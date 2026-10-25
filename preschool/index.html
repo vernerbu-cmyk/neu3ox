@@ -1,500 +1,410 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Дошколятам - NeuroX</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-
-<style>
-
-:root{
-    --blue:#1E3F8A;
-    --orange:#FF6A00;
-    --bg:#F4F6FB;
-}
-
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-
-body{
-
-    font-family:"Nunito Sans",sans-serif;
-    background:var(--bg);
-    color:#222;
-
-}
-
-
-/* HEADER */
-
-header{
-
-    background:var(--blue);
-    color:white;
-
-    padding:20px 24px;
-
-    box-shadow:0 4px 12px rgba(0,0,0,.15);
-
-}
-
-
-.header-top{
-
-    display:flex;
-
-    align-items:center;
-    justify-content:space-between;
-
-}
-
-
-.left-menu{
-
-    display:flex;
-    align-items:center;
-    gap:15px;
-
-}
-
-
-.menu-btn{
-
-    width:46px;
-    height:46px;
-
-    border:none;
-    border-radius:14px;
-
-    background:rgba(255,255,255,.15);
-
-    color:white;
-
-    font-size:24px;
-
-    cursor:pointer;
-
-}
-
-
-.brand{
-
-    display:flex;
-    align-items:center;
-
-    gap:12px;
-
-}
-
-
-.logo{
-
-    font-size:42px;
-
-}
-
-
-h1{
-
-    font-size:30px;
-    font-weight:800;
-
-}
-
-
-.subtitle{
-
-    font-size:14px;
-    opacity:.9;
-
-}
-
-
-.header-buttons{
-
-    display:flex;
-    gap:10px;
-
-}
-
-
-.icon-btn{
-
-    width:46px;
-    height:46px;
-
-    border:none;
-    border-radius:14px;
-
-    background:rgba(255,255,255,.15);
-
-    color:white;
-
-    font-size:22px;
-
-    cursor:pointer;
-
-}
-
-
-.icon-btn:hover,
-.menu-btn:hover{
-
-    background:var(--orange);
-
-}
-
-
-
-/* CONTENT */
-
-
-.container{
-
-    max-width:700px;
-
-    margin:auto;
-
-    padding:35px 20px;
-
-}
-
-
-.section-title{
-
-    color:var(--blue);
-
-    font-size:32px;
-
-    font-weight:800;
-
-    margin-bottom:25px;
-
-}
-
-
-
-.card{
-
-    background:white;
-
-    border-radius:20px;
-
-    margin-bottom:18px;
-
-    padding:22px 24px;
-
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-
-    border-left:6px solid transparent;
-
-    box-shadow:0 8px 20px rgba(0,0,0,.08);
-
-    cursor:pointer;
-
-    transition:.18s;
-
-}
-
-
-.card:hover{
-
-    transform:translateY(-3px);
-
-    border-left-color:var(--orange);
-
-}
-
-
-.card:active{
-
-    transform:scale(.985);
-
-}
-
-
-.left{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:18px;
-
-}
-
-
-.icon{
-
-    font-size:34px;
-
-}
-
-
-.title{
-
-    font-size:26px;
-
-    font-weight:700;
-
-    color:var(--blue);
-
-}
-
-
-.arrow{
-
-    font-size:30px;
-
-    color:#BBB;
-
-}
-
-
-/* FOOTER */
-
-
-footer{
-
-    text-align:center;
-
-    color:#999;
-
-    padding:20px;
-
-    font-size:12px;
-
-}
-
-
-
-@media(max-width:700px){
-
-
-h1{
-
-    font-size:26px;
-
-}
-
-
-.logo{
-
-    font-size:34px;
-
-}
-
-
-.title{
-
-    font-size:22px;
-
-}
-
-
-.card{
-
-    padding:18px;
-
-}
-
-
-}
-
-
-</style>
-
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Дошколятам — NeuroX</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Общие стили -->
+  <link rel="stylesheet" href="../shared/styles.css" />
+
+  <!-- Уникальное для «Дошколятам» -->
+  <style>
+    /* Метка «назад» на логотипе */
+    .logo { position: relative; }
+    .logo::after {
+      content: '←';
+      position: absolute;
+      top: -4px;
+      left: -6px;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #FF6A00;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .3);
+      font-family: "Nunito Sans", sans-serif;
+      line-height: 1;
+      pointer-events: none;
+    }
+    @media (max-width: 700px) {
+      .logo::after {
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        top: -3px;
+        left: -5px;
+      }
+    }
+
+    /* 1. БУКВЫ */
+    @keyframes letterFall {
+      0%, 100% { transform: translateY(-2px); }
+      50%      { transform: translateY(3px); }
+    }
+    .letter { transform-box: fill-box; transform-origin: center; }
+    .card:hover .letter-1 { animation: letterFall 2.2s ease-in-out infinite; }
+    .card:hover .letter-2 { animation: letterFall 2.2s ease-in-out infinite .35s; }
+    .card:hover .letter-3 { animation: letterFall 2.2s ease-in-out infinite .7s; }
+
+    /* 2. СЛЕДОПЫТ */
+    .paw { opacity: 1; transition: opacity .3s; }
+    .card:hover .paw-1 { animation: showPaw1 2.5s ease-in-out infinite; }
+    .card:hover .paw-2 { animation: showPaw2 2.5s ease-in-out infinite; }
+
+    @keyframes showPaw1 {
+      0%, 8%    { opacity: 1; }
+      15%       { opacity: 0; }
+      35%, 85%  { opacity: 1; }
+      100%      { opacity: 0; }
+    }
+    @keyframes showPaw2 {
+      0%, 25%   { opacity: 1; }
+      30%       { opacity: 0; }
+      55%, 85%  { opacity: 1; }
+      100%      { opacity: 0; }
+    }
+
+    /* 3. НАЙДИ БУКВУ */
+    @keyframes lensPatrol {
+      0%, 10%   { transform: translate(0, 0); }
+      24%, 34%  { transform: translate(52px, -6px); }
+      48%, 58%  { transform: translate(58px, 48px); }
+      72%, 82%  { transform: translate(-6px, 56px); }
+      96%, 100% { transform: translate(0, 0); }
+    }
+    @keyframes vanish1 {
+      0%, 6%   { opacity: 1; transform: scale(1); }
+      14%, 92% { opacity: 0; transform: scale(.4); }
+      98%, 100%{ opacity: 1; transform: scale(1); }
+    }
+    @keyframes vanish2 {
+      0%, 30%  { opacity: 1; transform: scale(1); }
+      38%, 92% { opacity: 0; transform: scale(.4); }
+      98%, 100%{ opacity: 1; transform: scale(1); }
+    }
+    @keyframes vanish3 {
+      0%, 54%  { opacity: 1; transform: scale(1); }
+      62%, 92% { opacity: 0; transform: scale(.4); }
+      98%, 100%{ opacity: 1; transform: scale(1); }
+    }
+    @keyframes vanish4 {
+      0%, 78%  { opacity: 1; transform: scale(1); }
+      86%, 92% { opacity: 0; transform: scale(.4); }
+      98%, 100%{ opacity: 1; transform: scale(1); }
+    }
+    .lens-group { transform-box: fill-box; transform-origin: center; }
+    .letter-b   { transform-box: fill-box; transform-origin: center; }
+    .card:hover .lens-group { animation: lensPatrol 6s ease-in-out infinite; }
+    .card:hover .letter-b1  { animation: vanish1 6s linear infinite; }
+    .card:hover .letter-b2  { animation: vanish2 6s linear infinite; }
+    .card:hover .letter-b3  { animation: vanish3 6s linear infinite; }
+    .card:hover .letter-b4  { animation: vanish4 6s linear infinite; }
+
+    /* 4. БУКВА — КАРТИНКА */
+    @keyframes arrowSlide {
+      0%, 100% { transform: translateX(-2px); }
+      50%      { transform: translateX(3px); }
+    }
+    @keyframes appleSway {
+      0%, 100% { transform: rotate(-5deg); }
+      50%      { transform: rotate(5deg); }
+    }
+    .arrow-group { transform-box: fill-box; transform-origin: center; }
+    .apple       { transform-box: fill-box; transform-origin: 50% 20%; }
+    .card:hover .arrow-group { animation: arrowSlide 1.6s ease-in-out infinite; }
+    .card:hover .apple       { animation: appleSway 1.9s ease-in-out infinite; }
+
+    /* 5. ЧТО ЛИШНЕЕ */
+    @keyframes oddPulse {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.15); }
+    }
+    .odd-square { transform-box: fill-box; transform-origin: center; }
+    .card:hover .odd-square { animation: oddPulse 1.5s ease-in-out infinite; }
+
+    /* 6. СЛОГОЛАЗ */
+    @keyframes slogoHop {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-2.5px); }
+    }
+    @keyframes slogoFlap {
+      0%, 100% { transform: rotate(0deg); }
+      50%      { transform: rotate(-6deg); }
+    }
+    .slogo-step { transform-box: fill-box; transform-origin: center; }
+    .slogo-flag { transform-box: fill-box; transform-origin: 0% 50%; }
+    .card:hover .slogo-step-1 { animation: slogoHop 1.5s ease-in-out infinite; }
+    .card:hover .slogo-step-2 { animation: slogoHop 1.5s ease-in-out infinite .35s; }
+    .card:hover .slogo-flag   { animation: slogoFlap 1s ease-in-out infinite alternate; }
+
+    /* 7. КРИСТАЛЬНАЯ ПЕЩЕРА */
+    @keyframes caveGlow {
+      0%, 100% { opacity: .85; transform: scale(1); }
+      50%      { opacity: 1;   transform: scale(1.08); }
+    }
+    @keyframes caveEyeBlink {
+      0%, 40%, 60%, 100% { opacity: 0; }
+      45%, 55%           { opacity: 1; }
+    }
+    .cave-cr { transform-box: fill-box; transform-origin: center; }
+    .card:hover .cave-cr-1 { animation: caveGlow 2.2s ease-in-out infinite; }
+    .card:hover .cave-cr-2 { animation: caveGlow 2.2s ease-in-out infinite .6s; }
+    .card:hover .cave-cr-3 { animation: caveGlow 1.8s ease-in-out infinite .3s; }
+    .card:hover .cave-eye  { animation: caveEyeBlink 4s ease-in-out infinite; }
+  </style>
 </head>
-
 
 <body>
 
-
-<header>
-
-
-<div class="header-top">
-
-
-<div class="left-menu">
-
-
-<button class="menu-btn" onclick="goBack()">
-☰
-</button>
-
-
-<div class="brand">
-
-
-<div class="logo">
-🧠
-</div>
-
-
-<div>
-
-<h1>NeuroX</h1>
-
-<div class="subtitle">
-Развитие когнитивных навыков
-</div>
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-<div class="header-buttons">
-
-
-<button class="icon-btn" onclick="showHelp()">
-❔
-</button>
-
-
-<button class="icon-btn" onclick="showSettings()">
-⚙
-</button>
-
-
-</div>
-
-
-</div>
-
-
-</header>
-
-
-
-
-<div class="container">
-
-
-<div class="section-title">
-🧸 Дошколятам
-</div>
-
-
-<div class="card" onclick="openTrainer('alf/letalf.html')">
-
-<div class="left">
-
-<div class="icon">
-🔤
-</div>
-
-<div class="title">
-Буквы
-</div>
-
-</div>
-
-<div class="arrow">
-›
-</div>
-
-</div>
-
-
-
-<div class="card" onclick="openTrainer('pathfinder.html')">
-
-<div class="left">
-
-<div class="icon">
-🧭
-</div>
-
-<div class="title">
-Следопыт
-</div>
-
-</div>
-
-<div class="arrow">
-›
-</div>
-
-</div>
-
-
-</div>
-
-
-
-
-<footer>
-
-© verner
-
-</footer>
-
-
-
-
-<script>
-
-
-function goBack(){
-
-    location.href="../index.html";
-
-}
-
-
-
-function openTrainer(path){
-
-    location.href = path;
-
-}
-
-
-
-function showHelp(){
-
-    alert("Руководство пользователя\n\nПоявится позже 🙂");
-
-}
-
-
-
-function showSettings(){
-
-    alert("Настройки\n\nПоявятся позже 🙂");
-
-}
-
-
-
-</script>
-
+  <div class="container">
+    <div class="cards">
+
+      <!-- 1. БУКВЫ -->
+      <div class="card" onclick="openTrainer('alf/letalf.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-linecap="round">
+              <text class="letter letter-1" x="8" y="17"
+                    font-family="Fredoka, sans-serif" font-size="18" font-weight="700"
+                    fill="#FF6A00" stroke="none" text-anchor="middle">А</text>
+              <text class="letter letter-2" x="24" y="30"
+                    font-family="Fredoka, sans-serif" font-size="18" font-weight="700"
+                    fill="currentColor" stroke="none" text-anchor="middle">Б</text>
+              <text class="letter letter-3" x="40" y="43"
+                    font-family="Fredoka, sans-serif" font-size="18" font-weight="700"
+                    fill="#FF6A00" stroke="none" text-anchor="middle">В</text>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Буквы</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 2. СЛЕДОПЫТ -->
+      <div class="card" onclick="openTrainer('pathfinder.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 100 100" fill="none">
+              <g class="paw paw-1"
+                 transform="translate(8 50) scale(0.24)"
+                 stroke="currentColor" stroke-width="20"
+                 fill="none"
+                 stroke-linecap="round" stroke-linejoin="round"
+                 style="color: var(--blue);">
+                <circle cx="212" cy="108" r="20"/>
+                <circle cx="44" cy="108" r="20"/>
+                <circle cx="92" cy="60" r="20"/>
+                <circle cx="164" cy="60" r="20"/>
+                <path d="M128,104A36,36,0,0,0,93.43,130a43.49,43.49,0,0,1-20.67,25.9,32,32,0,0,0,27.73,57.62,72.49,72.49,0,0,1,55,0,32,32,0,0,0,27.73-57.62A43.46,43.46,0,0,1,162.57,130,36,36,0,0,0,128,104Z"/>
+              </g>
+              <g class="paw paw-2"
+                 transform="translate(50 8) scale(0.19)"
+                 stroke="currentColor" stroke-width="20"
+                 fill="none"
+                 stroke-linecap="round" stroke-linejoin="round"
+                 style="color: var(--orange);">
+                <circle cx="212" cy="108" r="20"/>
+                <circle cx="44" cy="108" r="20"/>
+                <circle cx="92" cy="60" r="20"/>
+                <circle cx="164" cy="60" r="20"/>
+                <path d="M128,104A36,36,0,0,0,93.43,130a43.49,43.49,0,0,1-20.67,25.9,32,32,0,0,0,27.73,57.62,72.49,72.49,0,0,1,55,0,32,32,0,0,0,27.73-57.62A43.46,43.46,0,0,1,162.57,130,36,36,0,0,0,128,104Z"/>
+              </g>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Следопыт</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 3. НАЙДИ БУКВУ -->
+      <div class="card" onclick="openTrainer('findletter.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 100 100" fill="none">
+              <text class="letter-b letter-b1" x="24" y="30"
+                    font-family="Fredoka, sans-serif" font-size="24" font-weight="700"
+                    fill="currentColor" stroke="none" text-anchor="middle">А</text>
+              <text class="letter-b letter-b2" x="76" y="24"
+                    font-family="Fredoka, sans-serif" font-size="24" font-weight="700"
+                    fill="currentColor" stroke="none" text-anchor="middle">Б</text>
+              <text class="letter-b letter-b3" x="82" y="78"
+                    font-family="Fredoka, sans-serif" font-size="24" font-weight="700"
+                    fill="currentColor" stroke="none" text-anchor="middle">В</text>
+              <text class="letter-b letter-b4" x="18" y="86"
+                    font-family="Fredoka, sans-serif" font-size="24" font-weight="700"
+                    fill="currentColor" stroke="none" text-anchor="middle">Г</text>
+
+              <g class="lens-group">
+                <circle cx="24" cy="30" r="18"
+                        stroke="#FF6A00" stroke-width="3.4" fill="rgba(255,106,0,.1)"/>
+                <path d="M16 23 Q20 17 26 17"
+                      stroke="#FF6A00" stroke-width="2" fill="none"
+                      opacity=".6" stroke-linecap="round"/>
+                <path d="M37 43 L53 59" stroke="#FF6A00" stroke-width="4" stroke-linecap="round"/>
+              </g>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Найди букву</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 4. БУКВА — КАРТИНКА -->
+      <div class="card" onclick="openTrainer('letimage.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+              <text x="11" y="34" font-family="Fredoka, sans-serif" font-size="22" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">А</text>
+              <g class="arrow-group">
+                <path d="M22 26 L29 26" stroke="#FF6A00" stroke-width="2.4"/>
+                <path d="M26 23 L29 26 L26 29" stroke="#FF6A00" stroke-width="2.4" fill="none"/>
+              </g>
+              <g class="apple">
+                <circle cx="38" cy="31" r="7" fill="#FF6A00" stroke="#FF6A00"/>
+                <path d="M36 24 L38 21 L40 24" stroke="currentColor" stroke-width="1.8" fill="none"/>
+                <path d="M38 21 L40 18" stroke="currentColor" stroke-width="1.8" fill="none"/>
+                <path d="M40 22 Q44 21 42 18" stroke="currentColor" stroke-width="1.6" fill="none"/>
+              </g>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Буква — картинка</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 5. ЧТО ЛИШНЕЕ -->
+      <div class="card" onclick="openTrainer('different.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round">
+              <circle cx="7" cy="24" r="5"/>
+              <circle cx="23" cy="24" r="5"/>
+              <rect class="odd-square" x="34" y="19" width="10" height="10" rx="2.5" fill="#FF6A00" stroke="#FF6A00"/>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Что лишнее?</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 6. СЛОГОЛАЗ -->
+      <div class="card" onclick="openTrainer('slogolaz.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+              <!-- гора -->
+              <path d="M3 44 L24 12 L45 44 Z" fill="rgba(255,106,0,.08)"/>
+              <!-- снежная шапка -->
+              <path d="M24 12 L19 20 L22 19 L24 21 L26 19 L29 20 Z" fill="#fff" stroke-width="1.4"/>
+              <!-- слог МА -->
+              <g class="slogo-step slogo-step-1">
+                <rect x="8" y="34" width="13" height="8" rx="2.5" fill="currentColor"/>
+                <text x="14.5" y="40.2"
+                      font-family="Fredoka, sans-serif" font-size="7" font-weight="700"
+                      fill="#fff" stroke="none" text-anchor="middle">МА</text>
+              </g>
+              <!-- слог ЛУ -->
+              <g class="slogo-step slogo-step-2">
+                <rect x="22" y="23" width="13" height="8" rx="2.5" fill="#FF6A00"/>
+                <text x="28.5" y="29.2"
+                      font-family="Fredoka, sans-serif" font-size="7" font-weight="700"
+                      fill="#fff" stroke="none" text-anchor="middle">ЛУ</text>
+              </g>
+              <!-- флажок на пике -->
+              <rect x="23.3" y="0" width="1.4" height="13" fill="currentColor"/>
+              <g class="slogo-flag">
+                <path d="M24.7 0 h7.5 l-2.5 2.5 2.5 2.5 h-7.5 z" fill="#FF6A00"/>
+              </g>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Слоголаз</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 7. КРИСТАЛЬНАЯ ПЕЩЕРА -->
+      <div class="card" onclick="openTrainer('cave/index.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none">
+              <!-- тёмный фон пещеры -->
+              <path d="M4 44 L4 20 L14 12 L22 16 L30 10 L44 18 L44 44 Z"
+                    fill="rgba(95,224,255,.08)" stroke="currentColor"
+                    stroke-width="1.6" stroke-linejoin="round"/>
+              <!-- кристалл 1 (синий, светится) -->
+              <g class="cave-cr cave-cr-1">
+                <polygon points="14,38 18,30 22,38 18,44"
+                         fill="#5fe0ff" stroke="#e8fbff" stroke-width="1.2"/>
+                <circle cx="18" cy="38" r="7" fill="#5fe0ff" opacity=".35"/>
+              </g>
+              <!-- кристалл 2 (фиолетовый) -->
+              <g class="cave-cr cave-cr-2">
+                <polygon points="28,40 31,33 34,40 31,45"
+                         fill="#9a86ff" stroke="#e8d4ff" stroke-width="1.2"/>
+              </g>
+              <!-- кристалл 3 (золотой, ярче) -->
+              <g class="cave-cr cave-cr-3">
+                <polygon points="22,26 25,20 28,26 25,31"
+                         fill="#ffd24a" stroke="#fff2b8" stroke-width="1.2"/>
+                <circle cx="25" cy="26" r="6" fill="#ffd24a" opacity=".4"/>
+              </g>
+              <!-- силуэт тайны в глубине -->
+              <ellipse class="cave-eye" cx="25" cy="14" rx="2" ry="2" fill="#ffd24a"/>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Кристальная пещера</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Общие скрипты из shared/ -->
+  <script src="../shared/layout.js"></script>
+  <script src="../shared/storage.js"></script>
+<script src="../shared/app.js"></script>
+  <script src="../shared/seasons.js"></script>
+
+  <!-- Уникальное для «Дошколятам» -->
+  <script>
+    // Открытие тренажёра
+    function openTrainer(path) {
+      location.href = path;
+    }
+
+    // Заголовок шапки + клик по логотипу (назад в главное меню)
+    document.addEventListener('DOMContentLoaded', function () {
+      const h1 = document.querySelector('header h1');
+      if (h1) h1.textContent = 'Дошколятам';
+
+      const subtitle = document.getElementById('headerSubtitle');
+      if (subtitle) subtitle.textContent = 'NeuroX · 7 тренажёров';
+
+      // Перехват клика по логотипу: app.js открывает welcome, нам нужно — назад
+      const logo = document.getElementById('logoBtn');
+      if (logo) {
+        logo.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          location.href = '../index.html';
+        }, true);
+      }
+    });
+  </script>
 
 </body>
+
 </html>

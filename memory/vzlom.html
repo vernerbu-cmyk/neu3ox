@@ -1,0 +1,2405 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Взлом - NeuroX</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --blue:#2D6CDF; --blue-dark:#1E4FA8; --blue-light:#EBF2FF;
+    --orange:#FF8C42; --orange-dark:#E86E1F; --orange-light:#FFF2E5;
+    --bg:#F7F9FC; --text:#1F2937; --text-muted:#6B7280;
+    --border:#E5EAF2; --green:#22C55E; --red:#EF4444; --yellow:#F59E0B;
+    --panel:#FFFFFF;
+    --shadow-card:0 8px 24px rgba(45,108,223,.06);
+    --shadow-header:0 4px 16px rgba(45,108,223,.06);
+    --shadow-orange:0 8px 20px rgba(255,140,66,.3);
+    --shadow-orange-hover:0 12px 28px rgba(255,140,66,.4);
+  }
+  body.dark{
+    --blue:#4A7BD8; --blue-dark:#A8C4F0; --blue-light:#1F2A47;
+    --orange:#FF9F5C; --orange-dark:#C75B12; --orange-light:#3D2A1C;
+    --bg:#0F1626; --text:#E5E9F2; --text-muted:#9CA5B8;
+    --border:#2A3550; --green:#4ADE80; --red:#F87171; --yellow:#FBBF24;
+    --panel:#1A2338;
+    --shadow-card:0 8px 24px rgba(0,0,0,.30);
+    --shadow-header:0 4px 16px rgba(0,0,0,.25);
+    --shadow-orange:0 8px 20px rgba(255,140,66,.25);
+    --shadow-orange-hover:0 12px 28px rgba(255,140,66,.35);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  body{
+    font-family:-apple-system, 'Segoe UI', Roboto, 'Nunito Sans', sans-serif;
+    background:var(--bg); min-height:100vh; color:var(--text);
+    padding:16px; transition:background-color .25s, color .25s;
+  }
+  .container{ max-width:800px; margin:0 auto; }
+
+  /* ===== HEADER ===== */
+  header{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:16px; padding:14px 18px;
+    background:var(--panel); border-radius:20px;
+    border:1px solid var(--border); box-shadow:var(--shadow-header);
+    flex-wrap:wrap; gap:10px;
+  }
+  .back-btn{
+    width:44px; height:44px; border:none; border-radius:14px;
+    background:var(--blue-light); color:var(--blue);
+    font-size:22px; font-weight:700; cursor:pointer; transition:.18s;
+    display:flex; align-items:center; justify-content:center; font-family:inherit;
+  }
+  .back-btn:hover{ background:var(--blue); color:#fff; transform:translateY(-1px); }
+  h1{
+    font-size:20px; letter-spacing:.5px; color:var(--blue-dark);
+    font-weight:800; display:flex; align-items:center; gap:8px;
+    flex:1; min-width:0;
+  }
+  h1 svg{ flex-shrink:0; }
+  .header-right{ display:flex; align-items:center; gap:6px; }
+  .icon-btn{
+    width:44px; height:44px; border:none; border-radius:14px;
+    background:var(--blue-light); color:var(--blue);
+    cursor:pointer; transition:.18s;
+    display:flex; align-items:center; justify-content:center;
+    padding:0; font-family:inherit; position:relative;
+  }
+  .icon-btn:hover{ background:var(--blue); color:#fff; transform:translateY(-1px); }
+  .icon-btn svg{ display:block; width:22px; height:22px; }
+  .icon-btn .badge{
+    position:absolute; top:-4px; right:-4px;
+    min-width:18px; height:18px; border-radius:9px;
+    background:var(--orange); color:#fff;
+    font-size:10px; font-weight:800;
+    display:flex; align-items:center; justify-content:center;
+    padding:0 5px; border:2px solid var(--panel);
+  }
+
+  /* XP bar */
+  .xp-strip{
+    display:flex; align-items:center; gap:10px;
+    padding:8px 14px; border-radius:14px;
+    background:var(--blue-light); margin-bottom:16px;
+    font-size:13px; font-weight:700; color:var(--blue-dark);
+  }
+  .xp-strip .lvl{
+    background:var(--blue); color:#fff;
+    padding:3px 10px; border-radius:8px;
+    font-size:12px; font-weight:800;
+  }
+  .xp-bar{ flex:1; height:8px; border-radius:4px; background:rgba(45,108,223,.15); overflow:hidden; }
+  .xp-bar-fill{
+    height:100%; background:linear-gradient(90deg, var(--blue), var(--orange));
+    transition:width .5s ease;
+  }
+  .xp-strip .xp-val{ font-size:12px; color:var(--text-muted); }
+
+  main{ min-height:520px; }
+
+  /* ===== HEADINGS ===== */
+  .game-header{ text-align:center; margin-bottom:18px; }
+  .game-header h2{
+    font-size:22px; margin-bottom:6px;
+    color:var(--blue-dark); font-weight:800;
+  }
+  .subtitle{ font-size:14px; color:var(--text-muted); font-weight:600; }
+
+  /* ===== STATUS ===== */
+  .status{
+    text-align:center; font-size:15px; margin:14px 0;
+    min-height:26px; font-weight:700; color:var(--text-muted);
+    padding:8px 14px; background:var(--blue-light);
+    border-radius:12px; display:inline-block; transition:.3s;
+  }
+  .status.ok{ color:#166534; background:rgba(34,197,94,.15); }
+  .status.bad{ color:#991B1B; background:rgba(239,68,68,.15); }
+  .status.warn{ color:var(--orange-dark); background:var(--orange-light); }
+  body.dark .status.ok{ color:#86EFAC; }
+  body.dark .status.bad{ color:#FCA5A5; }
+
+  /* ===== PANEL ===== */
+  .panel{
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:22px; padding:24px;
+    box-shadow:var(--shadow-card);
+    transition:background-color .25s, border-color .25s;
+    position:relative;
+  }
+
+  /* ===== SETTINGS ===== */
+  .settings-grid{
+    display:grid; grid-template-columns:1fr; gap:16px;
+    margin-top:18px;
+  }
+  .settings-group{
+    padding:14px 16px;
+    background:var(--blue-light);
+    border-radius:14px;
+    display:flex; flex-direction:column; gap:12px;
+  }
+  body.dark .settings-group{ background:rgba(45,108,223,.08); }
+  .settings-group-title{
+    font-size:12px; font-weight:800;
+    color:var(--blue-dark);
+    text-transform:uppercase; letter-spacing:.8px;
+    margin-bottom:2px;
+  }
+  .setting{ display:flex; flex-direction:column; gap:6px; }
+  .setting-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-size:14px; font-weight:700; color:var(--text);
+  }
+  .setting-head .val{
+    color:var(--blue-dark); font-weight:800; font-size:15px;
+  }
+  .setting-desc{
+    font-size:11.5px; color:var(--text-muted);
+    font-weight:600; line-height:1.4;
+  }
+  input[type="range"]{
+    width:100%; accent-color:var(--orange);
+    height:24px; cursor:pointer;
+  }
+  select{
+    width:100%; font-family:inherit;
+    font-size:13.5px; font-weight:700;
+    color:var(--text); background:var(--panel);
+    border:2px solid var(--border); border-radius:12px;
+    padding:10px 12px; cursor:pointer; outline:none;
+    transition:.15s; appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat:no-repeat; background-position:right 12px center;
+    padding-right:32px;
+  }
+  select:hover, select:focus{ border-color:var(--orange); }
+  body.dark select{
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239CA5B8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  }
+
+  .types-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));
+    gap:6px; margin-top:4px;
+  }
+  .type-check{
+    display:flex; align-items:center; gap:6px;
+    padding:10px 12px; border-radius:10px;
+    background:var(--panel); border:2px solid var(--border);
+    cursor:pointer; font-weight:700; font-size:12.5px;
+    color:var(--blue-dark); transition:.15s; user-select:none;
+  }
+  .type-check:hover{ border-color:var(--orange); }
+  .type-check input{ accent-color:var(--orange); width:16px; height:16px; margin:0; cursor:pointer; }
+  .type-check.off{ opacity:.45; }
+
+  .check-row{
+    display:flex; align-items:center; gap:8px;
+    padding:9px 12px; border-radius:10px;
+    background:var(--panel); border:2px solid var(--border);
+    cursor:pointer; font-weight:700; font-size:13px;
+    color:var(--blue-dark); transition:.15s; user-select:none;
+  }
+  .check-row:hover{ border-color:var(--orange); }
+  .check-row input{ accent-color:var(--orange); width:16px; height:16px; margin:0; cursor:pointer; }
+
+  .setting-warn{
+    font-size:11.5px; color:var(--red); font-weight:800;
+    padding:5px 9px; background:rgba(239,68,68,.10);
+    border-radius:7px; margin-top:4px; display:none;
+  }
+  .setting-warn.visible{ display:block; }
+
+  /* ===== BUTTONS ===== */
+  .btn-main{
+    display:inline-flex; align-items:center; justify-content:center;
+    gap:9px; margin:0; padding:15px 30px;
+    border-radius:14px; border:none;
+    background:var(--orange); color:#fff;
+    font-size:16px; font-weight:800; cursor:pointer;
+    transition:.2s; letter-spacing:.4px;
+    box-shadow:var(--shadow-orange); font-family:inherit;
+  }
+  .btn-main:hover{
+    background:var(--orange-dark); transform:translateY(-2px);
+    box-shadow:var(--shadow-orange-hover);
+  }
+  .btn-main:active{ transform:translateY(0); }
+  .btn-main svg{ width:19px; height:19px; display:block; flex-shrink:0; }
+
+  .btn-secondary{
+    display:inline-flex; align-items:center; justify-content:center;
+    gap:7px; margin:0; padding:11px 22px;
+    border-radius:14px; border:2px solid var(--border);
+    background:transparent; color:var(--blue-dark);
+    font-size:14px; font-weight:700; cursor:pointer;
+    transition:.2s; font-family:inherit;
+  }
+  .btn-secondary:hover{ background:var(--blue-light); border-color:var(--blue-light); }
+  .btn-secondary svg{ width:17px; height:17px; display:block; flex-shrink:0; }
+
+  .btn-row{
+    display:flex; gap:10px; flex-wrap:wrap;
+    justify-content:center; margin-top:20px;
+  }
+
+  .btn-continue{
+    background:var(--green); box-shadow:0 8px 20px rgba(34,197,94,.3);
+  }
+  .btn-continue:hover{ background:#16A34A; box-shadow:0 12px 28px rgba(34,197,94,.4); }
+
+  /* ===== LOCK ===== */
+  .locks-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:44px 24px; justify-items:center;
+  }
+  .lock{
+    position:relative; width:100%; max-width:290px;
+    padding-top:106px; margin:0 auto;
+    filter:drop-shadow(0 6px 12px rgba(45,108,223,.10));
+  }
+  body.dark .lock{ filter:drop-shadow(0 6px 12px rgba(0,0,0,.35)); }
+  .lock-shackle{
+    position:absolute; top:0; left:50%;
+    transform:translateX(-50%);
+    width:190px; height:132px;
+    display:block; z-index:1; pointer-events:none; overflow:visible;
+    transition:transform .4s;
+  }
+  .lock.opened .lock-shackle{ transform:translateX(-50%) rotate(-25deg); }
+  .lock-body{
+    position:relative; z-index:2;
+    border:4px solid; border-radius:8px;
+    padding:22px 16px 54px;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:12px;
+    background-image:linear-gradient(180deg,
+      rgba(255,255,255,.55) 0%, rgba(255,255,255,.12) 14%,
+      rgba(255,255,255,0) 45%, rgba(0,0,0,.06) 78%,
+      rgba(0,0,0,.20) 100%);
+    box-shadow:
+      inset 0 0 0 2px rgba(255,255,255,.35),
+      inset 0 -8px 16px rgba(0,0,0,.10),
+      inset 0 2px 0 rgba(255,255,255,.6);
+    min-height:120px;
+  }
+  .lock-keyhole{
+    position:absolute; bottom:14px; left:50%;
+    transform:translateX(-50%);
+    width:26px; height:34px; z-index:3;
+    border-radius:6px;
+    background:linear-gradient(180deg,
+      rgba(255,255,255,.7) 0%, rgba(0,0,0,.06) 50%, rgba(0,0,0,.12) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.8),
+      inset 0 -2px 3px rgba(0,0,0,.15),
+      0 1px 2px rgba(0,0,0,.10);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .lock-keyhole::before{
+    content:''; position:absolute; top:5px; left:50%;
+    transform:translateX(-50%);
+    width:11px; height:11px; border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, #555, #000 85%);
+    box-shadow:inset 0 1px 2px rgba(255,255,255,.35);
+  }
+  .lock-keyhole::after{
+    content:''; position:absolute; top:13px; left:50%;
+    transform:translateX(-50%);
+    width:7px; height:14px;
+    background:linear-gradient(180deg, #000, #333);
+    clip-path:polygon(50% 0, 100% 100%, 0 100%);
+  }
+  .lock-rivet{
+    position:absolute; width:8px; height:8px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff, #888 65%, #333);
+    box-shadow:0 1px 1px rgba(0,0,0,.35), inset -1px -1px 1px rgba(0,0,0,.15);
+    z-index:3;
+  }
+  .lock-rivet.tl{ top:9px; left:11px; }
+  .lock-rivet.tr{ top:9px; right:11px; }
+  .lock-rivet.bl{ bottom:9px; left:11px; }
+  .lock-rivet.br{ bottom:9px; right:11px; }
+
+  .lock-code{
+    display:flex; gap:5px; flex-wrap:wrap;
+    justify-content:center; z-index:2;
+  }
+  .code-cell{
+    width:34px; height:42px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px; font-weight:700;
+    background:#fff; border:2px solid;
+    overflow:hidden; flex-shrink:0;
+    transition:.2s;
+  }
+  .code-cell.hidden-char{ color:transparent; background:rgba(255,255,255,.4); }
+  .code-cell.appearing{ animation:popIn .25s ease; }
+  @keyframes popIn{
+    from{ transform:scale(.5); opacity:0; }
+    to{ transform:scale(1); opacity:1; }
+  }
+
+  .lock-rule{
+    position:absolute; top:-14px; left:14px;
+    background:#fff; border:2px solid currentColor;
+    color:inherit; font-weight:700; font-size:13px;
+    padding:5px 12px; border-radius:999px;
+    box-shadow:0 2px 6px rgba(0,0,0,.12);
+    z-index:5; white-space:nowrap; letter-spacing:.3px;
+  }
+  .lock-rule .ic{ font-size:15px; margin-right:5px; }
+
+  .lock--digit{ color:#1E4FA8; }
+  .lock--digit .lock-body{ background-color:#BFD1ED; border-color:#1E4FA8; }
+  .lock--digit .code-cell{
+    border-color:#1E4FA8; border-radius:4px; color:#1E4FA8;
+    box-shadow:inset 0 2px 4px rgba(30,79,168,.15), 0 3px 0 rgba(30,79,168,.20);
+    background:linear-gradient(180deg, #fff, #EEF3FC);
+  }
+  .lock--letter{ color:#8A4A0E; }
+  .lock--letter .lock-body{ background-color:#E0BC7C; border-color:#8A4A0E; }
+  .lock--letter .code-cell{
+    border-color:#8A4A0E; border-radius:4px; color:#8A4A0E;
+    background:linear-gradient(180deg, #fff, #FFF6E8);
+    box-shadow:0 3px 0 rgba(138,74,14,.20);
+  }
+  .lock--symbol{ color:#374151; }
+  .lock--symbol .lock-body{ background-color:#9AA5B1; border-color:#374151; }
+  .lock--symbol .code-cell{
+    border-color:#374151; border-radius:50%;
+    width:38px; height:38px; color:#374151;
+    background:radial-gradient(circle at 30% 30%, #fff, #EDF0F3);
+    box-shadow:0 3px 0 rgba(55,65,81,.20);
+  }
+  .lock--color{ color:#6B3A1E; }
+  .lock--color .lock-body{ background-color:#D6A87C; border-color:#6B3A1E; }
+  .lock--color .code-cell{
+    border-color:#6B3A1E; border-radius:50%;
+    width:36px; height:36px; padding:0;
+    background:#fff;
+    box-shadow:0 3px 0 rgba(107,58,30,.22);
+  }
+  .lock--emoji{ color:#8A3418; }
+  .lock--emoji .lock-body{ background-color:#E0A083; border-color:#8A3418; }
+  .lock--emoji .code-cell{
+    border-color:#8A3418; border-radius:8px; color:#8A3418;
+    background:linear-gradient(180deg, #fff, #FFF1EA);
+    box-shadow:0 3px 0 rgba(138,52,24,.20);
+  }
+  .code-cell .swatch{ width:100%; height:100%; border-radius:50%; }
+
+  /* ===== PROGRESS ===== */
+  .progress{
+    height:12px; border-radius:999px;
+    background:var(--blue-light); overflow:hidden;
+    margin-top:16px;
+  }
+  .progress-fill{
+    height:100%; width:100%;
+    background:linear-gradient(90deg, var(--blue), var(--orange));
+    transition:width .08s linear;
+  }
+
+  /* Input timer bar */
+  .input-timer{
+    height:8px; border-radius:4px;
+    background:var(--blue-light); overflow:hidden;
+    margin-top:12px;
+    display:none;
+  }
+  .input-timer.visible{ display:block; }
+  .input-timer-fill{
+    height:100%; width:100%;
+    background:linear-gradient(90deg, var(--green), var(--yellow), var(--red));
+    transition:width .08s linear;
+  }
+
+  /* ===== HACK PHASE ===== */
+  .hack-slots{
+    display:flex; gap:5px; flex-wrap:wrap;
+    justify-content:center; z-index:2;
+  }
+  .hack-slot{
+    width:38px; height:46px; border-radius:6px;
+    background:rgba(255,255,255,.55);
+    border:2px dashed rgba(0,0,0,.35);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px; font-weight:700;
+    color:var(--blue-dark); transition:.2s;
+    overflow:hidden; flex-shrink:0;
+  }
+  .hack-slot.filled{
+    background:#fff; border-style:solid; border-color:#374151;
+  }
+  .hack-slot.correct{
+    background:rgba(34,197,94,.15);
+    border-color:var(--green); color:#166534;
+  }
+  .hack-slot.wrong{
+    background:rgba(239,68,68,.15);
+    border-color:var(--red); color:#991B1B;
+  }
+  .hack-slot .swatch{ width:100%; height:100%; border-radius:50%; }
+
+  .panels{
+    display:flex; flex-direction:column; gap:8px;
+    margin-top:20px;
+  }
+  .panels.locked{ pointer-events:none; opacity:.6; }
+  .panel-row{
+    background:var(--panel);
+    border:2px solid var(--border);
+    border-radius:14px; padding:8px 10px;
+    display:flex; gap:5px; flex-wrap:wrap;
+    justify-content:center;
+    transition:border-color .15s, background .15s;
+  }
+  .opt-btn{
+    width:40px; height:44px; border-radius:9px;
+    background:var(--blue-light);
+    border:2px solid transparent;
+    display:flex; align-items:center; justify-content:center;
+    font-size:19px; font-weight:700;
+    color:var(--blue-dark);
+    cursor:pointer; transition:.12s;
+    user-select:none; flex-shrink:0;
+  }
+  .opt-btn:hover{
+    background:var(--panel); border-color:var(--orange);
+    transform:translateY(-2px);
+  }
+  .opt-btn:active{ transform:translateY(0); }
+  .opt-btn.used{ opacity:.2; pointer-events:none; }
+  .opt-btn.color{ padding:0; overflow:hidden; border-radius:50%; }
+  .opt-btn.color .swatch{ width:100%; height:100%; }
+  .opt-btn.shuffled{ animation:optIn .3s ease; }
+  @keyframes optIn{
+    from{ transform:scale(.7); opacity:0; }
+    to{ transform:scale(1); opacity:1; }
+  }
+
+  .toolbar{
+    display:flex; gap:8px; flex-wrap:wrap;
+    justify-content:center; margin-top:14px;
+  }
+  .toolbar.locked{ pointer-events:none; opacity:.6; }
+
+  /* ===== LIVES ===== */
+  .lives{
+    display:flex; gap:4px; justify-content:center;
+    margin:8px 0; font-size:20px;
+  }
+  .lives .heart{ color:var(--red); transition:.3s; }
+  .lives .heart.lost{ color:var(--border); }
+
+  /* ===== DISTRACTIONS ===== */
+  #distractionLayer{
+    position:absolute; inset:0;
+    pointer-events:none; overflow:hidden;
+    border-radius:22px; z-index:20;
+  }
+  .distractor{
+    position:absolute;
+    font-size:44px; font-weight:800;
+    animation:distractorFly 2s ease-out forwards;
+    user-select:none;
+  }
+  @keyframes distractorFly{
+    0%{ transform:scale(.5) rotate(0deg); opacity:0; }
+    20%{ opacity:.85; }
+    80%{ opacity:.85; }
+    100%{ transform:scale(1.2) rotate(20deg); opacity:0; }
+  }
+
+  /* ===== COUNTDOWN ===== */
+  .countdown-overlay{
+    position:fixed; inset:0;
+    background:rgba(15,22,38,.7);
+    display:flex; align-items:center; justify-content:center;
+    z-index:900; animation:fade .2s ease;
+  }
+  .countdown-num{
+    font-size:120px; font-weight:900; color:#fff;
+    text-shadow:0 8px 30px rgba(0,0,0,.5);
+    animation:countPulse .9s ease;
+  }
+  @keyframes countPulse{
+    0%{ transform:scale(.4); opacity:0; }
+    30%{ transform:scale(1.1); opacity:1; }
+    100%{ transform:scale(1); opacity:.8; }
+  }
+
+  /* ===== RESULT ===== */
+  .result-title{
+    font-size:26px; font-weight:800;
+    color:var(--blue-dark); text-align:center;
+    margin-bottom:10px;
+  }
+  .result-sub{
+    text-align:center; font-weight:600;
+    color:var(--text-muted); font-size:15px;
+    line-height:1.6; margin-top:6px;
+  }
+  .result-stats{
+    display:flex; justify-content:center; gap:16px;
+    flex-wrap:wrap; margin:18px 0 8px;
+  }
+  .result-stat{
+    display:flex; flex-direction:column;
+    align-items:center; gap:3px; min-width:60px;
+  }
+  .result-stat .num{
+    font-size:26px; font-weight:800;
+    color:var(--blue-dark);
+  }
+  .result-stat .num.good{ color:#16A34A; }
+  .result-stat .num.bad{ color:#DC2626; }
+  body.dark .result-stat .num.good{ color:#4ADE80; }
+  body.dark .result-stat .num.bad{ color:#F87171; }
+  .result-stat .lbl{
+    font-size:11px; font-weight:700;
+    color:var(--text-muted);
+    text-transform:uppercase; letter-spacing:.4px;
+  }
+
+  .xp-gain{
+    text-align:center; margin:14px 0;
+    font-weight:800; color:var(--orange-dark);
+    font-size:16px;
+  }
+
+  /* ===== ACHIEVEMENTS MODAL ===== */
+  .modal-overlay{
+    position:fixed; inset:0;
+    background:rgba(15,22,38,.7);
+    display:flex; align-items:center; justify-content:center;
+    z-index:1000; padding:16px;
+    animation:fade .2s ease;
+  }
+  .modal{
+    background:var(--panel);
+    border-radius:22px;
+    max-width:520px; width:100%;
+    max-height:80vh; overflow-y:auto;
+    padding:24px;
+    box-shadow:0 20px 60px rgba(0,0,0,.4);
+    animation:modalIn .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes modalIn{
+    from{ transform:scale(.9); opacity:0; }
+    to{ transform:scale(1); opacity:1; }
+  }
+  .modal h3{
+    font-size:20px; font-weight:800;
+    color:var(--blue-dark); margin-bottom:16px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .modal-close{
+    width:32px; height:32px; border-radius:10px;
+    background:var(--blue-light); border:none;
+    color:var(--blue); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px; font-family:inherit;
+  }
+  .modal-close:hover{ background:var(--blue); color:#fff; }
+
+  .ach-list{ display:flex; flex-direction:column; gap:8px; }
+  .ach-item{
+    display:flex; gap:12px; align-items:center;
+    padding:12px 14px; border-radius:14px;
+    background:var(--blue-light);
+    transition:.2s;
+  }
+  body.dark .ach-item{ background:rgba(45,108,223,.08); }
+  .ach-item.locked{
+    opacity:.55;
+    filter:grayscale(.7);
+  }
+  .ach-item .ach-icon{
+    width:44px; height:44px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:12px; background:var(--panel);
+    font-size:22px; flex-shrink:0;
+  }
+  .ach-item .ach-body{ flex:1; min-width:0; }
+  .ach-item .ach-title{
+    font-size:14px; font-weight:800;
+    color:var(--blue-dark);
+  }
+  .ach-item .ach-desc{
+    font-size:12px; color:var(--text-muted);
+    font-weight:600; margin-top:2px;
+  }
+  .ach-item .ach-status{
+    font-size:11px; font-weight:800;
+    color:var(--orange-dark);
+    text-transform:uppercase; letter-spacing:.5px;
+    flex-shrink:0;
+  }
+
+  .fade{ animation:fade .35s ease; }
+  @keyframes fade{
+    from{ opacity:0; transform:translateY(8px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  @media (max-width:700px){
+    body{ padding:12px; }
+    header{ padding:12px 14px; }
+    h1{ font-size:16px; }
+    h1 svg{ width:18px; height:18px; }
+    .back-btn, .icon-btn{ width:40px; height:40px; border-radius:12px; }
+    .icon-btn svg{ width:20px; height:20px; }
+    .panel{ padding:18px; }
+    .lock{ padding-top:88px; max-width:250px; }
+    .lock-shackle{ width:160px; height:110px; }
+    .code-cell{ width:30px; height:38px; font-size:17px; }
+    .lock--symbol .code-cell{ width:32px; height:32px; }
+    .lock--color .code-cell{ width:30px; height:30px; }
+    .hack-slot{ width:32px; height:40px; font-size:17px; }
+    .opt-btn{ width:36px; height:42px; font-size:17px; }
+    .types-grid{ grid-template-columns:1fr 1fr; }
+    .lock-rule{ font-size:11px; padding:4px 9px; top:-12px; left:8px; }
+    .locks-grid{ gap:38px 16px; }
+    .btn-main{ padding:13px 22px; font-size:15px; }
+    .btn-main svg{ width:17px; height:17px; }
+  }
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="shackle-metal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="rgba(0,0,0,.55)"/>
+      <stop offset="16%"  stop-color="rgba(255,255,255,.75)"/>
+      <stop offset="38%"  stop-color="rgba(255,255,255,.15)"/>
+      <stop offset="58%"  stop-color="rgba(0,0,0,.20)"/>
+      <stop offset="78%"  stop-color="rgba(255,255,255,.55)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,.55)"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="container">
+  <header>
+    <button class="back-btn" onclick="goHome()" aria-label="Назад">←</button>
+    <h1>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="4" y="11" width="16" height="10" rx="2"/>
+        <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+        <circle cx="12" cy="16" r="1.2" fill="currentColor" stroke="none"/>
+      </svg>
+      ВЗЛОМ
+    </h1>
+    <div class="header-right">
+      <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Сменить тему">
+        <svg id="themeIcon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
+      </button>
+      <button class="icon-btn" onclick="showAchievements()" aria-label="Достижения">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="6"/>
+          <path d="M9 14v6l3-2 3 2v-6"/>
+        </svg>
+        <span class="badge" id="achBadge" style="display:none;">0</span>
+      </button>
+      <button class="icon-btn" onclick="toggleSettings()" aria-label="Настройки">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="xp-strip" id="xpStrip">
+    <span class="lvl" id="lvlBadge">Ур. 1</span>
+    <div class="xp-bar"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div></div>
+    <span class="xp-val" id="xpVal">0 / 100 XP</span>
+  </div>
+
+  <main id="app"></main>
+</div>
+
+<script>
+
+const app = document.getElementById("app");
+
+/* ============================================
+   ЗВУК
+   ============================================ */
+
+let audioCtx = null;
+function initAudio(){
+  if(!audioCtx){
+    try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){}
+  }
+}
+document.addEventListener('click', initAudio, {once:true});
+
+function beep(freq, dur = 0.12, type = 'sine', vol = 0.07){
+  if(!settings.sound) return;
+  if(!audioCtx) return;
+  try{
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = type; osc.frequency.value = freq;
+    const t = audioCtx.currentTime;
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.start(t); osc.stop(t + dur + 0.02);
+  }catch(e){}
+}
+function sfxClick(){ beep(420, 0.05, 'triangle', 0.05); }
+function sfxOpen(){
+  beep(660, 0.1);
+  setTimeout(() => beep(880, 0.14), 80);
+  setTimeout(() => beep(1180, 0.18), 180);
+}
+function sfxWrong(){ beep(180, 0.28, 'sawtooth', 0.10); }
+function sfxFail(){ beep(240, 0.15, 'square', 0.08); setTimeout(() => beep(160, 0.2, 'square', 0.08), 150); }
+function sfxWin(){ [523, 659, 784, 1047].forEach((f,i) => setTimeout(() => beep(f, 0.18, 'sine', 0.09), i * 110)); }
+function sfxTick(){ beep(880, 0.04, 'sine', 0.05); }
+function sfxAch(){ [660, 880, 1320].forEach((f,i) => setTimeout(() => beep(f, 0.15, 'triangle', 0.09), i * 130)); }
+
+/* ============================================
+   ВИБРАЦИЯ
+   ============================================ */
+
+function vibrate(pattern){
+  if(!settings.vibration) return;
+  if(navigator.vibrate) navigator.vibrate(pattern);
+}
+
+/* ============================================
+   ТЕМА
+   ============================================ */
+
+const THEME_ICONS = {
+  moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  sun: `<circle cx="12" cy="12" r="4"/>
+        <line x1="12" y1="2"  x2="12" y2="4"/>
+        <line x1="12" y1="20" x2="12" y2="22"/>
+        <line x1="4.22"  y1="4.22"  x2="5.64"  y2="5.64"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="2"  y1="12" x2="4"  y2="12"/>
+        <line x1="20" y1="12" x2="22" y2="12"/>
+        <line x1="4.22"  y1="19.78" x2="5.64"  y2="18.36"/>
+        <line x1="18.36" y1="5.64"  x2="19.78" y2="4.22"/>`
+};
+function setThemeIcon(isDark){
+  const icon = document.getElementById('themeIcon');
+  if(icon) icon.innerHTML = isDark ? THEME_ICONS.sun : THEME_ICONS.moon;
+}
+function toggleTheme(){
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  try{ localStorage.setItem('vlomTheme', isDark ? 'dark' : 'light'); }catch(e){}
+  setThemeIcon(isDark);
+}
+function loadTheme(){
+  let isDark = false;
+  try{ isDark = localStorage.getItem('vlomTheme') === 'dark'; }catch(e){}
+  if(isDark) document.body.classList.add('dark');
+  setThemeIcon(isDark);
+}
+
+/* ============================================
+   SVG ИКОНКИ
+   ============================================ */
+
+const ICONS = {
+  lockBtn: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect x="4" y="11" width="16" height="10" rx="2"/>
+    <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+    <circle cx="12" cy="16" r="1.2" fill="currentColor" stroke="none"/>
+  </svg>`,
+  undo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M9 14l-5-5 5-5"/>
+    <path d="M4 9h10a6 6 0 0 1 0 12h-3"/>
+  </svg>`,
+  refresh: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M21 12a9 9 0 1 1-3-6.7"/>
+    <path d="M21 4v5h-5"/>
+  </svg>`,
+  settings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+  </svg>`,
+  skip: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <polygon points="5 4 15 12 5 20 5 4"/>
+    <line x1="19" y1="5" x2="19" y2="19"/>
+  </svg>`,
+  continue: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <polygon points="5 3 19 12 5 21 5 3"/>
+  </svg>`
+};
+
+/* ============================================
+   ТИПЫ И ПРАВИЛА
+   ============================================ */
+
+const ALL_TYPES = [
+  { id:"digit",  name:"Цифровой",
+    pool:"0123456789".split(""),
+    rules:["direct","reverse","shift"] },
+  { id:"letter", name:"Буквенный",
+    pool:"АБВГДЕЖЗИКЛМНОПРСТ".split(""),
+    rules:["direct","reverse","shift"] },
+  { id:"symbol", name:"Символьный",
+    pool:["★","◆","●","▲","■","♦","⬟","⬢","✚","✱"],
+    rules:["direct","reverse"] },
+  { id:"color",  name:"Цветовой",
+    pool:["#EF4444","#FACC15","#22C55E","#3B82F6","#A855F7"],
+    rules:["direct","reverse"] },
+  { id:"emoji",  name:"Эмодзи",
+    pool:["🍎","🚗","🌙","⭐","🐟","🎈","🍋","🎁","🌸","🎩"],
+    rules:["direct","reverse"] }
+];
+
+const RULES = {
+  direct: { ic:"≡", label:"как есть" },
+  reverse:{ ic:"⇄", label:"наоборот" },
+  shift:  { ic:"+1", label:"следующий" }
+};
+
+/* ============================================
+   НАСТРОЙКИ
+   ============================================ */
+
+const DEFAULTS = {
+  count: 3,
+  codeLength: 5,
+  memorizeTime: 4,
+  progressive: false,
+  showAllAtOnce: false,
+  allowRepeats: true,
+  rulesMode: "random",
+  hackOrder: "inorder",
+  attemptsPerLock: 3,
+  livesMode: false,
+  reverseMode: false,
+
+  sound: true,
+  vibration: true,
+  distractions: "off",       // off | soft | medium | hard
+  oneByOne: false,
+  countdown: false,
+  fadeOut: false,
+  dependencies: false,
+  typeRotation: false,
+  inputTimer: false,
+  inputTime: 10,
+  shufflePanels: false,
+
+  typesOn: { digit:true, letter:true, symbol:true, color:true, emoji:true }
+};
+
+let settings = loadSettings();
+let settingsOpen = true;
+
+function loadSettings(){
+  try{
+    const raw = localStorage.getItem("vlomSettings");
+    if(raw){
+      const s = JSON.parse(raw);
+      return { ...DEFAULTS, ...s, typesOn:{ ...DEFAULTS.typesOn, ...(s.typesOn||{}) } };
+    }
+  }catch(e){}
+  return { ...DEFAULTS, typesOn:{ ...DEFAULTS.typesOn } };
+}
+function saveSettings(){
+  try{ localStorage.setItem("vlomSettings", JSON.stringify(settings)); }catch(e){}
+}
+
+function enabledTypes(){
+  return ALL_TYPES.filter(t => settings.typesOn[t.id]);
+}
+
+/* ============================================
+   ПРОФИЛЬ (XP, уровень, достижения, статистика)
+   ============================================ */
+
+const PROFILE_KEY = "vlomProfile";
+let profile = loadProfile();
+
+function loadProfile(){
+  try{
+    const raw = localStorage.getItem(PROFILE_KEY);
+    if(raw){
+      const p = JSON.parse(raw);
+      return {
+        xp: p.xp || 0,
+        games: p.games || 0,
+        bestSolved: p.bestSolved || 0,
+        totalSolved: p.totalSolved || 0,
+        totalLocks: p.totalLocks || 0,
+        bestStreak: p.bestStreak || 0,
+        achievements: p.achievements || {},
+        lastDaily: p.lastDaily || ""
+      };
+    }
+  }catch(e){}
+  return {
+    xp: 0, games: 0, bestSolved: 0, totalSolved: 0,
+    totalLocks: 0, bestStreak: 0, achievements: {}, lastDaily: ""
+  };
+}
+function saveProfile(){
+  try{ localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); }catch(e){}
+}
+
+function levelFromXp(xp){
+  // Каждый уровень требует всё больше XP
+  // Ур. 1 → 0 XP, Ур. 2 → 100, Ур. 3 → 250, Ур. 4 → 450 ...
+  let level = 1;
+  let need = 100;
+  let sum = 0;
+  while(xp >= sum + need){
+    sum += need;
+    level++;
+    need = Math.round(need * 1.4);
+  }
+  return { level, current: xp - sum, need };
+}
+
+function addXp(n){
+  profile.xp += n;
+  saveProfile();
+  updateXpBar();
+}
+
+function updateXpBar(){
+  const { level, current, need } = levelFromXp(profile.xp);
+  const lvlBadge = document.getElementById('lvlBadge');
+  const xpBarFill = document.getElementById('xpBarFill');
+  const xpVal = document.getElementById('xpVal');
+  if(lvlBadge) lvlBadge.textContent = 'Ур. ' + level;
+  if(xpBarFill) xpBarFill.style.width = (current / need * 100) + '%';
+  if(xpVal) xpVal.textContent = current + ' / ' + need + ' XP';
+}
+
+/* ============================================
+   ДОСТИЖЕНИЯ
+   ============================================ */
+
+const ACHIEVEMENTS = [
+  { id:"first",       icon:"🎯", title:"Первый взлом",       desc:"Заверши свою первую партию" },
+  { id:"perfect",     icon:"🏆", title:"Идеальный взлом",    desc:"Вскрой все замки в партии" },
+  { id:"perfect_3",   icon:"⭐", title:"Три подряд",          desc:"3 партии подряд со всеми вскрытыми замками" },
+  { id:"streak_5",    icon:"🔥", title:"Серия 5",             desc:"5 замков без единой ошибки подряд" },
+  { id:"streak_10",   icon:"💥", title:"Серия 10",            desc:"10 замков без единой ошибки подряд" },
+  { id:"hardcore",    icon:"💀", title:"Хардкорщик",          desc:"6 замков по 10 символов" },
+  { id:"types_all",   icon:"🎨", title:"Все типы",            desc:"Партия со всеми 5 типами замков" },
+  { id:"chain",       icon:"🔗", title:"Цепной мастер",       desc:"Партия с зависимостями без провалов" },
+  { id:"reverse",     icon:"🔄", title:"Обратный ум",         desc:"Партия в режиме «Реверс» без провалов" },
+  { id:"survivor",    icon:"❤️", title:"Живучий",             desc:"Сохрани хотя бы одну жизнь в режиме трёх жизней" },
+  { id:"speed",       icon:"⚡", title:"Скоростной",          desc:"Вскрой 5 замков за партию при времени показа ≤ 3 сек" },
+  { id:"lvl_5",       icon:"👑", title:"Уровень 5",           desc:"Достигни 5-го уровня" },
+  { id:"lvl_10",      icon:"💎", title:"Уровень 10",          desc:"Достигни 10-го уровня" },
+  { id:"games_10",    icon:"📚", title:"Десятка",             desc:"Сыграй 10 партий" },
+  { id:"games_50",    icon:"🏅", title:"Пятьдесят",           desc:"Сыграй 50 партий" }
+];
+
+function unlockAchievement(id){
+  if(profile.achievements[id]) return false;
+  profile.achievements[id] = true;
+  saveProfile();
+  updateAchBadge();
+  return true;
+}
+
+function updateAchBadge(){
+  const total = ACHIEVEMENTS.length;
+  const done = Object.keys(profile.achievements).length;
+  const badge = document.getElementById('achBadge');
+  if(!badge) return;
+  const remaining = total - done;
+  if(remaining > 0){
+    badge.textContent = remaining;
+    badge.style.display = '';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function showAchievements(){
+  const total = ACHIEVEMENTS.length;
+  const done = Object.keys(profile.achievements).length;
+
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+  modal.innerHTML = `
+    <div class="modal">
+      <h3>
+        <span>Достижения (${done}/${total})</span>
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+      </h3>
+      <div class="ach-list">
+        ${ACHIEVEMENTS.map(a => {
+          const got = profile.achievements[a.id];
+          return `
+            <div class="ach-item ${got ? '' : 'locked'}">
+              <div class="ach-icon">${got ? a.icon : '🔒'}</div>
+              <div class="ach-body">
+                <div class="ach-title">${a.title}</div>
+                <div class="ach-desc">${a.desc}</div>
+              </div>
+              ${got ? '<div class="ach-status">Открыто</div>' : ''}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+/* ============================================
+   СОХРАНЕНИЕ ПАРТИИ
+   ============================================ */
+
+const SAVE_KEY = "vlomProgress";
+
+function saveProgress(){
+  try{
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      locks, hackOrder, hackIdx, solvedCount, failedCount,
+      livesLeft, currentAttempts, memIdx, phase: currentPhase,
+      saveTime: Date.now()
+    }));
+  }catch(e){}
+}
+function clearProgress(){
+  try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+}
+function hasSavedProgress(){
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return false;
+    const data = JSON.parse(raw);
+    // Не показываем, если сохранение старше 7 дней
+    if(Date.now() - (data.saveTime || 0) > 7 * 24 * 3600 * 1000){
+      clearProgress();
+      return false;
+    }
+    return data && data.locks && data.locks.length && data.phase;
+  }catch(e){ return false; }
+}
+function loadProgress(){
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){ return null; }
+}
+
+/* ============================================
+   УТИЛИТЫ
+   ============================================ */
+
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+function shuffle(a){
+  const arr=[...a];
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function shackleSvg(){
+  return `
+    <svg class="lock-shackle" viewBox="0 0 200 140" preserveAspectRatio="xMidYMax meet">
+      <path d="M 30 140 L 30 70 Q 30 20 100 20 Q 170 20 170 70 L 170 140"
+            stroke="currentColor" stroke-width="40" fill="none" stroke-linecap="butt"/>
+      <path d="M 30 140 L 30 70 Q 30 20 100 20 Q 170 20 170 70 L 170 140"
+            stroke="url(#shackle-metal)" stroke-width="40" fill="none" stroke-linecap="butt"/>
+    </svg>
+  `;
+}
+
+function generateCode(pool, length, allowRepeats, seedChar){
+  const code=[]; const used=new Set();
+  if(seedChar !== undefined && seedChar !== null){
+    code.push(seedChar);
+    used.add(seedChar);
+  }
+  const maxLen = Math.min(length, pool.length);
+  let guard=0;
+  while(code.length < maxLen && guard<300){
+    guard++;
+    const v=pick(pool);
+    if(!allowRepeats && used.has(v)) continue;
+    used.add(v); code.push(v);
+  }
+  return code;
+}
+
+/* ============================================
+   ПРАВИЛА ШИФРОВАНИЯ
+   ============================================ */
+
+function shiftSymbol(ch, pool){
+  const i = pool.indexOf(ch);
+  if(i < 0) return ch;
+  return pool[(i + 1) % pool.length];
+}
+
+function applyRule(code, rule, type){
+  if(rule === "direct")  return [...code];
+  if(rule === "reverse") return [...code].reverse();
+  if(rule === "shift")   return code.map(ch => shiftSymbol(ch, type.pool));
+  return [...code];
+}
+
+function pickRuleForType(type){
+  if(settings.rulesMode === "off") return "direct";
+  if(settings.rulesMode === "reverse") return "reverse";
+  if(settings.rulesMode === "shift"){
+    return type.rules.includes("shift") ? "shift" : "direct";
+  }
+  return pick(type.rules);
+}
+
+/* ============================================
+   ПАРАМЕТРЫ ЗАМКА
+   ============================================ */
+
+function computeLockParams(index, total){
+  let len = settings.codeLength;
+  let time = settings.memorizeTime;
+  if(settings.progressive && total > 1){
+    const k = index / (total - 1);
+    len = Math.round(len + k);
+    time = Math.max(1, time * (1 - k * 0.2));
+  }
+  len = Math.max(2, Math.min(10, len));
+  time = Math.max(0.5, Math.min(30, time));
+  return { length: len, time };
+}
+
+/* ============================================
+   СОСТОЯНИЕ
+   ============================================ */
+
+let locks = [];
+let hackOrder = [];
+let hackIdx = 0;
+let currentAttempts = 0;
+let solvedCount = 0;
+let failedCount = 0;
+let livesLeft = 3;
+let currentStreak = 0;
+let hackLocked = false;
+let memIdx = 0;
+let currentPhase = "select";
+let memTimer = null;
+let inputTimer = null;
+let distractorTimer = null;
+let perfectGamesInRow = 0;
+
+/* ============================================
+   НАСТРОЙКИ UI
+   ============================================ */
+
+function toggleSettings(){
+  settingsOpen = !settingsOpen;
+  renderSelect();
+}
+
+function onSetting(key, value){
+  settings[key] = value;
+  saveSettings();
+  const el = document.getElementById("v_"+key);
+  if(el){
+    if(key === "memorizeTime") el.textContent = value + " с";
+    else if(key === "inputTime") el.textContent = value + " с";
+    else el.textContent = value;
+  }
+}
+
+function onTypeToggle(id, checked){
+  settings.typesOn[id] = checked;
+  saveSettings();
+  renderSelect();
+}
+
+function onBool(key, checked){
+  settings[key] = checked;
+  saveSettings();
+}
+
+function onSelect(key, value){
+  settings[key] = value;
+  saveSettings();
+}
+
+function resetSettings(){
+  settings = { ...DEFAULTS, typesOn:{ ...DEFAULTS.typesOn } };
+  saveSettings();
+  renderSelect();
+}
+
+/* ============================================
+   СТАРТОВЫЙ ЭКРАН
+   ============================================ */
+
+function renderSelect(){
+  currentPhase = "select";
+  clearProgress();
+  stopAllTimers();
+
+  const types = enabledTypes();
+  const tooFewTypes = types.length < 2;
+  const resume = hasSavedProgress();
+
+  app.innerHTML = `
+    <div class="panel fade">
+      <div class="game-header">
+        <h2>Параметры взлома</h2>
+        <div class="subtitle">Настрой партию под себя.</div>
+      </div>
+
+      ${resume ? `
+        <div class="settings-group" style="background:var(--orange-light);">
+          <div class="settings-group-title" style="color:var(--orange-dark);">Есть незавершённая партия</div>
+          <button class="btn-main btn-continue" onclick="resumeGame()" style="width:100%;">
+            ${ICONS.continue}
+            Продолжить
+          </button>
+        </div>
+      ` : ""}
+
+      ${settingsOpen ? `
+        <div class="settings-grid">
+
+          <div class="settings-group">
+            <div class="settings-group-title">Основные</div>
+
+            <div class="setting">
+              <div class="setting-head"><span>Замков в партии</span><span class="val" id="v_count">${settings.count}</span></div>
+              <input type="range" min="2" max="6" step="1" value="${settings.count}" oninput="onSetting('count', +this.value)">
+            </div>
+
+            <div class="setting">
+              <div class="setting-head"><span>Длина кода</span><span class="val" id="v_codeLength">${settings.codeLength}</span></div>
+              <input type="range" min="2" max="10" step="1" value="${settings.codeLength}" oninput="onSetting('codeLength', +this.value)">
+            </div>
+
+            <div class="setting">
+              <div class="setting-head"><span>Время на запоминание</span><span class="val" id="v_memorizeTime">${settings.memorizeTime} с</span></div>
+              <input type="range" min="0.5" max="30" step="0.5" value="${settings.memorizeTime}" oninput="onSetting('memorizeTime', +this.value)">
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-group-title">Правила и порядок</div>
+
+            <div class="setting">
+              <div class="setting-head"><span>Правила шифрования</span></div>
+              <select onchange="onSelect('rulesMode', this.value)">
+                <option value="off"     ${settings.rulesMode === 'off'     ? 'selected' : ''}>Выключены — код вводится как есть</option>
+                <option value="random"  ${settings.rulesMode === 'random'  ? 'selected' : ''}>Случайные — каждое правило на своём замке</option>
+                <option value="reverse" ${settings.rulesMode === 'reverse' ? 'selected' : ''}>Только «наоборот»</option>
+                <option value="shift"   ${settings.rulesMode === 'shift'   ? 'selected' : ''}>Только «+1» (для цифр и букв)</option>
+              </select>
+            </div>
+
+            <div class="setting">
+              <div class="setting-head"><span>Порядок взлома</span></div>
+              <select onchange="onSelect('hackOrder', this.value)">
+                <option value="inorder"  ${settings.hackOrder === 'inorder'  ? 'selected' : ''}>По порядку — 1, 2, 3…</option>
+                <option value="shuffled" ${settings.hackOrder === 'shuffled' ? 'selected' : ''}>Вразброс — случайный порядок</option>
+              </select>
+            </div>
+
+            <label class="check-row">
+              <input type="checkbox" ${settings.reverseMode ? 'checked' : ''} onchange="onBool('reverseMode', this.checked)">
+              <span>Режим «Реверс» — видишь расшифрованный код, вводишь зашифрованный</span>
+            </label>
+            <div class="setting-desc" style="padding-left:4px;">Работает только если правила не выключены.</div>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-group-title">Сложность и защита от ошибок</div>
+
+            <div class="setting">
+              <div class="setting-head"><span>Попытки на замок</span></div>
+              <select onchange="onSelect('attemptsPerLock', +this.value)">
+                <option value="1" ${settings.attemptsPerLock === 1 ? 'selected' : ''}>1 попытка — строго</option>
+                <option value="2" ${settings.attemptsPerLock === 2 ? 'selected' : ''}>2 попытки</option>
+                <option value="3" ${settings.attemptsPerLock === 3 ? 'selected' : ''}>3 попытки</option>
+                <option value="5" ${settings.attemptsPerLock === 5 ? 'selected' : ''}>5 попыток</option>
+                <option value="999" ${settings.attemptsPerLock === 999 ? 'selected' : ''}>Без ограничений</option>
+              </select>
+            </div>
+
+            <label class="check-row">
+              <input type="checkbox" ${settings.livesMode ? 'checked' : ''} onchange="onBool('livesMode', this.checked)">
+              <span>Режим трёх жизней</span>
+            </label>
+            <div class="setting-desc" style="padding-left:4px;">3 общие жизни на партию. Каждая ошибка (в том числе на панели) снимает одну. Кончились — партия прервана.</div>
+
+            <label class="check-row">
+              <input type="checkbox" ${settings.progressive ? 'checked' : ''} onchange="onBool('progressive', this.checked)">
+              <span>Нарастание сложности</span>
+            </label>
+
+            <label class="check-row">
+              <input type="checkbox" ${settings.dependencies ? 'checked' : ''} onchange="onBool('dependencies', this.checked)">
+              <span>Цепочка зависимостей — в коде каждого замка символ из предыдущего</span>
+            </label>
+
+            <label class="check-row">
+              <input type="checkbox" ${settings.typeRotation ? 'checked' : ''} onchange="onBool('typeRotation', this.checked)">
+              <span>Ротация типов — все замки разные</span>
+            </label>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-group-title">Помехи и анимации</div>
+
+            <div class="setting">
+              <div class="setting-head"><span>Помехи на запоминании</span></div>
+              <select onchange="onSelect('distractions', this.value)">
+                <option value="off"    ${settings.distractions === 'off'    ? 'selected' : ''}>Выключены</option>
+                <option value="soft"   ${settings.distractions === 'soft'   ? 'selected' : ''}>Слабо — редкие символы</option>
+                <option value="medium" ${settings.distractions === 'medium' ? 'selected' : ''}>Средне — чаще</option>
+                <option value="hard"   ${settings.distractions === 'hard'   ? 'selected' : ''}>Жёстко — часто и ярко</option>
+              </select>
+            </div>
+
+            <label class="check-row">
+              <input type="checkbox" ${settings.oneByOne ? 'checked' : ''} onchange="onBool('oneByOne', this.checked)">
+              <span>Показ кода по одному символу</span>
+            </label>
+
+            <label class="check-row">
+              <input type="checkbox" ${settings.countdown ? 'checked' : ''} onchange="onBool('countdown', this.checked)">
+              <span>Обратный отсчёт 3… 2… 1… перед показом</span>
+            </label>
+
+            <label class="check-row">
+              <input type="checkbox" ${settings.fadeOut ? 'checked' : ''} onchange="onBool('fadeOut', this.checked)">
+              <span>Затухание — символы исчезают по одному</span>
+            </label>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-group-title">Панели и ввод</div>
+
+            <label class="check-row">
+              <input type="checkbox" ${settings.shufflePanels ? 'checked' : ''} onchange="onBool('shufflePanels', this.checked)">
+              <span>Перемешивать порядок панелей</span>
+            </label>
+
+            <div class="setting">
+              <div class="setting-head"><span>Таймер на ввод</span></div>
+              <label class="check-row">
+                <input type="checkbox" ${settings.inputTimer ? 'checked' : ''} onchange="onBool('inputTimer', this.checked)">
+                <span>Ограничивать время ввода</span>
+              </label>
+              ${settings.inputTimer ? `
+                <div class="setting-head" style="margin-top:6px;"><span>Секунд на ввод</span><span class="val" id="v_inputTime">${settings.inputTime} с</span></div>
+                <input type="range" min="3" max="60" step="1" value="${settings.inputTime}" oninput="onSetting('inputTime', +this.value)">
+              ` : ""}
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-group-title">Звук и отклик</div>
+
+            <label class="check-row">
+              <input type="checkbox" ${settings.sound ? 'checked' : ''} onchange="onBool('sound', this.checked)">
+              <span>Звуковые эффекты</span>
+            </label>
+
+            <label class="check-row">
+              <input type="checkbox" ${settings.vibration ? 'checked' : ''} onchange="onBool('vibration', this.checked)">
+              <span>Вибрация на мобильных</span>
+            </label>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-group-title">Типы замков</div>
+            <div class="types-grid">
+              ${ALL_TYPES.map(t => `
+                <label class="type-check ${settings.typesOn[t.id] ? '' : 'off'}">
+                  <input type="checkbox" ${settings.typesOn[t.id] ? 'checked' : ''} onchange="onTypeToggle('${t.id}', this.checked)">
+                  <span>${t.name}</span>
+                </label>
+              `).join("")}
+            </div>
+            <div class="setting-warn ${tooFewTypes ? 'visible' : ''}">Нужно выбрать минимум 2 типа</div>
+          </div>
+
+        </div>
+      ` : ""}
+
+      <div class="btn-row">
+        <button class="btn-main" onclick="startGame()" ${tooFewTypes ? 'disabled style="opacity:.4;cursor:default;box-shadow:none;"' : ''}>
+          ${ICONS.lockBtn}
+          Начать взлом
+        </button>
+        <button class="btn-secondary" onclick="resetSettings()">Сбросить</button>
+      </div>
+    </div>
+  `;
+}
+
+/* ============================================
+   ГЕНЕРАЦИЯ ПАРТИИ
+   ============================================ */
+
+function startGame(){
+  const types = enabledTypes();
+  if(types.length < 2) return;
+
+  const needCount = settings.count;
+  let pool;
+
+  if(settings.typeRotation && needCount <= types.length){
+    // Каждый замок — свой тип, без повторов
+    pool = shuffle(types).slice(0, needCount);
+  } else {
+    pool = shuffle(types);
+  }
+
+  const chosen = [];
+  let i = 0;
+  while(chosen.length < needCount){
+    chosen.push(pool[i % pool.length]);
+    i++;
+    if(i > 200) break;
+  }
+
+  const total = chosen.length;
+
+  // Зависимости: символ из предыдущего кода попадает в следующий
+  let seedFromPrev = null;
+  locks = chosen.map((t, idx) => {
+    const params = computeLockParams(idx, total);
+    let code;
+
+    if(settings.dependencies && idx > 0 && seedFromPrev !== null){
+      // Берём случайный символ из предыдущего кода и используем как seed
+      const seedChar = seedFromPrev;
+      code = generateCode(t.pool, params.length, settings.allowRepeats !== false, seedChar);
+    } else {
+      code = generateCode(t.pool, params.length, settings.allowRepeats !== false);
+    }
+
+    // Запоминаем первый символ для следующего замка
+    seedFromPrev = pick(code);
+
+    const rule = pickRuleForType(t);
+    const target = applyRule(code, rule, t);
+
+    return {
+      type: t,
+      code,           // исходный код (для реверс-режима — то что вводить)
+      rule,
+      target,         // зашифрованный (обычно показывается)
+      length: code.length,
+      time: params.time
+    };
+  });
+
+  if(settings.hackOrder === "shuffled"){
+    hackOrder = shuffle(locks.map((_, i) => i));
+  } else {
+    hackOrder = locks.map((_, i) => i);
+  }
+
+  hackIdx = 0;
+  solvedCount = 0;
+  failedCount = 0;
+  currentStreak = 0;
+  livesLeft = 3;
+  hackLocked = false;
+  memIdx = 0;
+
+  saveProgress();
+  if(settings.showAllAtOnce){
+    renderMemorizeAll();
+  } else {
+    renderMemorizeOne(0);
+  }
+}
+
+function resumeGame(){
+  const data = loadProgress();
+  if(!data) return;
+  locks = data.locks;
+  hackOrder = data.hackOrder || locks.map((_,i)=>i);
+  hackIdx = data.hackIdx || 0;
+  solvedCount = data.solvedCount || 0;
+  failedCount = data.failedCount || 0;
+  livesLeft = data.livesLeft !== undefined ? data.livesLeft : 3;
+  currentAttempts = data.currentAttempts || 0;
+  memIdx = data.memIdx || 0;
+
+  if(data.phase === 'memorizeAll'){
+    renderMemorizeAll();
+  } else if(data.phase === 'memorizeOne'){
+    renderMemorizeOne(memIdx);
+  } else if(data.phase === 'hack'){
+    startHackPhase();
+  } else {
+    renderSelect();
+  }
+}
+
+/* ============================================
+   ФАЗА ЗАПОМИНАНИЯ
+   ============================================ */
+
+function stopAllTimers(){
+  if(memTimer){ clearInterval(memTimer); memTimer = null; }
+  if(inputTimer){ clearInterval(inputTimer); inputTimer = null; }
+  if(distractorTimer){ clearInterval(distractorTimer); distractorTimer = null; }
+}
+
+function renderMemorizeAll(){
+  currentPhase = "memorizeAll";
+  saveProgress();
+  const totalSec = settings.memorizeTime * locks.length;
+
+  app.innerHTML = `
+    <div class="panel fade" id="gamePanel">
+      <div id="distractionLayer"></div>
+      <div class="game-header">
+        <h2>Запоминай коды</h2>
+        <div class="subtitle">Все замки на одном экране.</div>
+      </div>
+      <div class="locks-grid" style="margin-top:20px;">
+        ${locks.map(l => renderLockCard(l, true, false, true)).join("")}
+      </div>
+      <div class="progress" style="margin-top:22px;">
+        <div class="progress-fill" id="memFill" style="width:100%;"></div>
+      </div>
+      <div style="text-align:center;">
+        <div class="status" id="memTime">${totalSec.toFixed(1)} с</div>
+      </div>
+    </div>
+  `;
+
+  // Обратный отсчёт
+  if(settings.countdown){
+    showCountdown(() => runMemorizeTimer(totalSec));
+  } else {
+    runMemorizeTimer(totalSec);
+  }
+
+  if(settings.oneByOne){
+    // Скрываем все символы, показываем по одному
+    applyOneByOne(locks);
+  }
+
+  startDistractions();
+}
+
+function applyOneByOne(list){
+  const allCodeCells = document.querySelectorAll('.lock-code');
+  const cells = [];
+  list.forEach((lock, li) => {
+    const cont = allCodeCells[li];
+    if(!cont) return;
+    cont.querySelectorAll('.code-cell').forEach(c => {
+      c.classList.add('hidden-char');
+      cells.push(c);
+    });
+  });
+  let idx = 0;
+  function step(){
+    if(idx >= cells.length) return;
+    cells[idx].classList.remove('hidden-char');
+    cells[idx].classList.add('appearing');
+    idx++;
+    setTimeout(step, 350);
+  }
+  step();
+}
+
+function runMemorizeTimer(totalSec){
+  const fill = document.getElementById("memFill");
+  const timeEl = document.getElementById("memTime");
+  const start = Date.now();
+  const totalMs = totalSec * 1000;
+  let lastTickSec = -1;
+
+  memTimer = setInterval(() => {
+    const left = Math.max(0, totalMs - (Date.now() - start));
+    const leftSec = Math.ceil(left / 1000);
+    fill.style.width = (left / totalMs * 100) + "%";
+    timeEl.textContent = (left / 1000).toFixed(1) + " с";
+
+    if(leftSec !== lastTickSec && leftSec <= 3 && leftSec > 0){
+      sfxTick();
+    }
+    lastTickSec = leftSec;
+
+    if(left <= 0){
+      clearInterval(memTimer); memTimer = null;
+      stopDistractions();
+      setTimeout(() => startHackPhase(), 280);
+    }
+  }, 80);
+}
+
+function renderMemorizeOne(idx){
+  currentPhase = "memorizeOne";
+  memIdx = idx;
+  saveProgress();
+
+  if(idx >= locks.length){
+    return startHackPhase();
+  }
+
+  const lock = locks[idx];
+  const total = locks.length;
+
+  app.innerHTML = `
+    <div class="panel fade" id="gamePanel">
+      <div id="distractionLayer"></div>
+      <div class="game-header">
+        <h2>Замок ${idx + 1} из ${total}</h2>
+        <div class="subtitle">${settings.rulesMode === 'off' ? 'Запоминай код' : (settings.reverseMode ? 'Запоминай расшифрованный код' : 'Запоминай код и правило')}</div>
+      </div>
+      <div style="margin-top:20px;">
+        ${renderLockCard(lock, true, false, true)}
+      </div>
+      <div class="progress" style="margin-top:22px;">
+        <div class="progress-fill" id="memFill" style="width:100%;"></div>
+      </div>
+      <div style="text-align:center;">
+        <div class="status" id="memTime">${lock.time.toFixed(1)} с</div>
+      </div>
+    </div>
+  `;
+
+  if(settings.countdown){
+    showCountdown(() => runOneTimer(lock, idx));
+  } else {
+    runOneTimer(lock, idx);
+  }
+
+  if(settings.oneByOne){
+    applyOneByOne([lock]);
+  }
+
+  startDistractions();
+}
+
+function runOneTimer(lock, idx){
+  const fill = document.getElementById("memFill");
+  const timeEl = document.getElementById("memTime");
+  const start = Date.now();
+  const totalMs = lock.time * 1000;
+  let lastTickSec = -1;
+
+  memTimer = setInterval(() => {
+    const left = Math.max(0, totalMs - (Date.now() - start));
+    const leftSec = Math.ceil(left / 1000);
+    fill.style.width = (left / totalMs * 100) + "%";
+    timeEl.textContent = (left / 1000).toFixed(1) + " с";
+
+    if(leftSec !== lastTickSec && leftSec <= 3 && leftSec > 0){
+      sfxTick();
+    }
+    lastTickSec = leftSec;
+
+    if(left <= 0){
+      clearInterval(memTimer); memTimer = null;
+      stopDistractions();
+      setTimeout(() => renderMemorizeOne(idx + 1), 280);
+    }
+  }, 80);
+}
+
+function showCountdown(onDone){
+  let n = 3;
+  const overlay = document.createElement('div');
+  overlay.className = 'countdown-overlay';
+  document.body.appendChild(overlay);
+  function step(){
+    if(n === 0){
+      overlay.remove();
+      onDone();
+      return;
+    }
+    overlay.innerHTML = `<div class="countdown-num">${n}</div>`;
+    beep(600, 0.15, 'sine', 0.08);
+    n--;
+    setTimeout(step, 800);
+  }
+  step();
+}
+
+function renderLockCard(lock, showRule, slots, forMemorize){
+  const rule = RULES[lock.rule];
+  const showRuleBadge = showRule && settings.rulesMode !== "off";
+
+  // В реверс-режиме показываем target, но при взломе ожидаем code
+  let displayCode;
+  if(forMemorize){
+    displayCode = settings.reverseMode && settings.rulesMode !== "off" ? lock.target : lock.code;
+  } else {
+    displayCode = lock.code;
+  }
+
+  const inner = slots
+    ? `<div class="hack-slots" id="hackSlots">
+         ${(settings.reverseMode && settings.rulesMode !== "off" ? lock.code : lock.target).map((_, i) => `<div class="hack-slot" data-i="${i}"></div>`).join("")}
+       </div>`
+    : `<div class="lock-code">
+         ${displayCode.map(v => renderCodeCell(v, lock.type.id)).join("")}
+       </div>`;
+
+  return `
+    <div class="lock lock--${lock.type.id}" id="lockCard">
+      ${shackleSvg()}
+      ${showRuleBadge ? `<div class="lock-rule"><span class="ic">${rule.ic}</span>${rule.label}</div>` : ""}
+      <div class="lock-body">
+        <span class="lock-rivet tl"></span>
+        <span class="lock-rivet tr"></span>
+        <span class="lock-rivet bl"></span>
+        <span class="lock-rivet br"></span>
+        ${inner}
+        <div class="lock-keyhole"></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCodeCell(v, typeId){
+  if(typeId === "color"){
+    return `<div class="code-cell"><div class="swatch" style="background:${v};"></div></div>`;
+  }
+  return `<div class="code-cell">${v}</div>`;
+}
+
+/* ============================================
+   ПОМЕХИ
+   ============================================ */
+
+const DISTRACTOR_ITEMS = ["★","●","▲","?","!","◆","✦","✱","✚","🌀","❄","☀","♫","✈"];
+const DISTRACTOR_COLORS = ["#FF8C42","#EF4444","#F59E0B","#22C55E","#3B82F6","#A855F7"];
+
+function startDistractions(){
+  stopDistractions();
+  if(settings.distractions === "off") return;
+
+  const config = {
+    soft:   { interval: 3200, count: 1 },
+    medium: { interval: 1900, count: 2 },
+    hard:   { interval: 1200, count: 3 }
+  }[settings.distractions];
+
+  distractorTimer = setInterval(() => {
+    const layer = document.getElementById('distractionLayer');
+    if(!layer) return;
+    for(let i = 0; i < config.count; i++){
+      spawnDistractor(layer);
+    }
+  }, config.interval);
+}
+
+function spawnDistractor(layer){
+  const panel = document.getElementById('gamePanel');
+  if(!panel) return;
+  const rect = panel.getBoundingClientRect();
+  const el = document.createElement('div');
+  el.className = 'distractor';
+  el.textContent = pick(DISTRACTOR_ITEMS);
+  el.style.color = pick(DISTRACTOR_COLORS);
+  el.style.fontSize = (40 + Math.random() * 40) + 'px';
+  el.style.left = (Math.random() * (rect.width - 60)) + 'px';
+  el.style.top = (Math.random() * (rect.height - 60)) + 'px';
+  el.style.animationDuration = (1.5 + Math.random() * 1.5) + 's';
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+function stopDistractions(){
+  if(distractorTimer){ clearInterval(distractorTimer); distractorTimer = null; }
+  const layer = document.getElementById('distractionLayer');
+  if(layer) layer.innerHTML = '';
+}
+
+/* ============================================
+   ФАЗА ВЗЛОМА
+   ============================================ */
+
+function startHackPhase(){
+  currentPhase = "hack";
+  saveProgress();
+  hackIdx = 0;
+  renderHackLock();
+}
+
+function renderHackLock(){
+  stopAllTimers();
+  if(hackIdx >= hackOrder.length){
+    return renderResult();
+  }
+
+  const lock = locks[hackOrder[hackIdx]];
+  const t = lock.type;
+  const total = locks.length;
+
+  // Какие панели показываем
+  let panels = enabledTypes();
+  if(settings.shufflePanels){
+    panels = shuffle(panels);
+  }
+
+  currentAttempts = settings.attemptsPerLock;
+  hackLocked = false;
+
+  // Правильный ответ: в реверс-режиме — lock.code (исходный). Обычно — lock.target (зашифрованный)
+  const isReverse = settings.reverseMode && settings.rulesMode !== "off";
+  const expected = isReverse ? lock.code : lock.target;
+
+  app.innerHTML = `
+    <div class="panel fade" id="gamePanel">
+      <div class="game-header">
+        <h2>Замок ${hackIdx + 1} из ${total}</h2>
+        <div class="subtitle">${isReverse ? 'Введи исходный код' : (settings.rulesMode === 'off' ? 'Выбери правильную панель и введи код' : 'Выбери панель и введи код с учётом правила')}</div>
+      </div>
+
+      ${settings.livesMode ? `
+        <div class="lives">
+          ${[0,1,2].map(i => `<span class="heart ${i < livesLeft ? '' : 'lost'}">❤</span>`).join('')}
+        </div>
+      ` : ""}
+
+      <div style="margin-top:14px;">
+        ${renderLockCardForHack(lock, expected)}
+      </div>
+
+      <div class="input-timer ${settings.inputTimer ? 'visible' : ''}" id="inputTimerBar">
+        <div class="input-timer-fill" id="inputTimerFill"></div>
+      </div>
+
+      <div class="panels" id="panels">
+        ${panels.map(pt => `
+          <div class="panel-row" data-type="${pt.id}">
+            ${shuffle(pt.pool).map(v => renderOptButton(v, pt.id)).join("")}
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="toolbar" id="toolbar">
+        <button class="btn-secondary" onclick="undoLast()">
+          ${ICONS.undo}
+          Стереть
+        </button>
+        <button class="btn-secondary" onclick="skipLock()">
+          ${ICONS.skip}
+          Пропустить
+        </button>
+      </div>
+
+      <div style="text-align:center;">
+        <div class="status" id="hackStatus">${statusIntroText()}</div>
+      </div>
+    </div>
+  `;
+
+  // Обработчики панелей
+  document.querySelectorAll(".panel-row").forEach(row => {
+    const typeId = row.dataset.type;
+    const isCorrectPanel = typeId === t.id;
+
+    row.querySelectorAll(".opt-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if(hackLocked) return;
+        if(!isCorrectPanel){
+          handleWrongPanel(row);
+          return;
+        }
+        sfxClick();
+        onPick(btn.dataset.value, btn, lock, expected);
+      });
+    });
+  });
+
+  // Таймер ввода
+  if(settings.inputTimer){
+    startInputTimer(lock, expected);
+  }
+}
+
+function renderLockCardForHack(lock, expected){
+  return `
+    <div class="lock lock--${lock.type.id}" id="lockCard">
+      ${shackleSvg()}
+      <div class="lock-body">
+        <span class="lock-rivet tl"></span>
+        <span class="lock-rivet tr"></span>
+        <span class="lock-rivet bl"></span>
+        <span class="lock-rivet br"></span>
+        <div class="hack-slots" id="hackSlots">
+          ${expected.map((_, i) => `<div class="hack-slot" data-i="${i}"></div>`).join("")}
+        </div>
+        <div class="lock-keyhole"></div>
+      </div>
+    </div>
+  `;
+}
+
+function startInputTimer(lock, expected){
+  const fill = document.getElementById('inputTimerFill');
+  const bar = document.getElementById('inputTimerBar');
+  if(!fill) return;
+  const total = settings.inputTime * 1000;
+  const start = Date.now();
+  let lastTick = -1;
+
+  inputTimer = setInterval(() => {
+    const left = Math.max(0, total - (Date.now() - start));
+    const leftSec = Math.ceil(left / 1000);
+    fill.style.width = (left / total * 100) + '%';
+
+    if(leftSec !== lastTick && leftSec <= 3 && leftSec > 0){
+      sfxTick();
+    }
+    lastTick = leftSec;
+
+    if(left <= 0){
+      clearInterval(inputTimer); inputTimer = null;
+      if(hackLocked) return;
+      // Время истекло — как ошибка
+      handleTimeOut(lock, expected);
+    }
+  }, 80);
+}
+
+function handleTimeOut(lock, expected){
+  hackLocked = true;
+  const status = document.getElementById('hackStatus');
+  status.textContent = "Время вышло.";
+  status.className = "status bad";
+  vibrate([100, 50, 100]);
+  sfxWrong();
+  currentAttempts = 0;
+  showCorrectAnswer(lock, expected);
+  failedCount++;
+  if(settings.livesMode){
+    livesLeft--;
+    if(livesLeft <= 0){
+      setTimeout(() => renderResult(true), 2000);
+      return;
+    }
+  }
+  setTimeout(() => {
+    hackIdx++;
+    renderHackLock();
+  }, 1800);
+}
+
+function statusIntroText(){
+  if(settings.livesMode){
+    return `Жизни: ${livesLeft}. Выбери панель`;
+  }
+  if(settings.attemptsPerLock === 999) return "Выбери панель и введи код";
+  if(settings.attemptsPerLock === 1) return "Одна попытка";
+  return `Попыток: ${settings.attemptsPerLock}`;
+}
+
+function renderOptButton(v, typeId){
+  if(typeId === "color"){
+    return `<div class="opt-btn color shuffled" data-value="${v}"><div class="swatch" style="background:${v};"></div></div>`;
+  }
+  return `<div class="opt-btn shuffled" data-value="${v}">${v}</div>`;
+}
+
+function handleWrongPanel(row){
+  hackLocked = true;
+  clearInterval(inputTimer); inputTimer = null;
+  row.style.borderColor = "var(--red)";
+  row.style.background = "rgba(239,68,68,.10)";
+  const status = document.getElementById('hackStatus');
+  status.textContent = "Не та панель.";
+  status.className = "status bad";
+  vibrate([100, 50, 100]);
+  sfxFail();
+  failedCount++;
+  currentAttempts = 0;
+
+  if(settings.livesMode){
+    livesLeft--;
+    if(livesLeft <= 0){
+      setTimeout(() => renderResult(true), 1400);
+      return;
+    }
+  }
+  setTimeout(() => {
+    hackIdx++;
+    renderHackLock();
+  }, 1400);
+}
+
+function onPick(value, btn, lock, expected){
+  if(hackLocked) return;
+
+  const slots = document.querySelectorAll(".hack-slot");
+  const nextEmpty = Array.from(slots).find(s => !s.classList.contains("filled"));
+  if(!nextEmpty) return;
+
+  const i = +nextEmpty.dataset.i;
+  nextEmpty.classList.add("filled");
+
+  if(lock.type.id === "color"){
+    nextEmpty.innerHTML = `<div class="swatch" style="background:${value};"></div>`;
+  } else {
+    nextEmpty.textContent = value;
+  }
+
+  if(settings.allowRepeats === false){
+    btn.classList.add("used");
+  }
+
+  if(i === expected.length - 1){
+    clearInterval(inputTimer); inputTimer = null;
+    setTimeout(() => checkCode(lock, expected), 250);
+  }
+}
+
+function undoLast(){
+  if(hackLocked) return;
+  const slots = document.querySelectorAll(".hack-slot");
+  const lastFilled = Array.from(slots).reverse().find(s => s.classList.contains("filled"));
+  if(!lastFilled) return;
+  lastFilled.classList.remove("filled", "correct", "wrong");
+  lastFilled.textContent = "";
+  lastFilled.innerHTML = "";
+  document.querySelectorAll(".opt-btn.used").forEach(btn => btn.classList.remove("used"));
+  sfxClick();
+}
+
+function skipLock(){
+  if(hackLocked) return;
+  hackLocked = true;
+  clearInterval(inputTimer); inputTimer = null;
+  const status = document.getElementById('hackStatus');
+  status.textContent = "Замок пропущен.";
+  status.className = "status warn";
+  failedCount++;
+  const lock = locks[hackOrder[hackIdx]];
+  const isReverse = settings.reverseMode && settings.rulesMode !== "off";
+  const expected = isReverse ? lock.code : lock.target;
+  showCorrectAnswer(lock, expected);
+  if(settings.livesMode){
+    livesLeft--;
+    if(livesLeft <= 0){
+      setTimeout(() => renderResult(true), 2000);
+      return;
+    }
+  }
+  setTimeout(() => { hackIdx++; renderHackLock(); }, 1800);
+}
+
+function clearSlots(){
+  document.querySelectorAll(".hack-slot").forEach(s => {
+    s.classList.remove("filled", "correct", "wrong");
+    s.textContent = "";
+    s.innerHTML = "";
+  });
+  document.querySelectorAll(".opt-btn.used").forEach(btn => btn.classList.remove("used"));
+}
+
+function setLockedState(locked){
+  hackLocked = locked;
+  const panels = document.getElementById("panels");
+  const toolbar = document.getElementById("toolbar");
+  if(panels) panels.classList.toggle("locked", locked);
+  if(toolbar) toolbar.classList.toggle("locked", locked);
+}
+
+function showCorrectAnswer(lock, expected){
+  const slots = document.querySelectorAll(".hack-slot");
+  slots.forEach((slot, i) => {
+    slot.classList.remove("filled", "correct", "wrong");
+    slot.classList.add("filled", "correct");
+    if(lock.type.id === "color"){
+      slot.innerHTML = `<div class="swatch" style="background:${expected[i]};"></div>`;
+    } else {
+      slot.textContent = expected[i];
+    }
+  });
+}
+
+function checkCode(lock, expected){
+  const slots = document.querySelectorAll(".hack-slot");
+  let allRight = true;
+
+  slots.forEach((slot, i) => {
+    const exp = expected[i];
+    const got = slot.querySelector(".swatch")
+      ? rgbToHex(slot.querySelector(".swatch").style.background)
+      : slot.textContent.trim();
+
+    const e = lock.type.id === "color" ? exp.toLowerCase() : exp;
+    const g = lock.type.id === "color" ? (got || "").toLowerCase() : got;
+
+    if(e === g){
+      slot.classList.add("correct");
+    } else {
+      slot.classList.add("wrong");
+      allRight = false;
+    }
+  });
+
+  const status = document.getElementById("hackStatus");
+
+  if(allRight){
+    setLockedState(true);
+    currentStreak++;
+    if(currentStreak > profile.bestStreak){
+      profile.bestStreak = currentStreak;
+      saveProfile();
+    }
+    status.textContent = currentStreak >= 3 ? `Вскрыт! Серия ${currentStreak}` : "Замок вскрыт!";
+    status.className = "status ok";
+    vibrate(30);
+    sfxOpen();
+
+    // Открываем дужку у замка
+    const card = document.getElementById('lockCard');
+    if(card) card.classList.add('opened');
+
+    solvedCount++;
+    hackIdx++;
+    setTimeout(renderHackLock, 1000);
+    return;
+  }
+
+  // Ошибка
+  currentStreak = 0;
+  currentAttempts--;
+  setLockedState(true);
+  vibrate([100, 50, 100]);
+  sfxWrong();
+
+  if(settings.livesMode){
+    livesLeft--;
+  }
+
+  if(currentAttempts > 0 && !settings.livesMode){
+    status.textContent = `Неверно. Осталось: ${currentAttempts}`;
+    status.className = "status bad";
+    setTimeout(() => {
+      clearSlots();
+      status.textContent = `Попробуй ещё — попыток: ${currentAttempts}`;
+      status.className = "status warn";
+      setLockedState(false);
+      if(settings.inputTimer) startInputTimer(lock, expected);
+    }, 1400);
+    return;
+  }
+
+  // Попытки кончились или режим жизней
+  failedCount++;
+  status.textContent = "Замок не вскрыт.";
+  status.className = "status bad";
+  setTimeout(() => {
+    showCorrectAnswer(lock, expected);
+    if(settings.livesMode && livesLeft <= 0){
+      setTimeout(() => renderResult(true), 1800);
+      return;
+    }
+    setTimeout(() => { hackIdx++; renderHackLock(); }, 1800);
+  }, 1200);
+}
+
+function rgbToHex(rgb){
+  const m = rgb.match(/\d+/g);
+  if(!m) return rgb;
+  return "#" + m.slice(0,3).map(n => (+n).toString(16).padStart(2,"0")).join("");
+}
+
+/* ============================================
+   РЕЗУЛЬТАТ
+   ============================================ */
+
+function renderResult(interrupted = false){
+  stopAllTimers();
+  currentPhase = "result";
+  clearProgress();
+
+  const total = locks.length;
+
+  // XP
+  let xpGain = solvedCount * 10;
+  if(solvedCount === total) xpGain += 30;
+  if(currentStreak >= 5) xpGain += 15;
+
+  addXp(xpGain);
+
+  // Статистика
+  profile.games++;
+  profile.totalSolved += solvedCount;
+  profile.totalLocks += total;
+  if(solvedCount > profile.bestSolved) profile.bestSolved = solvedCount;
+  if(solvedCount === total){
+    perfectGamesInRow = (perfectGamesInRow || 0) + 1;
+  } else {
+    perfectGamesInRow = 0;
+  }
+  saveProfile();
+
+  // Достижения
+  const newAch = [];
+  if(unlockAchievement('first')) newAch.push('first');
+  if(profile.games >= 10) { if(unlockAchievement('games_10')) newAch.push('games_10'); }
+  if(profile.games >= 50) { if(unlockAchievement('games_50')) newAch.push('games_50'); }
+  if(solvedCount === total) { if(unlockAchievement('perfect')) newAch.push('perfect'); }
+  if(perfectGamesInRow >= 3) { if(unlockAchievement('perfect_3')) newAch.push('perfect_3'); }
+  if(currentStreak >= 5) { if(unlockAchievement('streak_5')) newAch.push('streak_5'); }
+  if(currentStreak >= 10) { if(unlockAchievement('streak_10')) newAch.push('streak_10'); }
+  if(settings.count === 6 && settings.codeLength === 10) { if(unlockAchievement('hardcore')) newAch.push('hardcore'); }
+  if(settings.typesOn.digit && settings.typesOn.letter && settings.typesOn.symbol && settings.typesOn.color && settings.typesOn.emoji) {
+    if(unlockAchievement('types_all')) newAch.push('types_all');
+  }
+  if(settings.dependencies && solvedCount === total) { if(unlockAchievement('chain')) newAch.push('chain'); }
+  if(settings.reverseMode && settings.rulesMode !== 'off' && solvedCount === total) { if(unlockAchievement('reverse')) newAch.push('reverse'); }
+  if(settings.livesMode && livesLeft > 0) { if(unlockAchievement('survivor')) newAch.push('survivor'); }
+  if(settings.memorizeTime <= 3 && solvedCount >= 5) { if(unlockAchievement('speed')) newAch.push('speed'); }
+  const lvl = levelFromXp(profile.xp).level;
+  if(lvl >= 5) { if(unlockAchievement('lvl_5')) newAch.push('lvl_5'); }
+  if(lvl >= 10) { if(unlockAchievement('lvl_10')) newAch.push('lvl_10'); }
+
+  if(newAch.length){
+    setTimeout(() => sfxAch(), 400);
+    updateAchBadge();
+  }
+
+  let title;
+  if(interrupted) title = "Партия прервана";
+  else if(solvedCount === total) title = "Все замки вскрыты!";
+  else if(solvedCount > 0) title = `Вскрыто ${solvedCount} из ${total}`;
+  else title = "Ни один замок не поддался";
+
+  app.innerHTML = `
+    <div class="panel fade">
+      <div class="result-title">${title}</div>
+
+      <div class="result-stats">
+        <div class="result-stat">
+          <div class="num good">${solvedCount}</div>
+          <div class="lbl">Вскрыто</div>
+        </div>
+        <div class="result-stat">
+          <div class="num bad">${failedCount}</div>
+          <div class="lbl">Провалено</div>
+        </div>
+        <div class="result-stat">
+          <div class="num">${currentStreak}</div>
+          <div class="lbl">Серия</div>
+        </div>
+        <div class="result-stat">
+          <div class="num">${profile.bestStreak}</div>
+          <div class="lbl">Рекорд серии</div>
+        </div>
+      </div>
+
+      <div class="xp-gain">+ ${xpGain} XP</div>
+
+      ${newAch.length ? `
+        <div class="settings-group" style="margin-top:14px;">
+          <div class="settings-group-title" style="color:var(--orange-dark);">Новые достижения</div>
+          <div class="ach-list">
+            ${newAch.map(id => {
+              const a = ACHIEVEMENTS.find(x => x.id === id);
+              return a ? `
+                <div class="ach-item">
+                  <div class="ach-icon">${a.icon}</div>
+                  <div class="ach-body">
+                    <div class="ach-title">${a.title}</div>
+                    <div class="ach-desc">${a.desc}</div>
+                  </div>
+                </div>
+              ` : '';
+            }).join('')}
+          </div>
+        </div>
+      ` : ""}
+
+      <div class="btn-row">
+        <button class="btn-main" onclick="startGame()">
+          ${ICONS.refresh}
+          Ещё раз
+        </button>
+        <button class="btn-secondary" onclick="settingsOpen=true; renderSelect()">
+          ${ICONS.settings}
+          Настройки
+        </button>
+      </div>
+    </div>
+  `;
+
+  if(solvedCount > 0) sfxWin();
+}
+
+/* ============================================
+   ГОРЯЧИЕ КЛАВИШИ
+   ============================================ */
+
+document.addEventListener('keydown', (e) => {
+  if(currentPhase !== 'hack') return;
+  if(hackLocked) return;
+
+  if(e.key === 'Backspace'){
+    e.preventDefault();
+    undoLast();
+    return;
+  }
+
+  // Цифры — быстрый ввод, если активная панель цифровая
+  if(/^[0-9]$/.test(e.key)){
+    const panels = document.querySelectorAll('.panel-row');
+    for(const row of panels){
+      if(row.dataset.type === 'digit'){
+        const btn = row.querySelector(`.opt-btn[data-value="${e.key}"]`);
+        if(btn) btn.click();
+        break;
+      }
+    }
+  }
+});
+
+/* ============================================
+   НАВИГАЦИЯ
+   ============================================ */
+
+function goHome(){
+  location.href = "index.html";
+}
+
+/* ============================================
+   СТАРТ
+   ============================================ */
+
+loadTheme();
+updateXpBar();
+updateAchBadge();
+renderSelect();
+</script>
+
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ёлочка — NeuroX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{
+  --blue:#1E3F8A; --blue-light:#2A56C6; --blue-pale:#E8EEF9;
+  --orange:#FF6A00; --orange-soft:#FF8B3D; --orange-dark:#C85100;
+  --bg:#F4F6FB; --text:#24324B; --text-dim:#6B7280;
+  --border:rgba(30,63,138,.10); --panel:#FFFFFF;
+  --header-shadow: rgba(30,63,138,.25);
+  --dot-color: rgba(30,63,138,.07);
+  --overlay: rgba(30,63,138,.45);
+  --header-h:80px;
+}
+[data-theme="dark"]{
+  --blue:#7B9BE5; --blue-light:#6B8BDB; --blue-pale:#2A3A5C;
+  --orange:#FF8B3D; --orange-soft:#FFA057; --orange-dark:#C85100;
+  --bg:#121721; --text:#E8EEF9; --text-dim:#8A96B0;
+  --border:rgba(140,170,240,.15); --panel:#1C2331;
+  --header-shadow: rgba(0,0,0,.55);
+  --dot-color: rgba(140,170,240,.09);
+  --overlay: rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;}
+html,body{transition:background-color .3s,color .3s;}
+body{
+  margin:0; font-family:"Nunito Sans",sans-serif;
+  background-color:var(--bg);
+  background-image:radial-gradient(circle,var(--dot-color) 1.5px,transparent 1.6px);
+  background-size:26px 26px; color:var(--text); min-height:100vh;
+}
+
+/* ===== HEADER ===== */
+header{
+  position:sticky; top:0; width:100%;
+  background:linear-gradient(135deg,#152E68 0%,#1E3F8A 60%,#2A4A99 100%);
+  color:#fff; padding:10px 16px; z-index:1000;
+  box-shadow:0 6px 20px var(--header-shadow);
+}
+[data-theme="dark"] header{
+  background:linear-gradient(135deg,#12193A 0%,#1A2440 60%,#243057 100%);
+}
+.header-top{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;}
+.logo{
+  position:relative; width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  background:transparent; border:none; padding:0;
+  color:#FF8B3D; cursor:pointer; transition:transform .2s;
+}
+.logo svg{width:30px;height:30px;display:block;}
+.logo::after{
+  content:'←'; position:absolute; top:-2px; left:-4px;
+  width:18px; height:18px; display:flex; align-items:center; justify-content:center;
+  background:#FF6A00; color:#fff; font-size:11px; font-weight:800;
+  border-radius:50%; box-shadow:0 2px 6px rgba(0,0,0,.3); pointer-events:none;
+}
+.logo:hover{transform:scale(1.08);}
+h1{
+  margin:0; font-family:"Fredoka",sans-serif;
+  font-size:18px; font-weight:700; letter-spacing:.3px; line-height:1.1;
+}
+.subtitle{font-size:11px;opacity:.85;font-weight:600;}
+.header-buttons{display:flex;gap:6px;}
+.icon-btn{
+  width:38px; height:38px; border:none; border-radius:12px;
+  background:rgba(255,255,255,.18); color:#fff; cursor:pointer;
+  transition:.22s; display:flex; align-items:center; justify-content:center; padding:0;
+}
+.icon-btn svg{width:19px;height:19px;}
+.icon-btn:hover{background:var(--orange);transform:translateY(-2px) rotate(6deg) scale(1.06);}
+.icon-btn:active{transform:scale(.95);}
+
+/* ===== SETTINGS ===== */
+.settings{
+  margin-top:10px;
+  display:flex; flex-wrap:wrap; gap:6px 8px; align-items:end;
+  max-height:900px; overflow:hidden;
+  transition:max-height .3s ease, opacity .25s ease, margin .25s ease;
+  opacity:1;
+}
+.settings.collapsed{max-height:0;opacity:0;margin-top:0;pointer-events:none;}
+
+.field{
+  display:flex; flex-direction:column; gap:3px;
+  flex:1 1 130px; min-width:120px; max-width:220px;
+}
+.field.wide{flex:1 1 280px;max-width:none;}
+.field.full{flex:1 1 100%;max-width:none;}
+.field label{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:10.5px; font-weight:800; color:rgba(255,255,255,.9);
+  letter-spacing:.2px; padding-left:2px;
+}
+.field label .val{color:#FFB37A;font-size:10.5px;font-weight:800;}
+
+select{
+  width:100%; padding:6px 8px;
+  border-radius:8px; border:2px solid transparent;
+  font-family:inherit; font-size:12px; font-weight:700;
+  background:var(--panel); color:var(--blue);
+  cursor:pointer; outline:none; transition:.18s;
+}
+select:focus{border-color:var(--orange);}
+
+textarea{
+  width:100%; padding:8px 10px;
+  border-radius:8px; border:2px solid transparent;
+  font-family:"Courier New",monospace; font-size:11.5px; font-weight:600; line-height:1.5;
+  background:var(--panel); color:var(--blue);
+  resize:vertical; min-height:110px; max-height:180px;
+  outline:none; transition:.18s;
+}
+textarea:focus{border-color:var(--orange);}
+
+input[type=range]{
+  width:100%; accent-color:var(--orange);
+  height:18px; margin:0;
+}
+
+.toggle-chips{
+  display:flex; flex-wrap:wrap; gap:5px;
+  padding:4px; background:rgba(255,255,255,.08);
+  border-radius:8px;
+}
+.toggle-chip{
+  padding:6px 12px;
+  border-radius:8px; border:2px solid transparent;
+  background:var(--panel); color:var(--text-dim);
+  font-family:inherit; font-size:11.5px; font-weight:800;
+  cursor:pointer; transition:.15s;
+}
+.toggle-chip:hover{border-color:var(--orange-soft);}
+.toggle-chip.on{
+  background:var(--orange); color:#fff;
+  border-color:var(--orange-dark);
+}
+
+/* ===== PRINT HEADER ===== */
+.print-header{display:none;}
+
+/* ===== GAME LAYOUT ===== */
+.game-layout{
+  display:flex; flex-direction:column;
+  gap:14px; margin:14px;
+  align-items:stretch;
+}
+@media(min-width:900px){
+  .game-layout{
+    flex-direction:row;
+    align-items:flex-start;
+    justify-content:center;
+  }
+  .game-layout > .field-wrapper{
+    flex:1 1 auto;
+    min-width:0;
+    max-width:820px;
+  }
+}
+
+/* ===== FIELD WRAPPER ===== */
+.field-wrapper{
+  background:var(--panel);
+  border:2px solid var(--border);
+  border-radius:16px;
+  padding:24px;
+  box-shadow:0 4px 0 rgba(30,63,138,.08),0 10px 20px rgba(30,63,138,.06);
+  overflow-x:auto;
+  transition:background-color .2s, border-color .2s;
+}
+
+/* Ч/Б режим */
+.field-wrapper.bw-mode{
+  background:#fff;
+  border-color:#999;
+  box-shadow:none;
+}
+.field-wrapper.bw-mode .puzzle-row .left,
+.field-wrapper.bw-mode .puzzle-row .right{
+  color:#000;
+}
+.field-wrapper.bw-mode .puzzle-row .mid{
+  color:#000;
+}
+
+/* ===== PUZZLE ===== */
+#puzzle-container{
+  display:flex;
+  flex-direction:column;
+  font-family:"Fredoka","Nunito Sans",sans-serif;
+  line-height:1.3;
+  font-size:22px;
+  padding:6px 0;
+}
+.puzzle-row{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  margin-bottom:10px;
+  white-space:nowrap;
+}
+.puzzle-row .left{
+  text-align:right;
+  font-weight:700;
+  padding-right:14px;
+  color:var(--blue);
+  letter-spacing:.3px;
+}
+.puzzle-row .mid{
+  text-align:center;
+  color:var(--orange);
+  font-family:"Courier New",monospace;
+  font-weight:800;
+  white-space:pre;
+  letter-spacing:.5px;
+}
+.puzzle-row .right{
+  text-align:left;
+  font-weight:700;
+  padding-left:14px;
+  color:var(--blue);
+  letter-spacing:.3px;
+}
+
+/* ===== ACTION BAR ===== */
+.action-bar{
+  display:flex; flex-wrap:wrap; gap:8px;
+  justify-content:center; margin:0 14px 30px;
+}
+.btn{
+  padding:10px 20px; border:none; border-radius:10px;
+  font-family:inherit; font-size:13px; font-weight:800;
+  cursor:pointer; transition:.18s;
+}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--orange);color:#fff;box-shadow:0 3px 0 var(--orange-dark);}
+.btn-primary:hover{background:var(--orange-soft);}
+.btn-blue{background:var(--blue);color:#fff;box-shadow:0 3px 0 #102a63;}
+[data-theme="dark"] .btn-blue{box-shadow:0 3px 0 #0a1224;}
+.btn-blue:hover{background:var(--blue-light);}
+.btn-secondary{background:var(--panel);color:var(--blue);border:2px solid var(--border);}
+.btn-secondary:hover{border-color:var(--orange);color:var(--orange-dark);}
+
+/* ===== AUTHOR ===== */
+#verner{
+  position:fixed; right:12px; bottom:6px;
+  font-size:11px; font-weight:600;
+  color:var(--text-dim); opacity:.8;
+  pointer-events:none; user-select:none;
+}
+
+/* ===== MODAL ===== */
+.modal{
+  position:fixed; inset:0; background:var(--overlay);
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  display:flex; align-items:center; justify-content:center;
+  padding:20px; opacity:0; visibility:hidden;
+  transition:opacity .25s,visibility .25s; z-index:1500;
+}
+.modal.open{opacity:1;visibility:visible;}
+.modal-card{
+  background:var(--panel); border-radius:22px;
+  max-width:480px; width:100%; max-height:90vh;
+  display:flex; flex-direction:column;
+  box-shadow:0 24px 70px rgba(0,0,0,.35);
+  transform:translateY(24px) scale(.95);
+  transition:transform .42s cubic-bezier(.34,1.56,.64,1);
+  overflow:hidden;
+}
+.modal.open .modal-card{transform:translateY(0) scale(1);}
+.modal-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 20px;
+  background:linear-gradient(135deg,#1E3F8A 0%,#3A5FA8 60%,#4A6DB8 100%);
+  color:#fff;
+}
+[data-theme="dark"] .modal-header{
+  background:linear-gradient(135deg,#1A2440 0%,#2A3A5C 60%,#3A4F7C 100%);
+}
+.modal-header h2{
+  font-family:"Fredoka",sans-serif; font-size:19px; font-weight:600;
+  margin:0; display:flex; align-items:center; gap:9px;
+}
+.modal-header h2 svg{width:20px;height:20px;}
+.modal-close{
+  width:36px; height:36px; border:none; border-radius:10px;
+  background:rgba(255,255,255,.18); color:#fff;
+  font-size:22px; line-height:1; cursor:pointer; transition:.2s;
+  font-family:inherit;
+}
+.modal-close:hover{background:var(--orange);transform:rotate(90deg);}
+.modal-body{padding:18px 20px 22px;overflow-y:auto;}
+.modal-body p{
+  font-size:13.5px; font-weight:700; color:var(--text-dim);
+  line-height:1.6; margin:0 0 9px;
+}
+.modal-body p:last-child{margin-bottom:0;}
+.modal-body b{color:var(--blue);}
+
+/* ===== PRINT ===== */
+@page{ size: A4; margin: 12mm 10mm 10mm; }
+@media print{
+  html,body{
+    background:#fff !important;
+    background-image:none !important;
+    color:#000 !important;
+    font-size:11pt;
+  }
+  header,.action-bar,#verner,.modal{display:none !important;}
+  .game-layout{margin:0 !important;display:block !important;}
+  .print-header{
+    display:block !important;
+    margin:0 0 8mm;
+    padding:0 0 4mm;
+    border-bottom:2px solid #1E3F8A;
+    page-break-inside:avoid;
+    page-break-after:avoid;
+  }
+  .print-header .ph-top{
+    display:flex; justify-content:space-between;
+    align-items:flex-end; gap:10mm; margin-bottom:3mm;
+  }
+  .print-header .ph-title{
+    font-family:"Fredoka","Nunito Sans",sans-serif;
+    font-size:16pt; font-weight:700;
+    color:#1E3F8A; margin:0; line-height:1.1;
+  }
+  .print-header .ph-subtitle{
+    font-size:9pt; color:#6B7280;
+    font-weight:700; margin-top:1mm;
+  }
+  .print-header .ph-fields{
+    display:flex; gap:6mm;
+    font-size:10pt; font-weight:700; color:#24324B;
+    white-space:nowrap;
+  }
+  .print-header .ph-fields span{
+    display:inline-block;
+    border-bottom:1px solid #999;
+    min-width:35mm; padding:0 2mm;
+  }
+  .print-header .ph-task{
+    display:flex; flex-wrap:wrap; align-items:center;
+    gap:3mm 4mm;
+    padding:3mm 4mm;
+    background:#E8EEF9;
+    border-left:4px solid #FF6A00;
+    border-radius:4px;
+    font-size:11pt; font-weight:800;
+    color:#24324B;
+  }
+  .print-header .ph-task-label{
+    font-size:9pt; text-transform:uppercase;
+    letter-spacing:.5px; color:#6B7280; font-weight:800;
+  }
+  .field-wrapper{
+    margin:0 auto !important;
+    padding:0 !important;
+    border:none !important;
+    box-shadow:none !important;
+    background:#fff !important;
+    overflow:visible !important;
+    width:100% !important;
+  }
+  #puzzle-container{ font-size:13pt !important; }
+  .puzzle-row{margin-bottom:3mm;}
+  .puzzle-row .left,
+  .puzzle-row .right{ color:#000 !important; }
+  .puzzle-row .mid{ color:#444 !important; }
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:640px){
+  header{padding:8px 12px;}
+  h1{font-size:16px;}
+  .subtitle{font-size:10px;}
+  .field{flex:1 1 45%;max-width:none;}
+  .game-layout{margin:10px;gap:10px;}
+  .field-wrapper{padding:14px;border-radius:12px;}
+  #puzzle-container{font-size:16px !important;}
+  .btn{padding:9px 14px;font-size:12px;}
+  .action-bar{margin:0 10px 24px;}
+}
+</style>
+</head>
+<body>
+
+<header id="panel">
+  <div class="header-top">
+    <div class="brand">
+      <button class="logo" onclick="goBack()" title="Назад" aria-label="Назад">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8"/>
+          <path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8"/>
+          <path d="M17.5 16a3.5 3.5 0 0 0 0 -7h-.5"/>
+          <path d="M19 9.3v-2.8a3.5 3.5 0 0 0 -7 0"/>
+          <path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5"/>
+          <path d="M5 9.3v-2.8a3.5 3.5 0 0 1 7 0v10"/>
+        </svg>
+      </button>
+      <div>
+        <h1>Ёлочка</h1>
+        <div class="subtitle">NeuroX · сборка слов</div>
+      </div>
+    </div>
+    <div class="header-buttons">
+      <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Сменить тему" aria-label="Сменить тему">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="showHelp()" title="Справка" aria-label="Справка">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 1.5-2.5 2-2.5 3.5"/>
+          <circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="toggleBtn" title="Свернуть настройки" aria-label="Свернуть настройки">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="settings" id="settingsGrid">
+    <div class="field wide">
+      <label>Режим</label>
+      <select id="mode">
+        <option value="words">🧩 Сборка слов (20 шт.)</option>
+        <option value="random">🔢 Режим цифр</option>
+      </select>
+    </div>
+    <div class="field" id="field-sort">
+      <label>Сортировка</label>
+      <select id="sort">
+        <option value="length">Короткие → длинные</option>
+        <option value="random">Случайно</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Шрифт <span class="val" id="fv">22</span></label>
+      <input type="range" id="fontSize" min="12" max="40" value="22">
+    </div>
+    <div class="field">
+      <label>Старт центра <span class="val" id="gsv">3</span></label>
+      <input type="range" id="gapStart" min="1" max="10" value="3">
+    </div>
+    <div class="field">
+      <label>Прирост <span class="val" id="gptv">1</span></label>
+      <input type="range" id="gapStep" min="0" max="5" value="1">
+    </div>
+    <div class="field full" id="field-words">
+      <label>База слов (случайно 20 из списка)</label>
+      <textarea id="wordsInput" spellcheck="false"></textarea>
+    </div>
+    <div class="field full">
+      <label>Опции</label>
+      <div class="toggle-chips" id="toggleChips">
+        <button class="toggle-chip" data-key="bw">⬛ Ч/Б (для печати и тетради)</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== ПЕЧАТНЫЙ ЗАГОЛОВОК ===== -->
+<div class="print-header" id="printHeader">
+  <div class="ph-top">
+    <div>
+      <div class="ph-title">Ёлочка</div>
+      <div class="ph-subtitle" id="phSubtitle">NeuroX · сборка слов</div>
+    </div>
+    <div class="ph-fields">
+      <div>Ф.И.О.: <span></span></div>
+      <div>Дата: <span></span></div>
+    </div>
+  </div>
+  <div class="ph-task">
+    <span class="ph-task-label">Задание:</span>
+    <span id="phTask">Соедини левую и правую части так, чтобы получилось слово</span>
+  </div>
+</div>
+
+<!-- ===== ИГРА ===== -->
+<div class="game-layout">
+  <section class="field-wrapper" id="capture-area">
+    <div id="puzzle-container"></div>
+  </section>
+</div>
+
+<div class="action-bar">
+  <button class="btn btn-primary" onclick="generatePuzzle()">↻ Сгенерировать</button>
+  <button class="btn btn-blue" onclick="downloadPNG()">📥 Скачать PNG</button>
+  <button class="btn btn-secondary" onclick="copyPNG()">📋 Копировать PNG</button>
+  <button class="btn btn-secondary" onclick="window.print()">⎙ Печать</button>
+</div>
+
+<div id="verner">© verner · NeuroX</div>
+
+<!-- ===== HELP MODAL ===== -->
+<div class="modal" id="helpModal" onclick="if(event.target===this)closeHelp()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 1.5-2.5 2-2.5 3.5"/>
+          <circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+        Справка
+      </h2>
+      <button class="modal-close" onclick="closeHelp()" aria-label="Закрыть">×</button>
+    </div>
+    <div class="modal-body">
+      <p><b>Ёлочка</b> — задание на сборку слов из двух половин. Каждый ряд шире предыдущего — получается форма ёлки.</p>
+      <p><b>Ровно 20 строк.</b> Всегда 20 заданий: в режиме «Сборка» из базы случайно выбираются 20 слов, в режиме «Цифр» — 20 строк с цифрами.</p>
+      <p><b>Режим «Сборка слов».</b> Слова делятся на слоги по школьному правилу (вес-на, фрук-ты). Левая и правая части берутся из выбранных слов.</p>
+      <p><b>Режим цифр.</b> В центре — номера 1…20 по порядку, а по краям — случайные цифры 0–9. Пирамида для тренировки внимания и распознавания цифр.</p>
+      <p><b>Сортировка.</b> «Короткие → длинные» строит ровную ёлочку. «Случайно» — для тренировки.</p>
+      <p><b>Ч/Б режим.</b> Убирает все цвета — удобно для распечатки и копирования в тетрадь.</p>
+      <p><b>Экспорт.</b> PNG (скачать или скопировать в буфер) и печать. При печати добавляются поля Ф.И.О. и дата.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== ТЕМА ===== */
+const LS_THEME = 'neurox_theme';
+const LS_CFG = 'neurox_elochka_cfg';
+const SVG_SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const SVG_MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  const b = document.getElementById('themeBtn');
+  if (b) b.innerHTML = t === 'dark' ? SVG_SUN : SVG_MOON;
+}
+function initTheme(){
+  let t = localStorage.getItem(LS_THEME);
+  if (!t) t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  applyTheme(t);
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  const nxt = cur === 'dark' ? 'light' : 'dark';
+  applyTheme(nxt);
+  localStorage.setItem(LS_THEME, nxt);
+}
+function showHelp(){ document.getElementById('helpModal').classList.add('open'); }
+function closeHelp(){ document.getElementById('helpModal').classList.remove('open'); }
+function goBack(){ history.length > 1 ? history.back() : (location.href = '../index.html'); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeHelp();
+});
+initTheme();
+
+/* ============================================================
+   ЁЛОЧКА — ЛОГИКА
+============================================================ */
+const $ = id => document.getElementById(id);
+const els = {
+  mode: $('mode'),
+  wordsInput: $('wordsInput'),
+  sort: $('sort'),
+  fontSize: $('fontSize'),
+  gapStart: $('gapStart'),
+  gapStep: $('gapStep'),
+  container: $('puzzle-container'),
+  fieldWords: $('field-words'),
+  fieldSort: $('field-sort'),
+  fv: $('fv'),
+  gsv: $('gsv'),
+  gptv: $('gptv'),
+  capture: $('capture-area'),
+};
+
+const TOTAL_ITEMS = 20; // ⬅️ всегда 20 строк
+
+const DEFAULT_WORDS = `мама
+папа
+баба
+деда
+дядя
+каша
+чаша
+миша
+маша
+саша
+даша
+кошка
+мышка
+мишка
+шишка
+пышка
+мушка
+пушка
+сушка
+ложка
+плошка
+крошка
+брошка
+рыбка
+шубка
+юбка
+губка
+ручка
+тучка
+кучка
+дочка
+бочка
+ночка
+точка
+кочка
+речка
+печка
+свечка
+гречка
+книжка
+крышка
+шапка
+лапка
+папка
+тапка
+чашка
+вилка
+пилка
+полка
+ёлка
+сумка
+дудка
+утка
+будка
+роза
+коза
+лоза
+гроза
+слеза
+оса
+лиса
+роса
+коса
+луна
+стена
+весна
+сосна
+спина
+зима
+дома
+дрова
+трава
+листва
+нога
+рука
+мука
+река
+щека
+гора
+нора
+кора
+пора
+дыра
+село
+весло
+число
+масло
+поле
+море
+горе
+утро
+ведро
+бедро
+добро
+кино
+окно
+вино
+лицо
+яйцо
+письмо`;
+
+/* ===== СОСТОЯНИЕ ===== */
+function loadState(){
+  const saved = localStorage.getItem(LS_CFG);
+  if (saved){
+    try {
+      const s = JSON.parse(saved);
+      els.wordsInput.value = s.words || DEFAULT_WORDS;
+      els.mode.value = s.mode || 'words';
+      els.sort.value = s.sort || 'length';
+      els.fontSize.value = s.fontSize || 22;
+      els.gapStart.value = s.gapStart || 3;
+      els.gapStep.value = s.gapStep || 1;
+      if (s.bw){
+        els.capture.classList.add('bw-mode');
+        const chip = document.querySelector('.toggle-chip[data-key="bw"]');
+        if (chip) chip.classList.add('on');
+      }
+    } catch(e){ els.wordsInput.value = DEFAULT_WORDS; }
+  } else {
+    els.wordsInput.value = DEFAULT_WORDS;
+  }
+  updateRangeLabels();
+}
+
+function saveState(){
+  localStorage.setItem(LS_CFG, JSON.stringify({
+    words: els.wordsInput.value,
+    mode: els.mode.value,
+    sort: els.sort.value,
+    fontSize: +els.fontSize.value,
+    gapStart: +els.gapStart.value,
+    gapStep: +els.gapStep.value,
+    bw: els.capture.classList.contains('bw-mode'),
+  }));
+}
+
+function updateRangeLabels(){
+  els.fv.textContent = els.fontSize.value;
+  els.gsv.textContent = els.gapStart.value;
+  els.gptv.textContent = els.gapStep.value;
+}
+
+/* ===== СЛОГИ ===== */
+function splitIntoSyllables(word){
+  const vowels = 'аеёиоуыэюя';
+  const syllables = [];
+  let current = '';
+  for (let i = 0; i < word.length; i++){
+    current += word[i];
+    if (!vowels.includes(word[i].toLowerCase())) continue;
+    let j = i + 1, consonants = 0;
+    while (j < word.length && !vowels.includes(word[j].toLowerCase())){
+      consonants++; j++;
+    }
+    if (j === word.length){
+      syllables.push(current + word.substring(i + 1));
+      break;
+    }
+    if (consonants <= 1){
+      syllables.push(current);
+      current = '';
+    } else {
+      syllables.push(current + word[i + 1]);
+      current = '';
+      i++;
+    }
+  }
+  return syllables;
+}
+
+function splitWord(word){
+  if (word.length < 2) return [word, ''];
+  const syls = splitIntoSyllables(word);
+  if (syls.length < 2){
+    const mid = Math.max(1, Math.floor(word.length / 2));
+    return [word.slice(0, mid), word.slice(mid)];
+  }
+  const idx = Math.floor(Math.random() * (syls.length - 1)) + 1;
+  return [syls.slice(0, idx).join(''), syls.slice(idx).join('')];
+}
+
+/* ===== ГЕНЕРАЦИЯ ===== */
+function getWords(){
+  return els.wordsInput.value.split('\n').map(w => w.trim().toLowerCase()).filter(w => w.length > 0);
+}
+
+function buildWordItems(){
+  const defaults = DEFAULT_WORDS.split('\n').map(w => w.trim().toLowerCase()).filter(Boolean);
+  let unique = [...new Set(getWords())];
+
+  // добиваем до 20 из дефолтной базы, если не хватает
+  if (unique.length < TOTAL_ITEMS){
+    for (const d of defaults){
+      if (unique.length >= TOTAL_ITEMS) break;
+      if (!unique.includes(d)) unique.push(d);
+    }
+  }
+
+  // случайно выбираем 20
+  let list = [...unique].sort(() => Math.random() - 0.5).slice(0, TOTAL_ITEMS);
+
+  // применяем сортировку
+  if (els.sort.value === 'length'){
+    list = list.sort((a, b) => a.length - b.length);
+  }
+
+  return list.map((word, i) => {
+    const [l, r] = splitWord(word);
+    return { number: i + 1, left: l, right: r };
+  });
+}
+
+function buildRandomItems(){
+  const digits = '0123456789'.split('');
+  const items = [];
+  for (let i = 0; i < TOTAL_ITEMS; i++){
+    items.push({
+      number: i + 1,
+      left: digits[Math.floor(Math.random() * digits.length)],
+      right: digits[Math.floor(Math.random() * digits.length)],
+    });
+  }
+  return items;
+}
+
+/* ===== РЕНДЕР ===== */
+function renderItems(items){
+  const container = els.container;
+  container.innerHTML = '';
+  const gapStart = +els.gapStart.value;
+  const gapStep = +els.gapStep.value;
+  container.style.fontSize = els.fontSize.value + 'px';
+
+  items.forEach((item, i) => {
+    const gap = gapStart + i * gapStep;
+    const line = '_'.repeat(gap);
+    const row = document.createElement('div');
+    row.className = 'puzzle-row';
+    row.innerHTML =
+      '<div class="left">' + item.left + '</div>' +
+      '<div class="mid">' + line + ' ' + item.number + ' ' + line + '</div>' +
+      '<div class="right">' + item.right + '</div>';
+    container.appendChild(row);
+  });
+}
+
+function generatePuzzle(){
+  const items = els.mode.value === 'random' ? buildRandomItems() : buildWordItems();
+  if (!items.length){ toast('Список слов пуст'); return; }
+  renderItems(items);
+  saveState();
+}
+
+function updateModeUI(){
+  const isRandom = els.mode.value === 'random';
+  els.fieldSort.style.display = isRandom ? 'none' : '';
+  els.fieldWords.style.display = isRandom ? 'none' : '';
+}
+
+/* ===== ЭКСПОРТ ===== */
+async function renderCanvas(){
+  return await html2canvas(els.capture, {
+    backgroundColor: '#ffffff',
+    scale: 2,
+    useCORS: true,
+  });
+}
+
+async function downloadPNG(){
+  try {
+    const canvas = await renderCanvas();
+    const link = document.createElement('a');
+    link.download = 'elochka-' + Date.now() + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    toast('PNG скачан');
+  } catch(e){ console.error(e); toast('Ошибка экспорта'); }
+}
+
+async function copyPNG(){
+  try {
+    const canvas = await renderCanvas();
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+    toast('Скопировано в буфер');
+  } catch(e){ console.error(e); toast('Не удалось скопировать'); }
+}
+
+/* ===== TOAST ===== */
+function toast(msg){
+  const el = document.createElement('div');
+  el.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translate(-50%,100px);background:#1e293b;color:#fff;padding:12px 22px;border-radius:10px;font-size:14px;font-weight:700;opacity:0;transition:transform .3s,opacity .3s;pointer-events:none;z-index:999;';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => { el.style.transform = 'translate(-50%,0)'; el.style.opacity = '1'; });
+  setTimeout(() => {
+    el.style.transform = 'translate(-50%,100px)';
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 300);
+  }, 2000);
+}
+
+/* ============================================================
+   EVENTS
+============================================================ */
+els.mode.addEventListener('change', () => { updateModeUI(); generatePuzzle(); });
+els.sort.addEventListener('change', generatePuzzle);
+els.fontSize.addEventListener('input', () => { updateRangeLabels(); generatePuzzle(); });
+els.gapStart.addEventListener('input', () => { updateRangeLabels(); generatePuzzle(); });
+els.gapStep.addEventListener('input', () => { updateRangeLabels(); generatePuzzle(); });
+els.wordsInput.addEventListener('input', saveState);
+
+document.querySelector('.toggle-chip[data-key="bw"]').addEventListener('click', function() {
+  this.classList.toggle('on');
+  els.capture.classList.toggle('bw-mode', this.classList.contains('on'));
+  saveState();
+});
+
+document.getElementById('toggleBtn').onclick = () => {
+  $('settingsGrid').classList.toggle('collapsed');
+};
+
+/* ============================================================
+   INIT
+============================================================ */
+loadState();
+updateModeUI();
+generatePuzzle();
+</script>
+
+</body>
+</html>

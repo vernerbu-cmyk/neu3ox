@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Башня мага - Мнемо-Арена</title>
+  <style>
+    :root {
+      --blue: #2D6CDF;
+      --blue-dark: #1E4FA8;
+      --blue-light: #EBF2FF;
+      --orange: #FF8C42;
+      --orange-dark: #E86E1F;
+      --orange-light: #FFF2E5;
+      --bg: #F7F9FC;
+      --text: #1F2937;
+      --text-muted: #6B7280;
+      --border: #E5EAF2;
+      --green: #22C55E;
+      --red: #EF4444;
+      --yellow: #F59E0B;
+      --purple: #A855F7;
+      --purple-light: #F5EDFF;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      font-family: -apple-system, 'Segoe UI', Roboto, 'Nunito Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      color: var(--text);
+      padding: 16px;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 16px 22px;
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 16px rgba(45, 108, 223, .06);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .back-btn {
+      width: 46px;
+      height: 46px;
+      border: none;
+      border-radius: 14px;
+      background: var(--blue-light);
+      color: var(--blue);
+      font-size: 22px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .18s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .back-btn:hover {
+      background: var(--blue);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    
+    h1 {
+      font-size: 20px;
+      letter-spacing: .5px;
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+    
+    .score-bar {
+      background: var(--orange);
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(255, 140, 66, .3);
+    }
+    
+    .score-bar span {
+      color: #fff;
+      font-weight: 800;
+      font-size: 17px;
+    }
+    
+    main {
+      min-height: 520px;
+    }
+    
+    .game-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .game-header h2 {
+      font-size: 22px;
+      margin-bottom: 6px;
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+    
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    
+    .status {
+      text-align: center;
+      font-size: 16px;
+      margin: 16px 0;
+      min-height: 26px;
+      font-weight: 700;
+      color: var(--text);
+      transition: .3s;
+    }
+    
+    .status.good {
+      color: #16A34A;
+    }
+    
+    .status.bad {
+      color: #DC2626;
+    }
+    
+    .status.warn {
+      color: var(--orange-dark);
+    }
+    
+    .panel {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 26px;
+      box-shadow: 0 8px 24px rgba(45, 108, 223, .06);
+    }
+    /* ---------- Комнаты ---------- */
+    
+    .rooms {
+      display: grid;
+      gap: 12px;
+    }
+    
+    .room {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--purple-light), var(--blue-light));
+      border: 2px solid var(--border);
+      animation: slideIn .4s ease backwards;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .room::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      background: var(--purple);
+      transform: scaleY(0);
+      transform-origin: top;
+      animation: slideDown .5s ease forwards;
+      animation-delay: inherit;
+    }
+    
+    @keyframes slideDown {
+      to {
+        transform: scaleY(1);
+      }
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(-30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    .room-emoji {
+      font-size: 42px;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, .6);
+      border-radius: 14px;
+      flex-shrink: 0;
+    }
+    
+    .room-info {
+      flex: 1;
+    }
+    
+    .room-name {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    
+    .room-label {
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--blue-dark);
+      margin-top: 2px;
+    }
+    
+    .room-item {
+      font-size: 42px;
+      animation: popIn .45s cubic-bezier(.34, 1.56, .64, 1) backwards;
+      animation-delay: inherit;
+    }
+    
+    @keyframes popIn {
+      from {
+        transform: scale(0) rotate(-15deg);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+      }
+    }
+    /* ---------- Варианты ответов ---------- */
+    
+    .options {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+    
+    .option-btn {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 46px;
+      border-radius: 18px;
+      background: #fff;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: .15s;
+      user-select: none;
+    }
+    
+    .option-btn:hover:not(:disabled) {
+      background: var(--blue-light);
+      border-color: var(--blue);
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 10px 20px rgba(45, 108, 223, .15);
+    }
+    
+    .option-btn:disabled {
+      cursor: default;
+    }
+    
+    .option-btn.correct {
+      background: #DCFCE7;
+      border-color: var(--green);
+      transform: scale(1.05);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, .15);
+    }
+    
+    .option-btn.wrong {
+      background: #FEE2E2;
+      border-color: var(--red);
+      animation: shake .35s ease;
+    }
+    
+    .option-btn.dimmed {
+      opacity: .35;
+    }
+    
+    @keyframes shake {
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+      25% {
+        transform: translateX(-6px);
+      }
+      50% {
+        transform: translateX(6px);
+      }
+      75% {
+        transform: translateX(-4px);
+      }
+    }
+    /* Прогресс */
+    
+    .progress-dots {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+    
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: .3s;
+    }
+    
+    .dot.active {
+      background: var(--orange);
+      transform: scale(1.3);
+    }
+    
+    .dot.done {
+      background: var(--blue);
+    }
+    
+    .dot.correct {
+      background: var(--green);
+    }
+    
+    .dot.wrong {
+      background: var(--red);
+    }
+    /* ---------- Настройки ---------- */
+    
+    .settings-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 15px;
+      color: var(--text);
+      font-weight: 700;
+    }
+    
+    .settings-row b {
+      color: var(--blue-dark);
+      font-size: 16px;
+      font-weight: 800;
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      accent-color: #FF8C42;
+      height: 26px;
+    }
+    
+    .btn-main {
+      display: block;
+      margin: 24px auto 0;
+      padding: 16px 40px;
+      border-radius: 14px;
+      border: none;
+      background: var(--orange);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .2s;
+      letter-spacing: .5px;
+      box-shadow: 0 8px 20px rgba(255, 140, 66, .3);
+    }
+    
+    .btn-main:hover {
+      background: var(--orange-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(255, 140, 66, .4);
+    }
+    
+    .btn-main:active {
+      transform: translateY(0);
+    }
+    
+    .btn-secondary {
+      display: block;
+      margin: 8px auto 0;
+      padding: 12px 30px;
+      border-radius: 14px;
+      border: none;
+      background: transparent;
+      color: var(--blue-dark);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .2s;
+    }
+    
+    .btn-secondary:hover {
+      background: var(--blue-light);
+    }
+    /* ---------- Таймер-полоска ---------- */
+    
+    .timer-bar {
+      height: 8px;
+      border-radius: 8px;
+      background: var(--border);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    
+    .timer-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--yellow), var(--red));
+      transition: width 0.5s linear;
+      width: 100%;
+    }
+    /* ---------- Результаты ---------- */
+    
+    .result-screen {
+      text-align: center;
+      padding: 30px 20px;
+    }
+    
+    .result-screen .big {
+      font-size: 72px;
+      margin-bottom: 12px;
+      animation: popIn .5s cubic-bezier(.34, 1.56, .64, 1);
+    }
+    
+    .result-screen h2 {
+      font-size: 26px;
+      margin-bottom: 10px;
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+    
+    .result-screen p {
+      color: var(--text-muted);
+      font-size: 16px;
+      margin: 6px 0;
+      font-weight: 600;
+    }
+    
+    .stars {
+      font-size: 40px;
+      margin: 20px 0;
+      letter-spacing: 6px;
+    }
+    
+    @media (max-width: 500px) {
+      .room-emoji {
+        font-size: 34px;
+        width: 46px;
+        height: 46px;
+      }
+      .room-item {
+        font-size: 34px;
+      }
+      .room-label {
+        font-size: 16px;
+      }
+      .option-btn {
+        font-size: 36px;
+      }
+      .options {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+    }
+  </style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <button class="back-btn" onclick="location.href='index.html'">←</button>
+      <h1>🧙 БАШНЯ МАГА</h1>
+      <div class="score-bar">Очки: <span id="globalScore">0</span></div>
+    </header>
+    <main id="game"></main>
+  </div>
+
+  <script>
+    /* ============ УТИЛИТЫ ============ */
+    const $ = id => document.getElementById(id);
+    const gameEl = $('game');
+    let globalScore = 0;
+    $('globalScore').textContent = globalScore;
+
+    function addScore(n) {
+      globalScore += n;
+      $('globalScore').textContent = globalScore;
+    }
+
+    function shuffle(a) {
+      const arr = [...a];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+    let timeouts = [];
+
+    function wait(ms, fn) {
+      const id = setTimeout(fn, ms);
+      timeouts.push(id);
+      return id;
+    }
+
+    function clearTimeouts() {
+      timeouts.forEach(clearTimeout);
+      timeouts = [];
+    }
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        try {
+          audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {}
+      }
+    }
+
+    function beep(freq, dur = 0.15, type = 'sine', vol = 0.08) {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = type;
+      osc.frequency.value = freq;
+      const t = audioCtx.currentTime;
+      gain.gain.setValueAtTime(vol, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      osc.start(t);
+      osc.stop(t + dur + 0.02);
+    }
+
+    function sfxCorrect() {
+      beep(660, 0.1);
+      setTimeout(() => beep(880, 0.15), 90);
+    }
+
+    function sfxWrong() {
+      beep(180, 0.3, 'sawtooth', 0.12);
+    }
+
+    function sfxClick() {
+      beep(440, 0.05, 'triangle', 0.06);
+    }
+
+    function sfxMagic() {
+      beep(880, 0.08);
+      setTimeout(() => beep(1046, 0.1), 80);
+      setTimeout(() => beep(1318, 0.15), 170);
+    }
+
+    function sfxWin() {
+      [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.2), i * 120));
+    }
+    /* ============ ДАННЫЕ ============ */
+    const ALL_ROOMS = [{
+      name: 'Кухня',
+      emoji: '🍳'
+    }, {
+      name: 'Библиотека',
+      emoji: '📚'
+    }, {
+      name: 'Крыша',
+      emoji: '🏰'
+    }, {
+      name: 'Сад',
+      emoji: '🌳'
+    }, {
+      name: 'Подвал',
+      emoji: '🕳️'
+    }, {
+      name: 'Башня',
+      emoji: '🗼'
+    }, {
+      name: 'Оружейная',
+      emoji: '⚔️'
+    }, {
+      name: 'Лаборатория',
+      emoji: '⚗️'
+    }];
+    const MAGIC_ITEMS = ['🐉', '🧪', '⭐', '🔮', '🗝️', '🪄', '🍄', '💎', '🕯️', '📜', '⚗️', '🧿', '🌙', '🔱', '🦄', '👑', '🏺', '🕸️', '🔥', '❄️', '🌈', '☄️', '🌟', '💫', '🎩', '🐸', '🦉', '🧚', '🧜', '🦅'];
+    let towerCfg = {
+      rooms: 5,
+      showTime: 9
+    };
+    try {
+      const s = localStorage.getItem('towerCfg');
+      if (s) towerCfg = {...towerCfg,
+        ...JSON.parse(s)
+      };
+    } catch (e) {}
+    /* ============ ЭКРАН НАСТРОЕК ============ */
+    function startTower() {
+      clearTimeouts();
+      gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🧙 Башня мага</h2>
+      <div class="subtitle">Запомни, что где лежит</div>
+    </div>
+    <div class="panel">
+      <div style="max-width: 440px; margin: 0 auto;">
+        <label style="display:block; margin-bottom: 22px;">
+          <div class="settings-row"><span>Комнат в башне</span><b id="tRoomsVal">${towerCfg.rooms}</b></div>
+          <input type="range" id="tRoomsRange" min="3" max="8" value="${towerCfg.rooms}">
+        </label>
+        <label style="display:block; margin-bottom: 22px;">
+          <div class="settings-row"><span>Время показа</span><b id="tTimeVal">${towerCfg.showTime} сек</b></div>
+          <input type="range" id="tTimeRange" min="3" max="20" value="${towerCfg.showTime}">
+        </label>
+        <div class="subtitle" style="text-align:left; padding: 12px; background: var(--blue-light); border-radius: 12px; line-height: 1.5; margin-bottom: 8px;">
+          💡 <b>Как играть:</b> увидишь комнаты башни, в каждой — магический предмет. Запомни, что где лежит. Потом нужно будет ответить, какой предмет в какой комнате, <b>в случайном порядке</b>.
+        </div>
+        <button class="btn-main" id="startBtn">Войти в башню 🧙</button>
+      </div>
+    </div>
+  `;
+      $('tRoomsRange').oninput = e => {
+        $('tRoomsVal').textContent = e.target.value;sfxClick();
+      };
+      $('tTimeRange').oninput = e => {
+        $('tTimeVal').textContent = e.target.value + ' сек';sfxClick();
+      };
+      $('startBtn').onclick = () => {
+        towerCfg.rooms = +$('tRoomsRange').value;
+        towerCfg.showTime = +$('tTimeRange').value;
+        try {
+          localStorage.setItem('towerCfg', JSON.stringify(towerCfg));
+        } catch (e) {}
+        towerShow();
+      };
+    }
+    /* ============ ФАЗА 1: ПОКАЗ ============ */
+    function towerShow() {
+      clearTimeouts();
+      const roomCount = towerCfg.rooms;
+      const showTime = towerCfg.showTime;
+      const rooms = shuffle(ALL_ROOMS).slice(0, roomCount);
+      const items = shuffle(MAGIC_ITEMS).slice(0, roomCount);
+      const assignments = rooms.map((r, i) => ({...r,
+        item: items[i]
+      }));
+      gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🧙 Башня мага</h2>
+      <div class="subtitle">Изучай башню... <span id="timeLeft">${showTime}</span> сек</div>
+    </div>
+    <div class="panel">
+      <div class="timer-bar"><div class="timer-fill" id="tfill" style="width:100%"></div></div>
+      <div class="status warn">Запоминай, что где лежит!</div>
+      <div class="rooms" id="rooms"></div>
+    </div>
+  `;
+      const roomsEl = $('rooms');
+      assignments.forEach((a, i) => {
+        const el = document.createElement('div');
+        el.className = 'room';
+        el.style.animationDelay = (i * 0.12) + 's';
+        el.innerHTML = `
+      <div class="room-emoji">${a.emoji}</div>
+      <div class="room-info">
+        <div class="room-name">Комната</div>
+        <div class="room-label">${a.name}</div>
+      </div>
+      <div class="room-item" style="animation-delay: ${0.3 + i * 0.12}s">${a.item}</div>
+    `;
+        roomsEl.appendChild(el);
+        wait(i * 150, () => beep(400 + i * 100, 0.08));
+      });
+      let left = showTime;
+      const intervalId = setInterval(() => {
+        left--;
+        const el = $('timeLeft');
+        if (el) el.textContent = Math.max(0, left);
+        const f = $('tfill');
+        if (f) f.style.width = (Math.max(0, left) / showTime * 100) + '%';
+        if (left <= 0) clearInterval(intervalId);
+      }, 1000);
+      timeouts.push(intervalId);
+      wait(showTime * 1000, () => {
+        sfxMagic();
+        const questionQueue = shuffle([...assignments]);
+        askTower(assignments, questionQueue, 0, 0, []);
+      });
+    }
+    /* ============ ФАЗА 2: ВОПРОСЫ ============ */
+    function askTower(assignments, queue, idx, score, history) {
+      if (idx >= queue.length) {
+        return towerResult(score, queue.length, history);
+      }
+      const cur = queue[idx];
+      // 3 неверных предмета из общего пула, не встречающихся в текущих назначениях
+      const usedItems = assignments.map(a => a.item);
+      const wrongPool = MAGIC_ITEMS.filter(i => i !== cur.item && !usedItems.includes(i));
+      const wrongItems = shuffle(wrongPool).slice(0, 3);
+      const options = shuffle([cur.item, ...wrongItems]);
+      // Прогресс
+      const dotsHtml = queue.map((_, i) => {
+        let cls = 'dot';
+        if (i < idx) {
+          cls += history[i] ? ' correct' : ' wrong';
+        } else if (i === idx) {
+          cls += ' active';
+        }
+        return `<div class="${cls}"></div>`;
+      }).join('');
+      gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🧙 Башня мага</h2>
+      <div class="subtitle">Вопрос ${idx + 1} / ${queue.length}</div>
+    </div>
+    <div class="panel">
+      <div class="progress-dots">${dotsHtml}</div>
+      <div class="status">Что лежит в комнате <b style="color: var(--purple)">«${cur.name}»</b> ${cur.emoji}?</div>
+      <div class="options" id="opts"></div>
+    </div>
+  `;
+      const opts = $('opts');
+      let answered = false;
+      options.forEach(o => {
+        const b = document.createElement('button');
+        b.className = 'option-btn';
+        b.textContent = o;
+        b.onclick = () => {
+          if (answered) return;
+          answered = true;
+          const good = o === cur.item;
+          opts.querySelectorAll('.option-btn').forEach(x => {
+            x.disabled = true;
+            if (x.textContent !== cur.item && x !== b) x.classList.add('dimmed');
+          });
+          if (good) {
+            b.classList.add('correct');
+            sfxCorrect();
+            addScore(10);
+          } else {
+            b.classList.add('wrong');
+            sfxWrong();
+            // подсветить правильный
+            opts.querySelectorAll('.option-btn').forEach(x => {
+              if (x.textContent === cur.item) {
+                x.classList.add('correct');
+                x.classList.remove('dimmed');
+              }
+            });
+          }
+          history.push(good);
+          wait(1100, () => askTower(assignments, queue, idx + 1, score + (good ? 1 : 0), history));
+        };
+        opts.appendChild(b);
+      });
+    }
+    /* ============ ФАЗА 3: РЕЗУЛЬТАТ ============ */
+    function towerResult(score, max, history) {
+      let emoji, title, text, stars, points;
+      if (score === max) {
+        emoji = '🧙‍♂️';
+        title = 'Ты — архимаг!';
+        text = `Все ${max} комнат угаданы без ошибок`;
+        stars = 3;
+        points = 50;
+        sfxWin();
+      } else if (score >= max - 1) {
+        emoji = '✨';
+        title = 'Почти идеально';
+        text = `Правильно: ${score} из ${max}`;
+        stars = 2;
+        points = 30;
+        sfxCorrect();
+      } else if (score >= Math.ceil(max / 2)) {
+        emoji = '🔮';
+        title = 'Магия идёт';
+        text = `Правильно: ${score} из ${max}`;
+        stars = 1;
+        points = 15;
+        sfxCorrect();
+      } else {
+        emoji = '🌀';
+        title = 'Башня развеялась';
+        text = `Правильно: ${score} из ${max}`;
+        stars = 0;
+        points = 5;
+        sfxWrong();
+      }
+      addScore(points);
+      const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+      // Разбор: все ответы
+      const historyRow = history.map((ok, i) => `
+    <div style="display:inline-flex; align-items:center; justify-content:center;
+      width: 36px; height: 36px; margin: 3px;
+      border-radius: 10px;
+      background: ${ok ? '#DCFCE7' : '#FEE2E2'};
+      border: 2px solid ${ok ? '#22C55E' : '#EF4444'};
+      font-size: 18px;">
+      ${ok ? '✓' : '✗'}
+    </div>
+  `).join('');
+      gameEl.innerHTML = `
+    <div class="panel">
+      <div class="result-screen">
+        <div class="big">${emoji}</div>
+        <h2>${title}</h2>
+        <p>${text}</p>
+        <div class="stars">${starStr}</div>
+        <p style="opacity:.6; font-size: 14px;">+${points} очков</p>
+        <div style="margin-top: 20px; padding: 14px; background: rgba(168,85,247,.06); border-radius: 14px;">
+          <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px; font-weight: 700;">Твои ответы:</div>
+          <div style="display:flex; flex-wrap:wrap; justify-content:center;">${historyRow}</div>
+        </div>
+        <button class="btn-main" id="retry">Ещё раз 🔄</button>
+        <button class="btn-secondary" id="menuBtn">← Настройки</button>
+      </div>
+    </div>
+  `;
+      $('retry').onclick = () => towerShow();
+      $('menuBtn').onclick = () => startTower();
+    }
+    /* ============ СТАРТ ============ */
+    document.addEventListener('click', initAudio, {
+      once: true
+    });
+    startTower();
+  </script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+
+</html>

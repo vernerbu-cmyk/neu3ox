@@ -1,0 +1,1971 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Разбор по составу · тренажёр - NeuroX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1E3F8A; --blue-soft:#3A5FA8; --blue-pale:#E8EEF9;
+  --orange:#FF6A00; --orange-soft:#FF8B3D; --orange-dark:#C85100;
+  --bg:#F4F6FB; --text:#24324B; --text-dim:#6B7280;
+  --border:rgba(30,63,138,.10); --panel:#FFFFFF; --line:#C3CCE0;
+  --good:#3D6B34; --good-bg:#E6F3E2; --bad:#A03030; --bad-bg:#FBE8E8;
+  --m-prefix:#E8523F; --m-root:#2E7BEE; --m-suffix:#3E9E48; --m-ending:#E0A020;
+  --mono:'JetBrains Mono','SF Mono','Consolas','Courier New',monospace;
+}
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body{
+  margin:0; font-family:"Nunito Sans",sans-serif;
+  background-color:var(--bg);
+  background-image:radial-gradient(circle, rgba(30,63,138,.07) 1.5px, transparent 1.6px);
+  background-size:26px 26px; color:var(--text);
+  min-height:100vh; padding-bottom:80px;
+}
+.mode-chooser{
+  position:fixed; inset:0; z-index:2000;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,106,0,.15), transparent 45%),
+    radial-gradient(circle at 80% 80%, rgba(30,63,138,.25), transparent 50%),
+    linear-gradient(135deg, #1E3F8A 0%, #24324B 100%);
+  display:flex; align-items:center; justify-content:center; padding:20px;
+}
+body.mode-trainer .mode-chooser,
+body.mode-theory .mode-chooser,
+body.mode-drag .mode-chooser{ display:none; }
+.mode-chooser-inner{ max-width:960px; width:100%; text-align:center; }
+.mode-chooser-title{
+  font-family:"Fredoka",sans-serif; font-size:44px; font-weight:700;
+  color:#fff; margin:0 0 8px; letter-spacing:.5px; text-shadow:0 4px 20px rgba(0,0,0,.3);
+}
+.mode-chooser-sub{ color:rgba(255,255,255,.75); font-size:17px; font-weight:600; margin:0 0 40px; }
+.mode-cards{ display:grid; grid-template-columns:repeat(3, 1fr); gap:18px; margin-bottom:32px; }
+.mode-card{
+  background:#fff; border:3px solid transparent; border-radius:24px;
+  padding:30px 22px 28px; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:12px;
+  font-family:inherit; color:var(--text); text-align:center;
+  transition:transform .2s, box-shadow .2s, border-color .2s;
+  box-shadow:0 12px 40px rgba(0,0,0,.25);
+}
+.mode-card:hover{ transform:translateY(-6px) scale(1.02); box-shadow:0 20px 50px rgba(0,0,0,.35); border-color:var(--orange); }
+.mode-icon{ font-size:56px; line-height:1; }
+.mode-name{ font-family:"Fredoka",sans-serif; font-size:22px; font-weight:700; color:var(--blue); margin:0; }
+.mode-desc{ font-size:13px; font-weight:600; color:var(--text-dim); line-height:1.45; }
+.mode-remember{
+  background:transparent; border:none; color:rgba(255,255,255,.7);
+  font:inherit; font-size:14px; font-weight:700; cursor:pointer;
+  padding:10px 16px; border-radius:10px;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.mode-remember:hover{ background:rgba(255,255,255,.1); color:#fff; }
+.mode-remember .mark{
+  display:inline-flex; width:18px; height:18px; border-radius:5px;
+  background:rgba(255,255,255,.2); align-items:center; justify-content:center; font-size:13px;
+}
+.mode-remember.on .mark{ background:var(--orange); color:#fff; }
+@media (max-width:760px){
+  .mode-chooser-title{ font-size:32px; }
+  .mode-cards{ grid-template-columns:1fr; gap:14px; }
+  .mode-card{ padding:22px 18px 20px; }
+  .mode-icon{ font-size:44px; }
+  .mode-name{ font-size:20px; }
+}
+body.mode-theory .trainer-only{ display:none !important; }
+body.mode-trainer .theory-only, body.mode-trainer .drag-only{ display:none !important; }
+body.mode-drag .theory-only, body.mode-drag .trainer-only{ display:none !important; }
+
+.topbar{
+  position:sticky; top:0; z-index:100; background:var(--blue); color:#fff;
+  padding:18px 22px 20px; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 6px 20px rgba(30,63,138,.25); overflow:hidden;
+}
+.topbar::before,.topbar::after{ content:''; position:absolute; border-radius:50%; pointer-events:none; }
+.topbar::before{ width:220px; height:220px; top:-120px; right:-60px; background:rgba(255,106,0,.22); }
+.topbar::after{ width:170px; height:170px; bottom:-130px; left:40px; background:rgba(255,255,255,.09); }
+.topbar-title{
+  position:relative; z-index:1; font-family:"Fredoka",sans-serif;
+  font-size:23px; font-weight:700; letter-spacing:.4px; text-shadow:0 2px 6px rgba(0,0,0,.15);
+}
+.topbar-title .mode-badge{
+  display:inline-block; padding:3px 10px; margin-left:10px;
+  background:rgba(255,255,255,.2); border-radius:8px;
+  font-family:"Nunito Sans",sans-serif; font-size:12px; font-weight:800;
+  letter-spacing:.5px; text-transform:uppercase; vertical-align:middle;
+}
+.back-btn,.theme-btn,.switch-btn{
+  position:absolute; top:50%; transform:translateY(-50%);
+  height:44px; border:none; border-radius:14px;
+  background:rgba(255,255,255,.18); color:#fff; cursor:pointer;
+  transition:.22s; z-index:2; display:flex; align-items:center; justify-content:center; padding:0 14px;
+  font:inherit; font-size:13px; font-weight:800;
+}
+.back-btn{ left:16px; width:44px; font-size:20px; padding:0; }
+.theme-btn{ right:16px; width:44px; font-size:18px; padding:0; }
+.switch-btn{ right:70px; gap:6px; }
+.back-btn:hover,.theme-btn:hover,.switch-btn:hover{ background:var(--orange); }
+
+.achievements-strip{
+  display:flex; gap:6px; padding:8px 16px; background:#fff;
+  border-bottom:2px solid var(--border); overflow-x:auto; scrollbar-width:none;
+}
+.achievements-strip::-webkit-scrollbar{ display:none; }
+.achievements-strip .ach{
+  display:inline-flex; align-items:center; gap:5px; padding:5px 10px;
+  background:var(--blue-pale); border-radius:10px; font-size:11.5px;
+  font-weight:800; color:var(--blue); white-space:nowrap; flex:none;
+}
+.achievements-strip .ach.locked{ opacity:.35; }
+.achievements-strip .ach .ico{ font-size:14px; }
+
+.student-bar{
+  background:#fff; border-bottom:2px solid var(--border);
+  padding:10px 16px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+  box-shadow:0 4px 12px rgba(30,63,138,.06);
+}
+.student-bar .label{ font-size:13px; font-weight:800; color:var(--text-dim); }
+.student-bar select{
+  font:inherit; font-size:13px; font-weight:700; color:var(--blue);
+  background:var(--blue-pale); border:2px solid transparent; border-radius:9px;
+  padding:8px 12px; outline:none; cursor:pointer; max-width:200px;
+}
+.student-bar button.mini{
+  font:inherit; font-size:13px; font-weight:800; padding:8px 12px;
+  border:2px solid var(--border); border-radius:9px; background:#fff;
+  color:var(--blue); cursor:pointer;
+}
+.student-bar button.mini:hover{ background:var(--blue-pale); }
+.student-bar .spacer{ flex:1; }
+
+.container{ max-width:1050px; margin:0 auto; padding:18px 20px 40px; }
+
+.toggle-btn{
+  display:block; width:100%; padding:12px 18px; margin-bottom:14px; background:#fff;
+  color:var(--blue); border:2px solid var(--border); border-radius:16px;
+  font-family:"Nunito Sans",sans-serif; font-size:14px; font-weight:800;
+  cursor:pointer; box-shadow:0 4px 0 rgba(30,63,138,.08);
+  transition:background .15s, transform .12s, box-shadow .12s; text-align:left;
+}
+.toggle-btn:hover{ background:var(--blue-pale); }
+
+#panel{
+  background:var(--panel); border:2px solid var(--border); border-radius:22px;
+  padding:20px 22px; margin-bottom:14px;
+  box-shadow:0 6px 0 rgba(30,63,138,.10), 0 14px 26px rgba(30,63,138,.08);
+}
+#panel.hidden{ display:none; }
+
+.section-head{
+  font-family:"Fredoka",sans-serif; font-size:16px; font-weight:700;
+  color:var(--blue); margin:18px 0 10px; display:flex; align-items:center; gap:8px;
+}
+.section-head:first-child{ margin-top:0; }
+.section-head .badge{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:26px; height:26px; border-radius:8px; background:var(--blue-pale);
+  color:var(--blue); font-size:14px; font-weight:700;
+}
+
+.presets{
+  display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;
+  padding-bottom:16px; border-bottom:1px dashed var(--border);
+}
+.presets button{
+  font-family:inherit; font-size:13px; font-weight:800; padding:8px 12px;
+  border:2px solid var(--border); border-radius:12px; background:#fff;
+  color:var(--blue); cursor:pointer;
+}
+.presets button:hover{ background:var(--blue-pale); border-color:var(--blue); }
+.presets button.active{ background:var(--blue); color:#fff; border-color:var(--blue); }
+
+.settings{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px 22px; }
+.settings .full{ grid-column:1 / -1; }
+.settings label{ display:block; font-size:14px; font-weight:800; color:var(--blue); margin-bottom:2px; }
+.settings select,.settings input[type=number],.settings input[type=text]{
+  width:100%; font-family:"Nunito Sans",sans-serif; font-size:14px; font-weight:700;
+  color:var(--blue); background:var(--blue-pale); border:2px solid transparent;
+  border-radius:12px; padding:10px 14px; outline:none; margin-top:4px;
+}
+.settings input[type=range]{ width:100%; accent-color:var(--orange); height:26px; margin-top:4px; cursor:pointer; }
+.settings .check-row{
+  display:flex; align-items:center; gap:8px; font-size:14px; font-weight:700;
+  color:var(--blue); cursor:pointer; padding:6px 0;
+}
+.settings .check-row input[type=checkbox]{ accent-color:var(--orange); width:18px; height:18px; margin:0; cursor:pointer; flex:none; }
+
+.op-block{
+  grid-column:1 / -1;
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:14px 22px; padding-top:14px; margin-top:2px;
+  border-top:1px dashed var(--border);
+}
+.op-block.hidden{ display:none; }
+
+.profile-row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+.profile-row button{
+  font:inherit; font-size:13px; font-weight:800; padding:8px 14px;
+  border:2px solid var(--border); border-radius:10px; background:#fff;
+  color:var(--blue); cursor:pointer;
+}
+.profile-row button:hover{ background:var(--blue-pale); }
+.profile-row button.danger{ color:#A03030; border-color:rgba(160,48,48,.25); }
+
+.controls{ display:flex; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
+.controls button{
+  flex:1; min-width:130px; padding:13px 18px; border:none; border-radius:14px;
+  background:var(--orange); color:#fff; font-family:"Nunito Sans",sans-serif;
+  font-size:14px; font-weight:800; cursor:pointer;
+  box-shadow:0 4px 0 var(--orange-dark); transition:.15s;
+}
+.controls button:hover{ background:var(--orange-soft); }
+.controls button.primary{ background:var(--blue); box-shadow:0 4px 0 #12295C; flex:1.4; }
+.controls button.ghost{ background:#fff; color:var(--blue); box-shadow:0 4px 0 rgba(30,63,138,.10); }
+
+.progress-wrap{
+  background:#fff; border:2px solid var(--border); border-radius:12px;
+  padding:4px; margin-bottom:14px; box-shadow:0 4px 0 rgba(30,63,138,.06); display:none;
+}
+.progress-wrap.on{ display:block; }
+.progress-bar{ height:12px; border-radius:8px; background:var(--blue-pale); overflow:hidden; }
+.progress-fill{
+  height:100%; width:0; border-radius:8px;
+  background:linear-gradient(90deg,var(--orange),var(--blue));
+  transition:width .3s ease;
+}
+
+.stats{ display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; justify-content:flex-end; }
+.stat{
+  display:inline-flex; align-items:center; gap:6px; padding:8px 14px;
+  background:#fff; border:2px solid var(--border); border-radius:12px;
+  font-family:var(--mono); font-size:14px; font-weight:700; color:var(--text-dim);
+  box-shadow:0 4px 0 rgba(30,63,138,.06);
+}
+.stat b{ color:var(--blue); font-weight:700; }
+.stat.hidden{ display:none; }
+.stat.record.lvl{ border-color:rgba(61,107,52,.35); }
+.stat.record.streak{ border-color:rgba(200,81,0,.35); }
+
+.sheet{
+  background:#fff; border-radius:18px; padding:30px 34px 34px; margin-bottom:22px;
+  box-shadow:0 6px 0 rgba(30,63,138,.10), 0 14px 26px rgba(30,63,138,.08);
+  position:relative;
+}
+.sheet-head{ text-align:center; margin-bottom:18px; position:relative; z-index:1; }
+.sheet-title{
+  font-family:"Fredoka",sans-serif; font-size:26px; font-weight:700;
+  color:var(--blue); margin:0 0 14px; letter-spacing:.4px;
+}
+.sheet-fields{
+  display:flex; justify-content:space-between; gap:28px; font-size:13px;
+  font-weight:800; color:var(--text-dim); margin-bottom:12px;
+}
+.sheet-fields span{ display:flex; align-items:flex-end; gap:6px; flex:1; white-space:nowrap; }
+.sheet-fields i{ flex:1; border-bottom:1.4px solid var(--line); height:15px; font-style:normal; }
+.sheet-instruction{
+  font-size:13px; font-weight:700; color:var(--text-dim); padding:9px 14px;
+  background:#F7F9FE; border-radius:10px; margin:0; text-align:left;
+}
+
+.problems-grid{
+  display:grid; grid-template-columns:repeat(var(--cols,2), minmax(0,1fr));
+  gap:14px; margin-top:18px; position:relative; z-index:1;
+}
+
+.problem{
+  position:relative; border:2px solid var(--border); border-radius:14px;
+  padding:16px 14px 14px; background:#FBFDFF;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+}
+.problem.correct{ border-color:#7AB86C; background:var(--good-bg); }
+.problem.wrong{ border-color:#E57373; background:var(--bad-bg); }
+.problem.pulse{ animation:pulse .35s ease; }
+@keyframes pulse{ 0%{ transform:scale(1); } 40%{ transform:scale(1.03); } 100%{ transform:scale(1); } }
+.problem .num{
+  position:absolute; top:8px; right:12px; font-size:11px; font-weight:800; color:#98A3BF;
+}
+.problem .mark{
+  position:absolute; bottom:10px; right:12px; font-size:18px; font-weight:800;
+}
+.problem .mark.good{ color:#3D6B34; }
+.problem .mark.bad{ color:#A03030; }
+.problem .step-btn{
+  position:absolute; top:8px; left:12px;
+  border:none; background:var(--blue-pale); color:var(--blue);
+  width:24px; height:24px; border-radius:8px; font-size:13px; cursor:pointer;
+  display:none; align-items:center; justify-content:center; padding:0; font-weight:800;
+}
+.problem .step-btn:hover{ background:var(--orange); color:#fff; }
+body.mode-trainer .problem .step-btn{ display:flex; }
+
+.word-row{
+  display:flex; flex-wrap:wrap; justify-content:center; align-items:stretch;
+  gap:6px; margin:6px 0 4px; font-family:var(--mono);
+}
+.morph{
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:26px; font-weight:700; letter-spacing:1px;
+  padding:8px 12px; border-radius:12px;
+  background:#fff; color:var(--blue);
+  border:3px solid var(--line);
+  cursor:pointer; transition:.18s; position:relative;
+  min-width:46px; user-select:none;
+}
+.morph:hover:not(.done){ transform:translateY(-2px); box-shadow:0 4px 12px rgba(30,63,138,.15); }
+.morph.done{ cursor:default; color:#fff; }
+.morph .tag{
+  position:absolute; top:-10px; right:-8px;
+  font-family:"Nunito Sans",sans-serif; font-size:9.5px; font-weight:800;
+  padding:2px 6px; border-radius:8px;
+  background:#fff; letter-spacing:.2px;
+  border:2px solid currentColor;
+  white-space:nowrap;
+}
+.morph.null-ending{
+  min-width:30px; padding:6px 6px;
+  font-size:20px; opacity:.85;
+}
+.morph.null-ending:hover:not(.done){ opacity:1; }
+.morph.wrong-anim{ animation:shake .35s; }
+@keyframes shake{
+  0%,100%{ transform:translateX(0); }
+  20%{ transform:translateX(-8px); }
+  40%{ transform:translateX(8px); }
+  60%{ transform:translateX(-6px); }
+  80%{ transform:translateX(6px); }
+}
+
+.tools{
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; margin-top:8px; width:100%;
+}
+.tool{
+  padding:8px 4px; border-radius:10px; border:2px solid var(--border);
+  background:#fff; color:var(--text-dim); cursor:pointer;
+  font-family:inherit; font-size:11px; font-weight:800; transition:.15s;
+  display:flex; flex-direction:column; align-items:center; gap:3px; line-height:1.1;
+}
+.tool .swatch{ width:16px; height:16px; border-radius:5px; }
+.tool:hover{ background:var(--blue-pale); }
+.tool.active{ transform:translateY(-2px); box-shadow:0 6px 14px rgba(0,0,0,.18); color:#fff; }
+
+/* DRAG MODE */
+.drag-word{
+  display:flex; flex-wrap:wrap; justify-content:center; align-items:center;
+  gap:8px; margin:12px 0 18px; font-family:var(--mono);
+}
+.drag-hint{
+  text-align:center; font-size:14px; font-weight:800; color:var(--text-dim); margin:0 0 6px;
+}
+.drag-hint b{ color:var(--blue); }
+.slot{
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:24px; font-weight:700; letter-spacing:1px;
+  padding:10px 14px; border-radius:12px;
+  background:#FFFDF7; color:var(--blue);
+  border:3px dashed var(--line);
+  min-width:56px; min-height:54px;
+  cursor:pointer; transition:.15s; user-select:none; position:relative;
+}
+.slot.empty::before{
+  content:attr(data-hint);
+  font-family:"Nunito Sans",sans-serif;
+  font-size:9px; font-weight:800; color:#98A3BF;
+  text-transform:uppercase; letter-spacing:.4px;
+}
+.slot.filled{ background:#fff; border-style:solid; cursor:grab; }
+.slot.filled .slot-tag{
+  position:absolute; top:-10px; right:-8px;
+  font-family:"Nunito Sans",sans-serif; font-size:9px; font-weight:800;
+  padding:2px 6px; border-radius:8px;
+  background:#fff; border:2px solid currentColor; color:inherit;
+}
+.slot.over{ border-color:var(--orange); background:#FFF4E5; }
+.slot.correct{ border-color:#7AB86C; background:var(--good-bg); color:var(--good); }
+.slot.wrong{ border-color:#E57373; background:var(--bad-bg); color:var(--bad); }
+
+.chips-pool{
+  display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:16px 0;
+}
+.chip{
+  display:inline-flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:22px; font-weight:700;
+  padding:10px 16px; border-radius:12px;
+  background:linear-gradient(145deg, #fff, #F2F6FF);
+  color:var(--blue); border:3px solid var(--line);
+  cursor:grab; user-select:none; transition:.15s;
+  box-shadow:0 4px 0 rgba(30,63,138,.08);
+  min-width:52px;
+}
+.chip:hover{ transform:translateY(-2px); border-color:var(--blue); }
+.chip.dragging{ opacity:.35; }
+.chip.used{ display:none; }
+.chip.selected{ border-color:var(--orange); box-shadow:0 6px 14px rgba(255,106,0,.3); }
+.chip.null-ending{ font-size:18px; padding:8px 10px; min-width:38px; opacity:.85; }
+
+.drag-controls{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+
+@media (max-width:760px){
+  .topbar{ padding:12px 14px 14px; }
+  .topbar-title{ font-size:15px; }
+  .topbar-title .mode-badge{ font-size:10px; padding:2px 7px; margin-left:6px; }
+  .back-btn,.theme-btn{ width:38px; height:38px; font-size:16px; border-radius:12px; }
+  .back-btn{ left:10px; } .theme-btn{ right:10px; }
+  .switch-btn{ right:56px; height:38px; padding:0 10px; font-size:11px; border-radius:12px; }
+  .container{ padding:14px 10px 60px; }
+  #panel{ position:fixed; inset:0; z-index:200; border-radius:0; margin:0; padding:16px 14px 100px; overflow-y:auto; box-shadow:none; border:none; }
+  .settings{ grid-template-columns:1fr; gap:12px; }
+  .controls button{ font-size:13px; padding:14px 12px; min-width:calc(50% - 4px); flex:1 1 calc(50% - 4px); }
+  .controls button.primary{ flex:1 1 100%; }
+  .problems-grid{ grid-template-columns:1fr !important; gap:12px; }
+  .morph{ font-size:20px; padding:6px 10px; min-width:38px; }
+  .morph.null-ending{ font-size:16px; min-width:26px; padding:6px 4px; }
+  .slot{ font-size:20px; padding:8px 10px; min-width:46px; min-height:46px; }
+  .chip{ font-size:18px; padding:8px 12px; min-width:44px; }
+  .tool{ font-size:10px; padding:6px 2px; }
+  .sheet{ padding:18px 12px 20px; border-radius:14px; }
+  .sheet-title{ font-size:19px; }
+}
+
+[data-theme="dark"]{
+  --bg:#131824; --text:#E5E9F0; --text-dim:#94A3B8;
+  --panel:#1C2231; --border:rgba(255,255,255,.08); --line:#374151;
+  --blue:#8AB4FF; --blue-soft:#A8C7FF; --blue-pale:#1E2637;
+  --orange:#FF9550; --orange-soft:#FFA56A; --orange-dark:#8B4A20;
+  --good:#6FB25E; --good-bg:#1E2F1A; --bad:#E08B8B; --bad-bg:#2F1E1E;
+  --m-prefix:#F07860; --m-root:#5D9CFF; --m-suffix:#5DBB68; --m-ending:#F0B540;
+}
+[data-theme="dark"] body{ background-color:var(--bg); }
+[data-theme="dark"] .topbar{ background:#1A2440; }
+[data-theme="dark"] .student-bar, [data-theme="dark"] .achievements-strip{ background:#1C2231; }
+[data-theme="dark"] .sheet,[data-theme="dark"] #panel,[data-theme="dark"] .stat,
+[data-theme="dark"] .progress-wrap,[data-theme="dark"] .toggle-btn,
+[data-theme="dark"] .presets button,[data-theme="dark"] .controls button.ghost,
+[data-theme="dark"] .student-bar button.mini,[data-theme="dark"] .modal-box,
+[data-theme="dark"] .problem{ background:#1C2231; color:var(--text); }
+[data-theme="dark"] .morph{ background:#232A3D; color:var(--blue); }
+[data-theme="dark"] .slot{ background:#232A3D; }
+[data-theme="dark"] .chip{ background:linear-gradient(145deg, #232A3D, #1A2133); color:var(--blue); }
+[data-theme="dark"] .tool{ background:#232A3D; }
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+
+<div class="mode-chooser" id="modeChooser">
+  <div class="mode-chooser-inner">
+    <h1 class="mode-chooser-title">Разбор по составу</h1>
+    <p class="mode-chooser-sub">Выбери, что тебе нужно</p>
+    <div class="mode-cards">
+      <button class="mode-card" onclick="pickMode('trainer')">
+        <div class="mode-icon">🧩</div>
+        <div class="mode-name">Разметь морфемы</div>
+        <div class="mode-desc">Слово уже собрано. Выбирай инструмент и отмечай каждую часть. Нулевое окончание — тоже морфема.</div>
+      </button>
+      <button class="mode-card" onclick="pickMode('drag')">
+        <div class="mode-icon">🧱</div>
+        <div class="mode-name">Расставь фигурки</div>
+        <div class="mode-desc">Слово рассыпалось на морфемы. Перетаскивай фигурки в нужные пустые слоты.</div>
+      </button>
+      <button class="mode-card" onclick="pickMode('theory')">
+        <div class="mode-icon">📖</div>
+        <div class="mode-name">Справочник</div>
+        <div class="mode-desc">Что такое приставка, корень, суффикс, окончание. Как разбирать слово.</div>
+      </button>
+    </div>
+    <button class="mode-remember" id="rememberBtn" onclick="toggleRemember()">
+      <span class="mark" id="rememberMark">✓</span>
+      <span>Не спрашивать при следующем входе</span>
+    </button>
+  </div>
+</div>
+
+<div class="topbar">
+  <button class="back-btn" onclick="goBack()">☰</button>
+  <div class="topbar-title">
+    🧩 Разбор по составу
+    <span class="mode-badge" id="modeBadge">—</span>
+  </div>
+  <button class="switch-btn" onclick="openModeChooser()">🔄 Сменить</button>
+  <button class="theme-btn" onclick="toggleTheme()">🌙</button>
+</div>
+
+<div class="achievements-strip trainer-only drag-only" id="achStrip"></div>
+
+<div class="student-bar trainer-only drag-only">
+  <span class="label">Ученик:</span>
+  <select id="studentSelect"></select>
+  <button class="mini" onclick="addStudent()">+ ученик</button>
+  <span class="spacer"></span>
+  <button class="mini" onclick="openHistory()">📊 История</button>
+</div>
+
+<div class="container">
+  <button class="toggle-btn trainer-only drag-only" onclick="togglePanel()">⚙ Настройки</button>
+
+  <div id="panel" class="trainer-only drag-only hidden">
+    <div class="presets" id="presetsBar">
+      <button data-preset="easy">2 класс · корень+окончание</button>
+      <button data-preset="mid" class="active">3 класс · + суффиксы</button>
+      <button data-preset="hard">4 класс · приставки и сложные</button>
+      <button data-preset="all">Всё подряд</button>
+      <button data-preset="speed">Скорость</button>
+    </div>
+
+    <div class="settings">
+      <div class="full">
+        <div class="section-head"><span class="badge">🎓</span> Какие части слова тренируем</div>
+        <div class="op-block" style="padding-top:0;border-top:none;margin-top:0">
+          <label class="check-row"><input type="checkbox" id="m-prefix" data-m="prefix"> 🟥 Приставка</label>
+          <label class="check-row"><input type="checkbox" id="m-root" data-m="root" checked> 🟦 Корень</label>
+          <label class="check-row"><input type="checkbox" id="m-suffix" data-m="suffix" checked> 🟩 Суффикс</label>
+          <label class="check-row"><input type="checkbox" id="m-ending" data-m="ending" checked> 🟨 Окончание (в т.ч. нулевое □)</label>
+        </div>
+      </div>
+
+      <div class="full"><div class="section-head"><span class="badge">📄</span> Лист</div></div>
+      <div class="full"><label>Заголовок</label>
+        <input type="text" id="titleInput" value="Разбор слова по составу" maxlength="60">
+      </div>
+      <div class="full"><label>Инструкция</label>
+        <input type="text" id="instrInput" value="Выбери инструмент и отметь каждую часть слова." maxlength="160">
+      </div>
+      <div><label>Слов <span id="countVal">8</span></label>
+        <input type="range" id="count" min="4" max="20" value="8">
+      </div>
+      <div><label>Колонок <span id="colsVal">2</span></label>
+        <input type="range" id="cols" min="1" max="3" value="2">
+      </div>
+      <div class="full">
+        <label class="check-row"><input type="checkbox" id="useTimer" checked> Таймер</label>
+        <label class="check-row"><input type="checkbox" id="optName" checked> Поля «Имя» и «Дата»</label>
+        <label class="check-row"><input type="checkbox" id="showSteps" checked> Кнопка 💡 «Как разобрать»</label>
+        <label class="check-row"><input type="checkbox" id="fbProgress" checked> Прогресс-бар</label>
+        <label class="check-row"><input type="checkbox" id="fbSound"> Звук</label>
+        <label class="check-row"><input type="checkbox" id="showHints" checked> Подписи под пустыми слотами в режиме «Расставь»</label>
+      </div>
+
+      <div class="full"><div class="section-head"><span class="badge">💾</span> Профили настроек</div>
+        <label>Название</label>
+        <input type="text" id="profileName" placeholder="например, «2 класс · базовый»" maxlength="40">
+        <div class="profile-row">
+          <button type="button" onclick="saveProfile()">💾 Сохранить</button>
+          <select id="profileSelect" style="flex:1;min-width:160px;margin-top:0"></select>
+          <button type="button" onclick="loadProfile()">📂 Загрузить</button>
+          <button type="button" class="danger" onclick="deleteProfile()">🗑</button>
+        </div>
+        <div class="profile-row">
+          <button type="button" onclick="exportSettings()">⬇ JSON</button>
+          <button type="button" onclick="document.getElementById('importFile').click()">⬆ JSON</button>
+          <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importSettings(event)">
+          <button type="button" class="danger" onclick="resetSettings()">↺ Сброс</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theory-only" id="theoryBlock" style="display:none">
+    <div class="sheet">
+      <div class="sheet-head"><h1 class="sheet-title">Как разбирать слово по составу</h1></div>
+
+      <div style="padding:16px 18px;border-radius:16px;margin-bottom:12px;background:#FBFDFF;border:2px solid var(--border);border-left:6px solid var(--m-root)">
+        <h3 style="font-family:Fredoka,sans-serif;color:var(--blue);margin:0 0 6px">🟦 Корень</h3>
+        <p style="font-size:14px;line-height:1.5">Главная часть слова. Общий смысл всех родственных слов.</p>
+        <div style="font-family:var(--mono);font-size:20px;font-weight:700;margin-top:8px;color:var(--blue)">
+          <span style="background:var(--m-root);color:#fff;padding:2px 8px;border-radius:8px">лес</span>ник,
+          <span style="background:var(--m-root);color:#fff;padding:2px 8px;border-radius:8px">лес</span>ной
+        </div>
+      </div>
+
+      <div style="padding:16px 18px;border-radius:16px;margin-bottom:12px;background:#FBFDFF;border:2px solid var(--border);border-left:6px solid var(--m-prefix)">
+        <h3 style="font-family:Fredoka,sans-serif;color:var(--blue);margin:0 0 6px">🟥 Приставка</h3>
+        <p style="font-size:14px;line-height:1.5">Стоит перед корнем. Образует новые слова.</p>
+        <div style="font-family:var(--mono);font-size:20px;font-weight:700;margin-top:8px;color:var(--blue)">
+          <span style="background:var(--m-prefix);color:#fff;padding:2px 8px;border-radius:8px">пере</span>ход,
+          <span style="background:var(--m-prefix);color:#fff;padding:2px 8px;border-radius:8px">вы</span>ход
+        </div>
+      </div>
+
+      <div style="padding:16px 18px;border-radius:16px;margin-bottom:12px;background:#FBFDFF;border:2px solid var(--border);border-left:6px solid var(--m-suffix)">
+        <h3 style="font-family:Fredoka,sans-serif;color:var(--blue);margin:0 0 6px">🟩 Суффикс</h3>
+        <p style="font-size:14px;line-height:1.5">Стоит после корня. Тоже образует новые слова.</p>
+        <div style="font-family:var(--mono);font-size:20px;font-weight:700;margin-top:8px;color:var(--blue)">
+          дом → дом<span style="background:var(--m-suffix);color:#fff;padding:2px 8px;border-radius:8px">ик</span>,
+          лес → лес<span style="background:var(--m-suffix);color:#fff;padding:2px 8px;border-radius:8px">ник</span>
+        </div>
+      </div>
+
+      <div style="padding:16px 18px;border-radius:16px;margin-bottom:12px;background:#FBFDFF;border:2px solid var(--border);border-left:6px solid var(--m-ending)">
+        <h3 style="font-family:Fredoka,sans-serif;color:var(--blue);margin:0 0 6px">🟨 Окончание</h3>
+        <p style="font-size:14px;line-height:1.5">Изменяемая часть. Служит для связи слов. Если его нет (при изменении слово не меняется), говорят о <b>нулевом окончании</b> и обозначают □.</p>
+        <div style="font-family:var(--mono);font-size:20px;font-weight:700;margin-top:8px;color:var(--blue)">
+          книг<span style="background:var(--m-ending);color:#fff;padding:2px 8px;border-radius:8px">а</span>,
+          книг<span style="background:var(--m-ending);color:#fff;padding:2px 8px;border-radius:8px">и</span> ·
+          стол<span style="background:var(--m-ending);color:#fff;padding:2px 8px;border-radius:8px">□</span>
+        </div>
+      </div>
+
+      <div style="padding:16px 18px;border-radius:16px;margin-top:8px;background:#FFF4E5;border:2px solid #FFD9A8">
+        <h3 style="font-family:Fredoka,sans-serif;color:var(--orange-dark);margin:0 0 6px">💡 Как разбирать</h3>
+        <p style="font-size:14px;line-height:1.6;color:#8B4A20">
+          1. Найди <b>окончание</b> — измени слово: <i>стена → стены → стеной</i>. Если не меняется — нулевое □.<br>
+          2. Найди <b>корень</b> — подбери родственные слова.<br>
+          3. Найди <b>приставку</b> — что стоит перед корнем.<br>
+          4. Найди <b>суффикс</b> — что стоит после корня, но перед окончанием.<br>
+          <b>Помни:</b> мягкий знак (Ь) — не окончание. Он часть корня или суффикса.
+        </p>
+      </div>
+
+      <button style="display:block;margin:22px auto 0;padding:16px 40px;border:none;border-radius:14px;background:var(--orange);color:#fff;font-family:inherit;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 var(--orange-dark)" onclick="pickMode('trainer')">Попробовать 🧩</button>
+    </div>
+  </div>
+
+  <div class="trainer-only">
+    <div class="controls">
+      <button class="primary" onclick="generate()">🎲 Новый набор</button>
+      <button class="ghost" onclick="checkAnswers()">✓ Проверить</button>
+      <button class="ghost" onclick="showAllAnswers()">💡 Ответы</button>
+      <button class="ghost" onclick="resetAllInputs()">↺ Очистить</button>
+    </div>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+    <div class="stats">
+      <span class="stat" id="statTimer">⏱ <b>00:00</b></span>
+      <span class="stat" id="statScore">✓ <b>0 / 0</b></span>
+      <span class="stat record lvl" id="statLvl">🎓 <b>Ур. 1</b></span>
+      <span class="stat record streak" id="statStreak">🔥 <b>0</b></span>
+    </div>
+    <div id="sheetsContainer"></div>
+  </div>
+
+  <div class="drag-only">
+    <div class="controls">
+      <button class="primary" onclick="generateDrag()">🎲 Новое слово</button>
+      <button class="ghost" onclick="checkDrag()">✓ Проверить</button>
+      <button class="ghost" onclick="showDragAnswer()">💡 Ответ</button>
+      <button class="ghost" onclick="resetDrag()">↺ Сбросить</button>
+    </div>
+    <div class="stats">
+      <span class="stat" id="dragStatScore">✓ <b>0 / 0</b></span>
+      <span class="stat record streak" id="dragStatStreak">🎯 <b>Серия: 0</b></span>
+    </div>
+    <div id="dragContainer"></div>
+  </div>
+</div>
+
+<div class="modal" id="histModal" style="position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;background:rgba(30,63,138,.35);padding:20px">
+  <div class="modal-box" style="background:#fff;border-radius:20px;padding:24px;max-width:680px;width:100%;max-height:85vh;overflow-y:auto;position:relative">
+    <button class="modal-close" onclick="closeHistory()" style="position:absolute;top:16px;right:16px;border:none;background:transparent;font-size:24px;color:var(--text-dim);cursor:pointer">×</button>
+    <h2 style="font-family:Fredoka,sans-serif;font-size:22px;color:var(--blue);margin:0 0 16px" id="histTitle">История</h2>
+    <div id="histBody"></div>
+  </div>
+</div>
+
+<div class="modal" id="stepModal" style="position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;background:rgba(30,63,138,.35);padding:20px">
+  <div class="modal-box" style="background:#fff;border-radius:20px;padding:24px;max-width:680px;width:100%;max-height:85vh;overflow-y:auto;position:relative">
+    <button class="modal-close" onclick="closeSteps()" style="position:absolute;top:16px;right:16px;border:none;background:transparent;font-size:24px;color:var(--text-dim);cursor:pointer">×</button>
+    <h2 style="font-family:Fredoka,sans-serif;font-size:22px;color:var(--blue);margin:0 0 16px">Как разобрать слово</h2>
+    <div id="stepBody" style="font-family:var(--mono);font-size:14px;line-height:1.7"></div>
+  </div>
+</div>
+
+<div style="position:fixed;bottom:8px;right:14px;font-size:12px;font-weight:600;color:#98A3BF;opacity:.8;pointer-events:none">© verner</div>
+
+<script>
+/* ============================================================
+   МОРФЕМЫ
+   ============================================================ */
+const MORPH = {
+  prefix: { name:'Приставка', short:'прист.',  color:'var(--m-prefix)' },
+  root:   { name:'Корень',    short:'корень',  color:'var(--m-root)'   },
+  suffix: { name:'Суффикс',   short:'суф.',    color:'var(--m-suffix)' },
+  ending: { name:'Окончание', short:'оконч.',  color:'var(--m-ending)' },
+};
+const MORPH_ORDER = ['prefix','root','suffix','ending'];
+const NULL_ENDING_MARK = '□';
+
+/* ============================================================
+   БАЗА СЛОВ (~510)
+   Формат: 'слово|часть:тип,часть:тип'
+   0:ending — нулевое окончание (отображается как □)
+   ============================================================ */
+const RAW_WORDS = [
+  /* --- М.р. и ж.р. с Ь: корень + нулевое окончание --- */
+  'стол|стол:root,0:ending','стул|стул:root,0:ending','дом|дом:root,0:ending',
+  'лес|лес:root,0:ending','сад|сад:root,0:ending','кот|кот:root,0:ending',
+  'кит|кит:root,0:ending','сон|сон:root,0:ending','нос|нос:root,0:ending',
+  'рот|рот:root,0:ending','дуб|дуб:root,0:ending','гриб|гриб:root,0:ending',
+  'зуб|зуб:root,0:ending','суп|суп:root,0:ending','хлеб|хлеб:root,0:ending',
+  'флаг|флаг:root,0:ending','берег|берег:root,0:ending','луг|луг:root,0:ending',
+  'круг|круг:root,0:ending','друг|друг:root,0:ending','враг|враг:root,0:ending',
+  'снег|снег:root,0:ending','бок|бок:root,0:ending','сок|сок:root,0:ending',
+  'лук|лук:root,0:ending','жук|жук:root,0:ending','рак|рак:root,0:ending',
+  'мак|мак:root,0:ending','лак|лак:root,0:ending','пёс|пёс:root,0:ending',
+  'год|год:root,0:ending','ход|ход:root,0:ending','плод|плод:root,0:ending',
+  'плот|плот:root,0:ending','род|род:root,0:ending','лев|лев:root,0:ending',
+  'час|час:root,0:ending','глаз|глаз:root,0:ending','голос|голос:root,0:ending',
+  'холод|холод:root,0:ending','молот|молот:root,0:ending','порох|порох:root,0:ending',
+  'живот|живот:root,0:ending','народ|народ:root,0:ending','букет|букет:root,0:ending',
+  'билет|билет:root,0:ending','турист|турист:root,0:ending','пилот|пилот:root,0:ending',
+  'обед|обед:root,0:ending','ответ|ответ:root,0:ending','совет|совет:root,0:ending',
+  'пакет|пакет:root,0:ending','кабинет|кабинет:root,0:ending','портрет|портрет:root,0:ending',
+  'балет|балет:root,0:ending','буфет|буфет:root,0:ending','паркет|паркет:root,0:ending',
+  'дождь|дождь:root,0:ending',
+  'день|день:root,0:ending','пень|пень:root,0:ending','тень|тень:root,0:ending',
+  'сирень|сирень:root,0:ending','метель|метель:root,0:ending','медаль|медаль:root,0:ending',
+  'печаль|печаль:root,0:ending','деталь|деталь:root,0:ending','мораль|мораль:root,0:ending',
+  'фасоль|фасоль:root,0:ending','пароль|пароль:root,0:ending','руль|руль:root,0:ending',
+  'соль|соль:root,0:ending','боль|боль:root,0:ending','роль|роль:root,0:ending',
+  'ноль|ноль:root,0:ending','тополь|тополь:root,0:ending','стиль|стиль:root,0:ending',
+  'быль|быль:root,0:ending','пыль|пыль:root,0:ending','даль|даль:root,0:ending',
+  'сталь|сталь:root,0:ending','шаль|шаль:root,0:ending','февраль|февраль:root,0:ending',
+  'апрель|апрель:root,0:ending','капель|капель:root,0:ending','карусель|карусель:root,0:ending',
+  'фланель|фланель:root,0:ending','шинель|шинель:root,0:ending','портфель|портфель:root,0:ending',
+  'автомобиль|автомобиль:root,0:ending','корабль|корабль:root,0:ending','журавль|журавль:root,0:ending',
+
+  /* --- Корень + окончание --- */
+  'книга|книг:root,а:ending','книги|книг:root,и:ending','книгу|книг:root,у:ending',
+  'вода|вод:root,а:ending','воды|вод:root,ы:ending','воду|вод:root,у:ending',
+  'гора|гор:root,а:ending','горы|гор:root,ы:ending','горе|гор:root,е:ending',
+  'стена|стен:root,а:ending','стены|стен:root,ы:ending','стену|стен:root,у:ending',
+  'трава|трав:root,а:ending','травы|трав:root,ы:ending',
+  'рука|рук:root,а:ending','руки|рук:root,и:ending','руку|рук:root,у:ending',
+  'нога|ног:root,а:ending','ноги|ног:root,и:ending','ногу|ног:root,у:ending',
+  'роза|роз:root,а:ending','розы|роз:root,ы:ending',
+  'зима|зим:root,а:ending','зимы|зим:root,ы:ending','зиму|зим:root,у:ending',
+  'весна|весн:root,а:ending','весны|весн:root,ы:ending',
+  'лиса|лис:root,а:ending','лисы|лис:root,ы:ending',
+  'коза|коз:root,а:ending','козы|коз:root,ы:ending',
+  'сова|сов:root,а:ending','совы|сов:root,ы:ending',
+  'гроза|гроз:root,а:ending','грозы|гроз:root,ы:ending',
+  'стрела|стрел:root,а:ending','стрелы|стрел:root,ы:ending',
+  'звезда|звезд:root,а:ending','звезды|звезд:root,ы:ending',
+  'река|рек:root,а:ending','реки|рек:root,и:ending','реку|рек:root,у:ending',
+  'страна|стран:root,а:ending','страны|стран:root,ы:ending',
+  'цена|цен:root,а:ending','цены|цен:root,ы:ending',
+  'нора|нор:root,а:ending','норы|нор:root,ы:ending',
+  'кора|кор:root,а:ending','коры|кор:root,ы:ending',
+  'игра|игр:root,а:ending','игры|игр:root,ы:ending',
+  'сестра|сестр:root,а:ending','сестры|сестр:root,ы:ending',
+  'жена|жен:root,а:ending','жены|жен:root,ы:ending',
+  'душа|душ:root,а:ending','души|душ:root,и:ending',
+  'мечта|мечт:root,а:ending','мечты|мечт:root,ы:ending',
+  'плита|плит:root,а:ending','плиты|плит:root,ы:ending',
+  'черта|черт:root,а:ending','черты|черт:root,ы:ending',
+  'тропа|троп:root,а:ending','тропы|троп:root,ы:ending',
+  'толпа|толп:root,а:ending','толпы|толп:root,ы:ending',
+  'судьба|судьб:root,а:ending',
+  'изба|изб:root,а:ending','губа|губ:root,а:ending','труба|труб:root,а:ending',
+  'работа|работ:root,а:ending','забота|забот:root,а:ending','охота|охот:root,а:ending',
+  'красота|красот:root,а:ending','доброта|доброт:root,а:ending','чистота|чистот:root,а:ending',
+  'пустота|пустот:root,а:ending','высота|высот:root,а:ending','теплота|теплот:root,а:ending',
+  'темнота|темнот:root,а:ending','слепота|слепот:root,а:ending','тишина|тишин:root,а:ending',
+  'ширина|ширин:root,а:ending','глубина|глубин:root,а:ending','седина|седин:root,а:ending',
+  'величина|величин:root,а:ending','новизна|новизн:root,а:ending','белизна|белизн:root,а:ending',
+  'окно|окн:root,о:ending','окна|окн:root,а:ending','село|сел:root,о:ending','весло|весл:root,о:ending',
+  'число|числ:root,о:ending','гнездо|гнезд:root,о:ending','ведро|ведр:root,о:ending',
+  'зерно|зерн:root,о:ending','полотно|полотн:root,о:ending','письмо|письм:root,о:ending',
+  'поле|пол:root,е:ending','море|мор:root,е:ending','горе|гор:root,е:ending',
+  'солнце|солнц:root,е:ending','сердце|сердц:root,е:ending',
+  'кольцо|кольц:root,о:ending','крыльцо|крыльц:root,о:ending',
+  'мыло|мыл:root,о:ending','дело|дел:root,о:ending','тело|тел:root,о:ending',
+  'масло|масл:root,о:ending','сало|сал:root,о:ending',
+
+  /* --- Корень + суффикс (м.р. — с нулевым окончанием) --- */
+  'домик|дом:root,ик:suffix,0:ending','столик|стол:root,ик:suffix,0:ending',
+  'садик|сад:root,ик:suffix,0:ending','грибок|гриб:root,ок:suffix,0:ending',
+  'лесок|лес:root,ок:suffix,0:ending','городок|город:root,ок:suffix,0:ending',
+  'лесник|лес:root,ник:suffix,0:ending','грибник|гриб:root,ник:suffix,0:ending',
+  'школьник|школь:root,ник:suffix,0:ending','печник|печ:root,ник:suffix,0:ending',
+  'дворник|двор:root,ник:suffix,0:ending','чайник|чай:root,ник:suffix,0:ending',
+  'добрый|добр:root,ый:ending','доброта|добр:root,от:suffix,а:ending',
+  'зимний|зим:root,н:suffix,ий:ending','лесной|лес:root,н:suffix,ой:ending',
+  'водный|вод:root,н:suffix,ый:ending','грибной|гриб:root,н:suffix,ой:ending',
+  'рыбный|рыб:root,н:suffix,ый:ending','стенной|стен:root,н:suffix,ой:ending',
+  'беленький|бел:root,еньк:suffix,ий:ending','домишко|дом:root,ишк:suffix,о:ending',
+  'бегун|бег:root,ун:suffix,0:ending','петушок|пету:root,шок:suffix,0:ending',
+  'снежок|снеж:root,ок:suffix,0:ending','зайчик|зайч:root,ик:suffix,0:ending',
+  'мячик|мяч:root,ик:suffix,0:ending','стульчик|стуль:root,чик:suffix,0:ending',
+  'карманчик|карман:root,чик:suffix,0:ending','грибочек|гриб:root,оч:suffix,ек:suffix,0:ending',
+  'листочек|лист:root,оч:suffix,ек:suffix,0:ending','цветочек|цвет:root,оч:suffix,ек:suffix,0:ending',
+  'пирожок|пирож:root,ок:suffix,0:ending','рожок|рож:root,ок:suffix,0:ending',
+  'дружок|друж:root,ок:suffix,0:ending','кружок|круж:root,ок:suffix,0:ending',
+  'флажок|флаж:root,ок:suffix,0:ending','утюжок|утюж:root,ок:suffix,0:ending',
+  'бережок|береж:root,ок:suffix,0:ending','островок|остров:root,ок:suffix,0:ending',
+  'бугорок|бугор:root,ок:suffix,0:ending',
+  'гребешок|греб:root,ешок:suffix,0:ending','ремешок|рем:root,ешок:suffix,0:ending',
+
+  /* --- Корень + суффикс + окончание --- */
+  'домики|дом:root,ик:suffix,и:ending','столики|стол:root,ик:suffix,и:ending',
+  'садики|сад:root,ик:suffix,и:ending','грибочки|гриб:root,оч:suffix,к:suffix,и:ending',
+  'рыбка|рыб:root,к:suffix,а:ending','рыбки|рыб:root,к:suffix,и:ending',
+  'стенка|стен:root,к:suffix,а:ending','стенки|стен:root,к:suffix,и:ending',
+  'книжка|книж:root,к:suffix,а:ending','книжки|книж:root,к:suffix,и:ending',
+  'полка|пол:root,к:suffix,а:ending','лапка|лап:root,к:suffix,а:ending',
+  'шапка|шап:root,к:suffix,а:ending','ветка|вет:root,к:suffix,а:ending',
+  'корка|кор:root,к:suffix,а:ending','мышка|мыш:root,к:suffix,а:ending',
+  'кошка|кош:root,к:suffix,а:ending','мошка|мош:root,к:suffix,а:ending',
+  'дочка|доч:root,к:suffix,а:ending','ночка|ноч:root,к:suffix,а:ending',
+  'ручка|руч:root,к:suffix,а:ending','точка|точ:root,к:suffix,а:ending',
+  'речка|реч:root,к:suffix,а:ending','печка|печ:root,к:suffix,а:ending',
+  'бочка|боч:root,к:suffix,а:ending','тучка|туч:root,к:suffix,а:ending',
+  'свечка|свеч:root,к:suffix,а:ending','внучка|внуч:root,к:suffix,а:ending',
+  'сестричка|сестр:root,ич:suffix,к:suffix,а:ending','лисичка|лис:root,ич:suffix,к:suffix,а:ending',
+  'водичка|вод:root,ич:suffix,к:suffix,а:ending','страничка|стран:root,ич:suffix,к:suffix,а:ending',
+  'ягодка|ягод:root,к:suffix,а:ending','гладкий|глад:root,к:suffix,ий:ending',
+  'сладкий|слад:root,к:suffix,ий:ending','редкий|ред:root,к:suffix,ий:ending',
+  'детский|дет:root,ск:suffix,ий:ending','морской|мор:root,ск:suffix,ой:ending',
+  'солнышко|солн:root,ышк:suffix,о:ending','зёрнышко|зёрн:root,ышк:suffix,о:ending',
+  'пёрышко|пёр:root,ышк:suffix,о:ending','донышко|дон:root,ышк:suffix,о:ending',
+  'дядюшка|дяд:root,юшк:suffix,а:ending','тётюшка|тёт:root,юшк:suffix,а:ending',
+  'дедушка|дед:root,ушк:suffix,а:ending','бабушка|баб:root,ушк:suffix,а:ending',
+  'подружка|подруж:root,к:suffix,а:ending','игрушка|игр:root,ушк:suffix,а:ending',
+  'верхушка|верх:root,ушк:suffix,а:ending','подушка|подуш:root,к:suffix,а:ending',
+  'кормушка|корм:root,ушк:suffix,а:ending','ловушка|лов:root,ушк:suffix,а:ending',
+  'хлопушка|хлоп:root,ушк:suffix,а:ending','лошадка|лошад:root,к:suffix,а:ending',
+  'тетрадка|тетрад:root,к:suffix,а:ending','площадка|площад:root,к:suffix,а:ending',
+  'грядка|гряд:root,к:suffix,а:ending','загадка|за:prefix,гад:root,к:suffix,а:ending',
+  'записка|за:prefix,пис:root,к:suffix,а:ending',
+  'подружки|подруж:root,к:suffix,и:ending','игрушки|игр:root,ушк:suffix,и:ending',
+  'верхушки|верх:root,ушк:suffix,и:ending','подушки|подуш:root,к:suffix,и:ending',
+  'кормушки|корм:root,ушк:suffix,и:ending','ловушки|лов:root,ушк:suffix,и:ending',
+  'хлопушки|хлоп:root,ушк:suffix,и:ending','лошадки|лошад:root,к:suffix,и:ending',
+  'тетрадки|тетрад:root,к:suffix,и:ending','площадки|площад:root,к:suffix,и:ending',
+  'грядки|гряд:root,к:suffix,и:ending','загадки|за:prefix,гад:root,к:suffix,и:ending',
+  'записки|за:prefix,пис:root,к:suffix,и:ending',
+  'морская|мор:root,ск:suffix,ая:ending','детская|дет:root,ск:suffix,ая:ending',
+  'городская|город:root,ск:suffix,ая:ending',
+  'русский|рус:root,ск:suffix,ий:ending','английский|англий:root,ск:suffix,ий:ending',
+  'братский|брат:root,ск:suffix,ий:ending','дружеский|друж:root,еск:suffix,ий:ending',
+  'деревенский|деревен:root,ск:suffix,ий:ending',
+
+  /* --- Приставка + корень (м.р. — нулевое окончание) --- */
+  'поезд|по:prefix,езд:root,0:ending','выезд|вы:prefix,езд:root,0:ending',
+  'переезд|пере:prefix,езд:root,0:ending','заезд|за:prefix,езд:root,0:ending',
+  'отъезд|отъ:prefix,езд:root,0:ending','переход|пере:prefix,ход:root,0:ending',
+  'восход|вос:prefix,ход:root,0:ending','заход|за:prefix,ход:root,0:ending',
+  'выход|вы:prefix,ход:root,0:ending','поход|по:prefix,ход:root,0:ending',
+  'приход|при:prefix,ход:root,0:ending','уход|у:prefix,ход:root,0:ending',
+  'вход|в:prefix,ход:root,0:ending','отход|от:prefix,ход:root,0:ending',
+  'рассказ|рас:prefix,сказ:root,0:ending','расцвет|рас:prefix,цвет:root,0:ending',
+  'закат|за:prefix,кат:root,0:ending','рассвет|рас:prefix,свет:root,0:ending',
+  'завод|за:prefix,вод:root,0:ending','отлёт|от:prefix,лёт:root,0:ending',
+  'побег|по:prefix,бег:root,0:ending','разбег|раз:prefix,бег:root,0:ending',
+  'исход|ис:prefix,ход:root,0:ending','разговор|раз:prefix,говор:root,0:ending',
+  'размер|раз:prefix,мер:root,0:ending','разрез|раз:prefix,рез:root,0:ending',
+  'раствор|рас:prefix,твор:root,0:ending','возглас|воз:prefix,глас:root,0:ending',
+  'возврат|воз:prefix,врат:root,0:ending','возраст|воз:prefix,раст:root,0:ending',
+  'изгиб|из:prefix,гиб:root,0:ending','испуг|ис:prefix,пуг:root,0:ending',
+
+  /* --- Приставка + корень + окончание --- */
+  'поезда|по:prefix,езд:root,а:ending','поезды|по:prefix,езд:root,ы:ending',
+  'переходы|пере:prefix,ход:root,ы:ending','рассказы|рас:prefix,сказ:root,ы:ending',
+  'закаты|за:prefix,кат:root,ы:ending','заводы|за:prefix,вод:root,ы:ending',
+  'выходы|вы:prefix,ход:root,ы:ending','приходы|при:prefix,ход:root,ы:ending',
+  'походы|по:prefix,ход:root,ы:ending','восходы|вос:prefix,ход:root,ы:ending',
+  'заезды|за:prefix,езд:root,ы:ending','отъезды|отъ:prefix,езд:root,ы:ending',
+  'перелёты|пере:prefix,лёт:root,ы:ending','прилёты|при:prefix,лёт:root,ы:ending',
+  'полёты|по:prefix,лёт:root,ы:ending','отлёты|от:prefix,лёт:root,ы:ending',
+  'входы|в:prefix,ход:root,ы:ending','отходы|от:prefix,ход:root,ы:ending',
+  'надписи|над:prefix,пис:root,и:ending',
+  'победы|по:prefix,бед:root,ы:ending','победа|по:prefix,бед:root,а:ending',
+  'разбеги|раз:prefix,бег:root,и:ending','исходы|ис:prefix,ход:root,ы:ending',
+  'разговоры|раз:prefix,говор:root,ы:ending','размеры|раз:prefix,мер:root,ы:ending',
+  'разрезы|раз:prefix,рез:root,ы:ending','растворы|рас:prefix,твор:root,ы:ending',
+  'возгласы|воз:prefix,глас:root,ы:ending','возвраты|воз:prefix,врат:root,ы:ending',
+  'изгибы|из:prefix,гиб:root,ы:ending',
+
+  /* --- Приставка + корень с Ь: нулевое окончание --- */
+  'надпись|над:prefix,пись:root,0:ending','опись|о:prefix,пись:root,0:ending',
+  'роспись|рос:prefix,пись:root,0:ending',
+
+  /* --- Приставка + корень + суффикс (м.р. — нулевое окончание) --- */
+  'рассказчик|рас:prefix,сказ:root,чик:suffix,0:ending',
+  'подводник|под:prefix,вод:root,ник:suffix,0:ending',
+  'перевозчик|пере:prefix,воз:root,чик:suffix,0:ending',
+  'переводчик|пере:prefix,вод:root,чик:suffix,0:ending',
+
+  /* --- Приставка + корень + суффикс + окончание --- */
+  'поездка|по:prefix,езд:root,к:suffix,а:ending','поездки|по:prefix,езд:root,к:suffix,и:ending',
+  'заправка|за:prefix,прав:root,к:suffix,а:ending','зарядка|за:prefix,ряд:root,к:suffix,а:ending',
+  'заколка|за:prefix,кол:root,к:suffix,а:ending','причёска|при:prefix,чёс:root,к:suffix,а:ending',
+  'постройка|по:prefix,строй:root,к:suffix,а:ending','находка|на:prefix,ход:root,к:suffix,а:ending',
+  'уборка|у:prefix,бор:root,к:suffix,а:ending','подсказка|под:prefix,сказ:root,к:suffix,а:ending',
+  'замазка|за:prefix,маз:root,к:suffix,а:ending','смазка|с:prefix,маз:root,к:suffix,а:ending',
+  'указка|у:prefix,каз:root,к:suffix,а:ending','покраска|по:prefix,крас:root,к:suffix,а:ending',
+  'раскраска|рас:prefix,крас:root,к:suffix,а:ending','закладка|за:prefix,клад:root,к:suffix,а:ending',
+  'разведка|раз:prefix,вед:root,к:suffix,а:ending','выписка|вы:prefix,пис:root,к:suffix,а:ending',
+  'подписка|под:prefix,пис:root,к:suffix,а:ending','переписка|пере:prefix,пис:root,к:suffix,а:ending',
+  'выписки|вы:prefix,пис:root,к:suffix,и:ending',
+  'пришкольный|при:prefix,школь:root,н:suffix,ый:ending',
+  'подводный|под:prefix,вод:root,н:suffix,ый:ending',
+  'надводный|над:prefix,вод:root,н:suffix,ый:ending',
+  'настольный|на:prefix,столь:root,н:suffix,ый:ending',
+  'настенный|на:prefix,стен:root,н:suffix,ый:ending',
+  'набережная|на:prefix,береж:root,н:suffix,ая:ending',
+  'зимовка|зим:root,ов:suffix,к:suffix,а:ending',
+  'ночёвка|ноч:root,ёв:suffix,к:suffix,а:ending',
+
+  /* --- Садовый/Столовая/Утренний и т.п. --- */
+  'садовый|сад:root,ов:suffix,ый:ending','садовая|сад:root,ов:suffix,ая:ending',
+  'столовая|стол:root,ов:suffix,ая:ending',
+  'утренний|утр:root,енн:suffix,ий:ending','вечерний|вечер:root,н:suffix,ий:ending',
+  'зимняя|зим:root,н:suffix,яя:ending','весенний|весен:root,н:suffix,ий:ending',
+  'осенний|осен:root,н:suffix,ий:ending','летний|лет:root,н:suffix,ий:ending',
+
+  /* ============================================================
+     СЛОЖНЫЕ СЛОВА (2 корня + соединительная гласная — она внутри слова)
+     Формат: соединительная гласная — тоже root (так принято в школе)
+     ============================================================ */
+  'самолёт|сам:root,о:root,лёт:root,0:ending',
+  'пароход|пар:root,о:root,ход:root,0:ending',
+  'снегопад|снег:root,о:root,пад:root,0:ending',
+  'листопад|лист:root,о:root,пад:root,0:ending',
+  'водопад|вод:root,о:root,пад:root,0:ending',
+  'звездопад|звезд:root,о:root,пад:root,0:ending',
+  'сенокос|сен:root,о:root,кос:root,0:ending',
+  'птицелов|птиц:root,е:root,лов:root,0:ending',
+  'рыболов|рыб:root,о:root,лов:root,0:ending',
+  'зверолов|звер:root,о:root,лов:root,0:ending',
+  'садовод|сад:root,о:root,вод:root,0:ending',
+  'пчеловод|пчел:root,о:root,вод:root,0:ending',
+  'овощевод|овощ:root,е:root,вод:root,0:ending',
+  'хлебороб|хлеб:root,о:root,роб:root,0:ending',
+  'трубопровод|труб:root,о:root,провод:root,0:ending',
+  'нефтепровод|нефт:root,е:root,провод:root,0:ending',
+  'газопровод|газ:root,о:root,провод:root,0:ending',
+  'водопровод|вод:root,о:root,провод:root,0:ending',
+  'мясорубка|мяс:root,о:root,руб:root,к:suffix,а:ending',
+  'кофемолка|коф:root,е:root,мол:root,к:suffix,а:ending',
+  'кофеварка|коф:root,е:root,вар:root,к:suffix,а:ending',
+  'пылесос|пыл:root,е:root,сос:root,0:ending',
+  'вездеход|везде:root,ход:root,0:ending',
+  'вездеходы|везде:root,ход:root,ы:ending',
+  'луноход|лун:root,о:root,ход:root,0:ending',
+  'марсоход|марс:root,о:root,ход:root,0:ending',
+  'теплоход|тепл:root,о:root,ход:root,0:ending',
+  'атомоход|атом:root,о:root,ход:root,0:ending',
+  'мореход|мор:root,е:root,ход:root,0:ending',
+  'скороход|скор:root,о:root,ход:root,0:ending',
+  'самосвал|сам:root,о:root,свал:root,0:ending',
+  'самокат|сам:root,о:root,кат:root,0:ending',
+  'самовар|сам:root,о:root,вар:root,0:ending',
+  'самолёты|сам:root,о:root,лёт:root,ы:ending',
+  'пароходы|пар:root,о:root,ход:root,ы:ending',
+  'пылесосы|пыл:root,е:root,сос:root,ы:ending',
+  'снегопады|снег:root,о:root,пад:root,ы:ending',
+  'листопады|лист:root,о:root,пад:root,ы:ending',
+  'водопады|вод:root,о:root,пад:root,ы:ending',
+  'сенокосы|сен:root,о:root,кос:root,ы:ending',
+  'птицеловы|птиц:root,е:root,лов:root,ы:ending',
+  'рыболовы|рыб:root,о:root,лов:root,ы:ending',
+  'садоводы|сад:root,о:root,вод:root,ы:ending',
+  'пчеловоды|пчел:root,о:root,вод:root,ы:ending',
+  'овощеводы|овощ:root,е:root,вод:root,ы:ending',
+  'хлеборобы|хлеб:root,о:root,роб:root,ы:ending',
+  'пешеход|пеш:root,е:root,ход:root,0:ending',
+  'пешеходы|пеш:root,е:root,ход:root,ы:ending',
+  'громоотвод|гром:root,о:root,отвод:root,0:ending',
+  'светофор|свет:root,о:root,фор:root,0:ending',
+  'молокозавод|молок:root,о:root,завод:root,0:ending',
+  'хлебозавод|хлеб:root,о:root,завод:root,0:ending',
+  'птицефабрика|птиц:root,е:root,фабрик:root,а:ending',
+  'фотоаппарат|фот:root,о:root,аппарат:root,0:ending',
+  'телефон|тел:root,е:root,фон:root,0:ending',
+  'телевизор|тел:root,е:root,визор:root,0:ending',
+  'телеграф|тел:root,е:root,граф:root,0:ending',
+  'телескоп|тел:root,е:root,скоп:root,0:ending',
+  'микрофон|микр:root,о:root,фон:root,0:ending',
+  'микроскоп|микр:root,о:root,скоп:root,0:ending',
+  'землетрясение|земл:root,е:root,тряс:root,ени:suffix,е:ending',
+  'водохранилище|вод:root,о:root,хран:root,илищ:suffix,е:ending',
+
+  /* ============================================================
+     -ОСТЬ / -ЕСТЬ / -ЕНИЕ / -АНИЕ / -ИЗМ / -ИСТ / -ЧИК / -ЩИК / -ТЕЛЬ
+     ============================================================ */
+  'радость|рад:root,ость:suffix,0:ending',
+  'молодость|молод:root,ость:suffix,0:ending',
+  'смелость|смел:root,ость:suffix,0:ending',
+  'нежность|нежн:root,ость:suffix,0:ending',
+  'точность|точн:root,ость:suffix,0:ending',
+  'прочность|прочн:root,ость:suffix,0:ending',
+  'жёсткость|жёстк:root,ость:suffix,0:ending',
+  'мягкость|мягк:root,ость:suffix,0:ending',
+  'лёгкость|лёгк:root,ость:suffix,0:ending',
+  'тяжесть|тяж:root,есть:suffix,0:ending',
+  'свежесть|свеж:root,есть:suffix,0:ending',
+  'текучесть|текуч:root,есть:suffix,0:ending',
+  'прыгучесть|прыгуч:root,есть:suffix,0:ending',
+  'летучесть|летуч:root,есть:suffix,0:ending',
+  'горячность|горяч:root,н:suffix,ость:suffix,0:ending',
+  'вежливость|вежлив:root,ость:suffix,0:ending',
+  'лживость|лжив:root,ость:suffix,0:ending',
+  'молчаливость|молчалив:root,ость:suffix,0:ending',
+  'терпеливость|терпелив:root,ость:suffix,0:ending',
+  'справедливость|справедлив:root,ость:suffix,0:ending',
+  'заботливость|заботлив:root,ость:suffix,0:ending',
+  'доверчивость|доверчив:root,ость:suffix,0:ending',
+  'правдивость|правдив:root,ость:suffix,0:ending',
+
+  'чтение|чт:root,ени:suffix,е:ending',
+  'пение|пе:root,ни:suffix,е:ending',
+  'мышление|мышл:root,ени:suffix,е:ending',
+  'решение|реш:root,ени:suffix,е:ending',
+  'движение|движ:root,ени:suffix,е:ending',
+  'мнение|мн:root,ени:suffix,е:ending',
+  'зрение|зр:root,ени:suffix,е:ending',
+  'умение|ум:root,ени:suffix,е:ending',
+  'строение|стро:root,ени:suffix,е:ending',
+  'хранение|хран:root,ени:suffix,е:ending',
+  'учение|уч:root,ени:suffix,е:ending',
+  'лечение|леч:root,ени:suffix,е:ending',
+  'значение|знач:root,ени:suffix,е:ending',
+  'изучение|из:prefix,уч:root,ени:suffix,е:ending',
+  'обучение|об:prefix,уч:root,ени:suffix,е:ending',
+  'получение|по:prefix,луч:root,ени:suffix,е:ending',
+  'приключение|при:prefix,ключ:root,ени:suffix,е:ending',
+  'изменение|из:prefix,мен:root,ени:suffix,е:ending',
+  'украшение|у:prefix,краш:root,ени:suffix,е:ending',
+  'удивление|у:prefix,дивл:root,ени:suffix,е:ending',
+  'наблюдение|на:prefix,блюд:root,ени:suffix,е:ending',
+  'расписание|рас:prefix,пис:root,ани:suffix,е:ending',
+  'расстояние|рас:prefix,сто:root,яни:suffix,е:ending',
+  'признание|при:prefix,зн:root,ани:suffix,е:ending',
+  'сознание|со:prefix,зн:root,ани:suffix,е:ending',
+  'познание|по:prefix,зн:root,ани:suffix,е:ending',
+  'указание|у:prefix,каз:root,ани:suffix,е:ending',
+  'наказание|на:prefix,каз:root,ани:suffix,е:ending',
+  'описание|о:prefix,пис:root,ани:suffix,е:ending',
+  'издание|из:prefix,д:root,ани:suffix,е:ending',
+  'создание|со:prefix,зд:root,ани:suffix,е:ending',
+  'желание|жел:root,ани:suffix,е:ending',
+  'внимание|вним:root,ани:suffix,е:ending',
+  'молчание|молч:root,ани:suffix,е:ending',
+  'обещание|обещ:root,ани:suffix,е:ending',
+  'прощание|прощ:root,ани:suffix,е:ending',
+  'здание|зд:root,ани:suffix,е:ending',
+
+  /* -ИСТ, -ЧИК, -ЩИК, -НИК, -ТЕЛЬ, -ИЗМ — м.р., нулевое окончание */
+  'танкист|танк:root,ист:suffix,0:ending',
+  'артист|арт:root,ист:suffix,0:ending',
+  'гитарист|гитар:root,ист:suffix,0:ending',
+  'пианист|пиан:root,ист:suffix,0:ending',
+  'машинист|машин:root,ист:suffix,0:ending',
+  'футболист|футбол:root,ист:suffix,0:ending',
+  'хоккеист|хокке:root,ист:suffix,0:ending',
+  'журналист|журнал:root,ист:suffix,0:ending',
+  'программист|программ:root,ист:suffix,0:ending',
+  'лётчик|лёт:root,чик:suffix,0:ending',
+  'грузчик|груз:root,чик:suffix,0:ending',
+  'кладовщик|кладов:root,щик:suffix,0:ending',
+  'часовщик|часов:root,щик:suffix,0:ending',
+  'каменщик|камен:root,щик:suffix,0:ending',
+  'банщик|бан:root,щик:suffix,0:ending',
+  'гонщик|гон:root,щик:suffix,0:ending',
+  'учитель|уч:root,и:suffix,тель:suffix,0:ending',
+  'воспитатель|вос:prefix,пит:root,а:suffix,тель:suffix,0:ending',
+  'писатель|пис:root,а:suffix,тель:suffix,0:ending',
+  'читатель|чит:root,а:suffix,тель:suffix,0:ending',
+  'мечтатель|мечт:root,а:suffix,тель:suffix,0:ending',
+  'строитель|стро:root,и:suffix,тель:suffix,0:ending',
+  'водитель|вод:root,и:suffix,тель:suffix,0:ending',
+  'создатель|со:prefix,зд:root,а:suffix,тель:suffix,0:ending',
+  'любитель|люб:root,и:suffix,тель:suffix,0:ending',
+  'мыслитель|мысл:root,и:suffix,тель:suffix,0:ending',
+  'двигатель|двиг:root,а:suffix,тель:suffix,0:ending',
+  'спасатель|с:prefix,пас:root,а:suffix,тель:suffix,0:ending',
+  'искатель|ис:prefix,к:root,а:suffix,тель:suffix,0:ending',
+  'идеализм|иде:root,ал:suffix,изм:suffix,0:ending',
+  'реализм|ре:root,ал:suffix,изм:suffix,0:ending',
+  'организм|орган:root,изм:suffix,0:ending',
+  'туризм|тур:root,изм:suffix,0:ending',
+
+  /* ============================================================
+     ПРИСТАВКИ НА -З/-С
+     ============================================================ */
+  'безоблачный|без:prefix,облач:root,н:suffix,ый:ending',
+  'бездомный|без:prefix,дом:root,н:suffix,ый:ending',
+  'безвредный|без:prefix,вред:root,н:suffix,ый:ending',
+  'безжалостный|без:prefix,жалост:root,н:suffix,ый:ending',
+  'беззвучный|без:prefix,звуч:root,н:suffix,ый:ending',
+  'безопасный|без:prefix,опас:root,н:suffix,ый:ending',
+  'безответный|без:prefix,ответ:root,н:suffix,ый:ending',
+  'безработный|без:prefix,работ:root,н:suffix,ый:ending',
+  'безумный|без:prefix,ум:root,н:suffix,ый:ending',
+  'бессмертный|бес:prefix,смерт:root,н:suffix,ый:ending',
+  'бесконечный|бес:prefix,конеч:root,н:suffix,ый:ending',
+  'бескорыстный|бес:prefix,корыст:root,н:suffix,ый:ending',
+  'беспокойный|бес:prefix,покой:root,н:suffix,ый:ending',
+  'бесполезный|бес:prefix,полез:root,н:suffix,ый:ending',
+  'беспощадный|бес:prefix,пощад:root,н:suffix,ый:ending',
+  'бесплатный|бес:prefix,плат:root,н:suffix,ый:ending',
+  'бессонный|бес:prefix,сон:root,н:suffix,ый:ending',
+  'бесславный|бес:prefix,слав:root,н:suffix,ый:ending',
+  'бессильный|бес:prefix,силь:root,н:suffix,ый:ending',
+  'бесстрашный|бес:prefix,страш:root,н:suffix,ый:ending',
+  'бесшумный|бес:prefix,шум:root,н:suffix,ый:ending',
+  'бесценный|бес:prefix,цен:root,н:suffix,ый:ending',
+  'бесчестный|бес:prefix,чест:root,н:suffix,ый:ending',
+  'известие|из:prefix,вест:root,и:suffix,е:ending',
+  'испытание|ис:prefix,пыт:root,ани:suffix,е:ending',
+  'исследование|ис:prefix,след:root,ов:root,ани:suffix,е:ending',
+  'расписка|рас:prefix,пис:root,к:suffix,а:ending',
+  'расписки|рас:prefix,пис:root,к:suffix,и:ending',
+  'растение|раст:root,ени:suffix,е:ending',
+  'восклицание|вос:prefix,клиц:root,ани:suffix,е:ending',
+  'воспитание|вос:prefix,пит:root,ани:suffix,е:ending',
+  'чрезмерный|чрез:prefix,мер:root,н:suffix,ый:ending',
+
+  /* --- Инфинитивы: -ть = формообразующий суффикс (не окончание) --- */
+  'избежать|из:prefix,беж:root,а:suffix,ть:suffix',
+  'исполнить|ис:prefix,полн:root,и:suffix,ть:suffix',
+  'разбить|раз:prefix,би:root,ть:suffix',
+  'взлететь|вз:prefix,лет:root,е:suffix,ть:suffix',
+  'вскипеть|вс:prefix,кип:root,е:suffix,ть:suffix',
+  'вскрикнуть|вс:prefix,крик:root,ну:suffix,ть:suffix',
+  'воскликнуть|вос:prefix,клик:root,ну:suffix,ть:suffix',
+];
+
+/* Разворачиваем компактный формат */
+const WORDS = RAW_WORDS.map(line => {
+  const [w, p] = line.split('|');
+  return { word: w, parts: p.split(',').map(chunk => {
+    const [text, type] = chunk.split(':');
+    return [text, type];
+  })};
+});
+
+/* ============================================================
+   УТИЛИТЫ
+   ============================================================ */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const LS_PROFILES = 'nx-morph-profiles-v4';
+const LS_CURRENT  = 'nx-morph-current-v4';
+const LS_THEME    = 'nx-theme';
+const LS_STUDENTS = 'nx-morph-students-v4';
+const LS_MODE     = 'nx-morph-mode-v4';
+const LS_STATS    = 'nx-morph-stats-v4';
+const LS_REMEMBER = 'nx-morph-remember-v4';
+
+const state = {
+  mode:'none', settings:null, variants:[],
+  correct:0, lastTotal:0,
+  timerStart:null, timerInterval:null, timerElapsed:0, timerRunning:false,
+  rememberMode:true, currentStudent:'',
+  dragWords:[], dragIdx:0, dragCorrect:0, dragStreak:0, dragTotal:0,
+};
+
+function shuffle(a){ const r=[...a]; for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];} return r; }
+function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+const escapeHtml = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function isNullEnding(part){ return part[0] === '0' && part[1] === 'ending'; }
+function displayText(part){ return isNullEnding(part) ? NULL_ENDING_MARK : part[0]; }
+
+let audioCtx = null;
+function beep(ok){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.type='sine'; o.frequency.value = ok?880:220; g.gain.value=0.05;
+    o.start(); setTimeout(()=>o.stop(), ok?120:220);
+  }catch(e){}
+}
+
+/* ============================================================
+   MODE
+   ============================================================ */
+function pickMode(m){
+  state.mode = m;
+  try{ localStorage.setItem(LS_MODE, m); localStorage.setItem(LS_REMEMBER, state.rememberMode?'1':'0'); }catch(e){}
+  applyMode();
+  if(m === 'trainer') generate();
+  else if(m === 'drag') generateDrag();
+}
+function applyMode(){
+  document.body.classList.remove('mode-trainer','mode-theory','mode-drag');
+  if(state.mode === 'trainer') document.body.classList.add('mode-trainer');
+  else if(state.mode === 'theory') document.body.classList.add('mode-theory');
+  else if(state.mode === 'drag') document.body.classList.add('mode-drag');
+  const b = $('#modeBadge');
+  if(b) b.textContent = state.mode === 'trainer' ? 'Разметь морфемы' : state.mode === 'drag' ? 'Расставь фигурки' : state.mode === 'theory' ? 'Справочник' : '—';
+  $('#theoryBlock').style.display = state.mode === 'theory' ? 'block' : 'none';
+  if(state.mode !== 'trainer') stopTimer();
+}
+function openModeChooser(){
+  document.body.classList.remove('mode-trainer','mode-theory','mode-drag');
+  const saved = localStorage.getItem(LS_REMEMBER);
+  state.rememberMode = saved !== '0';
+  updateRememberBtn();
+}
+function toggleRemember(){ state.rememberMode=!state.rememberMode; updateRememberBtn(); }
+function updateRememberBtn(){
+  const btn=$('#rememberBtn'), mark=$('#rememberMark');
+  if(!btn||!mark) return;
+  btn.classList.toggle('on', state.rememberMode);
+  mark.textContent = state.rememberMode ? '✓' : '';
+}
+
+/* ============================================================
+   STATS / ACH
+   ============================================================ */
+const ACH = [
+  { id:'first',    ico:'🎯', name:'Первый разбор',   check:s => s.sheets >= 1 },
+  { id:'ten',      ico:'📚', name:'10 разборов',     check:s => s.sheets >= 10 },
+  { id:'fifty',    ico:'✍️', name:'50 правильных',   check:s => s.totalCorrect >= 50 },
+  { id:'hundred',  ico:'💯', name:'100 правильных',  check:s => s.totalCorrect >= 100 },
+  { id:'perfect',  ico:'⭐', name:'Без ошибок',      check:s => s.perfectSheets >= 1 },
+  { id:'five_perf',ico:'🌟', name:'5 без ошибок',    check:s => s.perfectSheets >= 5 },
+  { id:'streak3',  ico:'🔥', name:'3 дня подряд',    check:s => s.streakBest >= 3 },
+  { id:'streak7',  ico:'🔥🔥', name:'7 дней подряд',  check:s => s.streakBest >= 7 },
+  { id:'lvl5',     ico:'🏅', name:'Уровень 5',       check:s => s.level >= 5 },
+];
+function loadStats(){
+  try{ return Object.assign({ sheets:0,totalCorrect:0,totalWrong:0,perfectSheets:0,level:1,xp:0,streak:0,streakBest:0,lastDay:'',achievements:[] }, JSON.parse(localStorage.getItem(LS_STATS)||'{}')); }
+  catch(e){ return { sheets:0,totalCorrect:0,totalWrong:0,perfectSheets:0,level:1,xp:0,streak:0,streakBest:0,lastDay:'',achievements:[] }; }
+}
+function saveStats(s){ try{ localStorage.setItem(LS_STATS, JSON.stringify(s)); }catch(e){} }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function updateStreak(s){
+  const t = todayStr(); if(s.lastDay===t) return;
+  const y = new Date(); y.setDate(y.getDate()-1);
+  const yd = y.toISOString().slice(0,10);
+  s.streak = s.lastDay===yd ? (s.streak||0)+1 : 1;
+  s.streakBest = Math.max(s.streakBest||0, s.streak);
+  s.lastDay = t;
+}
+function levelFromXp(xp){
+  let lvl=1, need=30, total=0;
+  while(xp >= total+need){ total+=need; lvl++; need=Math.round(need*1.4); }
+  return { level:lvl };
+}
+function recordStats(perfect){
+  const st = loadStats();
+  updateStreak(st);
+  st.sheets++;
+  st.totalCorrect += state.correct;
+  st.totalWrong += (state.lastTotal||0) - state.correct;
+  if(perfect) st.perfectSheets++;
+  st.xp += state.correct * 2 + (perfect ? 10 : 0);
+  st.level = levelFromXp(st.xp).level;
+  const unlocked = new Set(st.achievements||[]);
+  ACH.forEach(a => { if(!unlocked.has(a.id) && a.check(st)) unlocked.add(a.id); });
+  st.achievements = [...unlocked];
+  saveStats(st);
+  renderAchievements(st);
+  renderLevelAndStreak(st);
+}
+function renderAchievements(st){
+  const el = $('#achStrip'); if(!el) return;
+  const u = new Set(st.achievements||[]);
+  el.innerHTML = ACH.map(a => `<span class="ach${u.has(a.id)?'':' locked'}" title="${a.name}"><span class="ico">${a.ico}</span>${a.name}</span>`).join('');
+}
+function renderLevelAndStreak(st){
+  const l = $('#statLvl'); if(l) l.querySelector('b').textContent = `Ур. ${st.level}`;
+  const s = $('#statStreak'); if(s) s.querySelector('b').textContent = `${st.streak} 🔥`;
+}
+
+/* ============================================================
+   STUDENTS / HISTORY
+   ============================================================ */
+function loadStudents(){ try{ return JSON.parse(localStorage.getItem(LS_STUDENTS)||'{}'); }catch(e){ return {}; } }
+function saveStudents(s){ try{ localStorage.setItem(LS_STUDENTS, JSON.stringify(s)); }catch(e){} }
+function refreshStudentSelect(){
+  const sel = $('#studentSelect'); if(!sel) return;
+  const st = loadStudents();
+  const cur = state.currentStudent;
+  sel.innerHTML = '<option value="">— без имени —</option>' + Object.keys(st).map(k => `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`).join('');
+  if(cur && st[cur]) sel.value = cur;
+}
+function addStudent(){
+  const name = prompt('Имя ученика:'); if(!name) return;
+  const st = loadStudents();
+  if(st[name]){ alert('Такой уже есть'); return; }
+  st[name] = { attempts:[] }; saveStudents(st);
+  state.currentStudent = name; refreshStudentSelect();
+}
+function currentStudentData(){
+  if(!state.currentStudent) return null;
+  const st = loadStudents();
+  return st[state.currentStudent] || null;
+}
+function saveAttempt(data){
+  if(!state.currentStudent) return;
+  const st = loadStudents();
+  if(!st[state.currentStudent]) st[state.currentStudent] = { attempts:[] };
+  st[state.currentStudent].attempts.push(data);
+  saveStudents(st);
+}
+function openHistory(){
+  const modal = $('#histModal'), body = $('#histBody');
+  const data = currentStudentData();
+  $('#histTitle').textContent = data ? `История · ${state.currentStudent}` : 'История';
+  if(!data || !data.attempts.length){
+    body.innerHTML = '<p style="color:var(--text-dim);font-weight:700">Пока нет попыток.</p>';
+    modal.style.display = 'flex'; return;
+  }
+  let rows = '';
+  data.attempts.slice().reverse().slice(0,30).forEach(a => {
+    const d = new Date(a.date);
+    const date = d.toLocaleDateString('ru') + ' ' + d.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+    const t = a.time ? `${Math.floor(a.time/60)}:${String(a.time%60).padStart(2,'0')}` : '—';
+    rows += `<tr><td>${date}</td><td><b>${a.correct}/${a.total}</b></td><td>${t}</td></tr>`;
+  });
+  body.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr><th>Когда</th><th>Результат</th><th>Время</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  modal.style.display = 'flex';
+}
+function closeHistory(){ $('#histModal').style.display = 'none'; }
+
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+function readSettings(){
+  return {
+    morphemes: {
+      prefix: $('#m-prefix').checked, root: $('#m-root').checked,
+      suffix: $('#m-suffix').checked, ending: $('#m-ending').checked,
+    },
+    count: +$('#count').value, cols: +$('#cols').value,
+    title: $('#titleInput').value.trim() || 'Разбор слова по составу',
+    instr: $('#instrInput').value.trim(),
+    useTimer: $('#useTimer').checked, optName: $('#optName').checked,
+    showSteps: $('#showSteps').checked, fbProgress: $('#fbProgress').checked, fbSound: $('#fbSound').checked,
+    showHints: $('#showHints').checked,
+  };
+}
+function writeSettings(s){
+  const set = (id,v) => { const el = $('#'+id); if(!el) return; if(el.type==='checkbox') el.checked = !!v; else el.value = v; };
+  set('m-prefix', s.morphemes.prefix); set('m-root', s.morphemes.root);
+  set('m-suffix', s.morphemes.suffix); set('m-ending', s.morphemes.ending);
+  set('count', s.count); set('cols', s.cols);
+  set('titleInput', s.title); set('instrInput', s.instr);
+  set('useTimer', s.useTimer); set('optName', s.optName);
+  set('showSteps', s.showSteps); set('fbProgress', s.fbProgress); set('fbSound', s.fbSound);
+  set('showHints', s.showHints);
+  $('#countVal').textContent = s.count;
+  $('#colsVal').textContent = s.cols;
+}
+const DEFAULTS = () => ({
+  morphemes:{ prefix:false, root:true, suffix:true, ending:true },
+  count:8, cols:2, title:'Разбор слова по составу',
+  instr:'Выбери инструмент и отметь каждую часть слова. Нулевое окончание — тоже окончание.',
+  useTimer:true, optName:true, showSteps:true, fbProgress:true, fbSound:false, showHints:true,
+});
+const PRESETS = {
+  easy:  { morphemes:{ prefix:false, root:true, suffix:false, ending:true }, count:8,  cols:2 },
+  mid:   { morphemes:{ prefix:false, root:true, suffix:true,  ending:true }, count:8,  cols:2 },
+  hard:  { morphemes:{ prefix:true,  root:true, suffix:true,  ending:true }, count:10, cols:2 },
+  all:   { morphemes:{ prefix:true,  root:true, suffix:true,  ending:true }, count:12, cols:2 },
+  speed: { morphemes:{ prefix:true,  root:true, suffix:true,  ending:true }, count:16, cols:3 },
+};
+function applyPreset(name){
+  const s = Object.assign(DEFAULTS(), PRESETS[name] || {});
+  writeSettings(s);
+  $$('.presets button').forEach(b => b.classList.toggle('active', b.dataset.preset===name));
+  if(state.mode === 'trainer') generate();
+  else if(state.mode === 'drag') generateDrag();
+}
+function loadProfiles(){ try{ return JSON.parse(localStorage.getItem(LS_PROFILES)||'{}'); }catch(e){ return {}; } }
+function saveProfiles(p){ try{ localStorage.setItem(LS_PROFILES, JSON.stringify(p)); }catch(e){} }
+function refreshProfileSelect(){
+  const sel = $('#profileSelect'); if(!sel) return;
+  const p = loadProfiles();
+  sel.innerHTML = '<option value="">— выбери профиль —</option>' + Object.keys(p).map(k => `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`).join('');
+}
+function saveProfile(){
+  const name = ($('#profileName').value||'').trim();
+  if(!name){ alert('Введи название профиля'); return; }
+  const p = loadProfiles(); p[name] = readSettings(); saveProfiles(p);
+  refreshProfileSelect(); $('#profileSelect').value = name;
+}
+function loadProfile(){
+  const name = $('#profileSelect').value; if(!name) return;
+  const p = loadProfiles(); if(!p[name]) return;
+  writeSettings(Object.assign(DEFAULTS(), p[name]));
+  $('#profileName').value = name;
+  if(state.mode === 'trainer') generate();
+  else if(state.mode === 'drag') generateDrag();
+}
+function deleteProfile(){
+  const name = $('#profileSelect').value; if(!name) return;
+  if(!confirm(`Удалить профиль «${name}»?`)) return;
+  const p = loadProfiles(); delete p[name]; saveProfiles(p); refreshProfileSelect();
+}
+function exportSettings(){
+  const blob = new Blob([JSON.stringify(readSettings(), null, 2)], { type:'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'morph-settings.json'; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function importSettings(ev){
+  const f = ev.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = e => { try{ writeSettings(Object.assign(DEFAULTS(), JSON.parse(e.target.result))); generate(); } catch(err){ alert('Не удалось прочитать: '+err.message); } ev.target.value=''; };
+  r.readAsText(f);
+}
+function resetSettings(){ if(!confirm('Сбросить все настройки?')) return; writeSettings(DEFAULTS()); if(state.mode==='trainer') generate(); else if(state.mode==='drag') generateDrag(); }
+
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  const b = $('.theme-btn'); if(b) b.textContent = t==='dark' ? '☀️' : '🌙';
+  try{ localStorage.setItem(LS_THEME, t); }catch(e){}
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+}
+
+/* ============================================================
+   FILTER — нулевое окончание = окончание
+   ============================================================ */
+function filterWords(s){
+  const enabled = s.morphemes;
+  return WORDS.filter(w => {
+    const types = new Set(w.parts.map(p => p[1]));
+    // Если в слове есть нулевое окончание — оно требует включённого "окончание"
+    for(const t of types){ if(!enabled[t]) return false; }
+    if(!types.has('root')) return false;
+    return true;
+  });
+}
+
+/* ============================================================
+   GENERATE (TRAINER)
+   ============================================================ */
+function generate(){
+  state.settings = readSettings();
+  const s = state.settings;
+  let pool = filterWords(s);
+  if(!pool.length) pool = WORDS.filter(w => w.parts.every(p => p[1]==='root' || p[1]==='ending'));
+  const picked = [];
+  const used = new Set();
+  let guard = 0;
+  while(picked.length < s.count && guard < s.count*200){
+    guard++;
+    const w = pool[randInt(0, pool.length-1)];
+    if(used.has(w.word)) continue;
+    used.add(w.word);
+    picked.push(w);
+  }
+  state.variants = [picked];
+  state.correct = 0;
+  resetTimer();
+  renderSheet();
+  updateScoreUI(0, countTotalParts());
+  updateProgress(0, countTotalParts());
+}
+function countTotalParts(){
+  return state.variants.reduce((acc, list) => acc + list.reduce((a,w)=>a + w.parts.length, 0), 0);
+}
+function renderSheet(){
+  const s = state.settings;
+  const cont = $('#sheetsContainer');
+  cont.innerHTML = '';
+  if(!state.variants.length || !state.variants[0].length){
+    cont.innerHTML = '<div class="sheet"><div style="padding:40px;text-align:center;color:var(--text-dim);font-weight:700">Нет слов под выбранные правила. Включи корень и хотя бы одно другое.</div></div>';
+    return;
+  }
+  const sheet = document.createElement('div');
+  sheet.className = 'sheet';
+  sheet.innerHTML = `
+    <div class="sheet-head">
+      <h1 class="sheet-title">${escapeHtml(s.title)}</h1>
+      <div class="sheet-fields" style="${s.optName?'':'display:none'}">
+        <span>Имя: <i></i></span><span>Дата: <i></i></span>
+      </div>
+      <p class="sheet-instruction" style="${s.instr?'':'display:none'}">${escapeHtml(s.instr)}</p>
+    </div>`;
+  const grid = document.createElement('div');
+  grid.className = 'problems-grid';
+  grid.style.setProperty('--cols', s.cols);
+  state.variants[0].forEach((w, i) => grid.appendChild(renderProblem(w, i)));
+  sheet.appendChild(grid);
+  cont.appendChild(sheet);
+}
+function renderProblem(w, idx){
+  const s = state.settings;
+  const card = document.createElement('div');
+  card.className = 'problem';
+  card.dataset.idx = idx;
+  const stepBtn = s.showSteps ? `<button class="step-btn" onclick="openSteps(${idx})" title="Как разобрать">💡</button>` : '';
+  let wordHTML = '';
+  w.parts.forEach((p, i) => {
+    const isNull = isNullEnding(p);
+    const text = displayText(p);
+    const cls = 'morph' + (isNull ? ' null-ending' : '');
+    wordHTML += `<span class="${cls}" data-i="${i}" data-type="${p[1]}" data-null="${isNull?'1':'0'}">${escapeHtml(text)}</span>`;
+  });
+  let toolsHTML = '';
+  MORPH_ORDER.forEach(k => {
+    if(!s.morphemes[k]) return;
+    const info = MORPH[k];
+    toolsHTML += `<button class="tool" data-tool="${k}"><span class="swatch" style="background:${info.color}"></span><span>${info.short}</span></button>`;
+  });
+  card.innerHTML = `
+    <div class="num">${idx+1}</div>${stepBtn}
+    <div class="word-row">${wordHTML}</div>
+    <div class="tools">${toolsHTML}</div>
+    <div class="mark"></div>`;
+  let activeTool = null;
+  const morphes = card.querySelectorAll('.morph');
+  const tools = card.querySelectorAll('.tool');
+  tools.forEach(t => {
+    t.onclick = () => {
+      if(card.classList.contains('correct')) return;
+      const key = t.dataset.tool;
+      if(activeTool === key){ activeTool = null; t.classList.remove('active'); t.style.background=''; return; }
+      activeTool = key;
+      tools.forEach(x => { x.classList.remove('active'); x.style.background=''; });
+      t.classList.add('active'); t.style.background = MORPH[key].color;
+      if(s.fbSound) beep(true);
+    };
+  });
+  morphes.forEach(m => {
+    m.onclick = () => {
+      if(m.classList.contains('done') || card.classList.contains('correct')) return;
+      if(!activeTool){ m.classList.add('wrong-anim'); setTimeout(()=>m.classList.remove('wrong-anim'),400); return; }
+      const correctType = m.dataset.type;
+      if(activeTool === correctType){
+        const info = MORPH[correctType];
+        const isNull = m.dataset.null === '1';
+        m.classList.add('done');
+        m.style.background = info.color; m.style.borderColor = info.color; m.style.color = '#fff';
+        const tag = document.createElement('span');
+        tag.className = 'tag';
+        tag.textContent = isNull ? 'нулевое' : info.name;
+        tag.style.color = info.color;
+        m.appendChild(tag);
+        if(s.fbSound) beep(true);
+        activeTool = null; tools.forEach(x => { x.classList.remove('active'); x.style.background=''; });
+        if([...morphes].every(x => x.classList.contains('done'))) markCard(card, true);
+      } else {
+        m.classList.add('wrong-anim'); setTimeout(()=>m.classList.remove('wrong-anim'),400);
+        if(s.fbSound) beep(false);
+      }
+    };
+  });
+  return card;
+}
+function markCard(card, ok){
+  card.classList.toggle('correct', ok);
+  card.classList.toggle('wrong', !ok);
+  const m = card.querySelector('.mark');
+  if(m){ m.textContent = ok ? '✓' : '✗'; m.className = 'mark ' + (ok ? 'good' : 'bad'); }
+}
+function checkAnswers(){
+  let correct = 0, total = 0;
+  state.variants[0].forEach((w, i) => {
+    const card = document.querySelector(`.problem[data-idx="${i}"]`);
+    if(!card) return;
+    total++;
+    const morphes = card.querySelectorAll('.morph');
+    const allDone = [...morphes].every(x => x.classList.contains('done'));
+    const ok = allDone;
+    markCard(card, ok);
+    if(ok){ correct++; card.classList.add('pulse'); setTimeout(()=>card.classList.remove('pulse'),400); }
+  });
+  state.correct = correct; state.lastTotal = total;
+  updateScoreUI(correct, total);
+  updateProgress(correct, total);
+  const perfect = total > 0 && correct === total;
+  recordStats(perfect);
+  if(perfect) stopTimer();
+  if(state.currentStudent){ saveAttempt({ date:Date.now(), correct, total, time: Math.round(state.timerElapsed/1000) }); }
+}
+function showAllAnswers(){
+  state.variants[0].forEach((w, i) => {
+    const card = document.querySelector(`.problem[data-idx="${i}"]`);
+    if(!card) return;
+    card.querySelectorAll('.morph').forEach(m => {
+      if(m.classList.contains('done')) return;
+      const type = m.dataset.type;
+      const info = MORPH[type];
+      const isNull = m.dataset.null === '1';
+      m.classList.add('done');
+      m.style.background = info.color; m.style.borderColor = info.color; m.style.color = '#fff';
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.textContent = isNull ? 'нулевое' : info.name;
+      tag.style.color = info.color;
+      m.appendChild(tag);
+    });
+    markCard(card, true);
+  });
+}
+function resetAllInputs(){
+  state.variants[0].forEach((w, i) => {
+    const card = document.querySelector(`.problem[data-idx="${i}"]`);
+    if(!card) return;
+    card.querySelectorAll('.morph').forEach(m => {
+      m.classList.remove('done');
+      m.style.background = ''; m.style.borderColor = ''; m.style.color = '';
+      m.querySelectorAll('.tag').forEach(t => t.remove());
+    });
+    card.querySelectorAll('.tool').forEach(t => { t.classList.remove('active'); t.style.background=''; });
+    markCard(card, false);
+    card.classList.remove('correct','wrong');
+    const mk = card.querySelector('.mark'); if(mk){ mk.textContent=''; mk.className='mark'; }
+  });
+  state.correct = 0;
+  resetTimer();
+  updateScoreUI(0, countTotalParts());
+  updateProgress(0, countTotalParts());
+}
+function openSteps(idx){
+  const w = state.variants[0][idx]; if(!w) return;
+  const body = $('#stepBody');
+  const word = w.word;
+  const lines = [];
+  lines.push(`Слово: ${word}`);
+  const endingParts = w.parts.filter(p => p[1]==='ending');
+  if(endingParts.length){
+    const nullEnd = endingParts.find(isNullEnding);
+    if(nullEnd) lines.push(`1. Окончание — нулевое □ (слово не изменяется или изменяется только основа).`);
+    else lines.push(`1. Окончание — изменяемая часть: «${endingParts.map(p=>p[0]).join('')}».`);
+  } else lines.push(`1. Окончания нет.`);
+  const roots = w.parts.filter(p => p[1]==='root');
+  lines.push(`2. Корень(и) — родственные слова: ${roots.map(r=>`«${r[0]}»`).join(', ')}.`);
+  const prefixPart = w.parts.find(p => p[1]==='prefix');
+  if(prefixPart) lines.push(`3. Приставка перед корнем: «${prefixPart[0]}».`);
+  else lines.push(`3. Приставки нет.`);
+  const suffixParts = w.parts.filter(p => p[1]==='suffix');
+  if(suffixParts.length) lines.push(`4. Суффикс(ы): ${suffixParts.map(p=>`«${p[0]}»`).join(', ')}.`);
+  else lines.push(`4. Суффиксов нет.`);
+  const breakdown = w.parts.map(p => isNullEnding(p) ? `«□» — нулевое окончание` : `«${p[0]}» — ${MORPH[p[1]].name.toLowerCase()}`).join(' · ');
+  let html = `<div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--blue);padding:8px 10px;background:var(--blue-pale);border-radius:8px;margin-bottom:12px">${escapeHtml(word)}</div>`;
+  lines.forEach((l, i) => { html += `<div style="padding:6px 10px;border-bottom:1px dashed var(--border)"><span style="color:var(--orange);font-weight:800;margin-right:8px">${i+1}.</span>${escapeHtml(l)}</div>`; });
+  html += `<div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--orange);padding:10px 12px;background:#FFF4E5;border-radius:10px;margin-top:14px">${escapeHtml(breakdown)}</div>`;
+  body.innerHTML = html;
+  $('#stepModal').style.display = 'flex';
+}
+function closeSteps(){ $('#stepModal').style.display = 'none'; }
+
+/* ============================================================
+   DRAG MODE
+   ============================================================ */
+function generateDrag(){
+  state.settings = readSettings();
+  const s = state.settings;
+  let pool = filterWords(s);
+  if(!pool.length) pool = WORDS.filter(w => w.parts.every(p => p[1]==='root' || p[1]==='ending'));
+  state.dragWords = shuffle(pool).slice(0, 10);
+  state.dragIdx = 0;
+  state.dragCorrect = 0;
+  state.dragStreak = 0;
+  state.dragTotal = state.dragWords.length;
+  renderDragCard();
+}
+function renderDragCard(){
+  const cont = $('#dragContainer');
+  cont.innerHTML = '';
+  if(state.dragIdx >= state.dragWords.length){
+    cont.innerHTML = `
+      <div class="sheet">
+        <div style="text-align:center;padding:30px">
+          <div style="font-size:64px">🏆</div>
+          <h2 style="font-family:Fredoka,sans-serif;color:var(--blue);font-size:26px;margin:12px 0">Все 10 слов пройдены!</h2>
+          <p style="color:var(--text-dim);font-weight:700">Правильно: ${state.dragCorrect} из ${state.dragTotal}</p>
+          <button style="margin-top:20px;padding:14px 32px;border:none;border-radius:14px;background:var(--orange);color:#fff;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 var(--orange-dark)" onclick="generateDrag()">🎲 Ещё раз</button>
+        </div>
+      </div>`;
+    return;
+  }
+  const w = state.dragWords[state.dragIdx];
+  const s = state.settings;
+  const sheet = document.createElement('div');
+  sheet.className = 'sheet';
+  sheet.innerHTML = `
+    <div class="sheet-head">
+      <h1 class="sheet-title">Расставь морфемы по местам</h1>
+      <div style="font-family:var(--mono);font-size:22px;color:var(--text-dim);font-weight:700;margin-bottom:6px">${state.dragIdx + 1} / ${state.dragTotal}</div>
+      <p class="sheet-instruction">Слово рассыпалось. Перетащи фигурки в пустые слоты в правильном порядке. Нулевое окончание — квадратик □.</p>
+    </div>
+    <div class="drag-hint">Слово: <b>${escapeHtml(w.word)}</b></div>
+    <div class="drag-word" id="dragWord"></div>
+    <div class="chips-pool" id="chipsPool"></div>
+    <div class="drag-controls">
+      <button style="padding:12px 24px;border:none;border-radius:12px;background:var(--orange);color:#fff;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 var(--orange-dark)" onclick="checkDrag()">✓ Проверить</button>
+      <button style="padding:12px 24px;border:2px solid var(--border);border-radius:12px;background:#fff;color:var(--blue);font-family:inherit;font-size:14px;font-weight:800;cursor:pointer" onclick="nextDrag()">→ Дальше</button>
+      <button style="padding:12px 24px;border:2px solid var(--border);border-radius:12px;background:#fff;color:var(--blue);font-family:inherit;font-size:14px;font-weight:800;cursor:pointer" onclick="showDragAnswer()">💡 Ответ</button>
+    </div>
+    <div style="text-align:center;margin-top:14px;font-weight:800" id="dragFeedback"></div>
+  `;
+  cont.appendChild(sheet);
+
+  const wordEl = sheet.querySelector('#dragWord');
+  const poolEl = sheet.querySelector('#chipsPool');
+
+  w.parts.forEach((p, i) => {
+    const slot = document.createElement('div');
+    slot.className = 'slot empty';
+    slot.dataset.pos = i;
+    slot.dataset.expected = p[1];
+    if(s.showHints) slot.dataset.hint = isNullEnding(p) ? '□' : MORPH[p[1]].short;
+    wordEl.appendChild(slot);
+  });
+
+  const chips = shuffle(w.parts.map((p, i) => ({ part: p, origIdx: i })));
+  chips.forEach((c, i) => {
+    const chip = document.createElement('div');
+    const isNull = isNullEnding(c.part);
+    chip.className = 'chip' + (isNull ? ' null-ending' : '');
+    chip.dataset.origIdx = c.origIdx;
+    chip.dataset.type = c.part[1];
+    chip.dataset.chipId = i;
+    chip.textContent = isNull ? NULL_ENDING_MARK : c.part[0];
+    chip.draggable = true;
+    poolEl.appendChild(chip);
+  });
+
+  let selectedChip = null;
+  const slots = wordEl.querySelectorAll('.slot');
+  const chipEls = poolEl.querySelectorAll('.chip');
+
+  chipEls.forEach(ch => {
+    ch.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', ch.dataset.chipId);
+      ch.classList.add('dragging');
+    });
+    ch.addEventListener('dragend', () => ch.classList.remove('dragging'));
+    ch.addEventListener('click', () => {
+      if(ch.classList.contains('used')) return;
+      chipEls.forEach(x => x.classList.remove('selected'));
+      if(selectedChip === ch){ selectedChip = null; return; }
+      selectedChip = ch;
+      ch.classList.add('selected');
+    });
+  });
+
+  slots.forEach(slot => {
+    slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('over'); });
+    slot.addEventListener('dragleave', () => slot.classList.remove('over'));
+    slot.addEventListener('drop', e => {
+      e.preventDefault();
+      slot.classList.remove('over');
+      const id = e.dataTransfer.getData('text/plain');
+      const chip = poolEl.querySelector(`.chip[data-chip-id="${id}"]`);
+      if(!chip) return;
+      placeChip(chip, slot);
+    });
+    slot.addEventListener('click', () => {
+      if(slot.classList.contains('filled')){
+        const chipId = slot.dataset.chipId;
+        const chip = poolEl.querySelector(`.chip[data-chip-id="${chipId}"]`);
+        if(chip){ chip.classList.remove('used'); chip.classList.remove('selected'); }
+        slot.classList.remove('filled','correct','wrong');
+        slot.innerHTML = '';
+        slot.dataset.chipId = '';
+        if(s.showHints) slot.dataset.hint = slot.dataset.expected === 'ending' && slot.dataset.isNull === '1' ? '□' : MORPH[slot.dataset.expected].short;
+        slot.classList.add('empty');
+        return;
+      }
+      if(!selectedChip) return;
+      placeChip(selectedChip, slot);
+    });
+  });
+
+  function placeChip(chip, slot){
+    if(chip.classList.contains('used')) return;
+    if(slot.classList.contains('filled')) return;
+    chipEls.forEach(x => x.classList.remove('selected'));
+    selectedChip = null;
+    chip.classList.add('used');
+    slot.classList.add('filled');
+    slot.classList.remove('empty');
+    slot.dataset.chipId = chip.dataset.chipId;
+    slot.dataset.isNull = chip.classList.contains('null-ending') ? '1' : '0';
+    const info = MORPH[chip.dataset.type];
+    const isNull = chip.classList.contains('null-ending');
+    slot.innerHTML = `${escapeHtml(chip.textContent)}<span class="slot-tag" style="color:${info.color}">${isNull ? 'нулевое' : info.name}</span>`;
+    if(s.fbSound) beep(true);
+  }
+}
+function checkDrag(){
+  const w = state.dragWords[state.dragIdx]; if(!w) return;
+  const slots = document.querySelectorAll('#dragWord .slot');
+  let allOk = true;
+  slots.forEach((slot, i) => {
+    const expectedPart = w.parts[i];
+    const expectedType = expectedPart[1];
+    const expectedIsNull = isNullEnding(expectedPart);
+    const chipId = slot.dataset.chipId;
+    if(!chipId){ allOk = false; slot.classList.add('wrong'); return; }
+    const chip = document.querySelector(`.chip[data-chip-id="${chipId}"]`);
+    if(!chip){ allOk = false; slot.classList.add('wrong'); return; }
+    // Проверяем, что фигурка из правильной позиции И тип совпадает
+    const origIdx = +chip.dataset.origIdx;
+    const chipIsNull = chip.classList.contains('null-ending');
+    const okPos = origIdx === i;
+    const okType = chip.dataset.type === expectedType && chipIsNull === expectedIsNull;
+    if(okPos && okType){ slot.classList.add('correct'); slot.classList.remove('wrong'); }
+    else { slot.classList.add('wrong'); slot.classList.remove('correct'); allOk = false; }
+  });
+  const fb = document.querySelector('#dragFeedback');
+  if(allOk){
+    state.dragCorrect++;
+    state.dragStreak++;
+    if(fb){ fb.innerHTML = '✅ Верно!'; fb.style.color = 'var(--good)'; }
+    if(state.settings.fbSound) beep(true);
+    setTimeout(() => nextDrag(), 900);
+  } else {
+    state.dragStreak = 0;
+    if(fb){ fb.innerHTML = '❌ Есть ошибки. Попробуй ещё или посмотри ответ.'; fb.style.color = 'var(--bad)'; }
+    if(state.settings.fbSound) beep(false);
+  }
+  updateDragStats();
+}
+function nextDrag(){ state.dragIdx++; renderDragCard(); updateDragStats(); }
+function showDragAnswer(){
+  const w = state.dragWords[state.dragIdx]; if(!w) return;
+  const slots = document.querySelectorAll('#dragWord .slot');
+  slots.forEach((slot, i) => {
+    const expected = w.parts[i];
+    const chipId = slot.dataset.chipId;
+    if(chipId){
+      const chip = document.querySelector(`.chip[data-chip-id="${chipId}"]`);
+      if(chip){ chip.classList.remove('used'); chip.classList.remove('selected'); }
+    }
+    slot.innerHTML = '';
+    slot.dataset.chipId = '';
+    slot.classList.add('filled','correct');
+    slot.classList.remove('empty','wrong');
+    const info = MORPH[expected[1]];
+    const isNull = isNullEnding(expected);
+    slot.innerHTML = `${escapeHtml(displayText(expected))}<span class="slot-tag" style="color:${info.color}">${isNull ? 'нулевое' : info.name}</span>`;
+  });
+}
+function resetDrag(){ renderDragCard(); }
+function updateDragStats(){
+  const a = document.querySelector('#dragStatScore b');
+  if(a) a.textContent = `${state.dragCorrect} / ${state.dragTotal}`;
+  const b = document.querySelector('#dragStatStreak b');
+  if(b) b.textContent = `Серия: ${state.dragStreak}`;
+}
+
+/* ============================================================
+   TIMER / SCORE
+   ============================================================ */
+function startTimerIfNeeded(){
+  if(!state.settings?.useTimer || state.timerRunning) return;
+  if(state.mode !== 'trainer') return;
+  startTimer();
+}
+function startTimer(){
+  stopTimer();
+  state.timerStart = Date.now() - state.timerElapsed;
+  state.timerRunning = true;
+  state.timerInterval = setInterval(() => {
+    state.timerElapsed = Date.now() - state.timerStart;
+    updateTimerDisplay();
+  }, 100);
+}
+function stopTimer(){ if(state.timerInterval) clearInterval(state.timerInterval); state.timerInterval=null; state.timerRunning=false; }
+function resetTimer(){ stopTimer(); state.timerElapsed=0; state.timerStart=null; updateTimerDisplay(); }
+function updateTimerDisplay(){
+  const el = $('#statTimer'); if(!el) return;
+  if(!state.settings?.useTimer || state.mode !== 'trainer'){ el.classList.add('hidden'); return; }
+  el.classList.remove('hidden');
+  const t = Math.floor(state.timerElapsed/1000);
+  el.querySelector('b').textContent = `${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;
+}
+function updateScoreUI(correct, total){
+  const el = $('#statScore'); if(el) el.querySelector('b').textContent = `${correct} / ${total}`;
+}
+function updateProgress(correct, total){
+  const wrap = $('#progressWrap'); if(!wrap) return;
+  if(!state.settings?.fbProgress || state.mode !== 'trainer'){ wrap.classList.remove('on'); return; }
+  wrap.classList.add('on');
+  $('#progressFill').style.width = (total > 0 ? (correct/total)*100 : 0) + '%';
+}
+function togglePanel(){ $('#panel').classList.toggle('hidden'); }
+function goBack(){ location.href = 'index.html'; }
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(function init(){
+  applyTheme(localStorage.getItem(LS_THEME) || 'light');
+  let s = DEFAULTS();
+  try{
+    const cur = JSON.parse(localStorage.getItem(LS_CURRENT) || 'null');
+    if(cur && cur.morphemes) s = Object.assign(DEFAULTS(), cur);
+  }catch(e){}
+  writeSettings(s);
+  document.addEventListener('change', () => {
+    try{ localStorage.setItem(LS_CURRENT, JSON.stringify(readSettings())); }catch(e){}
+  });
+  refreshProfileSelect();
+  refreshStudentSelect();
+  const st = loadStats();
+  renderAchievements(st);
+  renderLevelAndStreak(st);
+
+  const savedRemember = localStorage.getItem(LS_REMEMBER);
+  const savedMode = localStorage.getItem(LS_MODE);
+  if(savedMode && savedRemember !== '0'){
+    state.mode = savedMode;
+    applyMode();
+    if(state.mode === 'trainer') generate();
+    else if(state.mode === 'drag') generateDrag();
+  } else {
+    state.rememberMode = savedRemember !== '0';
+    updateRememberBtn();
+  }
+
+  const $c = $('#count');
+  if($c){ $c.addEventListener('input', e => { $('#countVal').textContent = e.target.value; }); $c.addEventListener('change', () => state.mode === 'trainer' ? generate() : generateDrag()); }
+  const $col = $('#cols');
+  if($col) $col.addEventListener('input', e => { $('#colsVal').textContent = e.target.value; document.querySelectorAll('.problems-grid').forEach(g => g.style.setProperty('--cols', e.target.value)); });
+
+  ['m-prefix','m-root','m-suffix','m-ending'].forEach(id => {
+    const el = $('#'+id); if(el) el.addEventListener('change', () => state.mode === 'trainer' ? generate() : generateDrag());
+  });
+  ['useTimer','optName','showSteps','fbProgress','fbSound','showHints'].forEach(id => {
+    const el = $('#'+id); if(!el) return;
+    el.addEventListener('change', () => {
+      const s = readSettings();
+      if(id === 'useTimer' && !s.useTimer) resetTimer();
+      updateTimerDisplay();
+      const f = document.querySelector('.sheet-fields'); if(f) f.style.display = s.optName ? '' : 'none';
+      if(id === 'showSteps') document.querySelectorAll('.problem').forEach(card => {
+        const b = card.querySelector('.step-btn'); if(b) b.style.display = s.showSteps ? 'flex' : 'none';
+      });
+    });
+  });
+  ['titleInput','instrInput'].forEach(id => {
+    const el = $('#'+id); if(!el) return;
+    el.addEventListener('input', () => {
+      const s = readSettings();
+      const t = document.querySelector('.sheet-title'); if(t) t.textContent = s.title;
+      const ins = document.querySelector('.sheet-instruction');
+      if(ins){ ins.textContent = s.instr; ins.style.display = s.instr ? '' : 'none'; }
+    });
+  });
+  $$('.presets button').forEach(b => b.addEventListener('click', () => applyPreset(b.dataset.preset)));
+  const sel = $('#studentSelect');
+  if(sel) sel.addEventListener('change', e => { state.currentStudent = e.target.value; });
+
+  document.addEventListener('keydown', e => {
+    if(state.mode === 'trainer' && e.ctrlKey && e.key === 'Enter'){ e.preventDefault(); checkAnswers(); }
+    if(state.mode === 'trainer' && e.shiftKey && e.key === 'Enter'){ e.preventDefault(); generate(); }
+    if(state.mode === 'drag' && e.ctrlKey && e.key === 'Enter'){ e.preventDefault(); checkDrag(); }
+    if(state.mode === 'drag' && e.key === 'ArrowRight'){ nextDrag(); }
+    if(e.key === 'Escape'){ closeHistory(); closeSteps(); }
+  });
+  ['histModal','stepModal'].forEach(id => {
+    const el = $('#'+id);
+    if(el) el.addEventListener('click', e => { if(e.target.id === id) el.style.display = 'none'; });
+  });
+  document.addEventListener('click', () => { if(state.mode === 'trainer') startTimerIfNeeded(); }, { once: true });
+})();
+</script>
+
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

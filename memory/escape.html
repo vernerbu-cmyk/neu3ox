@@ -1,0 +1,1903 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Мнемо-Арена</title>
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  <style>
+    :root {
+      --blue: #2D6CDF;
+      --blue-dark: #1E4FA8;
+      --blue-light: #EBF2FF;
+      --orange: #FF8C42;
+      --orange-dark: #E86E1F;
+      --orange-light: #FFF2E5;
+      --bg: #F7F9FC;
+      --surface: #ffffff;
+      --text: #1F2937;
+      --text-muted: #6B7280;
+      --border: #E5EAF2;
+      --green: #22C55E;
+      --red: #EF4444;
+      --yellow: #F59E0B;
+      --purple: #A855F7;
+      --purple-light: #F5EDFF;
+      --green-tint: #DCFCE7;
+      --red-tint: #FEE2E2;
+      --tint-soft: rgba(45, 108, 223, .05);
+      --shadow-sm: 0 4px 16px rgba(45, 108, 223, .06);
+      --shadow-md: 0 8px 24px rgba(45, 108, 223, .06);
+      --shadow-orange: 0 8px 20px rgba(255, 140, 66, .3);
+      --shadow-orange-hover: 0 12px 28px rgba(255, 140, 66, .4);
+      --shadow-score: 0 4px 12px rgba(255, 140, 66, .3);
+    }
+
+    [data-theme="dark"] {
+      --blue: #5B9BFF;
+      --blue-dark: #A8C5FF;
+      --blue-light: #1B2A44;
+      --orange: #FF8C42;
+      --orange-dark: #FFA563;
+      --orange-light: #2E1F12;
+      --bg: #0F1520;
+      --surface: #182130;
+      --text: #E7ECF3;
+      --text-muted: #8B98AC;
+      --border: #2A3444;
+      --green: #34D399;
+      --red: #F87171;
+      --yellow: #FBBF24;
+      --purple: #C084FC;
+      --purple-light: #2B1F3D;
+      --green-tint: #14311F;
+      --red-tint: #3B1A1E;
+      --tint-soft: rgba(91, 155, 255, .08);
+      --shadow-sm: 0 4px 16px rgba(0, 0, 0, .35);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, .4);
+      --shadow-orange: 0 8px 20px rgba(255, 140, 66, .25);
+      --shadow-orange-hover: 0 12px 28px rgba(255, 140, 66, .35);
+      --shadow-score: 0 4px 12px rgba(255, 140, 66, .25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, 'Segoe UI', Roboto, 'Nunito Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      color: var(--text);
+      padding: 16px;
+      overflow-x: hidden;
+      transition: background-color .22s ease, color .22s ease;
+    }
+
+    .container { max-width: 800px; margin: 0 auto; }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 16px 22px;
+      background: var(--surface);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .back-btn,
+    .theme-btn {
+      width: 46px;
+      height: 46px;
+      border: none;
+      border-radius: 14px;
+      background: var(--blue-light);
+      color: var(--blue);
+      font-size: 22px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .18s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .back-btn:hover,
+    .theme-btn:hover {
+      background: var(--blue);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .theme-btn svg { width: 22px; height: 22px; display: block; }
+    .theme-btn .icon-moon { display: none; }
+    [data-theme="dark"] .theme-btn .icon-sun { display: none; }
+    [data-theme="dark"] .theme-btn .icon-moon { display: block; }
+
+    h1 {
+      font-size: 20px;
+      letter-spacing: .5px;
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .score-bar {
+      background: var(--orange);
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: var(--shadow-score);
+      white-space: nowrap;
+    }
+
+    .score-bar span { color: #fff; font-weight: 800; font-size: 17px; }
+
+    main { min-height: 520px; }
+
+    .game-header { text-align: center; margin-bottom: 20px; }
+
+    .game-header h2 {
+      font-size: 22px;
+      margin-bottom: 6px;
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .subtitle { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+
+    .status {
+      text-align: center;
+      font-size: 16px;
+      margin: 16px 0;
+      min-height: 26px;
+      font-weight: 700;
+      color: var(--text);
+      transition: .3s;
+    }
+
+    .status.good { color: var(--green); }
+    .status.bad { color: var(--red); }
+    .status.warn { color: var(--orange-dark); }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 26px;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* === Меню режимов === */
+    .mode-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    @media (min-width: 560px) {
+      .mode-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .mode-card {
+      display: block;
+      padding: 20px;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 18px;
+      text-align: left;
+      cursor: pointer;
+      transition: .18s;
+      font-family: inherit;
+      color: var(--text);
+      position: relative;
+    }
+
+    .mode-card:hover {
+      border-color: var(--orange);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .mode-card .ico {
+      font-size: 34px;
+      margin-bottom: 10px;
+      line-height: 1;
+    }
+
+    .mode-card .name {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--blue-dark);
+      margin-bottom: 4px;
+    }
+
+    .mode-card .desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .mode-card .rec {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 4px 10px;
+      background: var(--blue-light);
+      color: var(--blue-dark);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* === Пресеты (общие) === */
+    .presets {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .preset-btn {
+      flex: 1 1 auto;
+      min-width: 90px;
+      padding: 10px 8px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      color: var(--blue-dark);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: .18s;
+      font-family: inherit;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--orange);
+      color: var(--orange-dark);
+      transform: translateY(-1px);
+    }
+
+    .preset-btn.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+
+    .segment {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .segment-btn {
+      flex: 1 1 auto;
+      padding: 12px 10px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      color: var(--blue-dark);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: .18s;
+      font-family: inherit;
+      line-height: 1.25;
+      min-width: 100px;
+    }
+
+    .segment-btn:hover { border-color: var(--orange); }
+
+    .segment-btn.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+
+    .segment-btn small {
+      display: block;
+      font-size: 10px;
+      opacity: .7;
+      font-weight: 600;
+      margin-top: 3px;
+    }
+
+    .segment-btn.active small { opacity: .9; }
+
+    .slider-disabled { opacity: .35; pointer-events: none; }
+
+    .scene {
+      display: grid;
+      gap: 12px;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .scene-item {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(145deg, var(--orange-light), var(--purple-light));
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      animation: popIn .35s cubic-bezier(.34, 1.56, .64, 1) backwards;
+      padding: 6px;
+    }
+
+    .scene-item .emoji { font-size: 40px; line-height: 1; }
+    .scene-item .digit {
+      font-size: 22px;
+      color: var(--blue-dark);
+      font-weight: 800;
+      margin-top: -2px;
+    }
+
+    .scene-item.plain { background: var(--surface); }
+    .scene-item.plain .emoji { font-size: 46px; }
+
+    @keyframes popIn {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .timer-bar {
+      position: relative;
+      height: 10px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: linear-gradient(90deg, var(--green), var(--yellow), var(--red));
+      margin-bottom: 20px;
+    }
+
+    .timer-cover {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 0;
+      background: var(--border);
+      transition: width .5s linear;
+    }
+
+    /* Таймер цепочки — плавный, обновляется чаще, поэтому shorter transition */
+    .timer-cover.fast { transition: width .12s linear; }
+
+    .code-input {
+      display: block;
+      margin: 20px auto;
+      padding: 18px;
+      font-size: 30px;
+      text-align: center;
+      letter-spacing: 12px;
+      border-radius: 16px;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      color: var(--blue-dark);
+      width: 100%;
+      max-width: 420px;
+      font-family: 'Courier New', monospace;
+      font-weight: 800;
+      transition: .15s;
+    }
+
+    .code-input:focus {
+      outline: none;
+      border-color: var(--orange);
+      box-shadow: 0 0 0 4px var(--orange-light);
+    }
+
+    .code-input:disabled { opacity: .6; }
+
+    .input-hint {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: -10px 0 8px;
+      min-height: 18px;
+      font-weight: 700;
+      transition: .2s;
+    }
+
+    .input-hint.warn { color: var(--orange-dark); }
+    .input-hint.good { color: var(--green); }
+
+    .review-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .review-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+
+    .review-emoji {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 54px;
+      height: 54px;
+      font-size: 34px;
+      border-radius: 12px;
+      border: 2px solid;
+    }
+
+    .review-emoji.ok { background: var(--green-tint); border-color: var(--green); }
+    .review-emoji.bad { background: var(--red-tint); border-color: var(--red); }
+
+    .review-arrow { font-size: 13px; font-weight: 700; color: var(--text-muted); }
+
+    .review-wrap {
+      margin-top: 20px;
+      padding: 14px;
+      background: var(--tint-soft);
+      border-radius: 14px;
+    }
+
+    .settings-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 15px;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .settings-row b { color: var(--blue-dark); font-size: 16px; font-weight: 800; }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--orange);
+      height: 26px;
+    }
+
+    .time-hint {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 700;
+      padding: 10px;
+      background: var(--blue-light);
+      border-radius: 10px;
+      margin-top: 6px;
+    }
+
+    .time-hint b { color: var(--blue-dark); }
+
+    .btn-main {
+      display: block;
+      margin: 24px auto 0;
+      padding: 16px 40px;
+      border-radius: 14px;
+      border: none;
+      background: var(--orange);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .2s;
+      letter-spacing: .5px;
+      box-shadow: var(--shadow-orange);
+      font-family: inherit;
+    }
+
+    .btn-main:hover {
+      background: var(--orange-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-orange-hover);
+    }
+
+    .btn-main:active { transform: translateY(0); }
+    .btn-main:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; transform: none; }
+
+    .btn-secondary {
+      display: block;
+      margin: 8px auto 0;
+      padding: 12px 30px;
+      border-radius: 14px;
+      border: none;
+      background: transparent;
+      color: var(--blue-dark);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .2s;
+      font-family: inherit;
+    }
+
+    .btn-secondary:hover { background: var(--blue-light); }
+
+    .result-screen { text-align: center; padding: 30px 20px; }
+
+    .result-screen .big {
+      font-size: 72px;
+      margin-bottom: 12px;
+      animation: popIn .5s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    .result-screen h2 {
+      font-size: 26px;
+      margin-bottom: 10px;
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .result-screen p {
+      color: var(--text-muted);
+      font-size: 16px;
+      margin: 6px 0;
+      font-weight: 600;
+    }
+
+    .stars {
+      font-size: 40px;
+      margin: 20px 0;
+      letter-spacing: 6px;
+      white-space: nowrap;
+    }
+
+    /* === Угадай правило === */
+    .rule-io {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin: 10px 0 22px;
+    }
+
+    .rule-io .block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .rule-io .label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .rule-io .code {
+      font-family: 'Courier New', monospace;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: 8px;
+      color: var(--blue-dark);
+      padding: 10px 20px;
+      background: var(--blue-light);
+      border-radius: 14px;
+    }
+
+    .rule-io .code.out {
+      background: var(--orange-light);
+      color: var(--orange-dark);
+    }
+
+    .rule-io .arrow {
+      font-size: 28px;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .rule-chain {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      min-height: 56px;
+      padding: 10px;
+      background: var(--tint-soft);
+      border-radius: 14px;
+      margin-bottom: 16px;
+    }
+
+    .rule-chain .empty {
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: var(--blue);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .15s;
+      font-family: inherit;
+      border: none;
+    }
+
+    .chip:hover { background: var(--orange); }
+
+    .chip .x {
+      font-weight: 900;
+      opacity: .7;
+    }
+
+    .rule-chain .plus {
+      color: var(--text-muted);
+      font-weight: 800;
+      font-size: 18px;
+      padding: 0 4px;
+    }
+
+    .rule-atoms {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    @media (min-width: 560px) {
+      .rule-atoms { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    .atom-btn {
+      padding: 12px 10px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      color: var(--blue-dark);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: .18s;
+      font-family: inherit;
+    }
+
+    .atom-btn:hover {
+      border-color: var(--orange);
+      color: var(--orange-dark);
+      transform: translateY(-1px);
+    }
+
+    .rule-preview {
+      text-align: center;
+      padding: 12px;
+      background: var(--blue-light);
+      border-radius: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 6px;
+      color: var(--blue-dark);
+      margin-bottom: 14px;
+      min-height: 52px;
+    }
+
+    .rule-preview .match { color: var(--green); }
+    .rule-preview.hidden { opacity: .35; font-style: italic; font-size: 14px; letter-spacing: 0; }
+
+    /* === Цепочка === */
+    .chain-rule-banner {
+      text-align: center;
+      padding: 14px;
+      background: var(--blue-light);
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--blue-dark);
+      margin-bottom: 16px;
+      transition: background .3s, color .3s;
+    }
+
+    .chain-rule-banner.flash {
+      background: var(--orange-light);
+      color: var(--orange-dark);
+      animation: pulse .5s ease;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+      100% { transform: scale(1); }
+    }
+
+    .chain-view {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      padding: 20px 10px;
+      background: var(--tint-soft);
+      border-radius: 14px;
+      margin-bottom: 14px;
+      overflow-x: auto;
+      white-space: nowrap;
+      scroll-behavior: smooth;
+      min-height: 74px;
+    }
+
+    .chain-view .digit { color: var(--text); }
+    .chain-view .digit.tail { color: var(--orange-dark); }
+    .chain-view .ellipsis { color: var(--text-muted); padding: 0 6px; }
+    .chain-view .next-slot {
+      color: var(--text-muted);
+      border-bottom: 3px dashed var(--border);
+      padding: 0 6px;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: .3; }
+    }
+
+    .chain-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .chain-meta b { color: var(--blue-dark); font-size: 15px; }
+
+    .chain-timer-mini {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      min-width: 100px;
+    }
+
+    .chain-timer-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: var(--orange);
+      width: 100%;
+      transition: width .12s linear;
+    }
+
+    .chain-timer-fill.low { background: var(--red); }
+
+    .num-pad {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .num-btn {
+      padding: 18px 0;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      color: var(--blue-dark);
+      font-size: 22px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .15s;
+      font-family: 'Courier New', monospace;
+    }
+
+    .num-btn:hover {
+      border-color: var(--orange);
+      transform: translateY(-1px);
+    }
+
+    .num-btn:active {
+      background: var(--orange);
+      color: #fff;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 500px) {
+      .scene-item .emoji { font-size: 30px; }
+      .scene-item .digit { font-size: 17px; }
+      .scene-item.plain .emoji { font-size: 32px; }
+      .code-input { font-size: 22px; letter-spacing: 6px; padding: 12px; }
+      .review-emoji { width: 44px; height: 44px; font-size: 26px; }
+      .preset-btn { font-size: 12px; }
+      .segment-btn { font-size: 12px; }
+      .back-btn, .theme-btn { width: 42px; height: 42px; }
+      .theme-btn svg { width: 20px; height: 20px; }
+      .rule-io .code { font-size: 24px; letter-spacing: 5px; padding: 8px 12px; }
+      .chain-view { font-size: 20px; letter-spacing: 2px; }
+      .num-btn { padding: 14px 0; font-size: 20px; }
+    }
+  </style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <button class="back-btn" id="backBtn">←</button>
+      <h1>🧠 МНЕМО-АРЕНА</h1>
+      <div class="header-right">
+        <div class="score-bar">Очки: <span id="globalScore">0</span></div>
+        <button class="theme-btn" id="themeBtn" aria-label="Переключить тему" title="Переключить тему">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+    <main id="game"></main>
+  </div>
+
+  <script>
+    /* ============ УТИЛИТЫ ============ */
+    const $ = id => document.getElementById(id);
+    const gameEl = $('game');
+
+    let globalScore = +(localStorage.getItem('escapeScore') || 0);
+    $('globalScore').textContent = globalScore;
+
+    function addScore(n) {
+      globalScore += n;
+      try { localStorage.setItem('escapeScore', globalScore); } catch (e) {}
+      $('globalScore').textContent = globalScore;
+    }
+
+    function shuffle(a) {
+      const arr = [...a];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+    const rand = n => Math.floor(Math.random() * n);
+
+    let timeouts = [];
+    function wait(ms, fn) {
+      const id = setTimeout(fn, ms);
+      timeouts.push(id);
+      return id;
+    }
+    function clearTimeouts() {
+      timeouts.forEach(clearTimeout);
+      timeouts = [];
+    }
+
+    let escapeTimer = null;
+    function stopEscapeTimer() {
+      if (escapeTimer) { clearInterval(escapeTimer); escapeTimer = null; }
+    }
+
+    let chainTickId = null;
+    let chainStepTimerId = null;
+    function stopChainTimers() {
+      if (chainTickId) { clearInterval(chainTickId); chainTickId = null; }
+      if (chainStepTimerId) { clearTimeout(chainStepTimerId); chainStepTimerId = null; }
+    }
+
+    function stopAll() {
+      stopEscapeTimer();
+      stopChainTimers();
+      clearTimeouts();
+    }
+
+    window.addEventListener('beforeunload', stopAll);
+
+    /* ============ АУДИО ============ */
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+    }
+
+    function beep(freq, dur = 0.15, type = 'sine', vol = 0.08) {
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.type = type;
+        osc.frequency.value = freq;
+        const t = audioCtx.currentTime;
+        gain.gain.setValueAtTime(vol, t);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        osc.start(t); osc.stop(t + dur + 0.02);
+      } catch (e) {}
+    }
+
+    function sfxCorrect() { beep(660, 0.1); wait(90, () => beep(880, 0.15)); }
+    function sfxWrong() { beep(180, 0.3, 'sawtooth', 0.12); }
+    function sfxClick() { beep(440, 0.05, 'triangle', 0.06); }
+    function sfxWin() { [523, 659, 784, 1047].forEach((f, i) => wait(i * 120, () => beep(f, 0.2))); }
+    function sfxTick() { beep(880, 0.03, 'square', 0.03); }
+
+    /* ============ ТЕМА ============ */
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      try { localStorage.setItem('theme', theme); } catch (e) {}
+    }
+
+    $('themeBtn').addEventListener('click', () => {
+      initAudio();
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      setTheme(current === 'dark' ? 'light' : 'dark');
+      sfxClick();
+    });
+
+    /* ============ РЕКОРДЫ ============ */
+    const Records = {
+      data: (() => {
+        try { return JSON.parse(localStorage.getItem('arenaRecords') || '{}'); }
+        catch (e) { return {}; }
+      })(),
+      get(key) { return this.data[key] ?? null; },
+      trySet(key, value, lowerIsBetter = false) {
+        const prev = this.data[key];
+        const isNew = prev === undefined || (lowerIsBetter ? value < prev : value > prev);
+        if (isNew) {
+          this.data[key] = value;
+          try { localStorage.setItem('arenaRecords', JSON.stringify(this.data)); } catch (e) {}
+        }
+        return isNew;
+      }
+    };
+
+    /* ============ РОУТЕР ============ */
+    const Router = {
+      current: null,
+      backTo: 'menu',
+      go(name, props = {}) {
+        stopAll();
+        this.current = name;
+        Screens[name](props);
+      }
+    };
+
+    function goBack() {
+      initAudio();
+      sfxClick();
+      if (Router.current === 'menu') {
+        location.href = 'index.html';
+      } else {
+        Router.go('menu');
+      }
+    }
+    $('backBtn').addEventListener('click', goBack);
+
+    /* ============ БАЗА ЭМОДЗИ ============ */
+    const ALL_EMOJIS = [
+      '🕯️', '🔥', '❄️', '⭐', '🌙', '☀️', '🌈', '⚡', '☁️', '🌊',
+      '🌪️', '🌋', '🌺', '🍀', '🌵', '🌻', '🌿', '💧', '🌨️', '🌞',
+      '🦢', '🐱', '🐶', '🐢', '🐙', '🦉', '🐝', '🐬', '🦊', '🐸',
+      '🦁', '🐯', '🐼', '🐨', '🦄', '🐧', '🦋', '🐌', '🦅', '🐿️',
+      '🗝️', '🔔', '📚', '🎩', '🪑', '✋', '👓', '🎈', '🔮', '💎',
+      '📷', '🕰️', '🎁', '🔑', '📜', '🪄', '⚱️', '🔱', '🏺', '🧭',
+      '🍎', '🍕', '🍩', '🍦', '🍄', '🥕', '🍇', '🍓', '🥯', '🍋',
+      '🍉', '🍌', '🍒', '🍑', '🥝', '🍍', '🌰', '🥐', '🍪', '🧁',
+      '🚀', '⚓', '🛰️', '🚁', '🚂', '⛵', '🛸', '🎸', '🎺', '🥁',
+      '🎲', '🎯', '📡', '💾', '📱',
+      '🛡️', '⚔️', '🏆', '👑', '🧸', '🧿', '🎭', '🎨', '💡', '🔧',
+      '⚗️', '🔬', '🔭', '📿', '⚜️', '♟️', '🃏', '🎰', '🧩', '🎪',
+      '🎓', '👒', '🥂', '🧦', '👟', '🧤', '🕶️', '💄', '🎀', '🧵',
+      '🔗', '📎', '✂️', '📌', '🖋️'
+    ];
+
+    function randomCode(n) {
+      return shuffle([0,1,2,3,4,5,6,7,8,9]).slice(0, n).join('');
+    }
+
+    /* ============ ЭКРАН: МЕНЮ ============ */
+    function startMenu() {
+      Router.current = 'menu';
+      Router.backTo = 'index.html';
+      const escRec = Records.get('escape') || 0;
+      const ruleRec = Records.get('rule') || 0;
+      const chainRec = Records.get('chain') || 0;
+
+      gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🎯 Выбери тренировку</h2>
+      <div class="subtitle">Каждый режим качает свой навык. Начни с любого.</div>
+    </div>
+    <div class="panel">
+      <div class="mode-grid">
+        <button class="mode-card" data-mode="escape">
+          <div class="ico">🚪</div>
+          <div class="name">Побег</div>
+          <div class="desc">Ассоциативная память. Запомни связки «эмодзи → цифра», потом введи код по перемешанному порядку.</div>
+          ${escRec ? `<div class="rec">🏆 Рекорд: ${escRec}</div>` : ''}
+        </button>
+
+        <button class="mode-card" data-mode="rule">
+          <div class="ico">🔍</div>
+          <div class="name">Угадай правило</div>
+          <div class="desc">Обратное мышление. Дан вход и выход — собери цепочку операций, которая их связывает.</div>
+          ${ruleRec ? `<div class="rec">🏆 Серия: ${ruleRec}</div>` : ''}
+        </button>
+
+        <button class="mode-card" data-mode="chain">
+          <div class="ico">⛓️</div>
+          <div class="name">Цепочка</div>
+          <div class="desc">Устойчивое внимание. Продолжай цепочку цифр по правилу, которое меняется на ходу.</div>
+          ${chainRec ? `<div class="rec">🏆 Длина: ${chainRec}</div>` : ''}
+        </button>
+      </div>
+    </div>
+  `;
+      gameEl.querySelectorAll('.mode-card').forEach(card => {
+        card.onclick = () => {
+          initAudio(); sfxClick();
+          const mode = card.dataset.mode;
+          if (mode === 'escape') Router.go('escapeSettings');
+          else if (mode === 'rule') Router.go('rule');
+          else if (mode === 'chain') Router.go('chain');
+        };
+      });
+    }
+
+    /* ============================================================
+       РЕЖИМ «ПОБЕГ»
+       ============================================================ */
+    let escapeCfg = {
+      count: 5, showTime: 8, inputTime: 60, timerMode: true
+    };
+    try {
+      const s = localStorage.getItem('escapeCfg');
+      if (s) {
+        const p = JSON.parse(s);
+        escapeCfg = {
+          count: p.count ?? 5,
+          showTime: p.showTime ?? 8,
+          inputTime: p.inputTime ?? 60,
+          timerMode: p.timerMode !== false
+        };
+      }
+    } catch (e) {}
+
+    function generateItems(count) {
+      const emojis = shuffle([...ALL_EMOJIS]).slice(0, count);
+      let digits;
+      if (count <= 10) digits = shuffle([0,1,2,3,4,5,6,7,8,9]).slice(0, count);
+      else {
+        const base = shuffle([0,1,2,3,4,5,6,7,8,9]);
+        const extra = [];
+        while (base.length + extra.length < count) extra.push(rand(10));
+        digits = shuffle([...base, ...extra]);
+      }
+      return emojis.map((e, i) => ({ emoji: e, digit: digits[i] }));
+    }
+
+    function escapeSettings() {
+      Router.current = 'escapeSettings';
+      gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🚪 Побег из комнаты</h2>
+      <div class="subtitle">Запомни связку «предмет → цифра», потом разгадай код</div>
+    </div>
+    <div class="panel">
+      <div style="max-width: 480px; margin: 0 auto;">
+
+        <div class="presets" id="presets">
+          <button class="preset-btn" data-count="4" data-show="12" data-input="60" data-timer="1">🌱 Разминка</button>
+          <button class="preset-btn" data-count="5" data-show="8" data-input="60" data-timer="1">⚡ Стандарт</button>
+          <button class="preset-btn" data-count="7" data-show="6" data-input="45" data-timer="1">🔥 Сложнее</button>
+          <button class="preset-btn" data-count="10" data-show="5" data-input="40" data-timer="1">💀 Хардкор</button>
+        </div>
+
+        <label style="display:block; margin-bottom: 22px;">
+          <div class="settings-row"><span>Сколько предметов</span><b id="eCountVal">${escapeCfg.count}</b></div>
+          <input type="range" id="eCountRange" min="3" max="12" value="${escapeCfg.count}">
+          <div class="time-hint" id="countHint"></div>
+        </label>
+
+        <label style="display:block; margin-bottom: 22px;">
+          <div class="settings-row"><span>Время на запоминание</span><b id="eShowVal">${escapeCfg.showTime} сек</b></div>
+          <input type="range" id="eShowRange" min="2" max="30" value="${escapeCfg.showTime}">
+        </label>
+
+        <div style="margin-bottom: 22px;">
+          <div class="settings-row"><span>Режим ввода кода</span><b id="timerModeVal">${escapeCfg.timerMode ? 'с таймером' : 'без таймера'}</b></div>
+          <div class="segment" id="timerRow">
+            <button class="segment-btn" data-timer="1">С таймером<small>на время</small></button>
+            <button class="segment-btn" data-timer="0">Без таймера<small>спокойно</small></button>
+          </div>
+        </div>
+
+        <label style="display:block; margin-bottom: 22px;" id="inputTimeBlock">
+          <div class="settings-row"><span>Время на ввод кода</span><b id="eInputVal">${escapeCfg.inputTime} сек</b></div>
+          <input type="range" id="eInputRange" min="15" max="240" step="5" value="${escapeCfg.inputTime}">
+        </label>
+
+        <div class="subtitle" style="text-align:left; padding: 14px; background: var(--blue-light); border-radius: 12px; line-height: 1.5;">
+          💡 <b>Как играть:</b> увидишь предметы с их цифрами. Запомни связки. Затем предметы <b>перемешаются</b> — введи код: цифры в новом порядке слева направо.
+        </div>
+
+        <button class="btn-main" id="startBtn">Начать 🚪</button>
+      </div>
+    </div>
+  `;
+      const countRange = $('eCountRange');
+      const showRange = $('eShowRange');
+      const inputRange = $('eInputRange');
+      const inputTimeBlock = $('inputTimeBlock');
+
+      function updateCountHint() {
+        const c = +countRange.value;
+        $('countHint').textContent = c <= 10
+          ? `В игре будет ${c} предметов с уникальными цифрами`
+          : `В игре будет ${c} предметов, некоторые цифры повторятся`;
+      }
+      function updateTimerUI() {
+        $('timerModeVal').textContent = escapeCfg.timerMode ? 'с таймером' : 'без таймера';
+        gameEl.querySelectorAll('#timerRow .segment-btn').forEach(b => {
+          b.classList.toggle('active', (b.dataset.timer === '1') === escapeCfg.timerMode);
+        });
+        inputTimeBlock.classList.toggle('slider-disabled', !escapeCfg.timerMode);
+      }
+      function markPresetActive() {
+        document.querySelectorAll('.preset-btn').forEach(b => {
+          b.classList.toggle('active',
+            +b.dataset.count === +countRange.value &&
+            +b.dataset.show === +showRange.value &&
+            +b.dataset.input === +inputRange.value &&
+            (b.dataset.timer === '1') === escapeCfg.timerMode);
+        });
+      }
+
+      gameEl.querySelectorAll('#timerRow .segment-btn').forEach(b => {
+        b.onclick = () => {
+          escapeCfg.timerMode = b.dataset.timer === '1';
+          updateTimerUI(); markPresetActive(); sfxClick();
+        };
+      });
+      document.querySelectorAll('.preset-btn').forEach(b => {
+        b.onclick = () => {
+          countRange.value = b.dataset.count;
+          showRange.value = b.dataset.show;
+          inputRange.value = b.dataset.input;
+          escapeCfg.timerMode = b.dataset.timer === '1';
+          $('eCountVal').textContent = countRange.value;
+          $('eShowVal').textContent = showRange.value + ' сек';
+          $('eInputVal').textContent = inputRange.value + ' сек';
+          updateCountHint(); updateTimerUI(); markPresetActive(); sfxClick();
+        };
+      });
+      countRange.oninput = () => { $('eCountVal').textContent = countRange.value; updateCountHint(); markPresetActive(); sfxClick(); };
+      showRange.oninput = () => { $('eShowVal').textContent = showRange.value + ' сек'; markPresetActive(); sfxClick(); };
+      inputRange.oninput = () => { $('eInputVal').textContent = inputRange.value + ' сек'; markPresetActive(); sfxClick(); };
+
+      updateCountHint(); updateTimerUI(); markPresetActive();
+
+      $('startBtn').onclick = () => {
+        escapeCfg.count = +countRange.value;
+        escapeCfg.showTime = +showRange.value;
+        escapeCfg.inputTime = +inputRange.value;
+        try { localStorage.setItem('escapeCfg', JSON.stringify(escapeCfg)); } catch (e) {}
+        escapeShow();
+      };
+    }
+
+    function escapeShow() {
+      Router.current = 'escape';
+      stopAll();
+      const count = escapeCfg.count;
+      const showTime = escapeCfg.showTime;
+      const items = generateItems(count);
+      const cols = count <= 4 ? count : count <= 8 ? 4 : 6;
+
+      gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🚪 Побег из комнаты</h2>
+      <div class="subtitle">Запомни, какая цифра какой предмет означает</div>
+    </div>
+    <div class="panel">
+      <div class="timer-bar"><div class="timer-cover" id="tcover"></div></div>
+      <div class="status warn" id="status">Запоминай: <span id="time">${showTime}</span> сек</div>
+      <div class="scene" id="scene" style="grid-template-columns: repeat(${cols}, 1fr);"></div>
+    </div>
+  `;
+      const scene = $('scene');
+      items.forEach((p, i) => {
+        const el = document.createElement('div');
+        el.className = 'scene-item';
+        el.style.animationDelay = (i * 0.06) + 's';
+        el.innerHTML = `<div style="text-align:center"><div class="emoji">${p.emoji}</div><div class="digit">${p.digit}</div></div>`;
+        scene.appendChild(el);
+        wait(i * 80, () => beep(400 + i * 50, 0.06));
+      });
+
+      let left = showTime;
+      escapeTimer = setInterval(() => {
+        left--;
+        const t = $('time'); if (t) t.textContent = Math.max(0, left);
+        const c = $('tcover'); if (c) c.style.width = ((1 - Math.max(0, left) / showTime) * 100) + '%';
+        if (left <= 0) { stopEscapeTimer(); escapeInput(items); }
+      }, 1000);
+    }
+
+    function escapeInput(originalItems) {
+      Router.current = 'escape';
+      stopAll();
+      const count = originalItems.length;
+      const timerMode = escapeCfg.timerMode;
+
+      const sameAt = (a, b) => a.reduce((n, it, i) => n + (it.emoji === b[i].emoji ? 1 : 0), 0);
+      let shuffled = shuffle([...originalItems]);
+      let guard = 0;
+      while (guard++ < 50 && sameAt(shuffled, originalItems) > Math.max(0, count - 2)) {
+        shuffled = shuffle([...originalItems]);
+      }
+
+      const code = shuffled.map(it => it.digit).join('');
+      const inputTime = escapeCfg.inputTime;
+      let left = inputTime;
+      const cols = count <= 4 ? count : count <= 8 ? 4 : 6;
+
+      gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🔐 Дверь заперта!</h2>
+      <div class="subtitle">Предметы перемешались. Введи код слева направо</div>
+    </div>
+    <div class="panel">
+      ${timerMode ? `<div class="timer-bar"><div class="timer-cover" id="tcover"></div></div>` : ''}
+      <div class="status" id="status">${timerMode
+        ? `Осталось: <span id="time">${inputTime}</span> сек`
+        : 'Спокойно вводи код — время не ограничено'}</div>
+      <div class="scene" id="scene" style="grid-template-columns: repeat(${cols}, 1fr); margin-bottom: 20px;"></div>
+      <input class="code-input" id="code" type="tel" inputmode="numeric"
+             maxlength="${count}" autocomplete="off" placeholder="${'·'.repeat(count)}">
+      <div class="input-hint" id="inputHint"></div>
+      <button class="btn-main" id="submit">Открыть дверь 🚪</button>
+    </div>
+  `;
+
+      const scene = $('scene');
+      shuffled.forEach((p, i) => {
+        const el = document.createElement('div');
+        el.className = 'scene-item plain';
+        el.style.animationDelay = (i * 0.05) + 's';
+        el.innerHTML = `<div class="emoji">${p.emoji}</div>`;
+        scene.appendChild(el);
+        wait(i * 60, () => beep(500 + i * 40, 0.05));
+      });
+
+      const input = $('code');
+      const hint = $('inputHint');
+      wait(300, () => { try { input.focus(); } catch (e) {} });
+
+      let submitted = false;
+      let autoCheckId = null;
+
+      if (timerMode) {
+        escapeTimer = setInterval(() => {
+          left--;
+          const t = $('time'); if (t) t.textContent = Math.max(0, left);
+          const c = $('tcover'); if (c) c.style.width = ((1 - Math.max(0, left) / inputTime) * 100) + '%';
+          if (left <= 0) {
+            stopEscapeTimer();
+            if (!submitted) {
+              submitted = true;
+              clearTimeout(autoCheckId);
+              input.disabled = true;
+              escapeCheck(code, shuffled, input.value.trim(), true);
+            }
+          }
+        }, 1000);
+      }
+
+      const doCheck = () => {
+        if (submitted) return;
+        clearTimeout(autoCheckId);
+        const val = input.value.trim();
+        if (val.length < count) {
+          hint.textContent = `Нужно ${count} цифр — у тебя пока ${val.length}`;
+          hint.className = 'input-hint warn';
+          return;
+        }
+        submitted = true;
+        input.disabled = true;
+        stopEscapeTimer();
+        escapeCheck(code, shuffled, val, false);
+      };
+
+      input.addEventListener('input', () => {
+        const len = input.value.length;
+        if (len < count) {
+          hint.textContent = `Введено: ${len} / ${count}`;
+          hint.className = 'input-hint';
+        } else {
+          hint.textContent = 'Проверяем…';
+          hint.className = 'input-hint good';
+        }
+        clearTimeout(autoCheckId);
+        if (len === count) autoCheckId = setTimeout(doCheck, 400);
+      });
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { clearTimeout(autoCheckId); doCheck(); }
+      });
+      $('submit').onclick = () => { clearTimeout(autoCheckId); doCheck(); };
+    }
+
+    function escapeCheck(code, shuffled, userCode, timedOut) {
+      Router.current = 'escapeResult';
+      const count = code.length;
+      let correct = 0;
+      for (let i = 0; i < count; i++) if (userCode[i] === code[i]) correct++;
+      const perfect = !timedOut && correct === count;
+
+      let points, stars;
+      if (perfect) { points = 50; stars = 3; }
+      else if (timedOut) { points = correct === count ? 10 : 0; stars = 0; }
+      else {
+        points = Math.round((correct / count) * 30);
+        stars = correct >= count * 0.7 ? 2 : correct > 0 ? 1 : 0;
+      }
+      addScore(points);
+
+      const isRecord = Records.trySet('escape', points);
+
+      const row = shuffled.map((p, i) => {
+        const u = userCode[i] || '—';
+        const ok = u === String(p.digit);
+        return `<div class="review-item">
+          <div class="review-emoji ${ok ? 'ok' : 'bad'}">${p.emoji}</div>
+          <div class="review-arrow">${u} → ${p.digit}</div>
+        </div>`;
+      }).join('');
+
+      if (perfect) sfxWin();
+      else if (correct >= count / 2) sfxCorrect();
+      else sfxWrong();
+
+      const title = perfect ? 'ПОБЕГ УДАЛСЯ!' : timedOut ? 'Время вышло' : 'Дверь не открылась';
+      const big = perfect ? '🚪' : timedOut ? '⏰' : '💀';
+
+      gameEl.innerHTML = `
+    <div class="panel">
+      <div class="result-screen">
+        <div class="big">${big}</div>
+        <h2>${title}</h2>
+        <p>Правильных цифр: <b style="color: var(--blue-dark);">${correct}</b> из ${count}</p>
+        <p style="font-size: 14px;">Правильный код: <b style="color: var(--blue-dark); letter-spacing: 4px;">${code}</b></p>
+        <div class="stars">${'⭐'.repeat(stars)}${'☆'.repeat(3 - stars)}</div>
+        <p style="opacity:.6; font-size: 14px;">+${points} очков</p>
+        ${isRecord ? '<p style="color: var(--orange-dark); font-weight: 800;">🏆 Новый рекорд!</p>' : ''}
+        <div class="review-wrap">
+          <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px; font-weight: 700;">Разбор (твой ответ → правильная цифра):</div>
+          <div class="review-row">${row}</div>
+        </div>
+        <button class="btn-main" id="retry">Ещё раз 🔄</button>
+        <button class="btn-secondary" id="menuBtn">← В меню</button>
+      </div>
+    </div>
+  `;
+      $('retry').onclick = () => escapeShow();
+      $('menuBtn').onclick = () => Router.go('menu');
+    }
+
+    /* ============================================================
+       РЕЖИМ «УГАДАЙ ПРАВИЛО»
+       ============================================================ */
+
+    const RULE_ATOMS = {
+      reverse:   { label: '⇄ реверс',           fn: c => c.split('').reverse().join('') },
+      inc:       { label: '+1',                 fn: c => c.split('').map(d => (+d + 1) % 10).join('') },
+      dec:       { label: '−1',                 fn: c => c.split('').map(d => (+d + 9) % 10).join('') },
+      dbl:       { label: '×2 mod 10',          fn: c => c.split('').map(d => (+d * 2) % 10).join('') },
+      swapPairs: { label: '↔ обмен пар',        fn: c => c.replace(/(\d)(\d)/g, '$2$1') },
+      swapEnds:  { label: '⇋ крайние',          fn: c => c.length < 2 ? c : c.slice(-1) + c.slice(1, -1) + c[0] },
+      sortAsc:   { label: '↑ сорт по возрастанию', fn: c => c.split('').sort().join('') },
+      sortDesc:  { label: '↓ сорт по убыванию',    fn: c => c.split('').sort().reverse().join('') }
+    };
+
+    function applyChain(chain, code) {
+      return chain.reduce((c, id) => RULE_ATOMS[id].fn(c), code);
+    }
+
+    function generateRuleTask(difficulty) {
+      const lenMap = { easy: 4, normal: 5, hard: 6 };
+      const chainLenMap = { easy: 1, normal: 2, hard: 2 };
+      const len = lenMap[difficulty];
+      const chainLen = difficulty === 'hard' ? 2 + rand(2) : chainLenMap[difficulty];
+      const atomIds = Object.keys(RULE_ATOMS);
+
+      for (let attempt = 0; attempt < 100; attempt++) {
+        const input = randomCode(len);
+        const chain = [];
+        let last = null;
+        for (let i = 0; i < chainLen; i++) {
+          let id;
+          let guard = 0;
+          do { id = atomIds[rand(atomIds.length)]; guard++; } while (id === last && guard < 20);
+          chain.push(id);
+          last = id;
+        }
+        const output = applyChain(chain, input);
+        if (output !== input && output.length === input.length) {
+          return { input, output, solution: chain };
+        }
+      }
+      return { input: '1234', output: '2345', solution: ['inc'] };
+    }
+
+    let ruleState = null;
+
+    function startRule() {
+      Router.current = 'rule';
+      ruleState = { difficulty: 'normal', chain: [], current: null, streak: 0, total: 0 };
+      renderRuleMenu();
+    }
+
+    function renderRuleMenu() {
+      gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🔍 Угадай правило</h2>
+      <div class="subtitle">Дан вход и выход. Собери цепочку операций, которая их связывает.</div>
+    </div>
+    <div class="panel">
+      <div style="max-width: 480px; margin: 0 auto;">
+        <div class="settings-row"><span>Серия</span><b>${ruleState.streak}</b></div>
+        <div class="presets" id="diffPresets">
+          <button class="preset-btn" data-diff="easy">🌱 Лёгкий<small style="display:block; font-size:10px; opacity:.7; margin-top:2px;">4 цифры, 1 шаг, подсказка</small></button>
+          <button class="preset-btn" data-diff="normal">⚡ Стандарт<small style="display:block; font-size:10px; opacity:.7; margin-top:2px;">5 цифр, 2 шага, подсказка</small></button>
+          <button class="preset-btn" data-diff="hard">💀 Хардкор<small style="display:block; font-size:10px; opacity:.7; margin-top:2px;">6 цифр, 2-3 шага, без подсказки</small></button>
+        </div>
+
+        <div class="subtitle" style="text-align:left; padding: 14px; background: var(--blue-light); border-radius: 12px; line-height: 1.5; margin-top: 10px;">
+          💡 <b>Как играть:</b> увидишь <b>вход</b> и <b>выход</b>. Собери цепочку из операций так, чтобы применение дало показанный выход. <b>Любая</b> правильная цепочка засчитывается — решений может быть несколько.<br><br>
+          На «Лёгком» и «Стандарте» ты видишь предпросмотр — что получится после твоей цепочки. На «Хардкоре» — считаешь в голове.
+        </div>
+
+        <button class="btn-main" id="startRuleBtn">Начать 🔍</button>
+      </div>
+    </div>
+  `;
+      $('diffPresets').querySelectorAll('.preset-btn').forEach(b => {
+        b.onclick = () => {
+          ruleState.difficulty = b.dataset.diff;
+          $('diffPresets').querySelectorAll('.preset-btn').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          sfxClick();
+        };
+      });
+      $('diffPresets').querySelector(`[data-diff="${ruleState.difficulty}"]`).classList.add('active');
+      $('startRuleBtn').onclick = () => { sfxClick(); playRuleRound(); };
+    }
+
+    function playRuleRound() {
+      Router.current = 'rule';
+      const task = generateRuleTask(ruleState.difficulty);
+      const showPreview = ruleState.difficulty !== 'hard';
+      ruleState.current = { task, chain: [], showPreview };
+
+      const atomKeys = Object.keys(RULE_ATOMS);
+
+      gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🔍 Угадай правило</h2>
+      <div class="subtitle">${showPreview ? 'Предпросмотр показан — собери цепочку' : 'Без подсказки — считай в голове'}</div>
+    </div>
+    <div class="panel">
+      <div class="rule-io">
+        <div class="block">
+          <div class="label">Вход</div>
+          <div class="code">${task.input}</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="block">
+          <div class="label">Выход</div>
+          <div class="code out">${task.output}</div>
+        </div>
+      </div>
+
+      <div class="rule-chain" id="chainBox"></div>
+
+      ${showPreview ? `<div class="rule-preview" id="preview">${task.input}</div>` : `<div class="rule-preview hidden">Предпросмотр отключён</div>`}
+
+      <div class="rule-atoms" id="atomGrid">
+        ${atomKeys.map(k => `<button class="atom-btn" data-atom="${k}">${RULE_ATOMS[k].label}</button>`).join('')}
+      </div>
+
+      <button class="btn-main" id="submitRule" disabled>Ответить ✅</button>
+      <button class="btn-secondary" id="skipRule">Пропустить</button>
+    </div>
+  `;
+
+      const chainBox = $('chainBox');
+      const preview = $('preview');
+      const submitBtn = $('submitRule');
+
+      function renderChain() {
+        if (ruleState.current.chain.length === 0) {
+          chainBox.innerHTML = '<span class="empty">Цепочка пуста — выбери операции ниже</span>';
+        } else {
+          chainBox.innerHTML = ruleState.current.chain.map((id, i) =>
+            `${i > 0 ? '<span class="plus">→</span>' : ''}<button class="chip" data-idx="${i}">${RULE_ATOMS[id].label}<span class="x">×</span></button>`
+          ).join('');
+          chainBox.querySelectorAll('.chip').forEach(chip => {
+            chip.onclick = () => {
+              ruleState.current.chain.splice(+chip.dataset.idx, 1);
+              sfxClick();
+              renderChain();
+            };
+          });
+        }
+        submitBtn.disabled = ruleState.current.chain.length === 0;
+        if (showPreview && preview) {
+          const result = applyChain(ruleState.current.chain, task.input);
+          preview.textContent = result;
+          preview.className = 'rule-preview' + (result === task.output ? ' match' : '');
+          if (result === task.output) preview.style.color = 'var(--green)';
+          else preview.style.color = '';
+        }
+      }
+
+      $('atomGrid').querySelectorAll('.atom-btn').forEach(b => {
+        b.onclick = () => {
+          ruleState.current.chain.push(b.dataset.atom);
+          sfxClick();
+          renderChain();
+        };
+      });
+
+      $('submitRule').onclick = () => {
+        const result = applyChain(ruleState.current.chain, task.input);
+        const ok = result === task.output;
+        if (ok) {
+          ruleState.streak++;
+          ruleState.total++;
+          Records.trySet('rule', ruleState.streak);
+          sfxCorrect();
+        } else {
+          ruleState.streak = 0;
+          sfxWrong();
+        }
+        showRuleResult(task, ok, result);
+      };
+
+      $('skipRule').onclick = () => {
+        ruleState.streak = 0;
+        sfxClick();
+        showRuleResult(task, false, applyChain(ruleState.current.chain, task.input), true);
+      };
+
+      renderChain();
+    }
+
+    function showRuleResult(task, ok, got, skipped = false) {
+      const points = ok ? (ruleState.difficulty === 'hard' ? 50 : 30) : 0;
+      addScore(points);
+
+      const solutionChain = task.solution.map(id => RULE_ATOMS[id].label).join(' → ');
+
+      gameEl.innerHTML = `
+    <div class="panel">
+      <div class="result-screen">
+        <div class="big">${ok ? '✅' : skipped ? '⏭️' : '❌'}</div>
+        <h2>${ok ? 'Верно!' : skipped ? 'Пропущено' : 'Не сошлось'}</h2>
+        <p>Вход: <b style="color: var(--blue-dark); font-family:'Courier New',monospace; letter-spacing:3px;">${task.input}</b></p>
+        <p>Нужный выход: <b style="color: var(--blue-dark); font-family:'Courier New',monospace; letter-spacing:3px;">${task.output}</b></p>
+        <p>Твой результат: <b style="color:${ok ? 'var(--green)' : 'var(--red)'}; font-family:'Courier New',monospace; letter-spacing:3px;">${got || '—'}</b></p>
+        <div class="review-wrap" style="text-align:left;">
+          <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight: 700;">Одно из решений:</div>
+          <div style="font-family:inherit; font-weight:700; color: var(--blue-dark); font-size: 15px;">${solutionChain}</div>
+        </div>
+        ${ok ? `<p style="opacity:.7; font-size: 14px; margin-top: 12px;">+${points} очков · Серия: <b style="color: var(--blue-dark);">${ruleState.streak}</b></p>` : ''}
+        <button class="btn-main" id="nextRule">${ok ? 'Следующая 🔍' : 'Ещё раз 🔄'}</button>
+        <button class="btn-secondary" id="ruleMenu">← В меню</button>
+      </div>
+    </div>
+  `;
+      $('nextRule').onclick = () => { sfxClick(); playRuleRound(); };
+      $('ruleMenu').onclick = () => Router.go('menu');
+    }
+
+    /* ============================================================
+       РЕЖИМ «ЦЕПОЧКА»
+       ============================================================ */
+
+    const CHAIN_RULES = {
+      sum:  { label: '➕ сумма последних двух (mod 10)', fn: (a, b) => (a + b) % 10 },
+      diff: { label: '➖ разность последних двух (mod 10)', fn: (a, b) => (a + 10 - b) % 10 },
+      prod: { label: '✖️ произведение последних двух (mod 10)', fn: (a, b) => (a * b) % 10 },
+      max:  { label: '⬆️ максимум из последних двух', fn: (a, b) => Math.max(a, b) },
+      min:  { label: '⬇️ минимум из последних двух', fn: (a, b) => Math.min(a, b) }
+    };
+
+    let chainState = null;
+
+    function startChain() {
+      Router.current = 'chain';
+      chainState = {
+        digits: [],
+        ruleId: 'sum',
+        stepTime: 5,
+        timeLeft: 5,
+        stepsDone: 0,
+        paused: false
+      };
+      renderChainMenu();
+    }
+
+    function renderChainMenu() {
+      gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>⛓️ Цепочка</h2>
+      <div class="subtitle">Продолжай последовательность. Правило меняется на ходу.</div>
+    </div>
+    <div class="panel">
+      <div style="max-width: 480px; margin: 0 auto;">
+        <div class="subtitle" style="text-align:left; padding: 14px; background: var(--blue-light); border-radius: 12px; line-height: 1.5;">
+          💡 <b>Как играть:</b> есть стартовые 3 цифры и <b>правило</b>. Применяй правило к <b>последним двум</b> цифрам и дописывай результат в конец.<br><br>
+          Каждые 5 шагов правило <b>меняется</b>. Каждые 10 шагов время на шаг <b>уменьшается</b> (от 5 сек до 2 сек). Ошибся или не успел — конец.
+        </div>
+        <button class="btn-main" id="startChainBtn">Начать ⛓️</button>
+      </div>
+    </div>
+  `;
+      $('startChainBtn').onclick = () => { sfxClick(); startChainRound(); };
+    }
+
+    function startChainRound() {
+      Router.current = 'chain';
+      stopChainTimers();
+
+      // стартовые 3 цифры
+      const start = shuffle([0,1,2,3,4,5,6,7,8,9]).slice(0, 3);
+      const ruleIds = Object.keys(CHAIN_RULES);
+
+      chainState = {
+        digits: start,
+        ruleId: ruleIds[rand(ruleIds.length)],
+        stepTime: 5,
+        timeLeft: 5,
+        stepsDone: 0,
+        paused: false,
+        correctThisStep: null
+      };
+
+      gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>⛓️ Цепочка</h2>
+      <div class="subtitle">Допиши следующую цифру</div>
+    </div>
+    <div class="panel">
+      <div class="chain-rule-banner" id="ruleBanner"></div>
+      <div class="chain-view" id="chainView"></div>
+      <div class="chain-meta">
+        <span>Шагов: <b id="stepCount">0</b></span>
+        <div class="chain-timer-mini"><div class="chain-timer-fill" id="chainTimerFill"></div></div>
+        <span>⏱ <b id="stepTimeLabel">5.0</b>с</span>
+      </div>
+      <div class="num-pad" id="numPad">
+        ${[0,1,2,3,4,5,6,7,8,9].map(d => `<button class="num-btn" data-digit="${d}">${d}</button>`).join('')}
+      </div>
+      <button class="btn-secondary" id="chainMenu">← В меню</button>
+    </div>
+  `;
+
+      $('numPad').querySelectorAll('.num-btn').forEach(b => {
+        b.onclick = () => onChainDigit(+b.dataset.digit);
+      });
+
+      $('chainMenu').onclick = () => { stopChainTimers(); Router.go('menu'); };
+
+      renderChainView();
+      renderRuleBanner(false);
+      startChainStep();
+    }
+
+    function renderChainView() {
+      const view = $('chainView');
+      if (!view) return;
+      const maxShow = 10;
+      const ds = chainState.digits;
+      const shown = ds.length > maxShow ? ds.slice(-maxShow) : ds;
+      const truncated = ds.length > maxShow;
+
+      let html = '';
+      if (truncated) html += `<span class="ellipsis">…</span>`;
+      html += shown.map((d, i) => {
+        const isTail = i >= shown.length - 2;
+        return `<span class="digit${isTail ? ' tail' : ''}">${d}</span>`;
+      }).join('');
+      html += `<span class="next-slot">?</span>`;
+      view.innerHTML = html;
+      view.scrollLeft = view.scrollWidth;
+    }
+
+    function renderRuleBanner(flash) {
+      const banner = $('ruleBanner');
+      if (!banner) return;
+      banner.textContent = 'Правило: ' + CHAIN_RULES[chainState.ruleId].label;
+      if (flash) {
+        banner.classList.add('flash');
+        setTimeout(() => banner.classList.remove('flash'), 600);
+      }
+    }
+
+    function startChainStep() {
+      stopChainTimers();
+      if (chainState.paused) return;
+
+      chainState.timeLeft = chainState.stepTime;
+      const fill = $('chainTimerFill');
+      const label = $('stepTimeLabel');
+      if (fill) {
+        fill.style.width = '100%';
+        fill.classList.remove('low');
+      }
+
+      const tickMs = 50;
+      chainTickId = setInterval(() => {
+        chainState.timeLeft -= tickMs / 1000;
+        if (chainState.timeLeft < 0) chainState.timeLeft = 0;
+        if (fill) fill.style.width = (chainState.timeLeft / chainState.stepTime * 100) + '%';
+        if (label) label.textContent = chainState.timeLeft.toFixed(1);
+        if (fill && chainState.timeLeft < chainState.stepTime * 0.34) fill.classList.add('low');
+        if (chainState.timeLeft <= 0) {
+          stopChainTimers();
+          endChainRound('timeout');
+        }
+      }, tickMs);
+    }
+
+    function computeNextDigit() {
+      const d = chainState.digits;
+      const a = d[d.length - 2];
+      const b = d[d.length - 1];
+      return CHAIN_RULES[chainState.ruleId].fn(a, b);
+    }
+
+    function onChainDigit(digit) {
+      if (chainState.paused) return;
+      const expected = computeNextDigit();
+      chainState.correctThisStep = expected;
+
+      if (digit !== expected) {
+        sfxWrong();
+        stopChainTimers();
+        endChainRound('wrong', expected, digit);
+        return;
+      }
+
+      sfxCorrect();
+      chainState.digits.push(digit);
+      chainState.stepsDone++;
+
+      // каждые 10 шагов ускоряем
+      if (chainState.stepsDone % 10 === 0 && chainState.stepTime > 2) {
+        chainState.stepTime = Math.max(2, chainState.stepTime - 0.5);
+      }
+
+      // каждые 5 шагов меняем правило
+      if (chainState.stepsDone % 5 === 0) {
+        const ruleIds = Object.keys(CHAIN_RULES).filter(id => id !== chainState.ruleId);
+        chainState.ruleId = ruleIds[rand(ruleIds.length)];
+        renderRuleBanner(true);
+        beep(880, 0.15, 'triangle', 0.08);
+      }
+
+      const stepCountEl = $('stepCount');
+      if (stepCountEl) stepCountEl.textContent = chainState.stepsDone;
+
+      renderChainView();
+      startChainStep();
+    }
+
+    function endChainRound(reason, expected, got) {
+      chainState.paused = true;
+      const length = chainState.stepsDone;
+      const points = length * 2;
+      addScore(points);
+
+      const isRecord = Records.trySet('chain', length);
+      if (length > 0) sfxWrong(); // сигнал окончания
+
+      const title = reason === 'timeout' ? 'Время вышло' : 'Ошибка в цепочке';
+      const big = reason === 'timeout' ? '⏰' : '💥';
+
+      gameEl.innerHTML = `
+    <div class="panel">
+      <div class="result-screen">
+        <div class="big">${big}</div>
+        <h2>${title}</h2>
+        <p>Длина цепочки: <b style="color: var(--blue-dark); font-size: 22px;">${length}</b></p>
+        ${reason === 'wrong' ? `
+          <p style="font-size: 15px;">Ожидалось: <b style="color: var(--green); font-family:'Courier New',monospace;">${expected}</b>, введено: <b style="color: var(--red); font-family:'Courier New',monospace;">${got}</b></p>
+          <p style="font-size: 13px; opacity:.7;">Правило было: ${CHAIN_RULES[chainState.ruleId].label}</p>
+        ` : ''}
+        <div class="stars" style="font-size: 24px; letter-spacing: 2px; margin: 16px 0;">${'▮'.repeat(Math.min(length, 20))}${length > 20 ? '…' : ''}</div>
+        <p style="opacity:.6; font-size: 14px;">+${points} очков</p>
+        ${isRecord && length > 0 ? '<p style="color: var(--orange-dark); font-weight: 800;">🏆 Новый рекорд!</p>' : ''}
+        <div class="review-wrap" style="font-family:'Courier New',monospace; font-size: 14px; letter-spacing: 2px; word-break: break-all;">
+          ${chainState.digits.join('')}
+        </div>
+        <button class="btn-main" id="retryChain">Ещё раз ⛓️</button>
+        <button class="btn-secondary" id="chainMenuBtn">← В меню</button>
+      </div>
+    </div>
+  `;
+      $('retryChain').onclick = () => { sfxClick(); startChainRound(); };
+      $('chainMenuBtn').onclick = () => Router.go('menu');
+    }
+
+    /* ============ РЕЕСТР ЭКРАНОВ ============ */
+    const Screens = {
+      menu: startMenu,
+      escapeSettings: escapeSettings,
+      escape: escapeShow,
+      escapeResult: startMenu, // fallback
+      rule: startRule,
+      chain: startChain
+    };
+
+    /* ============ СТАРТ ============ */
+    document.addEventListener('click', initAudio, { once: true });
+    Router.go('menu');
+  </script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+
+</html>

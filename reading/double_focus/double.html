@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Двойной фокус — NeuroX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --blue:#1E3F8A;
+    --blue-dark:#152E68;
+    --blue-soft:#3A5FA8;
+    --blue-light:#E8EEF9;
+    --orange:#FF6A00;
+    --orange-dark:#C85100;
+    --orange-soft:#FF8B3D;
+    --orange-light:#FFEADB;
+    --bg:#F4F6FB;
+    --card:#FFFFFF;
+    --text:#24324B;
+    --text-muted:#6B7280;
+    --border:rgba(30,63,138,.10);
+    --green:#22C55E;
+    --red:#EF4444;
+    --yellow:#F59E0B;
+
+    --header-shadow:rgba(30,63,138,.25);
+    --dot-color:rgba(30,63,138,.07);
+    --overlay:rgba(30,63,138,.45);
+    --modal-grad-1:#1E3F8A;
+    --modal-grad-2:#3A5FA8;
+    --modal-grad-3:#4A6DB8;
+
+    --stage-1:#EFF4FF;
+    --stage-2:#F8FBFF;
+  }
+
+  [data-theme="dark"]{
+    --blue:#7B9BE5;
+    --blue-dark:#5F80D0;
+    --blue-soft:#5F80D0;
+    --blue-light:#2A3A5C;
+    --orange:#FF8B3D;
+    --orange-dark:#FFA057;
+    --orange-soft:#FFA057;
+    --orange-light:#4A2E1A;
+    --bg:#121721;
+    --card:#1C2331;
+    --text:#E8EEF9;
+    --text-muted:#8A96B0;
+    --border:rgba(140,170,240,.15);
+
+    --header-shadow:rgba(0,0,0,.55);
+    --dot-color:rgba(140,170,240,.09);
+    --overlay:rgba(0,0,0,.6);
+    --modal-grad-1:#1A2440;
+    --modal-grad-2:#2A3A5C;
+    --modal-grad-3:#3A4F7C;
+
+    --stage-1:#1A2440;
+    --stage-2:#1C2331;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+
+  html, body{transition:background-color .3s, color .3s;}
+
+  body{
+    font-family:"Nunito Sans",-apple-system,'Segoe UI',Roboto,sans-serif;
+    background-color:var(--bg);
+    background-image:radial-gradient(circle, var(--dot-color) 1.5px, transparent 1.6px);
+    background-size:26px 26px;
+    min-height:100vh;
+    color:var(--text);
+    overflow-x:hidden;
+    transition:background-color .3s, color .3s;
+  }
+
+  /* ============================================================
+     HEADER
+     ============================================================ */
+
+  header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    background:linear-gradient(135deg,#152E68 0%,#1E3F8A 60%,#2A4A99 100%);
+    color:#fff;
+    box-shadow:0 6px 20px var(--header-shadow);
+    transition:background .3s, box-shadow .3s;
+  }
+
+  [data-theme="dark"] header{
+    background:linear-gradient(135deg,#12193A 0%,#1A2440 60%,#243057 100%);
+  }
+
+  .header-inner{
+    max-width:960px;
+    margin:0 auto;
+    padding:16px 22px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    min-width:0;
+  }
+
+  .logo{
+    position:relative;
+    width:56px;
+    height:56px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent;
+    border:none;
+    padding:0;
+    color:#FF8B3D;
+    flex-shrink:0;
+    cursor:pointer;
+    transition:transform .2s;
+  }
+
+  .logo svg{
+    width:46px;
+    height:46px;
+    display:block;
+  }
+
+  .logo::after{
+    content:'←';
+    position:absolute;
+    top:-4px;
+    left:-6px;
+    width:22px;
+    height:22px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#FF6A00;
+    color:#fff;
+    font-size:13px;
+    font-weight:800;
+    border-radius:50%;
+    box-shadow:0 2px 6px rgba(0,0,0,.3);
+    line-height:1;
+    pointer-events:none;
+  }
+
+  .logo:hover{transform:scale(1.08);}
+  .logo:active{transform:scale(.94);}
+
+  h1{
+    margin:0;
+    font-family:"Fredoka",sans-serif;
+    font-size:24px;
+    font-weight:700;
+    letter-spacing:.4px;
+    line-height:1.1;
+    text-shadow:0 2px 4px rgba(0,0,0,.12);
+    color:#fff;
+  }
+
+  .subtitle{
+    margin-top:2px;
+    font-size:12.5px;
+    opacity:.85;
+    font-weight:600;
+    color:#fff;
+  }
+
+  .header-actions{
+    display:flex;
+    gap:10px;
+    flex-shrink:0;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+
+  .icon-btn{
+    position:relative;
+    width:48px;
+    height:48px;
+    border:none;
+    border-radius:16px;
+    background:rgba(255,255,255,.18);
+    color:#fff;
+    font-size:22px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.22s;
+    font-family:inherit;
+    line-height:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+  }
+
+  .icon-btn svg{
+    width:22px;
+    height:22px;
+    display:block;
+  }
+
+  .icon-btn:hover{
+    background:var(--orange);
+    transform:translateY(-2px) rotate(6deg) scale(1.06);
+  }
+
+  .icon-btn:active{transform:scale(.95);}
+
+  .back-btn.hidden{display:none !important;}
+
+  .score-bar{
+    background:var(--orange);
+    color:#fff;
+    padding:8px 16px;
+    border-radius:30px;
+    font-size:13px;
+    font-weight:700;
+    box-shadow:0 4px 12px rgba(255,140,66,.3);
+    white-space:nowrap;
+    transition:background .3s;
+  }
+
+  .score-bar span{
+    color:#fff;
+    font-weight:800;
+    font-size:15px;
+  }
+
+  .score-bar.hidden{display:none !important;}
+
+  /* ============================================================
+     КОНТЕЙНЕР
+     ============================================================ */
+
+  .container{
+    max-width:960px;
+    margin:0 auto;
+    padding:20px 16px 40px;
+  }
+
+  main{min-height:520px;}
+
+  .game-header{text-align:center;margin-bottom:16px;}
+  .game-header h2{
+    font-size:22px;
+    margin-bottom:6px;
+    color:var(--blue-dark);
+    font-weight:800;
+    transition:color .3s;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+  }
+  .game-header h2 svg{
+    width:24px;
+    height:24px;
+    flex-shrink:0;
+  }
+  .subtitle-inline{font-size:14px;color:var(--text-muted);font-weight:600;line-height:1.4;}
+
+  /* ============================================================
+     PANEL
+     ============================================================ */
+
+  .panel{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:26px;
+    box-shadow:0 8px 24px rgba(30,63,138,.06);
+    margin-bottom:20px;
+    transition:background .3s, border-color .3s;
+  }
+
+  .field{margin-bottom:22px;}
+  .field:last-child{margin-bottom:0;}
+  .field-label{
+    display:block;
+    font-size:13px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--text-muted);
+    margin-bottom:12px;
+    transition:color .3s;
+  }
+
+  .pills{display:flex;gap:10px;flex-wrap:wrap;}
+
+  .pill{
+    padding:10px 18px;
+    border-radius:14px;
+    border:2px solid var(--border);
+    background:var(--card);
+    color:var(--text-muted);
+    font-family:inherit;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+    transition:.15s;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .pill svg{
+    width:14px;
+    height:14px;
+    flex-shrink:0;
+  }
+
+  .pill:hover{border-color:var(--blue);color:var(--blue);}
+  .pill.on{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 6px 16px rgba(30,63,138,.25);}
+  .pill.on.easy{background:var(--green);border-color:var(--green);}
+  .pill.on.medium{background:var(--orange);border-color:var(--orange);}
+  .pill.on.hard{background:var(--red);border-color:var(--red);}
+
+  .btn-main{
+    display:block;
+    width:100%;
+    margin:24px auto 0;
+    padding:18px 40px;
+    border-radius:14px;
+    border:none;
+    background:var(--orange);
+    color:#fff;
+    font-family:inherit;
+    font-size:17px;
+    font-weight:800;
+    cursor:pointer;
+    transition:.2s;
+    letter-spacing:.5px;
+    box-shadow:0 8px 20px rgba(255,106,0,.3);
+  }
+
+  .btn-main:hover{background:var(--orange-dark);transform:translateY(-2px);}
+  .btn-main:active{transform:translateY(0);}
+  .btn-main:disabled{background:#C9D3E0;box-shadow:none;cursor:default;transform:none;}
+
+  .btn-secondary{
+    display:block;
+    margin:8px auto 0;
+    padding:12px 30px;
+    border-radius:14px;
+    border:none;
+    background:transparent;
+    color:var(--blue-dark);
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.2s;
+  }
+
+  .btn-secondary:hover{background:var(--blue-light);}
+
+  .actions{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-top:18px;
+  }
+
+  .actions .btn-main,.actions .btn-secondary{
+    width:auto;
+    margin:0;
+    padding:14px 28px;
+    font-size:15px;
+  }
+
+  .actions .btn-secondary{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .actions .btn-secondary svg{
+    width:16px;
+    height:16px;
+  }
+
+  .actions .btn-main{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .actions .btn-main svg{
+    width:16px;
+    height:16px;
+  }
+
+  .setting-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:10px 14px;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:12px;
+    font-size:14px;
+    font-weight:700;
+    margin-bottom:10px;
+    transition:background .3s, border-color .3s;
+  }
+
+  .switch{position:relative;display:inline-block;width:46px;height:26px;flex:0 0 auto;}
+  .switch input{opacity:0;width:0;height:0;position:absolute;}
+  .slider{position:absolute;inset:0;background:#C9D3E0;border-radius:999px;cursor:pointer;transition:.2s;}
+  .slider::before{content:"";position:absolute;height:20px;width:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+  .switch input:checked + .slider{background:var(--orange);}
+  .switch input:checked + .slider::before{transform:translateX(20px);}
+
+  .progress{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:14px;
+    font-size:13px;
+    color:var(--text-muted);
+    font-weight:700;
+    transition:color .3s;
+  }
+
+  .bar{flex:1;height:8px;background:var(--blue-light);border-radius:999px;overflow:hidden;}
+  .bar span{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--orange),var(--blue));border-radius:999px;transition:width .3s ease;}
+
+  /* ============================================================
+     STAGE — большое поле с текстом и цифрами
+     ============================================================ */
+
+  .stage-wrap{
+    position:relative;
+    background:linear-gradient(180deg,var(--stage-1),var(--stage-2));
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:70px 24px;
+    min-height:440px;
+    overflow:hidden;
+    margin-bottom:16px;
+    transition:background .3s, border-color .3s;
+  }
+
+  .stage-wrap::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 15% 15%,rgba(255,106,0,.10),transparent 45%),
+      radial-gradient(circle at 85% 85%,rgba(30,63,138,.10),transparent 45%);
+    pointer-events:none;
+  }
+
+  .text-card{
+    position:relative;
+    z-index:2;
+    max-width:680px;
+    margin:0 auto;
+    background:var(--card);
+    border-radius:18px;
+    padding:30px 34px;
+    box-shadow:0 10px 28px rgba(30,63,138,.10);
+    font-size:21px;
+    line-height:1.8;
+    letter-spacing:.2px;
+    transition:filter .3s, opacity .3s, background .3s;
+  }
+
+  .stage-wrap.dim .text-card{filter:blur(2px);opacity:.55;}
+
+  .text-title{
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--orange-dark);
+    margin-bottom:10px;
+  }
+
+  /* ===== ЦИФРА ===== */
+
+  .digit-slot{
+    position:absolute;
+    z-index:5;
+    pointer-events:none;
+  }
+
+  .digit{
+    position:relative;
+    font-size:44px;
+    font-weight:900;
+    color:var(--orange-dark);
+    line-height:1;
+    text-shadow:0 0 22px rgba(255,106,0,.75);
+    animation:popDigit .22s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  .digit::before{
+    content:"";
+    position:absolute;
+    inset:-16px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(255,106,0,.38),transparent 70%);
+    z-index:-1;
+    animation:glowDigit 1.6s ease-in-out infinite;
+  }
+
+  @keyframes popDigit{from{transform:scale(.5) rotate(-8deg);opacity:0;}to{transform:scale(1) rotate(0);opacity:1;}}
+  @keyframes glowDigit{0%,100%{opacity:.7;transform:scale(1);}50%{opacity:1;transform:scale(1.1);}}
+
+  .ready-overlay{
+    position:absolute;
+    inset:0;
+    background:var(--overlay);
+    backdrop-filter:blur(3px);
+    -webkit-backdrop-filter:blur(3px);
+    z-index:10;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:8px;
+    border-radius:22px;
+    transition:opacity .3s, background .3s;
+  }
+
+  .ready-overlay .count{
+    font-size:96px;
+    font-weight:900;
+    color:#fff;
+    line-height:1;
+    animation:pop .4s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  .ready-overlay .lbl{
+    font-size:15px;
+    font-weight:800;
+    color:#fff;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    opacity:.9;
+  }
+
+  @keyframes pop{0%{transform:scale(0);}100%{transform:scale(1);}}
+
+  .q{
+    margin-bottom:18px;
+    padding:16px 18px;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:16px;
+    transition:background .3s, border-color .3s;
+  }
+
+  .q p{margin:0 0 12px;font-size:15px;font-weight:700;line-height:1.4;}
+
+  .q .num{
+    display:inline-flex;
+    width:24px;
+    height:24px;
+    border-radius:8px;
+    background:var(--orange);
+    color:#fff;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    margin-right:8px;
+    font-weight:900;
+  }
+
+  .open-answer{
+    width:100%;
+    background:var(--card);
+    border:2px solid var(--border);
+    color:var(--text);
+    padding:12px 14px;
+    border-radius:12px;
+    font-family:inherit;
+    font-size:14.5px;
+    font-weight:600;
+    transition:.15s;
+    outline:none;
+  }
+
+  .open-answer:focus{border-color:var(--orange);box-shadow:0 0 0 4px rgba(255,106,0,.15);}
+
+  .q-actions{margin-top:10px;display:flex;gap:8px;}
+
+  .mini-btn{
+    background:var(--orange-light);
+    border:1px solid var(--orange-light);
+    color:var(--orange-dark);
+    font-family:inherit;
+    font-size:13px;
+    font-weight:800;
+    padding:8px 16px;
+    border-radius:10px;
+    cursor:pointer;
+    transition:.15s;
+  }
+
+  .mini-btn:hover{background:var(--orange);color:#fff;border-color:var(--orange);}
+  .mini-btn:disabled{opacity:.55;cursor:default;background:var(--bg);color:var(--text-muted);border-color:var(--border);}
+
+  .expected{
+    margin-top:12px;
+    padding:12px 14px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-left:4px solid var(--blue);
+    border-radius:12px;
+    animation:fadeIn .25s ease;
+  }
+
+  .expected .exp-label{
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    margin-bottom:6px;
+  }
+
+  .expected .exp-text{
+    font-size:15px;
+    font-weight:700;
+    color:var(--blue-dark);
+    line-height:1.4;
+    margin-bottom:12px;
+  }
+
+  .self-check{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .self-label{font-size:13px;color:var(--text-muted);font-weight:700;}
+
+  .self-btn{
+    padding:8px 14px;
+    border-radius:10px;
+    border:2px solid var(--border);
+    background:var(--card);
+    font-family:inherit;
+    font-size:13px;
+    font-weight:800;
+    cursor:pointer;
+    transition:.15s;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  .self-btn svg{
+    width:13px;
+    height:13px;
+    flex-shrink:0;
+  }
+
+  .self-btn.ok{color:#166534;}
+  .self-btn.ok:hover{border-color:var(--green);background:#DCFCE7;}
+  .self-btn.ok.on{border-color:var(--green);background:var(--green);color:#fff;}
+  .self-btn.no{color:#991B1B;}
+  .self-btn.no:hover{border-color:var(--red);background:#FEE2E2;}
+  .self-btn.no.on{border-color:var(--red);background:var(--red);color:#fff;}
+
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+
+  .hidden{display:none !important;}
+
+  .digit-input-wrap{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:20px 0;}
+
+  .digit-input{
+    width:64px;
+    height:80px;
+    border-radius:16px;
+    border:3px solid var(--border);
+    background:var(--card);
+    font-size:38px;
+    font-weight:900;
+    color:var(--blue-dark);
+    text-align:center;
+    font-family:inherit;
+    transition:.15s;
+    outline:none;
+  }
+
+  .digit-input:focus{border-color:var(--orange);box-shadow:0 0 0 4px rgba(255,106,0,.18);}
+  .digit-input.filled{border-color:var(--blue);background:var(--blue-light);}
+  .digit-input.ok{border-color:var(--green);background:#DCFCE7;color:#166534;}
+  .digit-input.no{border-color:var(--red);background:#FEE2E2;color:#991B1B;}
+
+  .result-screen{text-align:center;padding:20px;}
+
+  .result-screen .big{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:12px;
+    animation:pop .5s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  .result-screen .big svg{
+    width:72px;
+    height:72px;
+  }
+
+  .result-screen h2{
+    font-size:26px;
+    margin-bottom:10px;
+    color:var(--blue-dark);
+    font-weight:800;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+  }
+  .result-screen h2 svg{
+    width:22px;
+    height:22px;
+    flex-shrink:0;
+    color:var(--orange);
+  }
+  .result-screen p{color:var(--text-muted);font-size:15px;margin:6px 0;font-weight:600;line-height:1.5;}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:20px 0;}
+
+  .stat{
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:16px 12px;
+    text-align:center;
+    transition:background .3s, border-color .3s;
+  }
+
+  .stat b{display:block;font-size:28px;color:var(--blue-dark);font-weight:900;margin-bottom:4px;}
+  .stat.good b{color:var(--green);}
+  .stat.bad b{color:var(--red);}
+  .stat.warn b{color:var(--orange-dark);}
+  .stat span{font-size:12px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+
+  .feedback{
+    display:flex;
+    gap:10px;
+    padding:14px 18px;
+    border-radius:14px;
+    background:var(--orange-light);
+    border:1px solid #FCD9B8;
+    color:var(--orange-dark);
+    font-weight:700;
+    font-size:14.5px;
+    line-height:1.5;
+    margin-top:10px;
+    text-align:left;
+    transition:background .3s;
+    align-items:flex-start;
+  }
+
+  .feedback svg{
+    width:18px;
+    height:18px;
+    flex-shrink:0;
+    margin-top:2px;
+  }
+
+  .feedback.good{background:#DCFCE7;border-color:#A7F3D0;color:#166534;}
+  .feedback.mixed{background:#FEF3C7;border-color:#FDE68A;color:#92400E;}
+
+  .confetti{position:absolute;inset:0;pointer-events:none;z-index:5;overflow:hidden;border-radius:22px;}
+  .confetti span{position:absolute;width:10px;height:10px;border-radius:2px;animation:fall 1.4s ease-out forwards;}
+  @keyframes fall{0%{transform:translateY(0) rotate(0);opacity:1;}100%{transform:translateY(420px) rotate(540deg);opacity:0;}}
+
+  .hint{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    padding:12px 14px;
+    background:var(--blue-light);
+    border-radius:12px;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--blue-dark);
+    line-height:1.5;
+    transition:background .3s, color .3s;
+    text-align:left;
+  }
+
+  .hint svg{
+    width:18px;
+    height:18px;
+    flex-shrink:0;
+    margin-top:1px;
+  }
+
+  .hint-center{
+    justify-content:center;
+    text-align:center;
+  }
+
+  /* ============================================================
+     МОДАЛКА СПРАВКИ
+     ============================================================ */
+
+  .modal{
+    position:fixed;
+    inset:0;
+    background:var(--overlay);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .25s, visibility .25s, background .3s;
+    z-index:1500;
+  }
+
+  .modal.open{opacity:1;visibility:visible;}
+
+  .modal-card{
+    background:var(--card);
+    border-radius:28px;
+    max-width:480px;
+    width:100%;
+    max-height:90vh;
+    display:flex;
+    flex-direction:column;
+    box-shadow:0 24px 70px rgba(0,0,0,.35);
+    transform:translateY(24px) scale(.95);
+    transition:transform .42s cubic-bezier(.34, 1.56, .64, 1), background .3s;
+    overflow:hidden;
+  }
+
+  .modal.open .modal-card{transform:translateY(0) scale(1);}
+
+  .modal-header{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:22px 24px 20px;
+    background:linear-gradient(135deg, var(--modal-grad-1) 0%, var(--modal-grad-2) 60%, var(--modal-grad-3) 100%);
+    color:#fff;
+    transition:background .3s;
+  }
+
+  .modal-header h2{
+    font-family:"Fredoka",sans-serif;
+    font-size:22px;
+    font-weight:600;
+    margin:0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .modal-header h2 svg{
+    width:22px;
+    height:22px;
+    flex-shrink:0;
+  }
+
+  .modal-close{
+    width:40px;
+    height:40px;
+    border:none;
+    border-radius:12px;
+    background:rgba(255,255,255,.18);
+    color:#fff;
+    font-size:24px;
+    line-height:1;
+    cursor:pointer;
+    transition:.2s;
+    font-family:inherit;
+  }
+
+  .modal-close:hover{background:var(--orange);transform:rotate(90deg);}
+
+  .modal-body{padding:22px 24px 26px;overflow-y:auto;}
+
+  .modal-body p{
+    font-size:14.5px;
+    font-weight:700;
+    color:var(--text-muted);
+    line-height:1.6;
+    margin:0 0 10px;
+  }
+
+  .modal-body p:last-child{margin-bottom:0;}
+  .modal-body b{color:var(--blue);}
+
+  /* ============================================================
+     MOBILE
+     ============================================================ */
+
+  @media (max-width:700px){
+    .header-inner{padding:14px 16px;}
+
+    h1{font-size:20px;}
+    .subtitle{font-size:11.5px;}
+    .logo{width:48px;height:48px;}
+    .logo svg{width:40px;height:40px;}
+    .logo::after{width:20px;height:20px;font-size:12px;top:-3px;left:-5px;}
+
+    .icon-btn{width:42px;height:42px;border-radius:14px;}
+    .icon-btn svg{width:20px;height:20px;}
+
+    .score-bar{font-size:12px;padding:6px 12px;}
+    .score-bar span{font-size:14px;}
+
+    .container{padding:16px 12px 30px;}
+    .panel{padding:18px;border-radius:18px;}
+
+    .stage-wrap{
+      padding:60px 14px;
+      min-height:400px;
+    }
+
+    .text-card{
+      font-size:17px;
+      padding:20px 18px;
+      max-width:100%;
+    }
+
+    .digit{font-size:34px;}
+    .digit::before{inset:-12px;}
+
+    .digit-input{width:52px;height:68px;font-size:30px;}
+
+    .result-screen .big svg{width:60px;height:60px;}
+
+    .modal-card{border-radius:24px;}
+    .modal-header{padding:18px 20px 16px;}
+    .modal-header h2{font-size:20px;}
+    .modal-body{padding:18px 18px 22px;}
+    .modal-body p{font-size:13.5px;}
+  }
+</style>
+<link rel="stylesheet" href="../../assets/menu-drawer.css">
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <button class="logo" onclick="goHome()" title="В меню" aria-label="В меню">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8"/>
+          <path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8"/>
+          <path d="M17.5 16a3.5 3.5 0 0 0 0 -7h-.5"/>
+          <path d="M19 9.3v-2.8a3.5 3.5 0 0 0 -7 0"/>
+          <path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5"/>
+          <path d="M5 9.3v-2.8a3.5 3.5 0 0 1 7 0v10"/>
+        </svg>
+      </button>
+
+      <div>
+        <h1>Двойной фокус</h1>
+        <div class="subtitle">NeuroX · внимание и чтение</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="score-bar hidden" id="score">Очки: <span id="scoreVal">0</span></div>
+      <button class="icon-btn back-btn hidden" id="backBtn" title="В меню игры" aria-label="В меню игры">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/>
+          <path d="M12 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="themeBtn" title="Сменить тему" onclick="toggleTheme()" aria-label="Сменить тему">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+        </svg>
+      </button>
+      <button class="icon-btn" title="Справка" onclick="showHelp()" aria-label="Справка">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 1.5-2.5 2-2.5 3.5"/>
+          <circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <main id="game"></main>
+</div>
+
+<!-- МОДАЛКА «СПРАВКА» -->
+<div class="modal" id="helpModal" onclick="if(event.target===this) closeHelp()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 1.5-2.5 2-2.5 3.5"/>
+          <circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+        Справка
+      </h2>
+      <button class="modal-close" onclick="closeHelp()" aria-label="Закрыть">×</button>
+    </div>
+    <div class="modal-body">
+      <p><b>Двойной фокус</b> — тренажёр на распределённое внимание. Ты читаешь текст и одновременно запоминаешь цифры, которые появляются по краям.</p>
+      <p><b>Как играть:</b> читай текст по центру. Пока читаешь — по краям вспыхивают цифры. Запоминай их по порядку. Потом отвечаешь на вопросы по содержанию и вводишь цифры.</p>
+      <p><b>Возрастная группа</b> — от неё зависит набор текстов. <b>Сложность</b> — сколько цифр и с какой скоростью они появляются.</p>
+      <p><b>DTC</b> — индекс двойной задачи. Считается по среднему между пониманием текста и точностью цифр.</p>
+      <p>Кнопка со стрелкой в шапке возвращает на экран настроек. <b>Мозг</b> в левом углу ведёт в главное меню NeuroX.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==== БАЗА ТЕКСТОВ ==== -->
+<script src="text-bank.js"></script>
+
+<!-- ==== ТРЕНАЖЁР ==== -->
+<script>
+/* ============================================================
+   ДВОЙНОЙ ФОКУС — нейротренажёр «чтение + цифры»
+   ============================================================ */
+
+const $ = id => document.getElementById(id);
+const gameEl = $("game");
+const backBtn = $("backBtn");
+const scoreEl = $("score");
+const scoreVal = $("scoreVal");
+
+const rnd = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+
+let globalScore = 0;
+function addScore(n){ globalScore += n; scoreVal.textContent = globalScore; }
+
+/* ---------- SVG-ИКОНКИ ---------- */
+const SVG = {
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
+  brain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8"/><path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8"/><path d="M17.5 16a3.5 3.5 0 0 0 0 -7h-.5"/><path d="M19 9.3v-2.8a3.5 3.5 0 0 0 -7 0"/><path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5"/><path d="M5 9.3v-2.8a3.5 3.5 0 0 1 7 0v10"/></svg>',
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3l-11 11-4 1 1-4z"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>',
+  cross: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>',
+  seed: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-7"/><path d="M12 13c0-4 3-7 7-7 0 4-3 7-7 7z"/><path d="M12 13c0-3-2-6-6-6 0 3 2 6 6 6z"/></svg>',
+  fire: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 4-4 6-4 10a4 4 0 0 0 8 0c0-2-1-3-1-3 2 1 3 3 3 5a6 6 0 1 1-12 0c0-5 6-8 6-12z"/></svg>',
+  diamond: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20"/><path d="M12 21l-4-12M12 21l4-12"/></svg>',
+  bulb: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.6 1 1.4 1 2.3h6c0-.9.4-1.7 1-2.3A7 7 0 0 0 12 2z"/></svg>',
+  trophy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8v6a4 4 0 0 1-8 0z"/><path d="M8 5H5a2 2 0 0 0 0 4h3"/><path d="M16 5h3a2 2 0 0 1 0 4h-3"/><path d="M10 13h4v5h-4z"/><path d="M8 21h8"/><path d="M12 18v3"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.3 6.8 19l1-5.8-4.2-4.1 5.8-.8z"/></svg>',
+  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3z"/><path d="M8 4v16"/><path d="M12 8h4M12 12h4"/></svg>',
+  hash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16M4 15h16"/><path d="M10 3l-2 18M16 3l-2 18"/></svg>',
+  puzzle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4a2 2 0 1 1 4 0v1h4v4h1a2 2 0 1 1 0 4h-1v4h-4v1a2 2 0 1 1-4 0v-1H6v-4H5a2 2 0 1 1 0-4h1V5h4z"/></svg>',
+  spark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/></svg>'
+};
+
+/* ---------- ТЕМА ---------- */
+const LS_THEME_KEY = 'neurox_theme';
+
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.innerHTML = theme === 'dark' ? SVG.sun : SVG.moon;
+}
+
+function getStoredTheme(){ return localStorage.getItem(LS_THEME_KEY) || ''; }
+function saveTheme(theme){ localStorage.setItem(LS_THEME_KEY, theme); }
+
+function initTheme(){
+  let theme = getStoredTheme();
+  if (!theme){
+    const prefersDark = window.matchMedia &&
+                        window.matchMedia('(prefers-color-scheme: dark)').matches;
+    theme = prefersDark ? 'dark' : 'light';
+  }
+  applyTheme(theme);
+}
+
+function toggleTheme(){
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  saveTheme(next);
+}
+
+function showHelp(){ document.getElementById('helpModal').classList.add('open'); }
+function closeHelp(){ document.getElementById('helpModal').classList.remove('open'); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeHelp();
+});
+
+initTheme();
+
+if (window.matchMedia){
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  mq.addEventListener('change', e => {
+    if (!getStoredTheme()) applyTheme(e.matches ? 'dark' : 'light');
+  });
+}
+
+function goHome(){
+  location.href = "../index.html";
+}
+
+/* ---------- Звук ---------- */
+let audioCtx = null;
+function initAudio(){
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
+  }
+}
+function beep(freq, dur=.15, type="sine", vol=.08){
+  if (!state.settings.sound || !audioCtx) return;
+  try{
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.type = type; o.frequency.value = freq;
+    const t = audioCtx.currentTime;
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.start(t); o.stop(t + dur + .02);
+  }catch(e){}
+}
+function sfxClick(){ beep(440,.05,"triangle",.06); }
+function sfxShow(){ beep(880,.08,"sine",.05); }
+function sfxOk(){ beep(720,.1); setTimeout(()=>beep(960,.14),90); }
+function sfxErr(){ beep(180,.25,"triangle",.12); }
+function sfxWin(){ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.18), i*110)); }
+function sfxCount(){ beep(660,.12,"triangle",.07); }
+
+function speak(text){
+  if (!state.settings.voice || !("speechSynthesis" in window)) return;
+  try{
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "ru-RU"; u.rate = 0.95; u.pitch = 1.05;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ---------- Уровни ---------- */
+const LEVELS = {
+  1:{count:3, interval:4200, show:1800, leadIn:2000, label:"3 цифры · медленно"},
+  2:{count:4, interval:3600, show:1500, leadIn:1800, label:"4 цифры · спокойно"},
+  3:{count:5, interval:3000, show:1300, leadIn:1600, label:"5 цифр · средне"},
+  4:{count:6, interval:2500, show:1100, leadIn:1400, label:"6 цифр · быстро"},
+  5:{count:8, interval:2000, show:900,  leadIn:1200, label:"8 цифр · эксперт"}
+};
+
+const AGE_LABELS = { "5-7": "5–7 лет", "8-11": "8–11 лет", "12+": "12+ лет" };
+
+/* ---------- Состояние ---------- */
+const state = {
+  level: Math.max(1, Math.min(5, +localStorage.getItem('nr_level') || 1)),
+  age: localStorage.getItem('nr_age') || "8-11",
+  settings: { sound:true, voice:true },
+  current: null,
+  digitIndex: 0,
+  digitTimeout: null,
+  digitInterval: null,
+  selfCheck: []
+};
+
+function saveLevel(){ localStorage.setItem('nr_level', state.level); }
+function saveAge(){ localStorage.setItem('nr_age', state.age); }
+
+function getSeen(){
+  try { return JSON.parse(localStorage.getItem('nr_seen_' + state.age)) || []; }
+  catch(e){ return []; }
+}
+function setSeen(list){ localStorage.setItem('nr_seen_' + state.age, JSON.stringify(list)); }
+function addSeen(title){
+  const s = getSeen();
+  if (!s.includes(title)) s.push(title);
+  const total = getTextsByAge(state.age).length;
+  if (s.length >= total) s.length = 0;
+  setSeen(s);
+}
+
+function clearTimers(){
+  clearTimeout(state.digitTimeout);
+  clearInterval(state.digitInterval);
+  state.digitTimeout = null;
+  state.digitInterval = null;
+}
+
+/* ============================================================
+   ЭКРАН НАСТРОЕК
+   ============================================================ */
+function showStartScreen(){
+  clearTimers();
+  backBtn.classList.add("hidden");
+  scoreEl.classList.add("hidden");
+
+  const cfg = LEVELS[state.level];
+  const lastRun = localStorage.getItem('nr_last');
+  const totalTexts = getTextsByAge(state.age).length;
+  const seenCount = getSeen().length;
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>${SVG.brain} Двойной фокус</h2>
+      <div class="subtitle-inline">Читай текст и одновременно запоминай цифры по краям</div>
+    </div>
+
+    <div class="panel">
+      <div class="field">
+        <div class="field-label">Возрастная группа</div>
+        <div class="pills" id="ageRow">
+          <button class="pill easy"   data-a="5-7">5–7</button>
+          <button class="pill medium" data-a="8-11">8–11</button>
+          <button class="pill hard"   data-a="12+">12+</button>
+        </div>
+        <div class="subtitle-inline" style="margin-top:10px" id="ageHint">
+          В базе ${totalTexts} текст(ов) для группы «${AGE_LABELS[state.age]}» · показано: ${seenCount}
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Сложность цифровой задачи</div>
+        <div class="pills" id="lvlRow">
+          <button class="pill easy"   data-l="1">1 ${SVG.seed}</button>
+          <button class="pill easy"   data-l="2">2</button>
+          <button class="pill medium" data-l="3">3 ${SVG.fire}</button>
+          <button class="pill hard"   data-l="4">4</button>
+          <button class="pill hard"   data-l="5">5 ${SVG.diamond}</button>
+        </div>
+        <div class="subtitle-inline" id="levelHint" style="margin-top:10px">${cfg.label}</div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Настройки</div>
+        <div class="setting-row">
+          <label for="s-voice">Озвучка</label>
+          <label class="switch"><input type="checkbox" id="s-voice" ${state.settings.voice?'checked':''}><span class="slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <label for="s-sound">Звуки игры</label>
+          <label class="switch"><input type="checkbox" id="s-sound" ${state.settings.sound?'checked':''}><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <div class="hint">
+        ${SVG.bulb}
+        <div><b>Как играть:</b> читай текст по центру. Пока читаешь — по краям появляются цифры. Запоминай их по порядку. После текста — вопросы по содержанию и ввод цифр.</div>
+      </div>
+
+      ${lastRun ? `<div class="feedback" style="margin-top:18px;background:var(--blue-light);border-color:rgba(30,63,138,.2);color:var(--blue-dark);">${SVG.refresh}<div>Прошлый раз: ${lastRun}</div></div>` : ''}
+
+      <button class="btn-main" id="startBtn">Начать →</button>
+      <button class="btn-secondary" id="resetBtn">Сбросить прогресс</button>
+    </div>
+  `;
+
+  $("ageRow").querySelectorAll(".pill").forEach(b=>{
+    if (b.dataset.a === state.age) b.classList.add("on");
+  });
+  $("lvlRow").querySelectorAll(".pill").forEach(b=>{
+    if (+b.dataset.l === state.level) b.classList.add("on");
+  });
+
+  $("ageRow").querySelectorAll(".pill").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      $("ageRow").querySelectorAll(".pill").forEach(b=>b.classList.remove("on"));
+      btn.classList.add("on");
+      state.age = btn.dataset.a;
+      saveAge();
+      sfxClick();
+      const total = getTextsByAge(state.age).length;
+      const seen = getSeen().length;
+      $("ageHint").textContent = `В базе ${total} текст(ов) для группы «${AGE_LABELS[state.age]}» · показано: ${seen}`;
+    });
+  });
+
+  $("lvlRow").querySelectorAll(".pill").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      $("lvlRow").querySelectorAll(".pill").forEach(b=>b.classList.remove("on"));
+      btn.classList.add("on");
+      state.level = +btn.dataset.l;
+      saveLevel();
+      $("levelHint").textContent = LEVELS[state.level].label;
+      sfxClick();
+    });
+  });
+
+  $("s-voice").addEventListener("change", e=>{ state.settings.voice = e.target.checked; });
+  $("s-sound").addEventListener("change", e=>{ state.settings.sound = e.target.checked; });
+
+  $("startBtn").addEventListener("click", startRun);
+  $("resetBtn").addEventListener("click", ()=>{
+    localStorage.removeItem('nr_level');
+    localStorage.removeItem('nr_age');
+    localStorage.removeItem('nr_last');
+    ["5-7","8-11","12+"].forEach(a => localStorage.removeItem('nr_seen_' + a));
+    state.level = 1;
+    state.age = "8-11";
+    showStartScreen();
+  });
+}
+
+/* ============================================================
+   СТАРТ
+   ============================================================ */
+function startRun(){
+  backBtn.classList.remove("hidden");
+  scoreEl.classList.remove("hidden");
+  clearTimers();
+
+  const cfg = LEVELS[state.level];
+  const seen = getSeen();
+  const text = pickText(state.age, seen);
+  addSeen(text.title);
+
+  const digits = [];
+  const avail = [1,2,3,4,5,6,7,8,9];
+  while (digits.length < cfg.count) {
+    const i = rnd(0, avail.length - 1);
+    digits.push(avail.splice(i, 1)[0]);
+  }
+
+  state.current = { text, digits, cfg };
+  state.digitIndex = 0;
+  state.selfCheck = new Array(text.q.length).fill(null);
+
+  renderTaskScreen();
+}
+
+/* ============================================================
+   ЭКРАН ЧТЕНИЯ
+   ============================================================ */
+function renderTaskScreen(){
+  const { text, cfg, digits } = state.current;
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>Прочитай и запомни цифры</h2>
+      <div class="subtitle-inline">${AGE_LABELS[state.age]} · уровень ${state.level} · ${cfg.label}</div>
+    </div>
+
+    <div class="panel">
+      <div class="progress">
+        <div class="bar"><span id="barFill" style="width:0%"></span></div>
+        <div id="progressLabel">Цифр: 0 / ${digits.length}</div>
+      </div>
+
+      <div class="stage-wrap" id="stage">
+        <div class="text-card" id="textCard">
+          <div class="text-title">${text.title} · ${text.author}</div>
+          <div id="textBody">${text.body}</div>
+        </div>
+        <div class="ready-overlay" id="readyOverlay">
+          <div class="lbl">Приготовься</div>
+          <div class="count" id="readyCount">3</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn-main" id="doneBtn" disabled>Я прочитал(а) →</button>
+        <button class="btn-secondary" id="menuBtn">${SVG.gear}<span>Меню</span></button>
+      </div>
+    </div>
+  `;
+
+  $("menuBtn").addEventListener("click", ()=>{ clearTimers(); showStartScreen(); });
+  $("doneBtn").addEventListener("click", ()=>{ clearTimers(); renderQuestionsScreen(); });
+
+  startCountdown();
+}
+
+function startCountdown(){
+  const overlay = $("readyOverlay");
+  const countEl = $("readyCount");
+  if (!overlay || !countEl) return;
+
+  let n = 3;
+  countEl.textContent = n;
+  sfxCount();
+
+  const tick = ()=>{
+    n--;
+    if (n > 0) {
+      countEl.textContent = n;
+      countEl.style.animation = "none";
+      void countEl.offsetWidth;
+      countEl.style.animation = "";
+      sfxCount();
+      state.digitTimeout = setTimeout(tick, 700);
+    } else {
+      overlay.style.opacity = "0";
+      setTimeout(()=>overlay.remove(), 320);
+      beginDigits();
+    }
+  };
+  state.digitTimeout = setTimeout(tick, 700);
+}
+
+function beginDigits(){
+  const { cfg } = state.current;
+  speak("Читай и запоминай цифры");
+
+  state.digitTimeout = setTimeout(()=>{
+    tickDigit();
+    if (state.digitIndex < state.current.digits.length) {
+      state.digitInterval = setInterval(tickDigit, cfg.interval);
+    }
+  }, 1500);
+}
+
+function tickDigit(){
+  const { digits } = state.current;
+  if (state.digitIndex >= digits.length) {
+    clearInterval(state.digitInterval);
+    state.digitInterval = null;
+    const btn = $("doneBtn");
+    if (btn) btn.disabled = false;
+    const lbl = $("progressLabel");
+    if (lbl) lbl.textContent = `Цифр: ${digits.length} / ${digits.length} — готово`;
+    const fill = $("barFill");
+    if (fill) fill.style.width = "100%";
+    return;
+  }
+
+  const d = digits[state.digitIndex++];
+  spawnDigit(d);
+  sfxShow();
+
+  const lbl = $("progressLabel");
+  if (lbl) lbl.textContent = `Цифр: ${state.digitIndex} / ${digits.length}`;
+  const fill = $("barFill");
+  if (fill) fill.style.width = (state.digitIndex / digits.length * 100) + "%";
+
+  if (state.digitIndex >= digits.length) {
+    const btn = $("doneBtn");
+    if (btn) btn.disabled = false;
+  }
+}
+
+function spawnDigit(d){
+  const stage = $("stage");
+  if (!stage) return;
+
+  const slot = document.createElement("div");
+  slot.className = "digit-slot";
+
+  const el = document.createElement("div");
+  el.className = "digit";
+  el.textContent = d;
+  slot.appendChild(el);
+
+  const isMobile = window.innerWidth < 700;
+  const edgeOffset = isMobile ? 34 : 48;
+  const sideMin = 18;
+  const sideMax = 82;
+
+  const edge = rnd(0, 3);
+  const sidePercent = rnd(sideMin, sideMax);
+
+  if (edge === 0) {
+    slot.style.top = edgeOffset + "px";
+    slot.style.left = sidePercent + "%";
+    slot.style.transform = "translate(-50%, 0)";
+  } else if (edge === 1) {
+    slot.style.bottom = edgeOffset + "px";
+    slot.style.left = sidePercent + "%";
+    slot.style.transform = "translate(-50%, 0)";
+  } else if (edge === 2) {
+    slot.style.left = edgeOffset + "px";
+    slot.style.top = sidePercent + "%";
+    slot.style.transform = "translate(0, -50%)";
+  } else {
+    slot.style.right = edgeOffset + "px";
+    slot.style.top = sidePercent + "%";
+    slot.style.transform = "translate(0, -50%)";
+  }
+
+  stage.appendChild(slot);
+
+  stage.classList.add("dim");
+  setTimeout(()=>stage.classList.remove("dim"), 240);
+
+  setTimeout(()=>slot.remove(), state.current.cfg.show);
+}
+
+/* ============================================================
+   ЭКРАН ВОПРОСОВ
+   ============================================================ */
+function renderQuestionsScreen(){
+  const { text } = state.current;
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>Проверка понимания</h2>
+      <div class="subtitle-inline">«${text.title}» — ${text.author}</div>
+    </div>
+
+    <div class="panel">
+      <div class="hint" style="margin-bottom:16px">
+        ${SVG.pencil}
+        <div>Напиши свой ответ, затем нажми <b>«Показать ответ»</b> и сравни с эталоном. Оцени себя сам(а).</div>
+      </div>
+      <div id="qList"></div>
+      <button class="btn-main" id="toDigits" disabled>Дальше →</button>
+    </div>
+  `;
+
+  const list = $("qList");
+  text.q.forEach((q, qi)=>{
+    const div = document.createElement("div");
+    div.className = "q";
+    div.innerHTML = `
+      <p><span class="num">${qi+1}</span>${q.t}</p>
+      <input type="text" class="open-answer" data-idx="${qi}" placeholder="Твой ответ..." autocomplete="off">
+      <div class="q-actions">
+        <button class="mini-btn" data-show="${qi}">Показать ответ</button>
+      </div>
+      <div class="expected hidden" id="exp-${qi}">
+        <div class="exp-label">Эталонный ответ</div>
+        <div class="exp-text">${q.answer}</div>
+        <div class="self-check">
+          <span class="self-label">Мой ответ:</span>
+          <button class="self-btn ok" data-self="${qi}" data-val="1">${SVG.check}<span>Верно</span></button>
+          <button class="self-btn no" data-self="${qi}" data-val="0">${SVG.cross}<span>Неверно</span></button>
+        </div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+
+  list.querySelectorAll("[data-show]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const idx = btn.dataset.show;
+      document.getElementById("exp-" + idx).classList.remove("hidden");
+      btn.disabled = true;
+      btn.textContent = "Ответ показан";
+      sfxClick();
+    });
+  });
+
+  list.querySelectorAll("[data-self]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const idx = +btn.dataset.self;
+      const val = +btn.dataset.val;
+      state.selfCheck[idx] = val;
+
+      const wrap = btn.closest(".self-check");
+      wrap.querySelectorAll(".self-btn").forEach(b => b.classList.remove("on"));
+      btn.classList.add("on");
+      sfxClick();
+
+      if (state.selfCheck.every(v => v !== null)) {
+        $("toDigits").disabled = false;
+      }
+    });
+  });
+
+  $("toDigits").addEventListener("click", renderDigitsScreen);
+}
+
+/* ============================================================
+   ВВОД ЦИФР
+   ============================================================ */
+function renderDigitsScreen(){
+  const { digits } = state.current;
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>Вспомни цифры</h2>
+      <div class="subtitle-inline">Введи их по порядку появления</div>
+    </div>
+
+    <div class="panel">
+      <div class="digit-input-wrap" id="digitWrap"></div>
+      <div class="hint hint-center">
+        ${SVG.bulb}
+        <div>Постарайся не подсматривать в текст. Если забыл(а) — оставь пустым.</div>
+      </div>
+      <button class="btn-main" id="finishBtn">Проверить</button>
+    </div>
+  `;
+
+  const wrap = $("digitWrap");
+  for (let i = 0; i < digits.length; i++) {
+    const inp = document.createElement("input");
+    inp.type = "text";
+    inp.inputMode = "numeric";
+    inp.maxLength = 1;
+    inp.className = "digit-input";
+    inp.dataset.idx = i;
+    inp.addEventListener("input", e=>{
+      e.target.value = e.target.value.replace(/\D/g,'');
+      e.target.classList.toggle("filled", e.target.value !== "");
+      if (e.target.value && i < digits.length - 1) wrap.children[i+1].focus();
+    });
+    inp.addEventListener("keydown", e=>{
+      if (e.key === "Backspace" && !e.target.value && i > 0) wrap.children[i-1].focus();
+    });
+    wrap.appendChild(inp);
+  }
+  if (wrap.firstChild) wrap.firstChild.focus();
+
+  $("finishBtn").addEventListener("click", finishRun);
+}
+
+/* ============================================================
+   РЕЗУЛЬТАТ
+   ============================================================ */
+function finishRun(){
+  const { text, digits } = state.current;
+
+  const right = state.selfCheck.reduce((acc, v) => acc + (v === 1 ? 1 : 0), 0);
+  const textScore = right / state.selfCheck.length;
+
+  const inputs = [...$("digitWrap").children];
+  const userDigits = inputs.map(i => i.value);
+  const correctStr = digits.join("");
+  let dRight = 0;
+  inputs.forEach((inp, i)=>{
+    if (userDigits[i] === String(digits[i])) { inp.classList.add("ok"); dRight++; }
+    else inp.classList.add("no");
+  });
+  const digitScore = dRight / digits.length;
+
+  const norm = 0.9;
+  const dtc = ((textScore + digitScore) / 2) / norm;
+
+  let newLevel = state.level;
+  if (textScore >= 0.8 && digitScore >= 0.7) newLevel = Math.min(5, state.level + 1);
+  else if (textScore < 0.5 || digitScore < 0.4) newLevel = Math.max(1, state.level - 1);
+
+  const levelledUp = newLevel > state.level;
+  const levelledDown = newLevel < state.level;
+  state.level = newLevel;
+  saveLevel();
+
+  const points = Math.round(textScore * 10 + digitScore * 10 + (levelledUp ? 5 : 0));
+  addScore(points);
+
+  localStorage.setItem('nr_last',
+    `«${text.title}» · текст ${Math.round(textScore*100)}% · цифры ${Math.round(digitScore*100)}% · DTC ${dtc.toFixed(2)}`);
+
+  let msgSvg = SVG.puzzle, msg = "", msgClass = "mixed";
+  if (textScore >= 0.8 && digitScore >= 0.8) {
+    msgSvg = SVG.fire;
+    msg = "Отлично! Смысл удержан, цифры не потеряны. Так держать!";
+    msgClass = "good";
+  } else if (textScore >= 0.8 && digitScore < 0.5) {
+    msgSvg = SVG.book;
+    msg = "Текст понял(а) отлично. Цифры теряются — попробуй группировать их по две или три и проговаривать про себя.";
+  } else if (textScore < 0.5 && digitScore >= 0.8) {
+    msgSvg = SVG.hash;
+    msg = "Цифры держишь крепко, а смысл ускользает. Читай медленнее, цепляйся за главную мысль.";
+  } else {
+    msgSvg = SVG.puzzle;
+    msg = "Задача сложная — это нормально. Попробуй ещё раз, мозг тренируется с каждым прогоном.";
+  }
+
+  const subtitle = levelledUp ? "Уровень повышен!"
+                 : levelledDown ? "Уровень снижен для закрепления"
+                 : "Уровень тот же";
+
+  const bigSvg = (textScore>=0.8 && digitScore>=0.8)
+    ? `<div style="color:var(--orange)">${SVG.trophy}</div>`
+    : textScore>=0.6
+      ? `<div style="color:var(--orange)">${SVG.star}</div>`
+      : `<div style="color:var(--blue)">${SVG.brain}</div>`;
+
+  if (dtc >= 0.9) sfxWin();
+
+  const subtitleSvg = levelledUp ? SVG.spark : "";
+
+  gameEl.innerHTML = `
+    <div class="panel">
+      <div class="result-screen">
+        <div class="big">${bigSvg}</div>
+        <h2>${subtitleSvg ? subtitleSvg : ""}${subtitle}</h2>
+        <p>«${text.title}» · ${text.author}</p>
+
+        <div class="stats">
+          <div class="stat ${textScore>=0.7?'good':textScore>=0.4?'warn':'bad'}">
+            <b>${Math.round(textScore*100)}%</b><span>Понимание</span>
+          </div>
+          <div class="stat ${digitScore>=0.7?'good':digitScore>=0.4?'warn':'bad'}">
+            <b>${Math.round(digitScore*100)}%</b><span>Цифры</span>
+          </div>
+          <div class="stat ${dtc>=0.9?'good':dtc>=0.6?'warn':'bad'}">
+            <b>${dtc.toFixed(2)}</b><span>DTC</span>
+          </div>
+          <div class="stat">
+            <b>${newLevel}</b><span>Новый ур.</span>
+          </div>
+        </div>
+
+        <div class="feedback ${msgClass}">${msgSvg}<div>${msg}</div></div>
+
+        <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--text-muted);font-weight:700;">
+          Правильные цифры: <b style="color:var(--orange-dark);font-size:16px;letter-spacing:4px;">${correctStr}</b>
+        </div>
+
+        <div class="actions">
+          <button class="btn-main" id="againBtn">${SVG.refresh}<span>Ещё раз</span></button>
+          <button class="btn-secondary" id="menuBtn">${SVG.gear}<span>Меню</span></button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  $("againBtn").addEventListener("click", startRun);
+  $("menuBtn").addEventListener("click", showStartScreen);
+
+  if (textScore >= 0.8 && digitScore >= 0.8) confettiOnPanel();
+}
+
+function confettiOnPanel(){
+  const panel = document.querySelector(".panel");
+  if (!panel) return;
+  panel.style.position = "relative";
+  panel.style.overflow = "hidden";
+
+  const wrap = document.createElement("div");
+  wrap.className = "confetti";
+  const colors = ["#FF6A00","#1E3F8A","#22C55E","#F59E0B","#EF4444"];
+  for (let i = 0; i < 30; i++) {
+    const s = document.createElement("span");
+    s.style.left = Math.random()*100 + "%";
+    s.style.top = "-20px";
+    s.style.background = colors[i % colors.length];
+    s.style.animationDelay = (Math.random()*.5) + "s";
+    s.style.animationDuration = (1 + Math.random()*.8) + "s";
+    wrap.appendChild(s);
+  }
+  panel.appendChild(wrap);
+  setTimeout(()=>wrap.remove(), 2400);
+}
+
+/* ============================================================
+   ИНИЦИАЛИЗАЦИЯ
+   ============================================================ */
+backBtn.addEventListener("click", ()=>{ clearTimers(); showStartScreen(); });
+document.addEventListener("click", initAudio, { once:true });
+
+showStartScreen();
+</script>
+
+<!-- ==== БОКОВОЕ МЕНЮ NEUROX ==== -->
+
+
+
+<script src="../../assets/menu-data.js"></script>
+<script src="../../assets/menu-drawer.js"></script>
+</body>
+</html>

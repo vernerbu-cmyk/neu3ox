@@ -4,15 +4,27 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>Светофор</title>
+<title>Светофор - NeuroX</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 :root{
   --blue:#1E3F8A;
+  --blue-soft:#3A5FA8;
+  --blue-light:#2A56C6;
+  --blue-pale:#E8EEF9;
   --orange:#FF6A00;
-  --bg:#F5F7FB;
+  --orange-soft:#FF8B3D;
+  --orange-dark:#C85100;
+  --orange-pale:#FFEADB;
+  --bg:#F4F6FB;
   --text:#24324B;
-  --shadow:0 4px 0 rgba(180,80,0,.95);
+  --text-dim:#6B7280;
+  --border:rgba(30,63,138,.10);
+  --panel-bg:#FFFFFF;
 }
 
 *{
@@ -22,8 +34,10 @@
 
 body{
   margin:0;
-  font-family:Arial,sans-serif;
-  background:var(--bg);
+  font-family:"Nunito Sans",sans-serif;
+  background-color:var(--bg);
+  background-image:radial-gradient(circle, rgba(30,63,138,.07) 1.5px, transparent 1.6px);
+  background-size:26px 26px;
   overflow:hidden;
   color:var(--text);
 }
@@ -31,28 +45,84 @@ body{
 /* ===== ВЕРХНЯЯ ПАНЕЛЬ ===== */
 
 .topbar{
-  height:72px;
+  position:relative;
+  height:88px;
   background:var(--blue);
   display:flex;
   align-items:center;
   justify-content:center;
-  position:relative;
-  box-shadow:0 2px 10px rgba(0,0,0,.12);
+  box-shadow:0 6px 20px rgba(30,63,138,.25);
+  overflow:hidden;
+}
+
+.topbar::before,
+.topbar::after{
+  content:'';
+  position:absolute;
+  border-radius:50%;
+  pointer-events:none;
+}
+
+.topbar::before{
+  width:220px;
+  height:220px;
+  top:-110px;
+  right:-60px;
+  background:rgba(255,106,0,.22);
+}
+
+.topbar::after{
+  width:170px;
+  height:170px;
+  bottom:-120px;
+  left:30px;
+  background:rgba(255,255,255,.09);
 }
 
 .title{
+  position:relative;
+  z-index:1;
   color:#fff;
-  font-size:32px;
-  font-style:italic;
+  font-family:"Fredoka",sans-serif;
+  font-size:30px;
   font-weight:700;
-  letter-spacing:.5px;
+  letter-spacing:.4px;
   user-select:none;
+  text-shadow:0 2px 6px rgba(0,0,0,.15);
+}
+
+.back-btn{
+  position:absolute;
+  left:20px;
+  top:50%;
+  transform:translateY(-50%);
+  width:48px;
+  height:48px;
+  border:none;
+  border-radius:16px;
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  font-size:22px;
+  cursor:pointer;
+  transition:.22s;
+  z-index:2;
+  font-family:inherit;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  box-shadow:none;
+}
+
+.back-btn:hover{
+  background:var(--orange);
+  transform:translateY(-50%) rotate(-6deg) scale(1.06);
 }
 
 /* ===== ОСНОВНОЙ ЭКРАН ===== */
 
 #app{
-  height:calc(100vh - 72px);
+  height:calc(100vh - 88px);
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -64,14 +134,21 @@ body{
 
 #stimulus{
   font-size:clamp(58px, 10vw, 110px);
-  min-height:150px;
+  min-height:170px;
   display:flex;
   align-items:center;
   justify-content:center;
   text-align:center;
-  padding:10px;
+  padding:20px 30px;
   line-height:1.3;
   word-break:break-word;
+  background:var(--panel-bg);
+  border:2px solid var(--border);
+  border-radius:28px;
+  box-shadow:0 6px 0 rgba(30,63,138,.10),
+             0 14px 30px rgba(30,63,138,.08);
+  min-width:min(92vw, 640px);
+  transition:transform .18s ease;
 }
 
 /* ===== ПАНЕЛЬ ===== */
@@ -81,42 +158,59 @@ body{
   gap:12px;
   flex-wrap:wrap;
   justify-content:center;
-  margin-top:10px;
+  align-items:center;
+  margin-top:22px;
+  padding:14px 20px;
+  background:var(--panel-bg);
+  border:2px solid var(--border);
+  border-radius:22px;
+  box-shadow:0 6px 0 rgba(30,63,138,.10),
+             0 14px 26px rgba(30,63,138,.08);
 }
 
 /* КНОПКИ */
 
 button{
   border:none;
-  border-radius:14px;
+  border-radius:12px;
   background:var(--orange);
   color:#fff;
+  font-family:"Nunito Sans",sans-serif;
   font-size:15px;
-  font-weight:700;
-  padding:12px 18px;
+  font-weight:800;
+  letter-spacing:.3px;
+  padding:12px 20px;
   cursor:pointer;
+  box-shadow:0 4px 0 var(--orange-dark);
+  transition:background .15s, transform .12s, box-shadow .12s;
+}
 
-  box-shadow:var(--shadow);
-  transition:.08s ease;
+button:hover{
+  background:var(--orange-soft);
 }
 
 button:active{
   transform:translateY(4px);
-  box-shadow:none;
+  box-shadow:0 1px 0 var(--orange-dark);
 }
 
 /* SELECT */
 
 select{
-  border:2px solid var(--orange);
+  border:2px solid transparent;
   border-radius:12px;
-  padding:10px 14px;
+  padding:11px 16px;
+  font-family:"Nunito Sans",sans-serif;
   font-size:15px;
-  background:white;
-  color:var(--text);
+  font-weight:800;
+  background:var(--blue-pale);
+  color:var(--blue);
+  cursor:pointer;
   outline:none;
+  transition:.2s;
 }
 
+select:hover,
 select:focus{
   border-color:var(--orange);
 }
@@ -128,12 +222,10 @@ select:focus{
   bottom:0;
   left:0;
   right:0;
-
-  background:#fff;
-  border-top:1px solid #dfe6f3;
-
-  padding:12px 14px;
-  box-shadow:0 -2px 10px rgba(0,0,0,.06);
+  background:var(--panel-bg);
+  border-top:2px solid var(--border);
+  padding:14px 18px 18px;
+  box-shadow:0 -4px 14px rgba(30,63,138,.06);
 }
 
 .legend-row{
@@ -143,29 +235,37 @@ select:focus{
   flex-wrap:wrap;
 }
 
+.legend-row + .legend-row{
+  margin-top:10px;
+}
+
 .rule{
   font-size:24px;
   display:flex;
   align-items:center;
-  gap:6px;
+  gap:8px;
   white-space:nowrap;
 }
 
 .rule span{
+  font-family:"Nunito Sans",sans-serif;
   font-size:15px;
-  color:#4c5c78;
+  font-weight:700;
+  color:var(--text-dim);
 }
 
 /* ===== ПОДПИСЬ ===== */
 
 .signature{
   position:fixed;
-  right:10px;
+  right:14px;
   bottom:8px;
-  font-size:11px;
-  color:#9aa7bf;
+  font-size:12px;
+  font-weight:600;
+  color:#98A3BF;
   pointer-events:none;
   user-select:none;
+  z-index:5;
 }
 
 /* ===== МОБИЛЬНАЯ АДАПТАЦИЯ ===== */
@@ -173,45 +273,78 @@ select:focus{
 @media (max-width:700px){
 
   .topbar{
-    height:64px;
+    height:72px;
   }
 
   .title{
-    font-size:28px;
+    font-size:24px;
+  }
+
+  .back-btn{
+    width:42px;
+    height:42px;
+    font-size:20px;
+    border-radius:14px;
+    left:14px;
   }
 
   #app{
-    height:calc(100vh - 64px);
+    height:calc(100vh - 72px);
     padding:14px;
-    padding-bottom:120px;
+    padding-bottom:140px;
   }
 
   #stimulus{
-    font-size:clamp(50px, 12vw, 90px);
-    min-height:120px;
+    font-size:clamp(46px, 11vw, 80px);
+    min-height:130px;
+    padding:14px 18px;
+    border-radius:22px;
+    min-width:0;
+    width:100%;
+  }
+
+  #panel{
+    margin-top:16px;
+    padding:12px 14px;
+    gap:8px;
+    border-radius:18px;
   }
 
   button{
-    font-size:14px;
-    padding:11px 15px;
+    font-size:13px;
+    padding:10px 14px;
+    border-radius:10px;
+  }
+
+  select{
+    font-size:13px;
+    padding:9px 12px;
+    border-radius:10px;
+  }
+
+  #legend{
+    padding:10px 12px 14px;
   }
 
   .rule{
-    font-size:22px;
+    font-size:20px;
+    gap:6px;
   }
 
   .rule span{
-    font-size:14px;
+    font-size:13px;
   }
 }
 </style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
 </head>
 
 <body>
 
 <!-- ВЕРХ -->
 <div class="topbar">
-  <div class="title">Светофор</div>
+  <button class="back-btn" onclick="goBack()" aria-label="Назад">☰</button>
+  <div class="title">🚦 Светофор</div>
 </div>
 
 <!-- ОСНОВА -->
@@ -248,17 +381,21 @@ select:focus{
     <div class="rule">🐻 <span>предмет</span></div>
   </div>
 
-  <div class="legend-row" style="margin-top:8px;">
-  <div class="rule">🟢 <span>отвечаем</span></div>
-  <div class="rule">🟡 <span>шёпотом</span></div>
-  <div class="rule">🔴 <span>молчим</span></div>
-</div>
+  <div class="legend-row">
+    <div class="rule">🟢 <span>отвечаем</span></div>
+    <div class="rule">🟡 <span>шёпотом</span></div>
+    <div class="rule">🔴 <span>молчим</span></div>
+  </div>
 
 </div>
 
 <div class="signature">© verner</div>
 
 <script>
+
+function goBack(){
+  location.href = "index.html";
+}
 
 /* ===== СОСТОЯНИЕ ===== */
 
@@ -385,5 +522,8 @@ function setSpeed(){
 
 </script>
 
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
 </body>
 </html>

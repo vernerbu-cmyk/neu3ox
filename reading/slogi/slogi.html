@@ -1,399 +1,1412 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<link rel="stylesheet" href="../../menu/menu.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Учимся читать</title>
+<title>Учимся читать - NeuroX</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
 
 <style>
+:root{
+  --blue:#1E3F8A;
+  --blue-soft:#3A5FA8;
+  --blue-light:#2A56C6;
+  --blue-pale:#E8EEF9;
+  --orange:#FF6A00;
+  --orange-soft:#FF8B3D;
+  --orange-dark:#C85100;
+  --orange-pale:#FFEADB;
+  --bg:#F4F6FB;
+  --text:#24324B;
+  --text-dim:#6B7280;
+  --border:rgba(30,63,138,.10);
+  --panel:#FFFFFF;
+  --dot-color:rgba(30,63,138,.07);
+  --header-shadow:rgba(30,63,138,.25);
+  --overlay:rgba(30,63,138,.45);
+  --modal-grad-1:#1E3F8A;
+  --modal-grad-2:#3A5FA8;
+  --modal-grad-3:#4A6DB8;
+}
+
+[data-theme="dark"]{
+  --blue:#7B9BE5;
+  --blue-soft:#5F80D0;
+  --blue-light:#7B9BE5;
+  --blue-pale:#2A3A5C;
+  --orange:#FF8B3D;
+  --orange-soft:#FFA057;
+  --orange-dark:#8A3F00;
+  --orange-pale:#4A2E1A;
+  --bg:#121721;
+  --text:#E8EEF9;
+  --text-dim:#8A96B0;
+  --border:rgba(140,170,240,.15);
+  --panel:#1C2331;
+  --dot-color:rgba(140,170,240,.09);
+  --header-shadow:rgba(0,0,0,.55);
+  --overlay:rgba(0,0,0,.6);
+  --modal-grad-1:#1A2440;
+  --modal-grad-2:#2A3A5C;
+  --modal-grad-3:#3A4F7C;
+}
+
+*{box-sizing:border-box;}
+
+html, body{transition:background-color .3s, color .3s;}
 
 body{
-margin:0;
-font-family:Arial, sans-serif;
-background:#f5f6f8;
-display:flex;
-flex-direction:column;
-align-items:center;
+  margin:0;
+  font-family:"Nunito Sans",sans-serif;
+  background-color:var(--bg);
+  background-image:radial-gradient(circle, var(--dot-color) 1.5px, transparent 1.6px);
+  background-size:26px 26px;
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  transition:background-color .3s, color .3s;
 }
+
+/* ===== HEADER ===== */
 
 header{
-width:100%;
-background:#1E3F8A;
-color:#fff;
-display:grid;
-grid-template-columns:1fr auto 1fr;
-align-items:center;
-padding:10px 12px;
-box-sizing:border-box;
+  position:relative;
+  width:100%;
+  background:linear-gradient(135deg,#152E68 0%,#1E3F8A 60%,#2A4A99 100%);
+  color:#fff;
+  padding:16px 22px 18px;
+  box-shadow:0 6px 20px var(--header-shadow);
+  transition:background .3s, box-shadow .3s;
 }
 
-#title{
-font-size:26px;
-font-style:italic;
-font-weight:600;
-text-align:center;
+[data-theme="dark"] header{
+  background:linear-gradient(135deg,#12193A 0%,#1A2440 60%,#243057 100%);
 }
+
+.header-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  min-width:0;
+}
+
+.logo{
+  position:relative;
+  width:56px;
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:transparent;
+  border:none;
+  padding:0;
+  color:#FF8B3D;
+  flex-shrink:0;
+  cursor:pointer;
+  transition:transform .2s;
+}
+
+.logo svg{width:46px;height:46px;display:block;}
+
+.logo::after{
+  content:'←';
+  position:absolute;
+  top:-4px;
+  left:-6px;
+  width:22px;
+  height:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#FF6A00;
+  color:#fff;
+  font-size:13px;
+  font-weight:800;
+  border-radius:50%;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+  font-family:"Nunito Sans",sans-serif;
+  line-height:1;
+  pointer-events:none;
+}
+
+.logo:hover{transform:scale(1.08);}
+.logo:active{transform:scale(.94);}
+
+h1{
+  margin:0;
+  font-family:"Fredoka",sans-serif;
+  font-size:26px;
+  font-weight:700;
+  letter-spacing:.4px;
+  line-height:1.1;
+  text-shadow:0 2px 4px rgba(0,0,0,.12);
+}
+
+.subtitle{
+  margin-top:2px;
+  font-size:12.5px;
+  opacity:.85;
+  font-weight:600;
+}
+
+.header-buttons{
+  display:flex;
+  gap:10px;
+  flex-shrink:0;
+}
+
+.icon-btn{
+  position:relative;
+  width:48px;
+  height:48px;
+  border:none;
+  border-radius:16px;
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  font-size:22px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.22s;
+  font-family:inherit;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+}
+
+.icon-btn svg{
+  width:22px;
+  height:22px;
+  display:block;
+}
+
+.icon-btn:hover{
+  background:var(--orange);
+  transform:translateY(-2px) rotate(6deg) scale(1.06);
+}
+
+.icon-btn:active{transform:scale(.95);}
+
+/* Second row inside header */
+.header-controls{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-top:12px;
+}
+
+.btn-small{
+  padding:9px 14px;
+  font-size:13px;
+  border-radius:10px;
+  font-weight:800;
+  font-family:"Nunito Sans",sans-serif;
+  cursor:pointer;
+  border:none;
+  transition:.18s;
+  background:rgba(255,255,255,.18);
+  color:#fff;
+}
+
+.btn-small:hover{background:var(--orange);}
+
+.btn-small.active{
+  background:var(--orange);
+  box-shadow:0 3px 0 var(--orange-dark);
+}
+
+/* Speed slider in header */
+
+.speed-box{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:rgba(255,255,255,.14);
+  padding:8px 14px;
+  border-radius:12px;
+  margin-left:auto;
+  flex:1;
+  min-width:220px;
+  max-width:340px;
+}
+
+.speed-box label{
+  color:#fff;
+  font-size:12.5px;
+  font-weight:800;
+  white-space:nowrap;
+  opacity:.9;
+  margin:0;
+}
+
+.speed-box input[type=range]{
+  flex:1;
+  min-width:80px;
+  accent-color:#FF6A00;
+  height:22px;
+  margin:0;
+}
+
+.speed-box .val{
+  color:#fff;
+  font-size:12px;
+  font-weight:800;
+  min-width:44px;
+  text-align:right;
+  opacity:.85;
+}
+
+/* ===== SETTINGS ===== */
 
 #settings{
-width:100%;
-background:#1E3F8A;
-padding:10px;
-box-sizing:border-box;
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:10px;
+  width:100%;
+  background:var(--blue);
+  padding:16px 20px 20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+  box-shadow:0 6px 20px rgba(30,63,138,.20);
+  transition:background .3s;
+}
+
+[data-theme="dark"] #settings{
+  background:#1A2440;
 }
 
 .levelBar{
-width:90%;
-max-width:320px;
-display:flex;
-flex-wrap:wrap;
-gap:6px;
+  width:90%;
+  max-width:480px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
 }
 
 .lvl{
-flex:1;
-padding:8px 0;
-border:none;
-border-radius:8px;
-background:#2c4f9e;
-color:#fff;
-font-weight:600;
-cursor:pointer;
-box-shadow:0 3px 0 #16356f;
+  flex:1;
+  min-width:48px;
+  padding:10px 0;
+  border:none;
+  border-radius:12px;
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  font-family:"Nunito Sans",sans-serif;
+  font-weight:800;
+  font-size:14px;
+  cursor:pointer;
+  transition:.18s;
+  box-shadow:none;
 }
 
+.lvl:hover{background:var(--orange-soft);}
+
 .lvl.active{
-background:#FF6A00;
-box-shadow:0 3px 0 #c94f00;
+  background:var(--orange);
+  box-shadow:0 3px 0 var(--orange-dark);
+}
+
+.size-box{
+  width:90%;
+  max-width:480px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.size-box label{
+  color:#fff;
+  font-size:13px;
+  font-weight:800;
+  white-space:nowrap;
+  opacity:.9;
+  margin:0;
+}
+
+.size-box input[type=range]{
+  flex:1;
+  accent-color:#FF6A00;
+  height:26px;
+  margin:0;
+}
+
+.size-box .val{
+  color:#fff;
+  font-size:13px;
+  font-weight:800;
+  min-width:52px;
+  text-align:right;
+  opacity:.9;
 }
 
 input[type=range]{
-width:90%;
-max-width:320px;
-accent-color:#FF6A00;
+  accent-color:#FF6A00;
 }
 
 label{
-color:#fff;
-font-size:14px;
-display:flex;
-gap:6px;
-align-items:center;
-font-family:system-ui;
+  color:#fff;
+  font-size:14px;
+  font-weight:700;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  cursor:pointer;
+  user-select:none;
 }
 
-#syllable{
-font-weight:bold;
-margin-top:60px;
-text-align:center;
-color:#111;
-font-size:96px;
+label input[type=checkbox]{
+  accent-color:var(--orange);
+  width:18px;
+  height:18px;
+  cursor:pointer;
+  margin:0;
 }
 
-#extraLetter{
-font-size:46px;
-margin-top:10px;
-text-align:center;
-color:#333;
-}
+/* ===== BUTTONS ===== */
 
 button{
-border:none;
-padding:10px 14px;
-border-radius:10px;
-font-size:14px;
-cursor:pointer;
+  border:none;
+  padding:11px 16px;
+  border-radius:12px;
+  font-family:"Nunito Sans",sans-serif;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.3px;
+  cursor:pointer;
+  transition:background .15s, transform .12s, box-shadow .12s;
 }
 
 .btn-orange{
-background:#FF6A00;
-color:#fff;
-box-shadow:0 4px 0 #c94f00;
+  background:var(--orange);
+  color:#fff;
+  box-shadow:0 4px 0 var(--orange-dark);
 }
+
+.btn-orange:hover{background:var(--orange-soft);}
+
+.btn-orange:active{
+  transform:translateY(3px);
+  box-shadow:0 1px 0 var(--orange-dark);
+}
+
+/* ===== SYLLABLE ===== */
+
+#syllable{
+  font-family:"Fredoka",sans-serif;
+  font-weight:700;
+  margin-top:60px;
+  text-align:center;
+  color:var(--blue);
+  font-size:96px;
+  padding:30px 60px;
+  background:var(--panel);
+  border:2px solid var(--border);
+  border-radius:28px;
+  box-shadow:0 6px 0 rgba(30,63,138,.10),
+             0 14px 30px rgba(30,63,138,.08);
+  min-width:min(92vw, 500px);
+  line-height:1.2;
+  transition:background .3s, border-color .3s, color .3s;
+}
+
+[data-theme="dark"] #syllable{
+  box-shadow:0 6px 0 rgba(0,0,0,.25), 0 14px 30px rgba(0,0,0,.3);
+}
+
+#extraLetter{
+  font-family:"Fredoka",sans-serif;
+  font-weight:600;
+  font-size:46px;
+  margin-top:16px;
+  text-align:center;
+  color:var(--orange);
+  min-height:54px;
+}
+
+/* ===== BOTTOM CONTROLS ===== */
 
 #bottomControls{
-position:fixed;
-bottom:15px;
-left:50%;
-transform:translateX(-50%);
-display:flex;
-gap:12px;
-z-index:999;
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:12px;
+  z-index:999;
+  padding:12px 16px;
+  background:var(--panel);
+  border:2px solid var(--border);
+  border-radius:22px;
+  box-shadow:0 6px 0 rgba(30,63,138,.10),
+             0 14px 26px rgba(30,63,138,.08);
+  transition:background .3s, border-color .3s;
 }
 
-#bottomControls button{
-min-width:140px;
+[data-theme="dark"] #bottomControls{
+  box-shadow:0 6px 0 rgba(0,0,0,.25), 0 14px 26px rgba(0,0,0,.3);
 }
 
-#cenzBox{
-display:none;
-width:100%;
-background:#16356f;
-padding:10px;
-box-sizing:border-box;
-flex-direction:column;
-align-items:center;
-gap:6px;
+#bottomControls button{min-width:140px;}
+
+/* ===== PANELS ===== */
+
+.panel{
+  display:none;
+  width:92%;
+  max-width:560px;
+  background:var(--blue);
+  padding:16px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(30,63,138,.25);
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  margin-top:14px;
+  transition:background .3s;
 }
+
+[data-theme="dark"] .panel{
+  background:#1A2440;
+}
+
+.panel input{
+  width:100%;
+  padding:10px 12px;
+  border-radius:12px;
+  border:2px solid transparent;
+  font-family:"Nunito Sans",sans-serif;
+  font-size:14px;
+  font-weight:700;
+  outline:none;
+  transition:.18s;
+}
+
+.panel input:focus{border-color:var(--orange);}
+
+#bannedList{
+  color:#fff;
+  font-size:13px;
+  font-weight:600;
+  text-align:center;
+  line-height:1.5;
+}
+
+.lettersSection{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  width:100%;
+  justify-content:center;
+}
+
+.lettersSection h4{
+  color:#fff;
+  width:100%;
+  margin:6px 0 2px;
+  font-size:12px;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+  opacity:.75;
+  text-align:center;
+  font-weight:800;
+}
+
+.letterChip{
+  width:36px;
+  height:36px;
+  border-radius:9px;
+  border:none;
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  font-family:"Fredoka",sans-serif;
+  font-weight:600;
+  font-size:17px;
+  cursor:pointer;
+  padding:0;
+  transition:.15s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
+}
+
+.letterChip:hover{background:var(--orange-soft);}
+
+.letterChip.on{
+  background:var(--orange);
+  box-shadow:0 2px 0 var(--orange-dark);
+}
+
+.lettersActions{
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  margin-top:10px;
+}
+
+.lettersActions button{
+  padding:8px 14px;
+  font-size:13px;
+  border-radius:10px;
+}
+
+.profilesRow{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  width:100%;
+  justify-content:center;
+}
+
+.profileBtn{
+  padding:7px 11px;
+  font-size:12px;
+  border-radius:9px;
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  font-weight:700;
+  box-shadow:none;
+  cursor:pointer;
+  transition:.15s;
+  letter-spacing:.2px;
+  border:none;
+}
+
+.profileBtn:hover{background:var(--orange-soft);}
+
+.profileBtn.on{
+  background:var(--orange);
+  box-shadow:0 2px 0 var(--orange-dark);
+}
+
+/* ===== CREDIT ===== */
 
 #credit{
-position:fixed;
-bottom:6px;
-right:10px;
-font-size:10px;
-color:#888;
-opacity:0.7;
+  position:fixed;
+  bottom:8px;
+  left:14px;
+  font-size:12px;
+  font-weight:600;
+  color:var(--text-dim);
+  opacity:.8;
+  user-select:none;
+  pointer-events:none;
 }
 
+/* ===== MODAL ===== */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:var(--overlay);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .25s, visibility .25s, background .3s;
+  z-index:1500;
+}
+
+.modal.open{opacity:1;visibility:visible;}
+
+.modal-card{
+  background:var(--panel);
+  border-radius:28px;
+  max-width:460px;
+  width:100%;
+  max-height:90vh;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 24px 70px rgba(0,0,0,.35);
+  transform:translateY(24px) scale(.95);
+  transition:transform .42s cubic-bezier(.34, 1.56, .64, 1), background .3s;
+  overflow:hidden;
+}
+
+.modal.open .modal-card{transform:translateY(0) scale(1);}
+
+.modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:22px 24px 20px;
+  background:linear-gradient(135deg, var(--modal-grad-1) 0%, var(--modal-grad-2) 60%, var(--modal-grad-3) 100%);
+  color:#fff;
+  transition:background .3s;
+}
+
+.modal-header h2{
+  font-family:"Fredoka",sans-serif;
+  font-size:22px;
+  font-weight:600;
+  margin:0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.modal-header h2 svg{
+  width:22px;
+  height:22px;
+  flex-shrink:0;
+}
+
+.modal-close{
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:12px;
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  font-size:24px;
+  line-height:1;
+  cursor:pointer;
+  transition:.2s;
+  font-family:inherit;
+  padding:0;
+}
+
+.modal-close:hover{background:var(--orange);transform:rotate(90deg);}
+
+.modal-body{
+  padding:22px 24px 26px;
+  overflow-y:auto;
+}
+
+.modal-body p{
+  font-size:14.5px;
+  font-weight:700;
+  color:var(--text-dim);
+  line-height:1.6;
+  margin:0 0 10px;
+}
+
+.modal-body p:last-child{margin-bottom:0;}
+.modal-body b{color:var(--blue);}
+
+/* ===== MOBILE ===== */
+
+@media(max-width:700px){
+  header{padding:14px 16px 16px;}
+
+  h1{font-size:20px;}
+  .subtitle{font-size:11.5px;}
+  .logo{width:48px;height:48px;}
+  .logo svg{width:40px;height:40px;}
+  .logo::after{width:20px;height:20px;font-size:12px;top:-3px;left:-5px;}
+
+  .icon-btn{width:42px;height:42px;border-radius:14px;}
+  .icon-btn svg{width:20px;height:20px;}
+
+  .btn-small{padding:7px 10px;font-size:12px;}
+
+  .speed-box{
+    width:100%;
+    max-width:100%;
+    margin-left:0;
+    padding:8px 12px;
+  }
+
+  .speed-box label{font-size:12px;}
+
+  #settings{padding:14px 14px 18px;gap:12px;}
+
+  .levelBar{width:100%;gap:6px;}
+
+  .lvl{font-size:13px;padding:8px 0;min-width:42px;border-radius:10px;}
+
+  #syllable{
+    font-size:72px;
+    padding:20px 30px;
+    margin-top:40px;
+    border-radius:22px;
+  }
+
+  #extraLetter{font-size:34px;min-height:40px;}
+
+  #bottomControls{
+    bottom:14px;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:18px;
+  }
+
+  #bottomControls button{
+    min-width:110px;
+    padding:10px 14px;
+    font-size:13px;
+  }
+
+  .letterChip{width:32px;height:32px;font-size:15px;}
+
+  .profileBtn{padding:6px 9px;font-size:11px;}
+
+  .modal-card{border-radius:24px;}
+  .modal-header{padding:18px 20px 16px;}
+  .modal-header h2{font-size:20px;}
+  .modal-body{padding:18px 18px 22px;}
+  .modal-body p{font-size:13.5px;}
+}
 </style>
+<link rel="stylesheet" href="../../assets/menu-drawer.css">
 </head>
 
 <body>
 
 <header>
+  <div class="header-top">
+    <div class="brand">
+      <button class="logo" onclick="goBack()" title="Назад" aria-label="Назад">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8"/>
+          <path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8"/>
+          <path d="M17.5 16a3.5 3.5 0 0 0 0 -7h-.5"/>
+          <path d="M19 9.3v-2.8a3.5 3.5 0 0 0 -7 0"/>
+          <path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5"/>
+          <path d="M5 9.3v-2.8a3.5 3.5 0 0 1 7 0v10"/>
+        </svg>
+      </button>
+      <div>
+        <h1>Учимся читать</h1>
+        <div class="subtitle">NeuroX · слоги и буквы</div>
+      </div>
+    </div>
 
-<div>
-<button id="cenzToggle" class="btn-orange">ценз</button>
-<button id="settingsToggle" class="btn-orange">скрыть</button>
-</div>
+    <div class="header-buttons">
+      <button class="icon-btn" id="themeBtn" title="Сменить тему" onclick="toggleTheme()" aria-label="Сменить тему">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+        </svg>
+      </button>
+      <button class="icon-btn" title="Справка" onclick="showHelp()" aria-label="Справка">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 1.5-2.5 2-2.5 3.5"/>
+          <circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="settingsToggle" title="Настройки" aria-label="Настройки">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
 
-<div id="title">Учимся читать</div>
+  <div class="header-controls">
+    <button id="cenzToggle" class="btn-small">ценз</button>
+    <button id="lettersToggle" class="btn-small">буквы</button>
 
-<div></div>
-
+    <div class="speed-box">
+      <label for="speed">Скорость</label>
+      <input type="range" id="speed" min="0" max="13" step="1" value="4">
+      <span class="val" id="speedValue">1 сек</span>
+    </div>
+  </div>
 </header>
 
 <div id="settings">
+  <div class="levelBar"></div>
 
-<div class="levelBar"></div>
+  <div class="size-box">
+    <label for="fontSize">Размер</label>
+    <input type="range" id="fontSize" min="60" max="240" value="96">
+    <span class="val" id="fontSizeValue">96 px</span>
+  </div>
 
-<input type="range" id="speed" min="0" max="13" step="1" value="4">
-<input type="range" id="fontSize" min="60" max="140" value="96">
-
-<label><input type="checkbox" id="manualMode"> ручной режим</label>
-<label><input type="checkbox" id="advanced"> продвинутый</label>
-<label><input type="checkbox" id="highlight"> подсветка</label>
-
-<div id="cenzBox">
-<input id="bannedInput" placeholder="запрещённое сочетание">
-<button id="addBanned" class="btn-orange">добавить</button>
-<div id="bannedList"></div>
+  <label><input type="checkbox" id="manualMode"> ручной режим</label>
+  <label><input type="checkbox" id="advanced"> продвинутый</label>
+  <label><input type="checkbox" id="highlight"> подсветка</label>
 </div>
 
+<div id="lettersBox" class="panel"></div>
+
+<div id="cenzBox" class="panel">
+  <input id="bannedInput" placeholder="запрещённое сочетание">
+  <button id="addBanned" class="btn-orange">добавить</button>
+  <div id="bannedList"></div>
 </div>
 
 <div id="syllable">--</div>
 <div id="extraLetter"></div>
 
 <div id="bottomControls">
-<button id="startBtn" class="btn-orange">Старт</button>
-<button id="nextBtn" class="btn-orange">Следующий</button>
+  <button id="startBtn" class="btn-orange">Старт</button>
+  <button id="nextBtn" class="btn-orange">Следующий</button>
 </div>
 
 <div id="credit">© verner</div>
 
+<!-- МОДАЛКА «СПРАВКА» -->
+<div class="modal" id="helpModal" onclick="if(event.target===this) closeHelp()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 1.5-2.5 2-2.5 3.5"/>
+          <circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+        Справка
+      </h2>
+      <button class="modal-close" onclick="closeHelp()" aria-label="Закрыть">×</button>
+    </div>
+    <div class="modal-body">
+      <p><b>Учимся читать</b> — тренажёр для отработки чтения слогов и коротких слов по слоговой методике.</p>
+      <p><b>Уровни 1–6</b> — от простых слогов «ма, па» до слогов с «ъ» и мягким знаком.</p>
+      <p><b>Скорость</b> — ползунок в шапке. <b>Размер</b> слога — в панели настроек, до 240 px.</p>
+      <p><b>Кнопки «ценз» и «буквы»</b> открывают панели: список запрещённых сочетаний и выбор букв.</p>
+      <p>Горячая клавиша <b>Space</b> — следующий слог (в ручном режиме).</p>
+    </div>
+  </div>
+</div>
+
 <script>
 
-let interval=null;
-let manual=false;
-let level=1;
+/* ===== ТЕМА ===== */
+const LS_THEME_KEY = 'neurox_theme';
 
-const speeds=[
-2000,1750,1500,1250,1000,
-900,800,700,600,500,
-400,300,200,100
-];
+const SVG_SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const SVG_MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
 
-const v=['а','е','ё','и','о','у','ы','э','ю','я'];
-const c=['б','в','г','д','ж','з','й','к','л','м','н','п','р','с','т','ф','х','ц','ч','ш','щ'];
-
-const forbiddenFirst=['й','ь','ъ'];
-
-/* RANDOM */
-function r(a){
-return a[Math.floor(Math.random()*a.length)];
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.innerHTML = theme === 'dark' ? SVG_SUN : SVG_MOON;
 }
 
-function safeFirst(){
-let f;
-do{
-f=c[Math.floor(Math.random()*c.length)];
-}while(forbiddenFirst.includes(f));
-return f;
+function getStoredTheme(){ return localStorage.getItem(LS_THEME_KEY) || ''; }
+function saveTheme(theme){ localStorage.setItem(LS_THEME_KEY, theme); }
+
+function initTheme(){
+  let theme = getStoredTheme();
+  if (!theme){
+    const prefersDark = window.matchMedia &&
+                        window.matchMedia('(prefers-color-scheme: dark)').matches;
+    theme = prefersDark ? 'dark' : 'light';
+  }
+  applyTheme(theme);
+}
+
+function toggleTheme(){
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  saveTheme(next);
+}
+
+function showHelp(){ document.getElementById('helpModal').classList.add('open'); }
+function closeHelp(){ document.getElementById('helpModal').classList.remove('open'); }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeHelp();
+});
+
+initTheme();
+
+if (window.matchMedia){
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  mq.addEventListener('change', e => {
+    if (!getStoredTheme()) applyTheme(e.matches ? 'dark' : 'light');
+  });
+}
+
+/* ==================
+   Логика тренажёра
+   ================== */
+
+function goBack(){
+  location.href = "../index.html";
 }
 
 /* =========================
-   LEVELS (FIXED)
+   БАЗОВЫЕ ДАННЫЕ
 ========================= */
 
-let levels = JSON.parse(localStorage.getItem("levels")) || {
+const ALL_VOWELS      = ['а','е','ё','и','о','у','ы','э','ю','я'];
+const ALL_CONSONANTS  = ['б','в','г','д','ж','з','й','к','л','м','н','п','р','с','т','ф','х','ц','ч','ш','щ'];
 
-1:()=>r(v)+r(c),
+const ALL_VALID_CC = [
+  'бл','бр','вл','вр','вз','вс',
+  'гл','гр',
+  'дв','др',
+  'зв','зл','зм','зн','зр',
+  'кл','кр','кв','кн',
+  'мл','мн',
+  'пл','пр','пс',
+  'св','ск','сл','см','сн','сп','ст','ср','сф',
+  'тв','тр',
+  'фл','фр',
+  'хл','хр','хв',
+  'цв',
+  'шв','шк','шл','шп','шт'
+];
 
-2:()=>safeFirst()+r(v),
+/* =========================
+   ПРОФИЛИ БУКВ
+========================= */
 
-3:()=>safeFirst()+r(v)+r(c),
+const PROFILES = [
+  { id:'start',   name:'старт',      hint:'простые слоги',       v:['а','о','у','и'],                        c:['м','п','б','т','д','н'] },
+  { id:'row1',    name:'1-й ряд',    hint:'твёрдые гласные',     v:['а','о','у','ы','э'],                    c:() => ALL_CONSONANTS },
+  { id:'row2',    name:'2-й ряд',    hint:'мягкие гласные',      v:['я','ё','ю','и','е'],                    c:() => ALL_CONSONANTS },
+  { id:'sonor',   name:'сонорные',   hint:'м н л р й',            v:() => ALL_VOWELS,                         c:['м','н','л','р','й','в'] },
+  { id:'voiced',  name:'звонкие',    hint:'б в г д ж з ...',      v:() => ALL_VOWELS,                         c:['б','в','г','д','ж','з','л','м','н','р','й'] },
+  { id:'deaf',    name:'глухие',     hint:'п ф к т ш с х ц ч щ',  v:() => ALL_VOWELS,                         c:['п','ф','к','т','ш','с','х','ц','ч','щ'] },
+  { id:'whistle', name:'свистящие',  hint:'с з ц',                v:() => ALL_VOWELS,                         c:['с','з','ц'] },
+  { id:'hiss',    name:'шипящие',    hint:'ж ш ч щ',              v:() => ALL_VOWELS,                         c:['ж','ш','ч','щ'] },
+  { id:'nohiss',  name:'без шипящих',hint:'без ж ш ч щ',          v:() => ALL_VOWELS,                         c:['б','в','г','д','з','й','к','л','м','н','п','р','с','т','ф','х','ц'] },
+  { id:'noi',     name:'без й',      hint:'младшим',              v:() => ALL_VOWELS,                         c:['б','в','г','д','ж','з','к','л','м','н','п','р','с','т','ф','х','ц','ч','ш','щ'] },
+  { id:'all',     name:'всё',        hint:'все буквы',            v:() => ALL_VOWELS,                         c:() => ALL_CONSONANTS }
+];
 
-4:()=>safeFirst()+r(c)+r(v),
-
-5:()=>safeFirst()+r(v)+r(c),
-
-6:()=>{
-let f=safeFirst();
-while(['ж','ш','ц','й'].includes(f)) f=safeFirst();
-return f+r(v)+r(c)+"ь";
-},
-
-7:()=>{
-let f=safeFirst();
-let s=Math.random()>0.5?"ь":"ъ";
-return f+s+r(['я','ю','е','ё']);
+function resolveProfileList(val){
+  return typeof val === 'function' ? val() : [...val];
 }
 
-};
+let selectedVowels     = [...ALL_VOWELS];
+let selectedConsonants = [...ALL_CONSONANTS];
+let currentProfile     = 'all';
 
-/* SAVE (future-ready) */
-function saveLevels(){
-localStorage.setItem("levels",JSON.stringify(levels));
+function activeVowels(){
+  return selectedVowels.length ? selectedVowels : [...ALL_VOWELS];
 }
 
-/* GENERATOR */
+function activeConsonants(){
+  return selectedConsonants.length ? selectedConsonants : [...ALL_CONSONANTS];
+}
+
+function activeStartConsonants(){
+  const list = activeConsonants().filter(c => c !== 'й');
+  return list.length ? list : ['м','п','с','т','к','н'];
+}
+
+function activeValidCC(){
+  const cs = new Set(activeConsonants());
+  const filtered = ALL_VALID_CC.filter(cc => cs.has(cc[0]) && cs.has(cc[1]));
+  return filtered.length ? filtered : ALL_VALID_CC;
+}
+
+function allowedVowelsAfter(c){
+  const sel = new Set(activeVowels());
+  let pool;
+  if(c === 'ж' || c === 'ш')      pool = ['а','о','у','и','е','ё'];
+  else if(c === 'ч' || c === 'щ') pool = ['а','о','у','и','е'];
+  else if(c === 'ц')              pool = ['а','о','у','и','е'];
+  else                            pool = activeVowels();
+
+  const filtered = pool.filter(v => sel.has(v));
+  return filtered.length ? filtered : pool;
+}
+
+function activeCodaConsonants(){
+  const list = activeConsonants().filter(c => c !== 'й' && c !== 'ж');
+  return list.length ? list : ['м','н','л','р','с','т'];
+}
+
+function r(a){ return a[Math.floor(Math.random()*a.length)]; }
+function randStartConsonant(){ return r(activeStartConsonants()); }
+function randVowelAfter(c){ return r(allowedVowelsAfter(c)); }
+
+/* =========================
+   ГЕНЕРАТОРЫ УРОВНЕЙ
+========================= */
+
+function lvl1(){
+  const c = randStartConsonant();
+  return c + randVowelAfter(c);
+}
+
+function lvl2(){
+  return r(activeVowels()) + r(activeConsonants());
+}
+
+function lvl3(){
+  const cc = r(activeValidCC());
+  return cc + randVowelAfter(cc[1]);
+}
+
+function lvl4(){
+  const c = randStartConsonant();
+  return c + randVowelAfter(c) + r(activeConsonants());
+}
+
+function lvl5(){
+  const c = randStartConsonant();
+  return c + randVowelAfter(c) + r(activeCodaConsonants()) + 'ь';
+}
+
+function lvl6(){
+  const c = randStartConsonant();
+  const pool = ['е','ё','ю','я'].filter(v => activeVowels().includes(v));
+  return c + 'ъ' + r(pool.length ? pool : ['е','ё','ю','я']);
+}
+
+const levels = { 1: lvl1, 2: lvl2, 3: lvl3, 4: lvl4, 5: lvl5, 6: lvl6 };
+
+/* =========================
+   ЧЁРНЫЙ СПИСОК
+========================= */
+
+const DEFAULT_BANNED = [
+  'бля','ху','пиз','жоп','еб','ёб','мраз','говн','дроч','шлюх',
+  'манда','елд','пидо','пида','пидр','гандон','гандо','залуп',
+  'перд','бзд','сра','сру','муда','муди','гнид','ублюд'
+];
+
+/* =========================
+   СОСТОЯНИЕ
+========================= */
+
+let interval = null;
+let manual = false;
+let level = 1;
+let userBanned = [];
+let bannedWords = [];
+let autoRunning = false;
+
+const speeds = [
+  2000,1750,1500,1250,1000,
+  900,800,700,600,500,
+  400,300,200,100
+];
+
+const speedLabels = [
+  '2 сек','1.75','1.5 сек','1.25','1 сек',
+  '0.9','0.8','0.7','0.6','0.5',
+  '0.4','0.3','0.2','0.1'
+];
+
+function isBanned(word){
+  const w = word.toLowerCase();
+  return DEFAULT_BANNED.some(b => w.includes(b)) ||
+         bannedWords.some(b => w.includes(b.toLowerCase())) ||
+         userBanned.some(b => w.includes(b.toLowerCase()));
+}
 
 function gen(){
+  let word, attempts = 0;
+  do{
+    word = levels[level]();
+    attempts++;
+  }
+  while(attempts < 500 && isBanned(word));
 
-let word;
-
-do{
-    word=levels[level]();
+  if(isBanned(word)){
+    return level <= 2 ? 'ма' : 'рак';
+  }
+  return word;
 }
-while(
-    bannedWords.some(b=>word.includes(b))
-);
 
-return word;
+/* =========================
+   UI УРОВНЕЙ
+========================= */
 
-}
-
-/* UI LEVELS */
 function renderLevels(){
-const bar=document.querySelector(".levelBar");
-bar.innerHTML="";
-
-Object.keys(levels).forEach(k=>{
-let b=document.createElement("button");
-b.className="lvl"+(k==level?" active":"");
-b.textContent=k;
-
-b.onclick=()=>{
-level=k;
+  const bar = document.querySelector('.levelBar');
+  bar.innerHTML = '';
+  Object.keys(levels).forEach(k => {
+    const b = document.createElement('button');
+    b.className = 'lvl' + (Number(k) === level ? ' active' : '');
+    b.textContent = k;
+    b.onclick = () => {
+      level = Number(k);
+      renderLevels();
+      show();
+    };
+    bar.appendChild(b);
+  });
+}
 renderLevels();
-show();
+
+/* =========================
+   НАСТРОЙКИ (⚙)
+========================= */
+
+let settingsVisible = true;
+document.getElementById('settingsToggle').onclick = () => {
+  settingsVisible = !settingsVisible;
+  document.getElementById('settings').style.display =
+    settingsVisible ? 'flex' : 'none';
 };
 
-bar.appendChild(b);
-});
+/* =========================
+   ПАНЕЛЬ БУКВ + ПРОФИЛИ
+========================= */
+
+function buildLettersUI(){
+  const box = document.getElementById('lettersBox');
+  box.innerHTML = '';
+
+  const pTitle = document.createElement('h4');
+  pTitle.textContent = 'Профили';
+  box.appendChild(pTitle);
+
+  const pRow = document.createElement('div');
+  pRow.className = 'profilesRow';
+  PROFILES.forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'profileBtn' + (p.id === currentProfile ? ' on' : '');
+    b.textContent = p.name;
+    b.title = p.hint || '';
+    b.dataset.profile = p.id;
+    b.onclick = () => applyProfile(p.id);
+    pRow.appendChild(b);
+  });
+  box.appendChild(pRow);
+
+  const vTitle = document.createElement('h4');
+  vTitle.textContent = 'Гласные';
+  box.appendChild(vTitle);
+
+  const vRow = document.createElement('div');
+  vRow.className = 'lettersSection';
+  ALL_VOWELS.forEach(v => vRow.appendChild(makeChip(v, 'vowel')));
+  box.appendChild(vRow);
+
+  const cTitle = document.createElement('h4');
+  cTitle.textContent = 'Согласные';
+  box.appendChild(cTitle);
+
+  const cRow = document.createElement('div');
+  cRow.className = 'lettersSection';
+  ALL_CONSONANTS.forEach(c => cRow.appendChild(makeChip(c, 'consonant')));
+  box.appendChild(cRow);
+
+  const actions = document.createElement('div');
+  actions.className = 'lettersActions';
+
+  const allBtn = document.createElement('button');
+  allBtn.className = 'btn-orange';
+  allBtn.textContent = 'все';
+  allBtn.onclick = () => applyProfile('all');
+
+  const noneBtn = document.createElement('button');
+  noneBtn.className = 'btn-orange';
+  noneBtn.textContent = 'сбросить';
+  noneBtn.onclick = () => {
+    selectedVowels = [];
+    selectedConsonants = [];
+    currentProfile = null;
+    refreshChips();
+    refreshProfiles();
+    show();
+  };
+
+  actions.appendChild(allBtn);
+  actions.appendChild(noneBtn);
+  box.appendChild(actions);
 }
 
-renderLevels();
+function applyProfile(id){
+  const p = PROFILES.find(x => x.id === id);
+  if(!p) return;
+  selectedVowels     = resolveProfileList(p.v);
+  selectedConsonants = resolveProfileList(p.c);
+  currentProfile     = id;
+  refreshChips();
+  refreshProfiles();
+  show();
+}
 
-/* SETTINGS */
-let settingsVisible=true;
+function makeChip(letter, kind){
+  const btn = document.createElement('button');
+  btn.className = 'letterChip';
+  btn.textContent = letter;
+  btn.dataset.letter = letter;
+  btn.dataset.kind = kind;
+  const arr = kind === 'vowel' ? selectedVowels : selectedConsonants;
+  if(arr.includes(letter)) btn.classList.add('on');
 
-document.getElementById("settingsToggle").onclick=()=>{
-settingsVisible=!settingsVisible;
-document.getElementById("settings").style.display=
-settingsVisible?"flex":"none";
-document.getElementById("settingsToggle").textContent=
-settingsVisible?"скрыть":"показать";
+  btn.onclick = () => {
+    const list = kind === 'vowel' ? selectedVowels : selectedConsonants;
+    const i = list.indexOf(letter);
+    if(i >= 0) list.splice(i, 1);
+    else list.push(letter);
+    btn.classList.toggle('on');
+    currentProfile = null;
+    refreshProfiles();
+    show();
+  };
+  return btn;
+}
+
+function refreshChips(){
+  document.querySelectorAll('.letterChip').forEach(chip => {
+    const kind = chip.dataset.kind;
+    const letter = chip.dataset.letter;
+    const arr = kind === 'vowel' ? selectedVowels : selectedConsonants;
+    chip.classList.toggle('on', arr.includes(letter));
+  });
+}
+
+function refreshProfiles(){
+  document.querySelectorAll('.profileBtn').forEach(btn => {
+    btn.classList.toggle('on', btn.dataset.profile === currentProfile);
+  });
+}
+
+buildLettersUI();
+
+document.getElementById('lettersToggle').onclick = () => {
+  const b = document.getElementById('lettersBox');
+  const wasOpen = b.style.display === 'flex';
+  b.style.display = wasOpen ? 'none' : 'flex';
+  document.getElementById('lettersToggle').classList.toggle('active', !wasOpen);
 };
 
-/* CENZ */
-let bannedWords=[];
+/* =========================
+   ПАНЕЛЬ ЦЕНЗА
+========================= */
 
-fetch("banned.json")
-.then(response=>response.json())
-.then(data=>{
-    bannedWords=data.banned;
-})
-.catch(()=>{
-    console.log("Файл banned.json не найден");
-});
+fetch('banned.json')
+  .then(res => res.json())
+  .then(data => {
+    bannedWords = data.banned || [];
+  })
+  .catch(() => {
+    console.log('Файл banned.json не найден');
+  });
 
-document.getElementById("cenzToggle").onclick=()=>{
-let b=document.getElementById("cenzBox");
-b.style.display=b.style.display==="flex"?"none":"flex";
+document.getElementById('cenzToggle').onclick = () => {
+  const b = document.getElementById('cenzBox');
+  const wasOpen = b.style.display === 'flex';
+  b.style.display = wasOpen ? 'none' : 'flex';
+  document.getElementById('cenzToggle').classList.toggle('active', !wasOpen);
 };
 
-document.getElementById("addBanned").onclick=()=>{
-let v=document.getElementById("bannedInput").value.trim();
-if(!v)return;
-userBanned.push(v);
-document.getElementById("bannedList").innerHTML=userBanned.map(x=>"• "+x).join("<br>");
-document.getElementById("bannedInput").value="";
+document.getElementById('addBanned').onclick = () => {
+  const v = document.getElementById('bannedInput').value.trim().toLowerCase();
+  if(!v) return;
+  if(!userBanned.includes(v)) userBanned.push(v);
+  renderBannedList();
+  document.getElementById('bannedInput').value = '';
 };
 
-/* SHOW */
+function renderBannedList(){
+  document.getElementById('bannedList').innerHTML =
+    userBanned.map(x => '• ' + x).join('<br>');
+}
+
+/* =========================
+   ПОКАЗ
+========================= */
+
 function show(){
+  let word = gen();
 
-let word=gen();
+  const highlight = document.getElementById('highlight').checked;
+  const adv = document.getElementById('advanced').checked;
 
-let highlight=document.getElementById("highlight").checked;
-let adv=document.getElementById("advanced").checked;
+  if(highlight){
+    word = "<span style='color:#FF6A00'>" + word[0] + "</span>" + word.slice(1);
+  }
 
-if(highlight){
-word="<span style='color:#FF6A00'>"+word[0]+"</span>"+word.slice(1);
+  document.getElementById('syllable').innerHTML = word;
+
+  document.getElementById('extraLetter').textContent =
+    adv ? r(['л','п','о']) : '';
 }
 
-document.getElementById("syllable").innerHTML=word;
+/* =========================
+   АВТОРЕЖИМ
+========================= */
 
-document.getElementById("extraLetter").textContent=
-adv ? r(['л','п','о']) : "";
-
-}
-
-/* AUTO */
 function startAuto(){
-clearInterval(interval);
-if(manual)return;
-let i=parseInt(document.getElementById("speed").value);
-interval=setInterval(show,speeds[i]);
+  clearInterval(interval);
+  if(manual || !autoRunning) return;
+  const i = parseInt(document.getElementById('speed').value);
+  interval = setInterval(show, speeds[i]);
 }
 
-/* EVENTS */
-document.getElementById("speed").oninput=()=>{
-show();
-show();
-startAuto();
-};
-
-document.getElementById("fontSize").oninput=(e)=>{
-document.getElementById("syllable").style.fontSize=e.target.value+"px";
-};
-
-document.getElementById("manualMode").onchange=(e)=>{
-manual=e.target.checked;
-clearInterval(interval);
-if(!manual)startAuto();
-};
-
-document.addEventListener("keydown",(e)=>{
-if(!manual)return;
-if(e.code==="Space"){
-e.preventDefault();
-show();
+function updateStartBtn(){
+  document.getElementById('startBtn').textContent =
+    autoRunning ? 'Пауза' : 'Старт';
 }
+
+/* =========================
+   СОБЫТИЯ
+========================= */
+
+const speedInput = document.getElementById('speed');
+const speedValueEl = document.getElementById('speedValue');
+
+function updateSpeedLabel(){
+  const i = parseInt(speedInput.value);
+  speedValueEl.textContent = speedLabels[i] || '1 сек';
+}
+
+speedInput.oninput = () => {
+  updateSpeedLabel();
+  startAuto();
+};
+updateSpeedLabel();
+
+const fontSizeInput = document.getElementById('fontSize');
+const fontSizeValueEl = document.getElementById('fontSizeValue');
+
+fontSizeInput.oninput = (e) => {
+  const v = e.target.value;
+  document.getElementById('syllable').style.fontSize = v + 'px';
+  fontSizeValueEl.textContent = v + ' px';
+};
+fontSizeValueEl.textContent = fontSizeInput.value + ' px';
+
+document.getElementById('manualMode').onchange = (e) => {
+  manual = e.target.checked;
+  clearInterval(interval);
+  if(!manual && autoRunning) startAuto();
+};
+
+document.addEventListener('keydown', (e) => {
+  if(!manual) return;
+  if(e.code === 'Space'){
+    e.preventDefault();
+    show();
+  }
 });
 
-document.getElementById("startBtn").onclick=show;
-document.getElementById("nextBtn").onclick=show;
+document.getElementById('startBtn').onclick = () => {
+  if(manual) { show(); return; }
+  autoRunning = !autoRunning;
+  updateStartBtn();
+  if(autoRunning) startAuto(); else clearInterval(interval);
+};
 
+document.getElementById('nextBtn').onclick = show;
+
+/* Автозапуск */
+autoRunning = true;
+updateStartBtn();
 startAuto();
 
 </script>
-<script src="../../menu/menu.js"></script>
+
+<!-- ==== БОКОВОЕ МЕНЮ NEUROX ==== -->
+
+
+
+<script src="../../assets/menu-data.js"></script>
+<script src="../../assets/menu-drawer.js"></script>
 </body>
 </html>

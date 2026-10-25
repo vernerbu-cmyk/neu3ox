@@ -1,123 +1,558 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<link rel="stylesheet" href="../menu/menu.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Алфавит</title>
+<title>Алфавит - NeuroX</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
 
 <style>
-body {
-  margin: 0;
-  height: 100vh;
-  overflow: hidden;
-  background: white;
-  font-family: Arial, sans-serif;
+:root{
+  --blue:#1E3F8A;
+  --blue-soft:#3A5FA8;
+  --blue-light:#2A56C6;
+  --blue-pale:#E8EEF9;
+  --orange:#FF6A00;
+  --orange-soft:#FF8B3D;
+  --orange-dark:#C85100;
+  --orange-pale:#FFEADB;
+  --bg:#F4F6FB;
+  --text:#24324B;
+  --text-dim:#6B7280;
+  --border:rgba(30,63,138,.10);
+  --panel:#FFFFFF;
+  --dot-color:rgba(30,63,138,.07);
+  --header-shadow:rgba(30,63,138,.25);
+  --overlay:rgba(30,63,138,.45);
+  --modal-grad-1:#1E3F8A;
+  --modal-grad-2:#3A5FA8;
+  --modal-grad-3:#4A6DB8;
 }
 
-/* HEADER */
-.header {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  height: 56px;
-  background: #1E3F8A;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.8em;
-  font-weight: bold;
-  font-style: italic;
+[data-theme="dark"]{
+  --blue:#7B9BE5;
+  --blue-soft:#5F80D0;
+  --blue-light:#7B9BE5;
+  --blue-pale:#2A3A5C;
+  --orange:#FF8B3D;
+  --orange-soft:#FFA057;
+  --orange-dark:#8A3F00;
+  --orange-pale:#4A2E1A;
+  --bg:#121721;
+  --text:#E8EEF9;
+  --text-dim:#8A96B0;
+  --border:rgba(140,170,240,.15);
+  --panel:#1C2331;
+  --dot-color:rgba(140,170,240,.09);
+  --header-shadow:rgba(0,0,0,.55);
+  --overlay:rgba(0,0,0,.6);
+  --modal-grad-1:#1A2440;
+  --modal-grad-2:#2A3A5C;
+  --modal-grad-3:#3A4F7C;
 }
 
-/* СТОЛБИК */
-#column {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-weight: bold;
+*{ box-sizing:border-box; }
 
-  transform: translateX(-50%);
-  transition: opacity 0.2s ease;
+html, body{ transition:background-color .3s, color .3s; }
+
+body{
+  margin:0;
+  height:100vh;
+  overflow:hidden;
+  background-color:var(--bg);
+  background-image:radial-gradient(circle, var(--dot-color) 1.5px, transparent 1.6px);
+  background-size:26px 26px;
+  font-family:"Nunito Sans", sans-serif;
+  color:var(--text);
+  transition:background-color .3s, color .3s;
 }
 
-#l1 { font-size: 6rem; }
-#l2 { font-size: 5rem; }
-#l3 { font-size: 4rem; display: none; }
+/* ===== HEADER ===== */
 
-/* CONTROLS */
-.controls {
-  position: absolute;
-  bottom: 50px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
+header{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  background:linear-gradient(135deg,#152E68 0%,#1E3F8A 60%,#2A4A99 100%);
+  color:#fff;
+  padding:20px 24px 26px;
+  box-shadow:0 6px 20px var(--header-shadow);
+  z-index:10;
+  transition:background .3s, box-shadow .3s;
 }
 
-input[type="range"] {
-  width: 220px;
-  accent-color: #FF6A00;
+[data-theme="dark"] header{
+  background:linear-gradient(135deg,#12193A 0%,#1A2440 60%,#243057 100%);
 }
 
-/* BUTTONS */
-button {
-  padding: 10px 18px;
-  border: none;
-  border-radius: 14px;
-  background: #1E3F8A;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
+.header-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
 
-  box-shadow:
-    0 4px 0 #142a5e,
-    0 6px 12px rgba(0,0,0,0.25);
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  min-width:0;
+}
 
-  transition: all 0.12s ease;
+.logo{
+  position:relative;
+  width:56px;
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:transparent;
+  border:none;
+  padding:0;
+  color:#FF8B3D;
+  flex-shrink:0;
+  cursor:pointer;
+  transition:transform .2s;
+}
+
+.logo svg{ width:46px; height:46px; display:block; }
+
+.logo::after{
+  content:'←';
+  position:absolute;
+  top:-4px;
+  left:-6px;
+  width:22px;
+  height:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#FF6A00;
+  color:#fff;
+  font-size:13px;
+  font-weight:800;
+  border-radius:50%;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+  font-family:"Nunito Sans",sans-serif;
+  line-height:1;
+  pointer-events:none;
+}
+
+.logo:hover{ transform:scale(1.08); }
+.logo:active{ transform:scale(.94); }
+
+h1{
+  margin:0;
+  font-family:"Fredoka",sans-serif;
+  font-size:28px;
+  font-weight:700;
+  letter-spacing:.4px;
+  line-height:1.1;
+  text-shadow:0 2px 4px rgba(0,0,0,.12);
+}
+
+.subtitle{
+  margin-top:2px;
+  font-size:12.5px;
+  opacity:.85;
+  font-weight:600;
+}
+
+.header-buttons{
+  display:flex;
+  gap:10px;
+  flex-shrink:0;
+}
+
+.icon-btn{
+  position:relative;
+  width:48px;
+  height:48px;
+  border:none;
+  border-radius:16px;
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  cursor:pointer;
+  transition:.22s;
+  font-family:inherit;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+}
+
+.icon-btn svg{ width:22px; height:22px; display:block; }
+
+.icon-btn:hover{
+  background:var(--orange);
+  transform:translateY(-2px) rotate(6deg) scale(1.06);
+}
+
+.icon-btn:active{ transform:scale(.95); }
+
+/* ===== СТОЛБИК ===== */
+
+#column{
+  position:absolute;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  font-family:"Fredoka", sans-serif;
+  font-weight:700;
+
+  transform:translateX(-50%);
+  transition:opacity 0.2s ease;
+  color:var(--blue);
+}
+
+#l1{ font-size:6rem; }
+#l2{ font-size:5rem; }
+#l3{ font-size:4rem; display:none; }
+
+/* ===== CONTROLS ===== */
+
+.controls{
+  position:fixed;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:14px 20px;
+  background:var(--panel);
+  border:2px solid var(--border);
+  border-radius:22px;
+  box-shadow:0 6px 0 rgba(30,63,138,.10),
+             0 14px 26px rgba(30,63,138,.08);
+  z-index:5;
+  max-width:min(96vw, 720px);
+  transition:background .3s, border-color .3s;
+}
+
+[data-theme="dark"] .controls{
+  box-shadow:0 6px 0 rgba(0,0,0,.25), 0 14px 26px rgba(0,0,0,.3);
+}
+
+input[type="range"]{
+  width:220px;
+  accent-color:var(--orange);
+  height:24px;
+  cursor:pointer;
+}
+
+/* ===== BUTTONS ===== */
+
+button{
+  padding:11px 18px;
+  border:none;
+  border-radius:12px;
+  background:var(--orange);
+  color:#fff;
+  font-family:"Nunito Sans", sans-serif;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.3px;
+  cursor:pointer;
+  box-shadow:0 4px 0 var(--orange-dark);
+  transition:background .15s, transform .12s, box-shadow .12s;
+}
+
+button:hover{
+  background:var(--orange-soft);
+}
+
+button:active,
+button.pressed{
+  transform:translateY(3px);
+  box-shadow:0 1px 0 var(--orange-dark);
 }
 
 button.active{
-    background:#FF6A00;
-    box-shadow:
-      0 4px 0 #C85000,
-      0 6px 12px rgba(0,0,0,.25);
+  background:var(--blue);
+  box-shadow:0 4px 0 #142a5e;
 }
 
-
-/* AUTHOR */
-.footer {
-  position: absolute;
-  right: 10px;
-  bottom: 8px;
-  font-size: 10px;
-  color: rgba(0,0,0,0.25);
+[data-theme="dark"] button.active{
+  box-shadow:0 4px 0 #101a36;
 }
+
+/* ===== AUTHOR ===== */
+
+.footer{
+  position:fixed;
+  right:14px;
+  bottom:8px;
+  font-size:12px;
+  font-weight:600;
+  color:var(--text-dim);
+  opacity:.8;
+  user-select:none;
+  pointer-events:none;
+  z-index:5;
+}
+
+/* ===== MODAL ===== */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:var(--overlay);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .25s, visibility .25s, background .3s;
+  z-index:1500;
+}
+
+.modal.open{ opacity:1; visibility:visible; }
+
+.modal-card{
+  background:var(--panel);
+  border-radius:28px;
+  max-width:460px;
+  width:100%;
+  max-height:90vh;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 24px 70px rgba(0,0,0,.35);
+  transform:translateY(24px) scale(.95);
+  transition:transform .42s cubic-bezier(.34, 1.56, .64, 1), background .3s;
+  overflow:hidden;
+}
+
+.modal.open .modal-card{ transform:translateY(0) scale(1); }
+
+.modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:22px 24px 20px;
+  background:linear-gradient(135deg, var(--modal-grad-1) 0%, var(--modal-grad-2) 60%, var(--modal-grad-3) 100%);
+  color:#fff;
+  transition:background .3s;
+}
+
+.modal-header h2{
+  font-family:"Fredoka",sans-serif;
+  font-size:22px;
+  font-weight:600;
+  margin:0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.modal-header h2 svg{ width:22px; height:22px; flex-shrink:0; }
+
+.modal-close{
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:12px;
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  font-size:24px;
+  line-height:1;
+  cursor:pointer;
+  transition:.2s;
+  font-family:inherit;
+  padding:0;
+}
+
+.modal-close:hover{ background:var(--orange); transform:rotate(90deg); }
+
+.modal-body{
+  padding:22px 24px 26px;
+  overflow-y:auto;
+}
+
+.modal-body p{
+  font-size:14.5px;
+  font-weight:700;
+  color:var(--text-dim);
+  line-height:1.6;
+  margin:0 0 10px;
+}
+
+.modal-body p:last-child{ margin-bottom:0; }
+.modal-body b{ color:var(--blue); }
+
+/* ===== НАСТРОЙКИ ===== */
+
+.settings-section{ margin-bottom:22px; }
+.settings-section:last-child{ margin-bottom:0; }
+
+.settings-section h4{
+  font-family:"Fredoka",sans-serif;
+  font-size:16px;
+  color:var(--blue);
+  margin-bottom:10px;
+  font-weight:600;
+}
+
+.settings-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:13px 16px;
+  background:var(--bg);
+  border:2px solid var(--blue-pale);
+  border-radius:16px;
+  cursor:pointer;
+  user-select:none;
+  transition:.2s;
+}
+
+.settings-row:hover{
+  border-color:var(--blue-soft);
+  background:var(--panel);
+}
+
+.settings-row__label{
+  font-size:15px;
+  font-weight:800;
+  color:var(--blue);
+}
+
+.settings-row__label small{
+  display:block;
+  font-size:12px;
+  font-weight:700;
+  color:var(--text-dim);
+  margin-top:2px;
+}
+
+.switch{
+  width:46px;
+  height:26px;
+  border-radius:999px;
+  background:#CBD3E5;
+  position:relative;
+  flex-shrink:0;
+  transition:background .2s;
+}
+
+[data-theme="dark"] .switch{ background:#3A4560; }
+
+.switch::after{
+  content:'';
+  position:absolute;
+  top:3px;
+  left:3px;
+  width:20px;
+  height:20px;
+  background:#fff;
+  border-radius:50%;
+  box-shadow:0 2px 4px rgba(0,0,0,.18);
+  transition:transform .28s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.settings-row.theme-switch-on .switch{ background:var(--orange); }
+.settings-row.theme-switch-on .switch::after{ transform:translateX(20px); }
+
+/* ===== MOBILE ===== */
 
 @media (max-width:700px){
 
-#l1{font-size:4.5rem;}
-#l2{font-size:3.7rem;}
-#l3{font-size:3rem;}
+  header{ padding:16px 18px 18px; }
 
-.controls{
-    bottom:20px;
-}
+  h1{ font-size:22px; }
+  .subtitle{ font-size:11.5px; }
 
-input[type=range]{
-    width:180px;
-}
+  .logo{ width:48px; height:48px; }
+  .logo svg{ width:40px; height:40px; }
+  .logo::after{ width:20px; height:20px; font-size:12px; top:-3px; left:-5px; }
 
+  .icon-btn{ width:42px; height:42px; border-radius:14px; }
+  .icon-btn svg{ width:20px; height:20px; }
+
+  #l1{ font-size:4.5rem; }
+  #l2{ font-size:3.7rem; }
+  #l3{ font-size:3rem; }
+
+  .controls{
+    bottom:14px;
+    padding:12px 14px;
+    gap:8px;
+    border-radius:18px;
+  }
+
+  input[type=range]{ width:160px; }
+
+  button{
+    padding:9px 14px;
+    font-size:13px;
+    border-radius:10px;
+  }
+
+  .modal-card{ border-radius:24px; }
+  .modal-header{ padding:18px 20px 16px; }
+  .modal-header h2{ font-size:20px; }
+  .modal-body{ padding:18px 18px 22px; }
+  .modal-body p{ font-size:13.5px; }
 }
 </style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
 </head>
 
 <body>
 
-<div class="header">Алфавит</div>
+<header>
+  <div class="header-top">
+    <div class="brand">
+      <button class="logo" onclick="goBack()" title="Назад" aria-label="Назад">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8"/>
+          <path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8"/>
+          <path d="M17.5 16a3.5 3.5 0 0 0 0 -7h-.5"/>
+          <path d="M19 9.3v-2.8a3.5 3.5 0 0 0 -7 0"/>
+          <path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5"/>
+          <path d="M5 9.3v-2.8a3.5 3.5 0 0 1 7 0v10"/>
+        </svg>
+      </button>
+      <div>
+        <h1>Алфавит</h1>
+        <div class="subtitle">NeuroX · скорочтение</div>
+      </div>
+    </div>
+
+    <div class="header-buttons">
+      <button class="icon-btn" id="themeBtn" title="Сменить тему" onclick="toggleTheme()" aria-label="Сменить тему">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+        </svg>
+      </button>
+      <button class="icon-btn" title="Справка" onclick="showHelp()" aria-label="Справка">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 1.5-2.5 2-2.5 3.5"/>
+          <circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+      </button>
+      <button class="icon-btn" title="Настройки" onclick="showSettings()" aria-label="Настройки">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
 
 <div id="column">
   <div id="l1"></div>
@@ -135,7 +570,131 @@ input[type=range]{
 
 <div class="footer">© verner</div>
 
+<!-- МОДАЛКА «СПРАВКА» -->
+<div class="modal" id="helpModal" onclick="if(event.target===this) closeHelp()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 1.5-2.5 2-2.5 3.5"/>
+          <circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+        Справка
+      </h2>
+      <button class="modal-close" onclick="closeHelp()" aria-label="Закрыть">×</button>
+    </div>
+   <div class="modal-body">
+  <p><b>Алфавит</b> — тренажёр на внимание и координацию: читаешь букву и одновременно показываешь нужную руку и/или ногу.</p>
+  <p><b>Верхняя буква</b> — её нужно назвать вслух. Случайная буква алфавита.</p>
+  <p><b>Средняя буква</b> — показывает, какую руку поднять: <b>Л</b> — левую, <b>П</b> — правую, <b>О</b> — обе.</p>
+  <p><b>Режим «Ноги»</b> — добавляет третью букву внизу. Она показывает, какую ногу поднять: <b>Л</b> — левую, <b>П</b> — правую.</p>
+  <p><b>Радуга</b> — буквы окрашиваются в случайные цвета, их нужно назвать вместе с буквой сверху.</p>
+</div>
+  </div>
+</div>
+
+<!-- МОДАЛКА «НАСТРОЙКИ» -->
+<div class="modal" id="settingsModal" onclick="if(event.target===this) closeSettings()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+        </svg>
+        Настройки
+      </h2>
+      <button class="modal-close" onclick="closeSettings()" aria-label="Закрыть">×</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="settings-section">
+        <h4>Оформление</h4>
+        <div class="settings-row" id="themeRow" onclick="toggleTheme()">
+          <div class="settings-row__label">
+            Тёмная тема
+            <small>Меньше света вечером</small>
+          </div>
+          <div class="switch"></div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h4>Профиль</h4>
+        <p style="font-size: 13px; color: var(--text-dim); font-weight: 700; line-height: 1.5;">
+          Имя, возраст и настройки меняются в главном меню — нажми на мозг в шапке.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <script>
+/* ===== ТЕМА ===== */
+const LS_THEME_KEY = 'neurox_theme';
+
+const SVG_SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const SVG_MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.innerHTML = theme === 'dark' ? SVG_SUN : SVG_MOON;
+
+  const row = document.getElementById('themeRow');
+  if (row) row.classList.toggle('theme-switch-on', theme === 'dark');
+}
+
+function getStoredTheme(){ return localStorage.getItem(LS_THEME_KEY) || ''; }
+function saveTheme(theme){ localStorage.setItem(LS_THEME_KEY, theme); }
+
+function initTheme(){
+  let theme = getStoredTheme();
+  if (!theme){
+    const prefersDark = window.matchMedia &&
+                        window.matchMedia('(prefers-color-scheme: dark)').matches;
+    theme = prefersDark ? 'dark' : 'light';
+  }
+  applyTheme(theme);
+}
+
+function toggleTheme(){
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  saveTheme(next);
+}
+
+function showHelp(){ document.getElementById('helpModal').classList.add('open'); }
+function closeHelp(){ document.getElementById('helpModal').classList.remove('open'); }
+
+function showSettings(){ document.getElementById('settingsModal').classList.add('open'); }
+function closeSettings(){ document.getElementById('settingsModal').classList.remove('open'); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape'){
+    closeHelp();
+    closeSettings();
+  }
+});
+
+initTheme();
+
+if (window.matchMedia){
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  mq.addEventListener('change', e => {
+    if (!getStoredTheme()) applyTheme(e.matches ? 'dark' : 'light');
+  });
+}
+</script>
+
+<script>
+function goBack(){
+  location.href = "index.html";
+}
+
 const column=document.getElementById("column");
 const l1=document.getElementById("l1");
 const l2=document.getElementById("l2");
@@ -147,7 +706,11 @@ const legsBtn = document.getElementById("legs");
 const startBtn = document.getElementById("start");
 const stopBtn = document.getElementById("stop");
 
-const HEADER_HEIGHT = 56;
+/* Высота шапки считается динамически */
+function getHeaderH(){
+  const h = document.querySelector('header');
+  return h ? h.getBoundingClientRect().height : 100;
+}
 
 const alphabet="АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЫЭЮЯ".split("")
   .filter(x=>!["Ь","Ъ","Й"].includes(x));
@@ -163,7 +726,6 @@ const steps=[
 400,300,200,100
 ];
 
-/* 🌈 теперь радуга = цвета букв */
 const rainbowColors=[
 "#FF0000","#FF7F00","#FFFF00",
 "#00FF00","#00BFFF","#0000FF","#8A2BE2"
@@ -172,9 +734,7 @@ const rainbowColors=[
 let timer=null;
 let rainbow=false;
 let legs=false;
-let colorIndex=0;
 
-/* кнопки press */
 function bind(btn){
   btn.addEventListener("mousedown",()=>btn.classList.add("pressed"));
   btn.addEventListener("mouseup",()=>btn.classList.remove("pressed"));
@@ -184,34 +744,32 @@ function bind(btn){
   btn.addEventListener("touchend",()=>btn.classList.remove("pressed"));
 }
 
-bind(document.getElementById("start"));
-bind(document.getElementById("stop"));
-bind(document.getElementById("rainbow"));
-bind(document.getElementById("legs"));
+bind(startBtn);
+bind(stopBtn);
+bind(rainbowBtn);
+bind(legsBtn);
 
 function rand(a){
   return a[Math.floor(Math.random()*a.length)];
 }
 function randNoRepeat(arr, prev){
   let x;
-
   do{
     x = arr[Math.floor(Math.random()*arr.length)];
   } while(x === prev);
-
   return x;
 }
 
 function randPos(){
-
   const rect = column.getBoundingClientRect();
 
   const margin = 10;
+  const headerH = getHeaderH();
 
   const minX = rect.width/2 + margin;
   const maxX = window.innerWidth - rect.width/2 - margin;
 
-  const minY = HEADER_HEIGHT + margin;
+  const minY = headerH + margin;
   const maxY = window.innerHeight - rect.height - 180;
 
   column.style.left =
@@ -221,34 +779,29 @@ function randPos(){
       (Math.random() * (maxY - minY) + minY) + "px";
 }
 
-/* 🎯 ВАЖНО: теперь меняем ЦВЕТ БУКВ */
 function applyRainbowColor(){
-
   const color = rainbowColors[
       Math.floor(Math.random()*rainbowColors.length)
   ];
-
   l1.style.color = color;
   l2.style.color = color;
   l3.style.color = color;
-
 }
 
 function update(){
-
   column.style.opacity=0;
 
   setTimeout(()=>{
-
     l1.textContent=rand(alphabet);
+
     const newL2 = randNoRepeat(group, prevL2);
-l2.textContent = newL2;
-prevL2 = newL2;
+    l2.textContent = newL2;
+    prevL2 = newL2;
 
     if(legs){
       const newL3 = randNoRepeat(legsArr, prevL3);
-l3.textContent = newL3;
-prevL3 = newL3;
+      l3.textContent = newL3;
+      prevL3 = newL3;
       l3.style.display="block";
     } else {
       l3.style.display="none";
@@ -261,49 +814,38 @@ prevL3 = newL3;
     if(rainbow){
       applyRainbowColor();
     } else {
-      l1.style.color="black";
-      l2.style.color="black";
-      l3.style.color="black";
+      l1.style.color="";
+      l2.style.color="";
+      l3.style.color="";
     }
-
   },60);
 }
 
-/* start */
 startBtn.onclick=()=>{
   clearInterval(timer);
   update();
   timer=setInterval(update,steps[speed.value]);
 
-  startBtn.style.background="#FF6A00";
-  stopBtn.style.background="#1E3F8A";
+  startBtn.classList.add("active");
+  stopBtn.classList.remove("active");
 };
 
-/* stop */
 stopBtn.onclick=()=>{
   clearInterval(timer);
   timer=null;
-
-  startBtn.style.background="#1E3F8A";
+  startBtn.classList.remove("active");
 };
 
-/* rainbow */
-document.getElementById("rainbow").onclick=()=>{
+rainbowBtn.onclick=()=>{
   rainbow = !rainbow;
-
-  rainbowBtn.style.background =
-      rainbow ? "#FF6A00" : "#1E3F8A";
+  rainbowBtn.classList.toggle("active", rainbow);
 };
 
-/* legs */
-document.getElementById("legs").onclick=()=>{
+legsBtn.onclick=()=>{
   legs = !legs;
-
-  legsBtn.style.background =
-      legs ? "#FF6A00" : "#1E3F8A";
+  legsBtn.classList.toggle("active", legs);
 };
 
-/* speed */
 speed.oninput=()=>{
   if(timer){
     clearInterval(timer);
@@ -312,8 +854,12 @@ speed.oninput=()=>{
 };
 </script>
 
-<script src="./nav.js"></script>
-<script src="../menu/menu.js"></script>
+<!-- ==== БОКОВОЕ МЕНЮ NEUROX ==== -->
 
+
+
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
 </body>
 </html>

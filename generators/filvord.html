@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Филворд - Мнемо-Арена</title>
+<style>
+  :root {
+    --blue: #2D6CDF;
+    --blue-dark: #1E4FA8;
+    --blue-light: #EBF2FF;
+    --orange: #FF8C42;
+    --orange-dark: #E86E1F;
+    --orange-light: #FFF2E5;
+    --bg: #F7F9FC;
+    --text: #1F2937;
+    --text-muted: #6B7280;
+    --border: #E5EAF2;
+    --green: #22C55E;
+    --red: #EF4444;
+    --yellow: #F59E0B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, 'Nunito Sans', sans-serif;
+    background: var(--bg); min-height: 100vh; color: var(--text);
+    padding: 16px; overflow-x: hidden;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding: 16px 22px;
+    background: #fff; border-radius: 20px; border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(45,108,223,.06); flex-wrap: wrap; gap: 10px;
+  }
+  .back-btn {
+    width: 46px; height: 46px; border: none; border-radius: 14px;
+    background: var(--blue-light); color: var(--blue);
+    font-size: 22px; font-weight: 700; cursor: pointer; transition: .18s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .back-btn:hover { background: var(--blue); color: #fff; transform: translateY(-1px); }
+  h1 { font-size: 20px; letter-spacing: .5px; color: var(--blue-dark); font-weight: 800; }
+  .score-bar {
+    background: var(--orange); color: #fff; padding: 8px 18px;
+    border-radius: 30px; font-size: 14px; font-weight: 700;
+    box-shadow: 0 4px 12px rgba(255,140,66,.3);
+  }
+  .score-bar span { color: #fff; font-weight: 800; font-size: 17px; }
+  main { min-height: 520px; }
+  .game-header { text-align: center; margin-bottom: 20px; }
+  .game-header h2 { font-size: 22px; margin-bottom: 6px; color: var(--blue-dark); font-weight: 800; }
+  .subtitle { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+  .panel {
+    background: #fff; border: 1px solid var(--border); border-radius: 22px;
+    padding: 26px; box-shadow: 0 8px 24px rgba(45,108,223,.06);
+  }
+
+  .section-title {
+    font-size: 12px; font-weight: 800; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1px; margin: 18px 0 10px;
+  }
+  .section-title:first-child { margin-top: 0; }
+  .settings-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px; font-size: 15px; color: var(--text); font-weight: 700;
+  }
+  .settings-row b { color: var(--blue-dark); font-size: 16px; font-weight: 800; }
+  input[type="range"] { width: 100%; accent-color: #FF8C42; height: 26px; }
+
+  .cat-row { display: flex; flex-wrap: wrap; gap: 7px; }
+  .cat-chip {
+    padding: 8px 12px; border-radius: 11px; border: 2px solid var(--border);
+    background: #fff; color: var(--text-muted); font-size: 12.5px; font-weight: 800;
+    cursor: pointer; transition: .15s; font-family: inherit;
+  }
+  .cat-chip:hover { border-color: var(--orange); color: var(--orange-dark); }
+  .cat-chip.active {
+    background: var(--orange); border-color: var(--orange); color: #fff;
+    box-shadow: 0 4px 12px rgba(255,140,66,.3);
+  }
+
+  .opt-row { display: flex; flex-wrap: wrap; gap: 7px; }
+  .opt-chip {
+    padding: 8px 12px; border-radius: 11px; border: 2px solid var(--border);
+    background: #fff; color: var(--text-muted); font-size: 12.5px; font-weight: 800;
+    cursor: pointer; transition: .15s; font-family: inherit;
+  }
+  .opt-chip:hover { border-color: var(--blue); color: var(--blue); }
+  .opt-chip.active {
+    background: var(--blue); border-color: var(--blue); color: #fff;
+    box-shadow: 0 4px 12px rgba(45,108,223,.3);
+  }
+
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; margin-bottom: 8px; background: var(--bg);
+    border-radius: 12px; border: 2px solid var(--border);
+    cursor: pointer; transition: .15s; font-size: 14px; font-weight: 700;
+  }
+  .toggle-row:hover { border-color: var(--blue); }
+  .toggle-row.on { border-color: var(--blue); background: var(--blue-light); }
+  .toggle-switch {
+    width: 42px; height: 24px; border-radius: 12px; background: #CBD5E1;
+    position: relative; transition: .2s; flex-shrink: 0;
+  }
+  .toggle-row.on .toggle-switch { background: var(--blue); }
+  .toggle-switch::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 20px; height: 20px; background: #fff; border-radius: 50%;
+    transition: .2s; box-shadow: 0 2px 4px rgba(0,0,0,.15);
+  }
+  .toggle-row.on .toggle-switch::after { transform: translateX(18px); }
+
+  .btn-main {
+    display: block; margin: 24px auto 0; padding: 16px 40px;
+    border-radius: 14px; border: none; background: var(--orange); color: #fff;
+    font-size: 17px; font-weight: 800; cursor: pointer; transition: .2s;
+    letter-spacing: .5px; box-shadow: 0 8px 20px rgba(255,140,66,.3);
+    font-family: inherit;
+  }
+  .btn-main:hover {
+    background: var(--orange-dark); transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(255,140,66,.4);
+  }
+  .btn-main:active { transform: translateY(0); }
+
+  .btn-secondary {
+    display: block; margin: 8px auto 0; padding: 12px 30px;
+    border-radius: 14px; border: 2px solid var(--border);
+    background: #fff; color: var(--blue-dark); font-size: 15px;
+    font-weight: 700; cursor: pointer; transition: .2s; font-family: inherit;
+  }
+  .btn-secondary:hover { background: var(--blue-light); border-color: var(--blue); }
+
+  .btn-ghost {
+    display: inline-block; margin: 0 auto; padding: 10px 18px;
+    border-radius: 12px; border: 2px solid var(--border);
+    background: #fff; color: var(--text-muted); font-size: 14px;
+    font-weight: 800; cursor: pointer; transition: .2s; font-family: inherit;
+  }
+  .btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+
+  .stats-row {
+    display: flex; justify-content: center; gap: 10px;
+    flex-wrap: wrap; margin-bottom: 18px;
+  }
+  .stat {
+    background: var(--blue-light); color: var(--blue-dark);
+    padding: 8px 16px; border-radius: 12px; font-size: 14px;
+    font-weight: 800; letter-spacing: .3px;
+  }
+  .board-wrap { display: flex; justify-content: center; }
+  .board {
+    display: grid; gap: 4px; width: 100%; max-width: 560px;
+    touch-action: none; user-select: none; -webkit-user-select: none;
+  }
+  .cell {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    font-size: var(--fs, 18px); font-weight: 800; background: #fff;
+    border: 2px solid var(--border); border-radius: 10px; color: var(--text);
+    transition: background .12s, border-color .12s, transform .12s, color .12s;
+    cursor: pointer;
+  }
+  .cell.sel {
+    background: var(--orange-light); border-color: var(--orange);
+    color: var(--orange-dark); transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(255,140,66,.25);
+  }
+  .cell.found {
+    background: var(--wc, var(--blue-light));
+    border-color: var(--wcb, var(--blue));
+    color: var(--wcb, var(--blue-dark));
+    animation: popIn .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .cell.hint { animation: pulseCell .7s ease-in-out 2; }
+  .cell.bad {
+    background: #FEE2E2; border-color: var(--red); color: var(--red);
+    animation: shakeCell .3s;
+  }
+  @keyframes popIn {
+    from { transform: scale(.6); opacity: .4; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  @keyframes pulseCell {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(255,140,66,0); }
+    50% { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(255,140,66,.25); }
+  }
+  @keyframes shakeCell {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+
+  .word-list {
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+    margin-top: 22px;
+  }
+  .word-chip {
+    padding: 8px 14px; border-radius: 12px;
+    background: var(--blue-light); color: var(--blue-dark);
+    font-weight: 800; font-size: 14px; letter-spacing: .5px;
+    border: 2px solid transparent; transition: .25s;
+  }
+  .word-chip.done {
+    background: #DCFCE7; color: #16A34A; text-decoration: line-through;
+    opacity: .6; border-color: #86EFAC;
+  }
+  .actions-row {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    margin-top: 22px;
+  }
+  .actions-row button { margin: 0; }
+
+  .result-screen { text-align: center; padding: 30px 20px; }
+  .result-screen .big {
+    font-size: 72px; margin-bottom: 12px;
+    animation: popIn .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .result-screen h2 { font-size: 26px; margin-bottom: 10px; color: var(--blue-dark); font-weight: 800; }
+  .result-screen p { color: var(--text-muted); font-size: 16px; margin: 6px 0; font-weight: 600; }
+  .stars { font-size: 40px; margin: 20px 0; letter-spacing: 6px; }
+
+  @media (max-width: 500px) {
+    .panel { padding: 14px; border-radius: 18px; }
+    .board { gap: 3px; }
+    .cell { border-radius: 7px; border-width: 1.5px; }
+    .word-chip { padding: 6px 10px; font-size: 12px; }
+    .stat { padding: 6px 12px; font-size: 13px; }
+    .cat-chip, .opt-chip { padding: 7px 10px; font-size: 11.5px; }
+  }
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <button class="back-btn" onclick="location.href='index.html'">←</button>
+    <h1>🔤 ФИЛВОРД</h1>
+    <div class="score-bar">Очки: <span id="globalScore">0</span></div>
+  </header>
+  <main id="game"></main>
+</div>
+
+<script>
+/* ============ УТИЛИТЫ ============ */
+const $ = id => document.getElementById(id);
+const gameEl = $('game');
+let globalScore = 0;
+$('globalScore').textContent = globalScore;
+
+function addScore(n) {
+  globalScore = Math.max(0, globalScore + n);
+  $('globalScore').textContent = globalScore;
+}
+function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+const rnd = n => Math.floor(Math.random() * n);
+
+let timeouts = [];
+function wait(ms, fn) { const id = setTimeout(fn, ms); timeouts.push(id); return id; }
+function clearTimeouts() { timeouts.forEach(clearTimeout); timeouts = []; }
+
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+  }
+}
+function beep(freq, dur = 0.15, type = 'sine', vol = 0.08) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.type = type; osc.frequency.value = freq;
+  const t = audioCtx.currentTime;
+  gain.gain.setValueAtTime(vol, t);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  osc.start(t); osc.stop(t + dur + 0.02);
+}
+function sfxCorrect() { beep(660, 0.1); setTimeout(() => beep(880, 0.15), 90); }
+function sfxWrong()   { beep(180, 0.28, 'sawtooth', 0.12); }
+function sfxClick()   { beep(440, 0.05, 'triangle', 0.06); }
+function sfxTick()    { beep(560, 0.03, 'triangle', 0.04); }
+function sfxWin()     { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.2), i * 120)); }
+
+function fmtTime(sec) {
+  const m = Math.floor(sec / 60), s = sec % 60;
+  return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+
+/* ============ СЛОВАРИ ============ */
+const CATEGORIES = [
+  {
+    id: 'animals', name: '🐾 Животные',
+    words: [
+      'ТИГР','СЛОН','ЖИРАФ','ЗЕБРА','ЛИСА','МЕДВЕДЬ','ВОЛК','ЗАЯЦ','ЁЖИК','БЕЛКА','ОЛЕНЬ','ЛОСЬ',
+      'РЫСЬ','БАРСУК','БОБР','ВЫДРА','ПИНГВИН','ДЕЛЬФИН','АКУЛА','ОРЁЛ','СОВА','ВОРОН','СИНИЦА',
+      'ЧЕРЕПАХА','КРОКОДИЛ','ЗМЕЯ','ЯЩЕРИЦА','ЛЯГУШКА','БАБОЧКА','ПЧЕЛА','МУРАВЕЙ','ПАУК','КАРП',
+      'ЩУКА','ОКУНЬ','ХОМЯК','КРОЛИК','ТЮЛЕНЬ','МОРЖ','ЛАСКА','ПАНДА','КОАЛА','СТРАУС','ПАВЛИН',
+      'ФЛАМИНГО','ПЕЛИКАН','ГОРИЛЛА','ЛЕНИВЕЦ','ВЕРБЛЮД','КЕНГУРУ','ГЕПАРД','ЛЕОПАРД','ГИЕНА',
+      'ШАКАЛ','ЛЕМУР','СУРОК','ХОРЁК','СОБОЛЬ','НОРКА','КУНИЦА','КРЫСА','МЫШЬ','КРОТ','ОБЕЗЬЯНА',
+      'ШИМПАНЗЕ','МАКАКА','БАБУИН','ИГУАНА','ВАРАН','ХАМЕЛЕОН','САЛАМАНДРА','ТРИТОН','ЖАБА',
+      'ОСЬМИНОГ','КАЛЬМАР','МЕДУЗА','КРАБ','РАК','КРЕВЕТКА','УЛИТКА','СЛИЗЕНЬ','ПИЯВКА','КОМАР',
+      'МУХА','ОСА','ШМЕЛЬ','СТРЕКОЗА','КУЗНЕЧИК','СВЕРЧОК','ТАРАКАН','СКОРПИОН','СОКОЛ','ЯСТРЕБ',
+      'КОРШУН','ФИЛИН','ГОЛУБЬ','ВОРОБЕЙ','СНЕГИРЬ','ДЯТЕЛ','КУКУШКА','СОЛОВЕЙ','ДРОЗД','СКВОРЕЦ',
+      'ЛАСТОЧКА','СТРИЖ','ЖАВОРОНОК','ЧАЙКА','БАКЛАН','АИСТ','ЖУРАВЛЬ','ЦАПЛЯ','ЛЕБЕДЬ','ГУСЬ',
+      'УТКА','ИНДЮК','КУРИЦА','ПЕТУХ','ФАЗАН','ТЕТЕРЕВ','ГЛУХАРЬ','ПЕРЕПЁЛ','КУРОПАТКА','ТУКАН',
+      'ПОПУГАЙ','КАКАДУ','ГЕККОН','ТАПИР','ОКАПИ','МУРАВЬЕД','БРОНЕНОСЕЦ','ДИКОБРАЗ','СУРИКАТ',
+      'МАНГУСТ','ГАЗЕЛЬ','АНТИЛОПА','ГЕМСБОК','ЛАМА','АЛЬПАКА','ПУМА','ЯГУАР','ГРИЗЛИ','ШИНШИЛЛА'
+    ]
+  },
+  {
+    id: 'food', name: '🍎 Еда',
+    words: [
+      'ЯБЛОКО','ГРУША','СЛИВА','ВИШНЯ','АРБУЗ','ДЫНЯ','БАНАН','АПЕЛЬСИН','ЛИМОН','ВИНОГРАД',
+      'ПЕРСИК','АБРИКОС','КЛУБНИКА','МАЛИНА','СМОРОДИНА','КАРТОШКА','МОРКОВЬ','СВЁКЛА','КАПУСТА',
+      'ОГУРЕЦ','ПОМИДОР','ЧЕСНОК','РЕДИС','ТЫКВА','КАБАЧОК','ХЛЕБ','СЫР','МОЛОКО','МАСЛО','ТВОРОГ',
+      'СМЕТАНА','ЙОГУРТ','КОЛБАСА','СОСИСКА','КОТЛЕТА','ПЕЛЬМЕНИ','БОРЩ','КАША','БЛИНЫ','ПИРОГ',
+      'ТОРТ','КОНФЕТА','ШОКОЛАД','ПЕЧЕНЬЕ','ВАРЕНЬЕ','ОРЕХ','ЗЕФИР','ПРЯНИК','КЕФИР','ВАРЕНИКИ',
+      'БУЛОЧКА','БАТОН','ЛАВАШ','ПИТА','КРУАССАН','БАГЕТ','ПИЦЦА','СУШИ','РОЛЛЫ','ЛАПША',
+      'МАКАРОНЫ','СПАГЕТТИ','РИС','ГРЕЧКА','ОВСЯНКА','ПШЕНО','БУЛГУР','КУСКУС','ЧЕЧЕВИЦА','ГОРОХ',
+      'ФАСОЛЬ','КУКУРУЗА','РЕПА','РЕДЬКА','ХРЕН','ИМБИРЬ','КУРКУМА','ПЕРЕЦ','ПАПРИКА','КОРИЦА',
+      'ВАНИЛЬ','ШАФРАН','БАЗИЛИК','УКРОП','ПЕТРУШКА','КИНЗА','МЯТА','ЧАБРЕЦ','РОЗМАРИН','ШАЛФЕЙ',
+      'САХАР','СОЛЬ','СОДА','ДРОЖЖИ','МЁД','СИРОП','ДЖЕМ','ПОВИДЛО','МАРМЕЛАД','ПАСТИЛА',
+      'ХАЛВА','НУГА','ИРИС','КАРАМЕЛЬ','ЛЕДЕНЕЦ','ПОПКОРН','ЧИПСЫ','СУХАРИКИ','КРЕКЕР','ЖЕЛЕ',
+      'ПУДИНГ','МУСС','СУФЛЕ','КРЕМ','ГЛАЗУРЬ','БИСКВИТ','ВАФЛИ','ЭКЛЕР','МАКАРУН','ЧИЗКЕЙК',
+      'ТИРАМИСУ','МОРОЖЕНОЕ','СОРБЕТ','ЩЕРБЕТ','СМУЗИ','ЛИМОНАД','КВАС','КОМПОТ','МОРС','КИСЕЛЬ',
+      'ЧАЙ','КОФЕ','КАКАО','САЛАТ','СУП','БУЛЬОН','ОКРОШКА','СОЛЯНКА','ХАРЧО','ШАШЛЫК'
+    ]
+  },
+  {
+    id: 'nature', name: '🌿 Природа',
+    words: [
+      'РЕКА','ОЗЕРО','МОРЕ','ОКЕАН','ГОРА','ХОЛМ','ПОЛЕ','ЛЕС','ЛУГ','СТЕПЬ','ПУСТЫНЯ','БОЛОТО',
+      'ВОДОПАД','ВУЛКАН','ОСТРОВ','ЗАЛИВ','ПРОЛИВ','РУЧЕЙ','РОДНИК','ПОЛЯНА','ОПУШКА','ЧАЩА','ТАЙГА',
+      'ТУНДРА','ЛЕДНИК','АЙСБЕРГ','ГЕЙЗЕР','ДЮНА','КАНЬОН','ПЕЩЕРА','УТЁС','СКАЛА','БЕРЕГ','ПЛЯЖ',
+      'ДОЛИНА','РАВНИНА','ПЛАТО','ХРЕБЕТ','ВЕРШИНА','ЗАКАТ','РАССВЕТ','ОБЛАКО','ТУМАН','ГРОЗА',
+      'РАДУГА','СНЕГОПАД','ЛИВЕНЬ','ИНЕЙ','МЕТЕЛЬ','ВЕТЕР','ШТОРМ','УРАГАН','СМЕРЧ','ЗЕМЛЯ',
+      'ПОЧВА','ГЛИНА','ПЕСОК','ГРАВИЙ','КАМЕНЬ','ВАЛУН','МИНЕРАЛ','КРИСТАЛЛ','КВАРЦ','ГРАНИТ',
+      'БАЗАЛЬТ','МРАМОР','ИЗВЕСТЬ','МЕЛ','ТОРФ','УГОЛЬ','НЕФТЬ','ГАЗ','РУДА','ЗОЛОТО',
+      'СЕРЕБРО','МЕДЬ','ЖЕЛЕЗО','АЛМАЗ','ИЗУМРУД','РУБИН','САПФИР','ТОПАЗ','АМЕТИСТ','ЯНТАРЬ',
+      'ЖЕМЧУГ','КОРАЛЛ','РАКУШКА','ВОДОРОСЛЬ','МОХ','ЛИШАЙНИК','ПАПОРОТНИК','РОМАШКА','ВАСИЛЁК',
+      'ОДУВАНЧИК','КЛЕВЕР','ПОДСНЕЖНИК','ЛАНДЫШ','ТЮЛЬПАН','НАРЦИСС','ГВОЗДИКА','РОЗА','ПИОН',
+      'ЛИЛИЯ','ИРИС','ГЕОРГИН','АСТРА','ХРИЗАНТЕМА','ФИАЛКА','ФЛОКС','ПЕТУНИЯ','БАРХАТЦЫ','КАЛЕНДУЛА',
+      'ЛЮПИН','МАК','ЛОТОС','КУВШИНКА','РЯСКА','КАМЫШ','ТРОСТНИК','ОСОКА','ПОЛЫНЬ','КОВЫЛЬ'
+    ]
+  },
+  {
+    id: 'cities', name: '🏙️ Города',
+    words: [
+      'МОСКВА','КАЛУГА','ТУЛА','ОРЁЛ','КУРСК','БРЯНСК','СМОЛЕНСК','ТВЕРЬ','ПСКОВ','НОВГОРОД',
+      'ВОЛОГДА','КОСТРОМА','ВЛАДИМИР','РЯЗАНЬ','ЛИПЕЦК','ТАМБОВ','ПЕНЗА','САРАТОВ','САМАРА','ОМСК',
+      'ТОМСК','ИРКУТСК','ЯКУТСК','СОЧИ','АНАПА','РОСТОВ','ВОРОНЕЖ','БЕЛГОРОД','КРАСНОДАР','ЭЛИСТА',
+      'ПЕРМЬ','ТЮМЕНЬ','ОРЕНБУРГ','ЧЕЛЯБИНСК','КУРГАН','ЯРОСЛАВЛЬ','АСТРАХАНЬ','ВОЛГОГРАД','БАРНАУЛ',
+      'КЕМЕРОВО','МУРМАНСК','АРХАНГЕЛЬСК','САРАНСК','ЙОШКАР','ЧЕБОКСАРЫ','УФА','ИЖЕВСК','КИРОВ',
+      'НОРИЛЬСК','ХАБАРОВСК','ВЛАДИВОСТОК','МАГАДАН','ПЕТРОЗАВОДСК','СЫКТЫВКАР','НАЛЬЧИК','МАХАЧКАЛА',
+      'ГРОЗНЫЙ','ВЛАДИКАВКАЗ','СТАВРОПОЛЬ','СУРГУТ','НИЖНЕВАРТОВСК','НОВОСИБИРСК','КРАСНОЯРСК','БИЙСК',
+      'АБАКАН','КЫЗЫЛ','ГОРНО','БЛАГОВЕЩЕНСК','ЮЖНО','АРТЁМ','НАХОДКА','БРАТСК','АНГАРСК','УЛАН',
+      'ПАРИЖ','ЛОНДОН','БЕРЛИН','РИМ','МАДРИД','ЛИССАБОН','ПРАГА','ВЕНА','БУДАПЕШТ','ВАРШАВА',
+      'АТИНА','СТОКГОЛЬМ','ХЕЛЬСИНКИ','ОСЛО','КОПЕНГАГЕН','АМСТЕРДАМ','БРЮССЕЛЬ','ЦЮРИХ','ЖЕНЕВА',
+      'ТОКИО','ПЕКИН','СЕУЛ','БАНГКОК','ДЕЛИ','КАИР','СИДНЕЙ','НЬЮ','ТОРОНТО','ЧИКАГО',
+      'БОСТОН','СИЭТЛ','ДАЛЛАС','ХЬЮСТОН','МАЙАМИ','ЛИМА','БОГОТА','САНТЬЯГО','ГАВАНА','МЕХИКО'
+    ]
+  },
+  {
+    id: 'objects', name: '🪑 Предметы',
+    words: [
+      'СТОЛ','СТУЛ','ЛАМПА','КНИГА','РУЧКА','ТЕТРАДЬ','ЗЕРКАЛО','ЧАСЫ','КЛЮЧ','ЗАМОК','ДВЕРЬ','ОКНО',
+      'ДИВАН','КРОВАТЬ','ШКАФ','ПОЛКА','КОВЁР','ПОДУШКА','ОДЕЯЛО','ТАРЕЛКА','ЧАШКА','ЛОЖКА','ВИЛКА',
+      'ЧАЙНИК','КАСТРЮЛЯ','СКОВОРОДА','ВЕНИК','ВЕДРО','УТЮГ','ТЕЛЕФОН','КОМПЬЮТЕР','НАУШНИКИ','РЮКЗАК',
+      'ЗОНТИК','ПАКЕТ','КОРОБКА','СВЕЧА','ФОНАРЬ','ГИТАРА','ПИАНИНО','БАРАБАН','СКРИПКА','КАРТИНА',
+      'РАМКА','ВАЗА','НОЖНИЦЫ','ЛИНЕЙКА','ПЕНАЛ','ДОСКА','ПАРТА','ПОРТФЕЛЬ','КРЕСЛО','ТУМБА',
+      'КОМОД','ТАБУРЕТ','ЛОЖЕ','МАТРАС','ПЛЕД','ПОКРЫВАЛО','САЛФЕТКА','СКАТЕРТЬ','ПОЛОТЕНЦЕ','ХАЛАТ',
+      'ТАПОЧКИ','ЗАЖИГАЛКА','СПИЧКИ','ПЕПЕЛЬНИЦА','ТРУБКА','ДУХИ','ПОМАДА','ПУДРА','КРЕМ','ТУШЬ',
+      'БЛЕСК','ЛАК','ТЕНЬ','КИСТЬ','МАСКА','ГРЕБЕНЬ','ФЕН','БРИТВА','ЗУБНАЯ','ЩЁТКА','ПАСТА',
+      'МЫЛО','ШАМПУНЬ','ГЕЛЬ','СКРАБ','МОЧАЛКА','ГУБКА','ВАННА','ДУШ','СМЕСИТЕЛЬ','ТРУБА',
+      'КРАН','УНИТАЗ','БИДЕ','РАКОВИНА','ПЛИТКА','КАФЕЛЬ','ОБОИ','ЛАК','КРАСКА','ГРУНТОВКА',
+      'ШПАТЕЛЬ','ВАЛИК','ОТВЁРТКА','МОЛОТОК','КЛЕЩИ','ПИЛА','РУБАНОК','ДРЕЛЬ','НАПИЛЬНИК','ГВОЗДЬ',
+      'ШУРУП','БОЛТ','ГАЙКА','ШАЙБА','ДЮБЕЛЬ','ИЗОЛЕНТА','СКОТЧ','КЛЕЙ','ГИПС','ЦЕМЕНТ'
+    ]
+  },
+  {
+    id: 'professions', name: '👷 Профессии',
+    words: [
+      'ВРАЧ','УЧИТЕЛЬ','ИНЖЕНЕР','ПРОГРАММИСТ','ПОВАР','ПЕКАРЬ','ОФИЦИАНТ','БАРИСТА','ПРОДАВЕЦ','КАССИР',
+      'ВОДИТЕЛЬ','ПИЛОТ','МАТРОС','КАПИТАН','МАШИНИСТ','КОНДУКТОР','СТЮАРД','ПОЛИЦЕЙСКИЙ','ПОЖАРНЫЙ','СПАСАТЕЛЬ',
+      'ВОЕННЫЙ','СОЛДАТ','ОФИЦЕР','ГЕНЕРАЛ','МАЙОР','КАПИТАН','ЛЕЙТЕНАНТ','СЕРЖАНТ','ПРАПОРЩИК','МАТРОС',
+      'АКТЁР','АКТРИСА','РЕЖИССЁР','ОПЕРАТОР','СЦЕНАРИСТ','ХУДОЖНИК','СКУЛЬПТОР','ДИЗАЙНЕР','АРХИТЕКТОР','ФОТОГРАФ',
+      'ЖУРНАЛИСТ','РЕДАКТОР','КОРРЕКТОР','ПИСАТЕЛЬ','ПОЭТ','ПЕРЕВОДЧИК','БИБЛИОТЕКАРЬ','ЭКСКУРСОВОД','ГИД','МУЗЕЕВЕД',
+      'УЧЁНЫЙ','ФИЗИК','ХИМИК','БИОЛОГ','МАТЕМАТИК','АСТРОНОМ','ГЕОЛОГ','АРХЕОЛОГ','ИСТОРИК','ФИЛОСОФ',
+      'ПСИХОЛОГ','ЛОГОПЕД','ПЕДИАТР','ХИРУРГ','СТОМАТОЛОГ','ОКУЛИСТ','КАРДИОЛОГ','НЕВРОЛОГ','МЕДСЕСТРА','ФЕЛЬДШЕР',
+      'ВЕТЕРИНАР','ФАРМАЦЕВТ','ЛАБОРАНТ','БИОЛОГ','ЭКОЛОГ','АГРОНОМ','ЗООТЕХНИК','ЛЕСНИК','ЕГЕРЬ','САДОВНИК',
+      'ФЕРМЕР','ДОЯРКА','ПАСТУХ','КОНЮХ','ПЧЕЛОВОД','ВИНОГРАДАРЬ','РЫБАК','ОХОТНИК','ЕГЕРЬ','ЛЕСОРУБ',
+      'СТОЛЯР','ПЛОТНИК','КАМЕНЩИК','МАЛЯР','ШТУКАТУР','СВАРЩИК','ТОКАРЬ','ФРЕЗЕРОВЩИК','СЛЕСАРЬ','МЕХАНИК',
+      'ЭЛЕКТРИК','САНТЕХНИК','МОНТАЖНИК','КРАНОВЩИК','БУЛЬДОЗЕРИСТ','ЭКСКАВАТОРЩИК','МАШИНИСТ','ПИЛОТ','КОСМОНАВТ','ПОДВОДНИК'
+    ]
+  },
+  {
+    id: 'sport', name: '⚽ Спорт',
+    words: [
+      'ФУТБОЛ','ХОККЕЙ','БАСКЕТБОЛ','ВОЛЕЙБОЛ','ТЕННИС','БАДМИНТОН','ГАНДБОЛ','РЕГБИ','БЕЙСБОЛ','КРИКЕТ',
+      'БОКС','КИКБОКСИНГ','КАРАТЕ','ДЗЮДО','САМБО','АЙКИДО','ТАЭКВОНДО','УШУ','СУМО','ФЕХТОВАНИЕ',
+      'БОРЬБА','ГРЕБЛЯ','ПЛАВАНИЕ','ПРЫЖКИ','БЕГ','МАРАФОН','СПРИНТ','ЭСТАФЕТА','ХОДЬБА','ОРИЕНТИРОВАНИЕ',
+      'ВЕЛОСПОРТ','МОТОСПОРТ','АВТОСПОРТ','КАРТИНГ','РАЛЛИ','ФОРМУЛА','ДРИФТ','ПАРУС','ЯХТИНГ','СЁРФИНГ',
+      'ДАЙВИНГ','СКАЛОЛАЗАНИЕ','АЛЬПИНИЗМ','ПОХОД','ТУРИЗМ','СПЕЛЕОЛОГИЯ','ПАРАШЮТ','ДЕЛЬТАПЛАН','ПАРАПЛАН','АЭРОБИКА',
+      'ФИТНЕС','ЙОГА','ПИЛАТЕС','ШАГИ','КРОССФИТ','БОДИБИЛДИНГ','ПАУЭРЛИФТИНГ','АРМРЕСТЛИНГ','ГИМНАСТИКА','АКРОБАТИКА',
+      'СИНХРОННОЕ','ХУДОЖЕСТВЕННАЯ','ФИГУРНОЕ','КОНЬКИ','ЛЫЖИ','БИАТЛОН','СНОУБОРД','СКЕЛЕТОН','БОБСЛЕЙ','КЁРЛИНГ',
+      'СТРЕЛЬБА','ЛУК','АРБАЛЕТ','ПНЕВМАТИКА','БИАТЛОН','ПЯТИБОРЬЕ','ТРИАТЛОН','ДЕСЯТИБОРЬЕ','МНОГОБОРЬЕ','ШАХМАТЫ',
+      'ШАШКИ','НАРДЫ','ДОМИНО','КАРТЫ','ПОКЕР','БИЛЬЯРД','СНУКЕР','БОУЛИНГ','ДАРТС','ГОЛЬФ',
+      'КЕРЛИНГ','ПЕЙНТБОЛ','СТРАЙКБОЛ','ЛАЗЕРТАГ','КВЕСТ','ЗАРНИЦА','РЕГБИ','ФРИСБИ','СКЕЙТБОРД','РОЛИКИ',
+      'САМОКАТ','BMX','ТРИАЛ','ПАРКУР','ВОРКАУТ','СТРИТБОЛ','СКВОШ','ПАДЕЛ','ПИКЛЬБОЛ','ФЛОРБОЛ'
+    ]
+  },
+  {
+    id: 'transport', name: '🚗 Транспорт',
+    words: [
+      'АВТОМОБИЛЬ','МАШИНА','ГРУЗОВИК','ФУРА','ПИКАП','ВНЕДОРОЖНИК','КРОССОВЕР','СЕДАН','ХЭТЧБЕК','УНИВЕРСАЛ',
+      'ЛИМУЗИН','КАБРИОЛЕТ','КУПЕ','МИНИВЭН','ФУРГОН','АВТОБУС','ТРОЛЛЕЙБУС','ТРАМВАЙ','МАРШРУТКА','МИКРОАВТОБУС',
+      'ПОЕЗД','ЭЛЕКТРИЧКА','МЕТРО','МОНОРЕЛЬС','ТРАМВАЙ','ПАРОВОЗ','ЛОКОМОТИВ','ТЕПЛОВОЗ','ЭЛЕКТРОВОЗ','ВАГОН',
+      'САМОЛЁТ','ВЕРТОЛЁТ','АЭРОПЛАН','БИПЛАН','ДИРИЖАБЛЬ','АЭРОСТАТ','ПЛАНЕР','ДЕЛЬТАПЛАН','ПАРАПЛАН','РАКЕТА',
+      'КОРАБЛЬ','ЛОДКА','КАТЕР','ЯХТА','ПАРОМ','БАРЖА','ПАРОХОД','ТЕПЛОХОД','ПОДВОДНАЯ','КРЕЙСЕР','ФРЕГАТ',
+      'ВЕЛОСИПЕД','МОПЕД','МОТОЦИКЛ','СКУТЕР','КВАДРОЦИКЛ','САМОКАТ','РОЛИКИ','ГИРОСКУТЕР','СЕГВЕЙ','МОНОКОЛЕСО',
+      'ТРАКТОР','КОМБАЙН','БУЛЬДОЗЕР','ЭКСКАВАТОР','КРАН','ПОГРУЗЧИК','АСФАЛЬТОУКЛАДЧИК','КАТОК','СНЕГОУБОРЩИК','МУСОРОВОЗ',
+      'ТАНК','БРОНЕВИК','БТР','БРОНЕПОЕЗД','КАТЕР','СУБМАРИНА','АВИАНОСЕЦ','ЭСМИНЕЦ','ЛИНКОР','КАНОНЕРКА',
+      'РАКЕТА','ШАТТЛ','СПУТНИК','ЗОНД','МОДУЛЬ','СТАНЦИЯ','КОРАБЛЬ','ЧЕЛНОК','БУРАН','СОЮЗ',
+      'КАРЕТА','ПОВОЗКА','ТЕЛЕГА','АРБА','САНИ','УПРЯЖЬ','ТРОЙКА','ВЕРБЛЮД','ОСЛИК','МУЛ'
+    ]
+  },
+  {
+    id: 'space', name: '🚀 Космос',
+    words: [
+      'КОСМОС','ЗВЕЗДА','ПЛАНЕТА','ЛУНА','СОЛНЦЕ','МЕРКУРИЙ','ВЕНЕРА','ЗЕМЛЯ','МАРС','ЮПИТЕР',
+      'САТУРН','УРАН','НЕПТУН','ПЛУТОН','АСТЕРОИД','КОМЕТА','МЕТЕОР','МЕТЕОРИТ','ГАЛАКТИКА','ТУМАННОСТЬ',
+      'ОРБИТА','СПУТНИК','РАКЕТА','КОРАБЛЬ','ШАТТЛ','СТАНЦИЯ','МОДУЛЬ','СКАФАНДР','ШЛЕМ','ПЕРЧАТКИ',
+      'КИСЛОРОД','НЕВЕСОМОСТЬ','ГРАВИТАЦИЯ','ТЕЛЕСКОП','ОБСЕРВАТОРИЯ','ПЛАНЕТАРИЙ','АСТРОНОМ','КОСМОНАВТ','АСТРОНАВТ','ПИЛОТ',
+      'СТАРТ','ПОСАДКА','ВЗЛЁТ','СТЫКОВКА','ЭКИПАЖ','МИССИЯ','ПОЛЁТ','ЭКСПЕДИЦИЯ','ВАКУУМ','РАДИАЦИЯ',
+      'СОЗВЕЗДИЕ','ОРИОН','ЛЕБЕДЬ','КАССИОПЕЯ','ПЕГАС','ДРАКОН','ЛЕВ','ДЕВА','ВЕСЫ','СКОРПИОН',
+      'БЛИЗНЕЦЫ','РАК','ТЕЛЕЦ','ОВЕН','РЫБЫ','ВОДОЛЕЙ','КОЗЕРОГ','СТРЕЛЕЦ','ПОЛЯРИС','СИРИУС',
+      'ВЕГА','АРКТУР','КАПЕЛЛА','РИГЕЛЬ','БЕТЕЛЬГЕЙЗЕ','АНТАРЕС','АЛЬДЕБАРАН','ДЕНЕБ','ПОЛЛЮКС','АЛЬТАИР',
+      'КВАЗАР','ПУЛЬСАР','ЧЁРНАЯ','ДЫРА','КРОТОВАЯ','ГРАВИТОН','ФОТОН','НЕЙТРИНО','ПРОТОН','НЕЙТРОН',
+      'ЭЛЕКТРОН','ПЛАЗМА','АНТИМАТЕРИЯ','ТЕМНАЯ','ЭНЕРГИЯ','БОЗОН','ХИГГСА','ФИЗИКА','АСТРОФИЗИКА','КОСМОЛОГИЯ'
+    ]
+  },
+  {
+    id: 'clothes', name: '👕 Одежда',
+    words: [
+      'РУБАШКА','ФУТБОЛКА','МАЙКА','СВИТЕР','КОФТА','ЖАКЕТ','КУРТКА','ПАЛЬТО','ПЛАЩ','ШУБА',
+      'ДУБЛЁНКА','ПУХОВИК','ВЕТРОВКА','АНОРАК','БОМБЕР','ПИДЖАК','ЖИЛЕТ','КАРДИГАН','ПУЛОВЕР','ДЖЕМПЕР',
+      'БРЮКИ','ДЖИНСЫ','ШТАНЫ','СЛАКСЫ','ЧИНОСЫ','КАРГО','ШОРТЫ','БЕРМУДЫ','ЛЕГГИНСЫ','ТАЙТСЫ',
+      'ЮБКА','ПЛАТЬЕ','САРАФАН','ХАЛАТ','ПИЖАМА','НОЧНУШКА','КОСТЮМ','ТРОЙКА','КОМБИНЕЗОН','СПЕЦОВКА',
+      'НОСКИ','ЧУЛКИ','КОЛГОТКИ','ГЕТРЫ','ПОДВЯЗКИ','БЕЛЬЁ','ТРУСЫ','БЮСТГАЛЬТЕР','ЛИФЧИК','СОРОЧКА',
+      'ШАПКА','КЕПКА','БЕЙСБОЛКА','ПАНАМА','ШЛЯПА','БЕРЕТ','ФУРАЖКА','КАСКА','ШЛЕМ','КАПЮШОН',
+      'ШАРФ','ПЛАТОК','ПАЛАНТИН','СНУД','БАБОЧКА','ГАЛСТУК','ПОДТЯЖКИ','РЕМЕНЬ','ПОЯС','КУШАК',
+      'ПЕРЧАТКИ','ВАРЕЖКИ','РУКАВИЦЫ','МИТЕНКИ','НОСОВОЙ','ОЧКИ','МОНОКЛЬ','ЛОРНЕТ','ЗАЖИМ','БУЛАВКА',
+      'БОТИНКИ','ТУФЛИ','САПОГИ','КРОССОВКИ','КЕДЫ','МОКАСИНЫ','БАЛЕТКИ','САНДАЛИИ','ШЛЁПАНЦЫ','ВЬЕТНАМКИ',
+      'ТАПКИ','ГАЛОШИ','ВАЛЕНКИ','УНТЫ','БОСОНОЖКИ','КАБЛУК','ПЛАТФОРМА','ШНУРКИ','СТЕЛЬКА','ПОДОШВА'
+    ]
+  },
+  {
+    id: 'school', name: '📚 Школа',
+    words: [
+      'УРОК','КЛАСС','ПЕРЕМЕНА','ЗВОНОК','ДОСКА','МЕЛ','ТРЯПКА','ПАРТА','СТУЛ','ПОРТФЕЛЬ',
+      'РАНЕЦ','ПЕНАЛ','РУЧКА','КАРАНДАШ','ЛАСТИК','ЛИНЕЙКА','ЦИРКУЛЬ','ТОЧИЛКА','МАРКЕР','ТЕТРАДЬ',
+      'ДНЕВНИК','ЖУРНАЛ','УЧЕБНИК','ЗАДАЧНИК','ХРЕСТОМАТИЯ','СЛОВАРЬ','АТЛАС','КАРТА','ГЛОБУС','МИКРОСКОП',
+      'ПРОБИРКА','МЕНЗУРКА','СПИРТОВКА','РЕАКТИВ','ФОРМУЛА','ТЕОРЕМА','АКСИОМА','ГИПОТЕЗА','ЭКСПЕРИМЕНТ','ОПЫТ',
+      'ДИКТАНТ','ИЗЛОЖЕНИЕ','СОЧИНЕНИЕ','КОНТРОЛЬНАЯ','САМОСТОЯТЕЛЬНАЯ','ТЕСТ','ЭКЗАМЕН','ЗАЧЁТ','ОЦЕНКА','ОТМЕТКА',
+      'ДВОЙКА','ТРОЙКА','ЧЕТВЁРКА','ПЯТЁРКА','ОТЛИЧНИК','ХОРОШИСТ','ТРОЕЧНИК','ДВОЕЧНИК','УЧЕНИК','УЧЕНИЦА',
+      'УЧИТЕЛЬ','ДИРЕКТОР','ЗАВУЧ','КЛАССНЫЙ','СТАРОСТА','ДЕЖУРНЫЙ','ОТЛИЧНИК','МЕДАЛИСТ','ВЫПУСКНИК','АБИТУРИЕНТ',
+      'МАТЕМАТИКА','РУССКИЙ','ЛИТЕРАТУРА','ИСТОРИЯ','ГЕОГРАФИЯ','БИОЛОГИЯ','ФИЗИКА','ХИМИЯ','ГЕОМЕТРИЯ','АЛГЕБРА',
+      'ИНФОРМАТИКА','ОБЖ','ФИЗКУЛЬТРА','МУЗЫКА','РИСОВАНИЕ','ТЕХНОЛОГИЯ','АСТРОНОМИЯ','ЭКОНОМИКА','ПРАВО','ОБЩЕСТВО',
+      'РАСПИСАНИЕ','КАНИКУЛЫ','ЧЕТВЕРТЬ','ТРИМЕСТР','СЕМЕСТР','ЛИНЕЙКА','СОБРАНИЕ','РОДИТЕЛЬ','ДОМАШКА','ШПАРГАЛКА'
+    ]
+  },
+  {
+    id: 'fairy', name: '🧚 Сказки',
+    words: [
+      'КОЛОБОК','ТЕРЕМОК','РЕПКА','КУРОЧКА','РЯБА','МОРОЗКО','СНЕГУРОЧКА','ЗОЛУШКА','БУРАТИНО','МАЛЬВИНА',
+      'ПЬЕРО','АРЛЕКИН','АРТЕМОН','ПАПА','КАРЛО','ДУРЕМАР','ЧИПОЛЛИНО','ПОМИДОР','МАСТЕР','ВИНОГРАДИНКА',
+      'ПРИНЦ','ПРИНЦЕССА','КОРОЛЬ','КОРОЛЕВА','РЫЦАРЬ','ДРАКОН','ЕДИНОРОГ','ФЕЯ','ВОЛШЕБНИК','КОЛДУН',
+      'ВЕДЬМА','БАБА','ЯГА','КОЩЕЙ','ЛЕШИЙ','ВОДЯНОЙ','РУСАЛКА','ДОМОВОЙ','КИКИМОРА','ГНОМ',
+      'ЭЛЬФ','ГНОМ','ТРОЛЛЬ','ОГР','ВЕЛИКАН','КАРЛИК','РУСАЛОЧКА','ЛАСТОЧКА','ДЮЙМОВОЧКА','ГЕРДА',
+      'КАЙ','СНЕЖНАЯ','ЛЕДЯНАЯ','ШАПОКЛЯК','КРАСНАЯ','ЗАЯЦ','ЛИСА','МЕДВЕДЬ','ПЕТУХ','КОЗА',
+      'ВОЛК','ЖУРАВЛЬ','ЦАПЛЯ','ЛЯГУШКА','МЫШЬ','КОТ','ДЕД','БАБКА','ВНУЧКА','ЖУЧКА',
+      'КОШКА','МУРКА','СЕРАЯ','БЕЛАЯ','ЗОЛОТАЯ','РЫБКА','ЧУДО','ЮДО','СИВКА','БУРКА',
+      'КАУРКА','САПОГИ','СКАТЕРТЬ','ДУБИНКА','ПЕРО','ЖАР','МЕЧ','КЛАДЕНЕЦ','ГУСЛИ','САМОБРАНКА',
+      'КЛУБОК','ЯБЛОЧКО','ЗЕРКАЛЬЦЕ','КОВЁР','САМОЛЁТ','ПЕЧКА','СТУПА','МЕТЛА','ПОМЕЛО','ЛУКОМОРЬЕ'
+    ]
+  },
+  {
+    id: 'music', name: '🎵 Музыка',
+    words: [
+      'МУЗЫКА','МЕЛОДИЯ','РИТМ','ТЕМП','ТАКТ','НОТА','ОКТАВА','АККОРД','ГАММА','ЛАД',
+      'ТОНАЛЬНОСТЬ','ГАРМОНИЯ','ПОЛИФОНИЯ','СИМФОНИЯ','СОНАТА','КОНЦЕРТ','ОПЕРА','БАЛЕТ','ОПЕРЕТТА','МЮЗИКЛ',
+      'АРИЯ','ДУЭТ','ТРИО','КВАРТЕТ','КВИНТЕТ','ХОР','АНСАМБЛЬ','ОРКЕСТР','ДИРИЖЁР','СОЛИСТ',
+      'ПИАНИНО','РОЯЛЬ','СКРИПКА','АЛЬТ','ВИОЛОНЧЕЛЬ','КОНТРАБАС','АРФА','ГИТАРА','ЛЮТНЯ','МАНДОЛИНА',
+      'БАЛАЛАЙКА','ДОМРА','ГУСЛИ','ЦИМБАЛЫ','БАНДЖО','УКУЛЕЛЕ','ТРУБА','ТРОМБОН','ТУБА','ВАЛТОРНА',
+      'ГОРН','ФЛЕЙТА','КЛАРНЕТ','ОБОЙ','ФАГОТ','САКСОФОН','ГУБНАЯ','ГАРМОНЬ','БАЯН','АККОРДЕОН',
+      'ОРГАН','КЛАВЕСИН','ЧЕЛЕСТА','СИНТЕЗАТОР','БАРАБАН','ЛИТАВРЫ','ТАМТАМ','БУБЕН','ТАРЕЛКИ','ТРЕУГОЛЬНИК',
+      'КСИЛОФОН','МАРИМБА','ВИБРАФОН','КОЛОКОЛ','КОЛОКОЛЬЧИК','БУБЕНЦЫ','ТРЕЩОТКА','ЛОЖКИ','РУБЕЛЬ','СВИРЕЛЬ',
+      'ЖАЛЕЙКА','РОЖОК','ДУДКА','СОПИЛКА','ОКАРИНА','ВАРГАН','СКАЗИТЕЛЬ','БАРД','МЕНЕСТРЕЛЬ','ТРУБАДУР',
+      'РОК','ДЖАЗ','БЛЮЗ','ПОП','РЕП','ХИП','ФАНК','РЕГГИ','СКА','ПАНК','МЕТАЛЛ','КЛАССИКА','ФОЛК','ЭТНО'
+    ]
+  }
+];
+
+/* «Все подряд» — собираем все слова */
+CATEGORIES.unshift({
+  id: 'mix',
+  name: '🎲 Все подряд',
+  words: [...new Set(CATEGORIES.flatMap(c => c.words))]
+});
+
+/* ============ ГЕНЕРАТОР ============ */
+const DIRS_4 = [[0,1],[1,0],[0,-1],[-1,0]];
+const DIRS_8 = [...DIRS_4, [1,1],[1,-1],[-1,1],[-1,-1]];
+
+function randomWalk(grid, W, H, sr, sc, n, dirs) {
+  const path = [[sr, sc]];
+  const used = new Set([sr * W + sc]);
+  let dir = rnd(dirs.length);
+
+  for (let i = 1; i < n; i++) {
+    const [r, c] = path[path.length - 1];
+    const order = [];
+    if (Math.random() < 0.75) order.push(dirs[dir]);
+    const idxs = shuffle(dirs.map((_, k) => k));
+    for (const k of idxs) if (k !== dir) order.push(dirs[k]);
+
+    let moved = false;
+    for (const [dr, dc] of order) {
+      const nr = r + dr, nc = c + dc;
+      if (nr < 0 || nr >= H || nc < 0 || nc >= W) continue;
+      if (grid[nr][nc] !== null) continue;
+      const k = nr * W + nc;
+      if (used.has(k)) continue;
+      path.push([nr, nc]); used.add(k);
+      dir = dirs.findIndex(d => d[0] === dr && d[1] === dc);
+      moved = true;
+      break;
+    }
+    if (!moved) return null;
+  }
+  return path;
+}
+
+function placeWord(grid, W, H, word, dirs) {
+  const n = word.length;
+  const empties = [];
+  for (let r = 0; r < H; r++)
+    for (let c = 0; c < W; c++)
+      if (grid[r][c] === null) empties.push([r, c]);
+
+  if (empties.length < n) return null;
+  shuffle(empties);
+
+  const starts = empties.slice(0, Math.min(empties.length, 80));
+  for (const [sr, sc] of starts) {
+    for (let a = 0; a < 12; a++) {
+      const path = randomWalk(grid, W, H, sr, sc, n, dirs);
+      if (path) {
+        path.forEach(([r, c], i) => { grid[r][c] = word[i]; });
+        return path;
+      }
+    }
+  }
+  return null;
+}
+
+function buildOnce(words, W, H, dirs) {
+  const grid = Array.from({ length: H }, () => Array(W).fill(null));
+  const placed = [];
+  const sorted = [...words].sort((a, b) => b.length - a.length);
+
+  for (const w of sorted) {
+    const path = placeWord(grid, W, H, w, dirs);
+    if (!path) return null;
+    placed.push({ word: w, cells: path });
+  }
+  return { grid, placed };
+}
+
+function trimGrid(grid, placed) {
+  const H = grid.length, W = grid[0].length;
+  const rowEmpty = r => grid[r].every(x => x === null);
+  const colEmpty = c => grid.every(row => row[c] === null);
+
+  let top = 0, bottom = H - 1, left = 0, right = W - 1;
+  while (top < bottom && rowEmpty(top)) top++;
+  while (bottom > top && rowEmpty(bottom)) bottom--;
+  while (left < right && colEmpty(left)) left++;
+  while (right > left && colEmpty(right)) right--;
+
+  const newGrid = [];
+  for (let r = top; r <= bottom; r++) newGrid.push(grid[r].slice(left, right + 1));
+
+  const newPlaced = placed.map(p => ({
+    word: p.word,
+    cells: p.cells.map(([r, c]) => [r - top, c - left])
+  }));
+  return { grid: newGrid, placed: newPlaced };
+}
+
+function fillEmpty(grid, alphabet) {
+  for (let r = 0; r < grid.length; r++)
+    for (let c = 0; c < grid[0].length; c++)
+      if (grid[r][c] === null) grid[r][c] = alphabet[rnd(alphabet.length)];
+}
+
+function generatePuzzle(wordList, opts) {
+  const dirs = opts.diag ? DIRS_8 : DIRS_4;
+  const total = wordList.reduce((s, w) => s + w.length, 0);
+
+  let W, H;
+  if (opts.gridSize === 'auto') {
+    const target = total * 1.30;
+    W = Math.min(16, Math.max(4, Math.ceil(Math.sqrt(target))));
+    H = Math.min(16, Math.max(4, Math.ceil(target / W)));
+    while (W * H < total * 1.05 && (W < 18 || H < 18)) {
+      if (W <= H) W++; else H++;
+    }
+  } else {
+    W = H = opts.gridSize;
+  }
+
+  let best = null;
+  for (let i = 0; i < 18; i++) {
+    const res = buildOnce(shuffle(wordList), W, H, dirs);
+    if (!res) continue;
+    let empty = 0;
+    for (const row of res.grid) for (const x of row) if (x === null) empty++;
+    if (!best || empty < best.empty) best = { grid: res.grid, placed: res.placed, empty };
+    if (empty === 0) break;
+  }
+  if (!best) return null;
+
+  const t = trimGrid(best.grid, best.placed);
+  const alphabet = [...new Set(wordList.join('').split(''))];
+  fillEmpty(t.grid, alphabet);
+
+  return { grid: t.grid, placed: t.placed, W: t.grid[0].length, H: t.grid.length };
+}
+
+/* ============ НАСТРОЙКИ ============ */
+const DEFAULTS = {
+  category: 'mix',
+  count: 12,
+  gridSize: 'auto',
+  diag: false,
+  lenMode: 'any',
+  showTimer: true,
+  showList: true,
+  printAnswers: false
+};
+
+let cfg = { ...DEFAULTS };
+try {
+  const s = localStorage.getItem('fillwordCfg2');
+  if (s) cfg = { ...cfg, ...JSON.parse(s) };
+} catch (e) {}
+
+let state = null;
+let timerId = null;
+
+function saveCfg() {
+  try { localStorage.setItem('fillwordCfg2', JSON.stringify(cfg)); } catch (e) {}
+}
+
+const LEN_RANGES = {
+  any:   [3, 12],
+  short: [3, 5],
+  mid:   [5, 8],
+  long:  [7, 12]
+};
+
+function pickWords(cat, count) {
+  const [minL, maxL] = LEN_RANGES[cfg.lenMode] || LEN_RANGES.any;
+  const pool = cat.words.filter(w => w.length >= minL && w.length <= maxL);
+  return shuffle(pool).slice(0, Math.min(count, pool.length));
+}
+
+/* ============ ЭКРАН НАСТРОЕК ============ */
+function startSettings() {
+  clearTimeouts();
+  clearInterval(timerId);
+  state = null;
+
+  const sizeOptions = [
+    ['auto', 'Авто'],
+    [8, '8×8'],
+    [10, '10×10'],
+    [12, '12×12'],
+    [14, '14×14'],
+    [16, '16×16']
+  ];
+  const lenOptions = [
+    ['any', 'Любая'],
+    ['short', 'Короткие (3-5)'],
+    ['mid', 'Средние (5-8)'],
+    ['long', 'Длинные (7+)']
+  ];
+
+  const catChips = CATEGORIES.map(c =>
+    '<button class="cat-chip ' + (c.id === cfg.category ? 'active' : '') +
+    '" data-id="' + c.id + '">' + c.name + '</button>'
+  ).join('');
+
+  const sizeChips = sizeOptions.map(([v, l]) =>
+    '<button class="opt-chip ' + (String(cfg.gridSize) === String(v) ? 'active' : '') +
+    '" data-v="' + v + '">' + l + '</button>'
+  ).join('');
+
+  const lenChips = lenOptions.map(([v, l]) =>
+    '<button class="opt-chip ' + (cfg.lenMode === v ? 'active' : '') +
+    '" data-v="' + v + '">' + l + '</button>'
+  ).join('');
+
+  gameEl.innerHTML =
+    '<div class="game-header">' +
+      '<h2>🔤 Филворд</h2>' +
+      '<div class="subtitle">Настройки генератора</div>' +
+    '</div>' +
+    '<div class="panel">' +
+      '<div style="max-width: 560px; margin: 0 auto;">' +
+
+        '<div class="section-title">Тема</div>' +
+        '<div class="cat-row" id="catRow">' + catChips + '</div>' +
+
+        '<div class="section-title">Количество слов</div>' +
+        '<label style="display:block;">' +
+          '<div class="settings-row"><span>Слов в филворде</span><b id="fCountVal">' + cfg.count + '</b></div>' +
+          '<input type="range" id="fCountRange" min="5" max="30" value="' + cfg.count + '">' +
+        '</label>' +
+
+        '<div class="section-title">Размер сетки</div>' +
+        '<div class="opt-row" id="sizeRow">' + sizeChips + '</div>' +
+
+        '<div class="section-title">Длина слов</div>' +
+        '<div class="opt-row" id="lenRow">' + lenChips + '</div>' +
+
+        '<div class="section-title">Дополнительно</div>' +
+        '<div class="toggle-row ' + (cfg.diag ? 'on' : '') + '" id="tDiag">' +
+          '<span>↗ Слова по диагонали</span><div class="toggle-switch"></div>' +
+        '</div>' +
+        '<div class="toggle-row ' + (cfg.showTimer ? 'on' : '') + '" id="tTimer">' +
+          '<span>⏱ Показывать таймер</span><div class="toggle-switch"></div>' +
+        '</div>' +
+        '<div class="toggle-row ' + (cfg.showList ? 'on' : '') + '" id="tList">' +
+          '<span>📋 Список слов под сеткой</span><div class="toggle-switch"></div>' +
+        '</div>' +
+        '<div class="toggle-row ' + (cfg.printAnswers ? 'on' : '') + '" id="tPrint">' +
+          '<span>🖨 Печатать с ответами</span><div class="toggle-switch"></div>' +
+        '</div>' +
+
+        '<button class="btn-main" id="startBtn">Составить филворд 🔤</button>' +
+        '<button class="btn-secondary" id="printMenuBtn">🖨 Печать без игры (шаблон)</button>' +
+      '</div>' +
+    '</div>';
+
+  $('catRow').querySelectorAll('.cat-chip').forEach(chip => {
+    chip.onclick = () => {
+      cfg.category = chip.dataset.id;
+      $('catRow').querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      sfxClick(); saveCfg();
+    };
+  });
+
+  $('fCountRange').oninput = e => { $('fCountVal').textContent = e.target.value; sfxTick(); };
+  $('fCountRange').onchange = e => { cfg.count = +e.target.value; saveCfg(); };
+
+  $('sizeRow').querySelectorAll('.opt-chip').forEach(chip => {
+    chip.onclick = () => {
+      const v = chip.dataset.v;
+      cfg.gridSize = v === 'auto' ? 'auto' : +v;
+      $('sizeRow').querySelectorAll('.opt-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      sfxClick(); saveCfg();
+    };
+  });
+
+  $('lenRow').querySelectorAll('.opt-chip').forEach(chip => {
+    chip.onclick = () => {
+      cfg.lenMode = chip.dataset.v;
+      $('lenRow').querySelectorAll('.opt-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      sfxClick(); saveCfg();
+    };
+  });
+
+  const bindToggle = (id, key) => {
+    const el = $(id);
+    el.onclick = () => {
+      cfg[key] = !cfg[key];
+      el.classList.toggle('on', cfg[key]);
+      sfxClick(); saveCfg();
+    };
+  };
+  bindToggle('tDiag', 'diag');
+  bindToggle('tTimer', 'showTimer');
+  bindToggle('tList', 'showList');
+  bindToggle('tPrint', 'printAnswers');
+
+  $('startBtn').onclick = () => {
+    cfg.count = +$('fCountRange').value;
+    saveCfg();
+    startGame();
+  };
+  $('printMenuBtn').onclick = () => {
+    if (buildPuzzleFromCfg()) doPrint(cfg.printAnswers);
+  };
+}
+
+/* ============ СОЗДАНИЕ ПАЗЛА ============ */
+function buildPuzzleFromCfg() {
+  const cat = CATEGORIES.find(c => c.id === cfg.category) || CATEGORIES[0];
+  let count = cfg.count;
+  let puzzle = null;
+  const opts = { gridSize: cfg.gridSize, diag: cfg.diag };
+
+  for (let attempt = 0; attempt < 10 && !puzzle; attempt++) {
+    const words = pickWords(cat, count);
+    if (words.length < 4) return null;
+    puzzle = generatePuzzle(words, opts);
+    if (!puzzle && cfg.gridSize !== 'auto') {
+      count = Math.max(4, count - 2);
+    }
+  }
+  return puzzle;
+}
+
+/* ============ ИГРА ============ */
+function startGame() {
+  clearTimeouts();
+  clearInterval(timerId);
+
+  const puzzle = buildPuzzleFromCfg();
+  if (!puzzle) {
+    gameEl.innerHTML =
+      '<div class="panel"><div class="result-screen">' +
+        '<div class="big">😔</div><h2>Не удалось собрать</h2>' +
+        '<p>Уменьши число слов или увеличь сетку</p>' +
+        '<button class="btn-main" id="againBtn">Настройки</button>' +
+      '</div></div>';
+    $('againBtn').onclick = startSettings;
+    return;
+  }
+
+  state = {
+    grid: puzzle.grid,
+    W: puzzle.W,
+    H: puzzle.H,
+    placements: puzzle.placed,
+    words: puzzle.placed.map(p => p.word),
+    found: new Set(),
+    sel: [],
+    hints: 0,
+    cells: [],
+    startTime: Date.now()
+  };
+
+  renderGame();
+  if (cfg.showTimer) {
+    timerId = setInterval(updateTimer, 1000);
+    updateTimer();
+  }
+}
+
+function updateTimer() {
+  const el = $('timer');
+  if (!el || !state) return;
+  el.textContent = fmtTime(Math.floor((Date.now() - state.startTime) / 1000));
+}
+
+function renderGame() {
+  const timerStat = cfg.showTimer
+    ? '<div class="stat">⏱ <span id="timer">00:00</span></div>'
+    : '';
+
+  const statsHtml =
+    '<div class="stats-row">' +
+      timerStat +
+      '<div class="stat">✅ <span id="foundCount">0</span> / <span id="totalCount">' + state.words.length + '</span></div>' +
+      '<div class="stat">💡 <span id="hintCount">0</span></div>' +
+    '</div>';
+
+  const listHtml = cfg.showList ? '<div class="word-list" id="wordList"></div>' : '';
+  const subTitle = (cfg.diag ? 'Можно по диагонали · ' : '') + 'Слова могут поворачивать под прямым углом';
+
+  gameEl.innerHTML =
+    '<div class="game-header">' +
+      '<h2>🔤 Филворд</h2>' +
+      '<div class="subtitle">' + subTitle + '</div>' +
+    '</div>' +
+    '<div class="panel">' +
+      statsHtml +
+      '<div class="board-wrap"><div class="board" id="board"></div></div>' +
+      listHtml +
+      '<div class="actions-row">' +
+        '<button class="btn-ghost" id="hintBtn">💡 Подсказка (−10)</button>' +
+        '<button class="btn-ghost" id="printBtn">🖨 Распечатать</button>' +
+        '<button class="btn-ghost" id="menuBtn">⚙ Настройки</button>' +
+      '</div>' +
+      '<button class="btn-main" id="newBtn">Новый филворд 🔄</button>' +
+    '</div>';
+
+  const board = $('board');
+  board.style.gridTemplateColumns = 'repeat(' + state.W + ', 1fr)';
+  board.innerHTML = '';
+  state.cells = [];
+
+  for (let r = 0; r < state.H; r++) {
+    state.cells[r] = [];
+    for (let c = 0; c < state.W; c++) {
+      const d = document.createElement('div');
+      d.className = 'cell';
+      d.dataset.r = r;
+      d.dataset.c = c;
+      d.textContent = state.grid[r][c];
+      board.appendChild(d);
+      state.cells[r][c] = d;
+    }
+  }
+
+  if (cfg.showList) {
+    const listEl = $('wordList');
+    listEl.innerHTML = state.words
+      .slice()
+      .sort((a, b) => b.length - a.length)
+      .map(w => '<div class="word-chip" data-word="' + w + '">' + w + '</div>')
+      .join('');
+  }
+
+  $('hintBtn').onclick = useHint;
+  $('newBtn').onclick = startGame;
+  $('menuBtn').onclick = startSettings;
+  $('printBtn').onclick = () => doPrint(cfg.printAnswers);
+
+  attachBoardEvents(board);
+  requestAnimationFrame(fitBoard);
+}
+
+function fitBoard() {
+  const board = $('board');
+  if (!board || !board.firstElementChild) return;
+  const w = board.firstElementChild.getBoundingClientRect().width;
+  board.style.setProperty('--fs', Math.max(9, w * 0.56) + 'px');
+}
+window.addEventListener('resize', fitBoard);
+
+/* ---------- Выделение ---------- */
+let pointerActive = false;
+
+function attachBoardEvents(board) {
+  board.addEventListener('pointerdown', e => {
+    const cell = e.target.closest && e.target.closest('.cell');
+    if (!cell) return;
+    e.preventDefault();
+    initAudio();
+    pointerActive = true;
+    try { board.setPointerCapture(e.pointerId); } catch (err) {}
+    onCellDown(+cell.dataset.r, +cell.dataset.c);
+  });
+
+  board.addEventListener('pointermove', e => {
+    if (!pointerActive || !state) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const cell = el && el.closest ? el.closest('.cell') : null;
+    if (!cell) return;
+    onCellMove(+cell.dataset.r, +cell.dataset.c);
+  });
+
+  const end = e => {
+    if (!pointerActive) return;
+    pointerActive = false;
+    try { board.releasePointerCapture(e.pointerId); } catch (err) {}
+    finishSelection();
+  };
+  board.addEventListener('pointerup', end);
+  board.addEventListener('pointercancel', () => {
+    pointerActive = false;
+    if (state) { state.sel = []; renderSelection(); }
+  });
+}
+
+const key = (r, c) => r + ',' + c;
+const isAdj = (a, b) => {
+  const dr = Math.abs(a[0] - b[0]), dc = Math.abs(a[1] - b[1]);
+  if (cfg.diag) return dr <= 1 && dc <= 1 && (dr + dc) > 0;
+  return dr + dc === 1;
+};
+
+function hasCell(list, r, c) {
+  return list.some(([rr, cc]) => rr === r && cc === c);
+}
+
+function onCellDown(r, c) {
+  const sel = state.sel;
+  const last = sel[sel.length - 1];
+
+  if (sel.length >= 2 && isAdj(sel[sel.length - 2], [r, c])) {
+    sel.pop();
+  } else if (last && isAdj(last, [r, c]) && !hasCell(sel, r, c)) {
+    sel.push([r, c]);
+  } else {
+    state.sel = [[r, c]];
+  }
+  sfxTick();
+  renderSelection();
+}
+
+function onCellMove(r, c) {
+  const sel = state.sel;
+  if (!sel.length) { state.sel = [[r, c]]; renderSelection(); return; }
+
+  const last = sel[sel.length - 1];
+  if (last[0] === r && last[1] === c) return;
+
+  if (sel.length >= 2) {
+    const prev = sel[sel.length - 2];
+    if (prev[0] === r && prev[1] === c) { sel.pop(); renderSelection(); return; }
+  }
+  if (isAdj(last, [r, c]) && !hasCell(sel, r, c)) {
+    sel.push([r, c]);
+    sfxTick();
+    renderSelection();
+  }
+}
+
+function renderSelection() {
+  document.querySelectorAll('.cell.sel').forEach(el => el.classList.remove('sel'));
+  if (!state) return;
+  for (const [r, c] of state.sel) {
+    const el = state.cells[r] && state.cells[r][c];
+    if (el) el.classList.add('sel');
+  }
+}
+
+function finishSelection() {
+  const s = state.sel;
+  if (s.length < 2) return;
+
+  const letters = s.map(([r, c]) => state.grid[r][c]).join('');
+  const rev = [...letters].reverse().join('');
+  const match = state.words.find(w => !state.found.has(w) && (w === letters || w === rev));
+
+  if (match) {
+    const pl = state.placements.find(p => p.word === match);
+    const a = new Set(s.map(([r, c]) => key(r, c)));
+    const b = new Set(pl.cells.map(([r, c]) => key(r, c)));
+    let same = a.size === b.size;
+    if (same) for (const k of a) if (!b.has(k)) { same = false; break; }
+
+    if (same) { markFound(match, pl.cells); state.sel = []; renderSelection(); return; }
+  }
+
+  const cells = s.map(([r, c]) => state.cells[r][c]).filter(Boolean);
+  state.sel = [];
+  renderSelection();
+  cells.forEach(el => el.classList.add('bad'));
+  sfxWrong();
+  wait(400, () => cells.forEach(el => el.classList.remove('bad')));
+}
+
+function markFound(word, cells) {
+  state.found.add(word);
+  const idx = state.found.size - 1;
+  const [bg, fg] = PALETTE[idx % PALETTE.length];
+
+  for (const [r, c] of cells) {
+    const el = state.cells[r][c];
+    if (!el) continue;
+    el.classList.add('found');
+    el.style.setProperty('--wc', bg);
+    el.style.setProperty('--wcb', fg);
+  }
+
+  const chip = document.querySelector('.word-chip[data-word="' + word + '"]');
+  if (chip) chip.classList.add('done');
+
+  addScore(10);
+  sfxCorrect();
+  updateStats();
+
+  if (state.found.size === state.words.length) wait(520, winGame);
+}
+
+function updateStats() {
+  const fc = $('foundCount'), hc = $('hintCount');
+  if (fc) fc.textContent = state.found.size;
+  if (hc) hc.textContent = state.hints;
+}
+
+function useHint() {
+  if (!state) return;
+  const remaining = state.words.filter(w => !state.found.has(w));
+  if (!remaining.length) return;
+
+  const word = remaining[rnd(remaining.length)];
+  const pl = state.placements.find(p => p.word === word);
+  const [r, c] = pl.cells[0];
+  const el = state.cells[r][c];
+  if (el) {
+    el.classList.add('hint');
+    wait(1500, () => el.classList.remove('hint'));
+  }
+  state.hints++;
+  addScore(-10);
+  updateStats();
+  sfxClick();
+}
+
+/* ---------- Победа ---------- */
+function winGame() {
+  clearInterval(timerId);
+  const seconds = Math.floor((Date.now() - state.startTime) / 1000);
+
+  let stars = 3;
+  if (state.hints >= 3) stars = 1;
+  else if (state.hints >= 1) stars = 2;
+
+  const bonus = stars * 20;
+  addScore(bonus);
+  sfxWin();
+
+  const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+  const timeStr = cfg.showTimer ? ' · время ' + fmtTime(seconds) : '';
+
+  gameEl.innerHTML =
+    '<div class="panel">' +
+      '<div class="result-screen">' +
+        '<div class="big">🏆</div>' +
+        '<h2>Все слова найдены!</h2>' +
+        '<p>' + state.words.length + ' слов' + timeStr + '</p>' +
+        '<p>Подсказок использовано: ' + state.hints + '</p>' +
+        '<div class="stars">' + starStr + '</div>' +
+        '<p style="opacity:.6; font-size: 14px;">+' + bonus + ' очков за результат</p>' +
+        '<div class="actions-row">' +
+          '<button class="btn-ghost" id="printBtn">🖨 Распечатать с ответами</button>' +
+        '</div>' +
+        '<button class="btn-main" id="againBtn">Ещё раз 🔄</button>' +
+        '<button class="btn-secondary" id="menuBtn">← Настройки</button>' +
+      '</div>' +
+    '</div>';
+
+  $('againBtn').onclick = startGame;
+  $('menuBtn').onclick = startSettings;
+  $('printBtn').onclick = () => doPrint(true);
+}
+
+/* ============ ПЕЧАТЬ ============ */
+const PRINT_PALETTE = [
+  '#DBEAFE','#FEE2E2','#DCFCE7','#FEF3C7','#F3E8FF','#CFFAFE',
+  '#FFE4E6','#ECFCCB','#E0E7FF','#FFEDD5','#CCFBF1','#FCE7F3',
+  '#BAE6FD','#FED7AA','#DDD6FE','#BBF7D0','#FBCFE8','#FDE68A'
+];
+
+function buildPrintHTML(puzzle, opts) {
+  const { grid, W, H, placed } = puzzle;
+  const showAnswers = !!opts.withAnswers;
+  const catName = (CATEGORIES.find(c => c.id === cfg.category) || {}).name || '';
+
+  const colorMap = new Map();
+  if (showAnswers) {
+    placed.forEach((p, i) => {
+      const col = PRINT_PALETTE[i % PRINT_PALETTE.length];
+      p.cells.forEach(([r, c]) => colorMap.set(r + ',' + c, col));
+    });
+  }
+
+  const cellSize = Math.max(22, Math.min(38, Math.floor(560 / W)));
+
+  let gridHtml = '<div class="p-grid" style="grid-template-columns: repeat(' + W + ', ' + cellSize + 'px); grid-auto-rows: ' + cellSize + 'px;">';
+  for (let r = 0; r < H; r++) {
+    for (let c = 0; c < W; c++) {
+      const k = r + ',' + c;
+      const bg = colorMap.get(k) || '#fff';
+      const fw = (showAnswers && colorMap.has(k)) ? '800' : '600';
+      const fs = Math.round(cellSize * 0.52);
+      gridHtml += '<div class="p-cell" style="width:' + cellSize + 'px;height:' + cellSize + 'px;font-size:' + fs + 'px;background:' + bg + ';font-weight:' + fw + ';">' + grid[r][c] + '</div>';
+    }
+  }
+  gridHtml += '</div>';
+
+  const wordsAlpha = [...placed.map(p => p.word)].sort();
+  const listHtml =
+    '<div class="p-words">' +
+      wordsAlpha.map(w => '<span class="p-word">' + w + '</span>').join('') +
+    '</div>';
+
+  let legendHtml = '';
+  if (showAnswers) {
+    const items = placed.map((p, i) => {
+      const col = PRINT_PALETTE[i % PRINT_PALETTE.length];
+      return '<div class="p-legend-item"><span class="p-dot" style="background:' + col + '"></span>' + p.word + '</div>';
+    }).join('');
+    legendHtml = '<div class="p-legend">' + items + '</div>';
+  }
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ru-RU');
+  const sub = 'Найди слова: они идут по горизонтали, вертикали' + (cfg.diag ? ' и диагонали' : '') + ' и могут поворачивать под прямым углом.';
+  const meta = dateStr + ' · слов: ' + placed.length + ' · сетка ' + W + '×' + H + (showAnswers ? ' · С ОТВЕТАМИ' : '');
+
+  return '' +
+    '<div class="p-header">' +
+      '<div class="p-title">🔤 Филворд' + (catName ? ' — ' + catName : '') + '</div>' +
+      '<div class="p-sub">' + sub + '</div>' +
+      '<div class="p-meta">' + meta + '</div>' +
+    '</div>' +
+    '<div class="p-grid-wrap">' + gridHtml + '</div>' +
+    '<div class="p-words-title">Слова:</div>' +
+    listHtml +
+    legendHtml +
+    '<div class="p-footer">Мнемо-Арена · mnemo-arena.ru</div>';
+}
+
+function doPrint(withAnswers) {
+  if (!state && !buildPuzzleFromCfg()) return;
+  const puzzle = state
+    ? { grid: state.grid, W: state.W, H: state.H, placed: state.placements }
+    : buildPuzzleFromCfg();
+
+  const w = window.open('', '_blank');
+  if (!w) { alert('Разрешите всплывающие окна для печати'); return; }
+
+  const html =
+    '<!DOCTYPE html>\n' +
+    '<html lang="ru"><head><meta charset="UTF-8">\n' +
+    '<title>Филворд' + (withAnswers ? ' — с ответами' : '') + '</title>\n' +
+    '<style>\n' +
+    '  * { box-sizing: border-box; margin: 0; padding: 0; }\n' +
+    '  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: #1F2937; padding: 14mm 10mm; background: #fff; }\n' +
+    '  .p-header { text-align: center; margin-bottom: 8mm; }\n' +
+    '  .p-title { font-size: 22pt; font-weight: 800; color: #1E4FA8; margin-bottom: 3mm; }\n' +
+    '  .p-sub { font-size: 10pt; color: #4B5563; margin-bottom: 2mm; }\n' +
+    '  .p-meta { font-size: 9pt; color: #6B7280; }\n' +
+    '  .p-grid-wrap { display: flex; justify-content: center; margin: 6mm 0; }\n' +
+    '  .p-grid { display: grid; gap: 2px; }\n' +
+    '  .p-cell { display: flex; align-items: center; justify-content: center; border: 1px solid #1F2937; border-radius: 4px; font-weight: 700; text-transform: uppercase; color: #111827; line-height: 1; }\n' +
+    '  .p-words-title { font-size: 11pt; font-weight: 800; color: #1E4FA8; margin: 4mm 0 2mm; }\n' +
+    '  .p-words { display: flex; flex-wrap: wrap; gap: 3mm 5mm; margin-bottom: 4mm; }\n' +
+    '  .p-word { font-size: 11pt; font-weight: 700; letter-spacing: .5px; border-bottom: 1px dashed #9CA3AF; padding-bottom: 1mm; }\n' +
+    '  .p-legend { display: flex; flex-wrap: wrap; gap: 2mm 6mm; margin-top: 4mm; padding-top: 3mm; border-top: 1px solid #E5E7EB; }\n' +
+    '  .p-legend-item { display: flex; align-items: center; gap: 1.5mm; font-size: 9pt; font-weight: 700; }\n' +
+    '  .p-dot { display: inline-block; width: 4mm; height: 4mm; border-radius: 1mm; border: 1px solid #1F2937; }\n' +
+    '  .p-footer { text-align: center; margin-top: 8mm; font-size: 8pt; color: #9CA3AF; }\n' +
+    '  @page { size: A4; margin: 10mm; }\n' +
+    '  @media print { body { padding: 0; } }\n' +
+    '</style></head>\n' +
+    '<body>\n' +
+    buildPrintHTML(puzzle, { withAnswers }) + '\n' +
+    '<scr' + 'ipt>setTimeout(function(){window.print();},350);</scr' + 'ipt>\n' +
+    '</body></html>';
+
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+}
+
+/* ============ ПАЛИТРА ДЛЯ ИГРЫ ============ */
+const PALETTE = [
+  ['#DBEAFE', '#2563EB'],
+  ['#FEE2E2', '#DC2626'],
+  ['#DCFCE7', '#16A34A'],
+  ['#FEF3C7', '#D97706'],
+  ['#F3E8FF', '#9333EA'],
+  ['#CFFAFE', '#0891B2'],
+  ['#FFE4E6', '#E11D48'],
+  ['#ECFCCB', '#65A30D'],
+  ['#E0E7FF', '#4F46E5'],
+  ['#FFEDD5', '#EA580C'],
+  ['#CCFBF1', '#0D9488'],
+  ['#FCE7F3', '#DB2777']
+];
+
+/* ============ СТАРТ ============ */
+document.addEventListener('click', initAudio, { once: true });
+startSettings();
+</script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

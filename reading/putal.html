@@ -1,344 +1,1983 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<link rel="stylesheet" href="../menu/menu.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Анаграммы</title>
+<title>Анаграммы - NeuroX</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
 
 <style>
 :root{
---blue:#1E3F8A;
---orange:#FF6A00;
+  --blue:#1E3F8A;
+  --blue-soft:#3A5FA8;
+  --blue-light:#2A56C6;
+  --blue-pale:#E8EEF9;
+  --orange:#FF6A00;
+  --orange-soft:#FF8B3D;
+  --orange-dark:#C85100;
+  --orange-pale:#FFEADB;
+  --bg:#F4F6FB;
+  --text:#24324B;
+  --text-dim:#6B7280;
+  --border:rgba(30,63,138,.10);
+  --panel:#FFFFFF;
+  --dot-color:rgba(30,63,138,.07);
+  --header-shadow:rgba(30,63,138,.25);
+  --overlay:rgba(30,63,138,.45);
+  --modal-grad-1:#1E3F8A;
+  --modal-grad-2:#3A5FA8;
+  --modal-grad-3:#4A6DB8;
+  --green:#22C55E;
+  --green-pale:#DCFCE7;
+  --red:#EF4444;
+  --red-pale:#FEE2E2;
 }
+
+[data-theme="dark"]{
+  --blue:#7B9BE5;
+  --blue-soft:#5F80D0;
+  --blue-light:#7B9BE5;
+  --blue-pale:#2A3A5C;
+  --orange:#FF8B3D;
+  --orange-soft:#FFA057;
+  --orange-dark:#8A3F00;
+  --orange-pale:#4A2E1A;
+  --bg:#121721;
+  --text:#E8EEF9;
+  --text-dim:#8A96B0;
+  --border:rgba(140,170,240,.15);
+  --panel:#1C2331;
+  --dot-color:rgba(140,170,240,.09);
+  --header-shadow:rgba(0,0,0,.55);
+  --overlay:rgba(0,0,0,.6);
+  --modal-grad-1:#1A2440;
+  --modal-grad-2:#2A3A5C;
+  --modal-grad-3:#3A4F7C;
+  --green:#4CC46A;
+  --green-pale:#1A3625;
+  --red:#E85A5A;
+  --red-pale:#3D1F1F;
+}
+
+*{ box-sizing:border-box; }
+
+html, body{ transition:background-color .3s, color .3s; }
 
 body{
-margin:0;
-font-family:Arial, sans-serif;
-background:#f4f6fb;
-display:flex;
-justify-content:center;
-align-items:center;
-min-height:100vh;
+  margin:0;
+  font-family:"Nunito Sans",sans-serif;
+  background-color:var(--bg);
+  background-image:radial-gradient(circle, var(--dot-color) 1.5px, transparent 1.6px);
+  background-size:26px 26px;
+  color:var(--text);
+  min-height:100vh;
+  padding-bottom:80px;
+  transition:background-color .3s, color .3s;
 }
 
-.app{
-width:720px;
-max-width:95vw;
-background:#fff;
-border-radius:14px;
-overflow:hidden;
-box-shadow:0 10px 25px rgba(0,0,0,0.12);
-position:relative;
+/* ===== HEADER ===== */
+
+header{
+  position:relative;
+  width:100%;
+  background:linear-gradient(135deg,#152E68 0%,#1E3F8A 60%,#2A4A99 100%);
+  color:#fff;
+  padding:20px 24px 26px;
+  box-shadow:0 6px 20px var(--header-shadow);
+  transition:background .3s, box-shadow .3s;
 }
 
-.header{
-background:var(--blue);
-color:white;
-text-align:center;
-padding:14px 10px;
-font-style:italic;
-font-size:20px;
+[data-theme="dark"] header{
+  background:linear-gradient(135deg,#12193A 0%,#1A2440 60%,#243057 100%);
 }
 
-.content{
-padding:18px;
+.header-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
 }
 
-.toggleBtn{
-width:100%;
-margin-bottom:10px;
-background:#ddd;
-border:none;
-padding:8px;
-border-radius:8px;
-cursor:pointer;
-font-weight:600;
+.brand{ display:flex; align-items:center; gap:14px; min-width:0; }
+
+.logo{
+  position:relative;
+  width:56px; height:56px;
+  display:flex; align-items:center; justify-content:center;
+  background:transparent;
+  border:none;
+  padding:0;
+  color:#FF8B3D;
+  flex-shrink:0;
+  cursor:pointer;
+  transition:transform .2s;
 }
 
-.hidden{
-display:none;
+.logo svg{ width:46px; height:46px; display:block; }
+
+.logo::after{
+  content:'←';
+  position:absolute;
+  top:-4px;
+  left:-6px;
+  width:22px; height:22px;
+  display:flex; align-items:center; justify-content:center;
+  background:#FF6A00;
+  color:#fff;
+  font-size:13px;
+  font-weight:800;
+  border-radius:50%;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+  font-family:"Nunito Sans",sans-serif;
+  line-height:1;
+  pointer-events:none;
 }
+
+.logo:hover{ transform:scale(1.08); }
+.logo:active{ transform:scale(.94); }
+
+h1{
+  margin:0;
+  font-family:"Fredoka",sans-serif;
+  font-size:28px;
+  font-weight:700;
+  letter-spacing:.4px;
+  line-height:1.1;
+  text-shadow:0 2px 4px rgba(0,0,0,.12);
+}
+
+.subtitle{
+  margin-top:2px;
+  font-size:12.5px;
+  opacity:.85;
+  font-weight:600;
+}
+
+.header-buttons{ display:flex; gap:10px; flex-shrink:0; }
+
+.icon-btn{
+  position:relative;
+  width:48px; height:48px;
+  border:none;
+  border-radius:16px;
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  cursor:pointer;
+  transition:.22s;
+  font-family:inherit;
+  line-height:1;
+  display:flex; align-items:center; justify-content:center;
+  padding:0;
+}
+
+.icon-btn svg{ width:22px; height:22px; display:block; }
+
+.icon-btn:hover{
+  background:var(--orange);
+  transform:translateY(-2px) rotate(6deg) scale(1.06);
+}
+
+.icon-btn:active{ transform:scale(.95); }
+
+/* ===== CONTAINER ===== */
+
+.container{
+  max-width:960px;
+  margin:0 auto;
+  padding:24px 20px 40px;
+}
+
+/* ===== STATS BAR ===== */
+
+.stats-bar{
+  display:none;
+  gap:12px;
+  padding:14px 18px;
+  background:var(--panel);
+  border:2px solid var(--border);
+  border-radius:18px;
+  margin-bottom:12px;
+  box-shadow:0 4px 0 rgba(30,63,138,.08);
+  flex-wrap:wrap;
+  justify-content:space-between;
+  transition:background .3s, border-color .3s;
+}
+
+[data-theme="dark"] .stats-bar{
+  box-shadow:0 4px 0 rgba(0,0,0,.25);
+}
+
+.stats-bar.visible{ display:flex; }
+
+.stat{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width:80px;
+}
+
+.stat-label{
+  font-size:11px;
+  font-weight:800;
+  color:var(--text-dim);
+  text-transform:uppercase;
+  letter-spacing:.6px;
+}
+
+.stat-value{
+  font-family:"Fredoka",sans-serif;
+  font-size:20px;
+  font-weight:700;
+  color:var(--blue);
+}
+
+.stat-value.warn{ color:var(--orange); }
+
+/* ===== PROGRESS BAR ===== */
+
+.progress-bar{
+  display:none;
+  height:12px;
+  background:var(--blue-pale);
+  border-radius:999px;
+  overflow:hidden;
+  margin-bottom:20px;
+  box-shadow:inset 0 1px 3px rgba(30,63,138,.08);
+}
+
+.progress-bar.visible{ display:block; }
+
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg, var(--blue), var(--orange));
+  border-radius:999px;
+  transition:width .4s ease;
+}
+
+/* ===== TOGGLE BUTTON ===== */
+
+.toggle-btn{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  padding:12px 18px;
+  margin-bottom:14px;
+  background:var(--panel);
+  color:var(--blue);
+  border:2px solid var(--border);
+  border-radius:16px;
+  font-family:"Nunito Sans",sans-serif;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.3px;
+  cursor:pointer;
+  box-shadow:0 4px 0 rgba(30,63,138,.08);
+  transition:background .15s, transform .12s, box-shadow .12s;
+  text-align:left;
+}
+
+[data-theme="dark"] .toggle-btn{
+  box-shadow:0 4px 0 rgba(0,0,0,.25);
+}
+
+.toggle-btn svg{ width:18px; height:18px; flex-shrink:0; color:var(--orange); }
+
+.toggle-btn:hover{ background:var(--blue-pale); }
+.toggle-btn:active{
+  transform:translateY(2px);
+  box-shadow:0 2px 0 rgba(30,63,138,.08);
+}
+
+/* ===== PANEL ===== */
+
+#panel{
+  background:var(--panel);
+  border:2px solid var(--border);
+  border-radius:22px;
+  padding:20px 22px;
+  margin-bottom:14px;
+  box-shadow:0 6px 0 rgba(30,63,138,.10),
+             0 14px 26px rgba(30,63,138,.08);
+  transition:background .3s, border-color .3s;
+}
+
+[data-theme="dark"] #panel{
+  box-shadow:0 6px 0 rgba(0,0,0,.25), 0 14px 26px rgba(0,0,0,.3);
+}
+
+#panel.hidden{ display:none; }
 
 .settings{
-background:#f7f7f7;
-padding:12px;
-border-radius:10px;
-margin-bottom:12px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:14px 20px;
 }
 
-label{
-display:block;
-margin-top:12px;
-font-size:14px;
+.settings label{
+  display:block;
+  font-size:14px;
+  font-weight:800;
+  color:var(--blue);
+  margin-bottom:2px;
 }
 
-select, input[type=range]{
-width:100%;
-margin-top:6px;
+.settings label span{ color:var(--orange); font-weight:800; }
+
+.settings select,
+.settings input[type=number]{
+  width:100%;
+  font-family:"Nunito Sans",sans-serif;
+  font-size:14px;
+  font-weight:700;
+  color:var(--blue);
+  background:var(--blue-pale);
+  border:2px solid transparent;
+  border-radius:12px;
+  padding:10px 14px;
+  cursor:pointer;
+  outline:none;
+  transition:.18s;
+  margin-top:4px;
 }
 
-textarea{
-width:100%;
-height:140px;
-padding:10px;
-border-radius:10px;
-border:1px solid #ddd;
-margin-bottom:12px;
-resize:none;
+.settings select:hover,
+.settings select:focus,
+.settings input[type=number]:focus{
+  border-color:var(--orange);
 }
 
-input[type=range]{
-accent-color:var(--orange);
+.settings input[type=range]{
+  width:100%;
+  accent-color:var(--orange);
+  height:26px;
+  margin-top:4px;
+  cursor:pointer;
 }
 
-.btns{
-display:flex;
-gap:10px;
-margin-top:10px;
+.settings .check-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+  font-weight:700;
+  color:var(--blue);
+  cursor:pointer;
+  user-select:none;
+  padding:8px 0;
 }
 
-button{
-flex:1;
-padding:10px;
-border:none;
-border-radius:10px;
-background:var(--orange);
-color:#fff;
-font-weight:600;
-cursor:pointer;
-box-shadow:0 4px 0 #c24f00;
+.settings .check-row input[type=checkbox]{
+  accent-color:var(--orange);
+  width:18px;
+  height:18px;
+  margin:0;
+  cursor:pointer;
 }
 
-button:active{
-transform:translateY(3px);
-box-shadow:0 1px 0 #c24f00;
+/* ===== CONTROLS ===== */
+
+.controls{
+  display:flex;
+  gap:12px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
 }
+
+.controls button{
+  flex:1;
+  min-width:150px;
+  padding:13px 20px;
+  border:none;
+  border-radius:14px;
+  background:var(--orange);
+  color:#fff;
+  font-family:"Nunito Sans",sans-serif;
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:.3px;
+  cursor:pointer;
+  box-shadow:0 4px 0 var(--orange-dark);
+  transition:background .15s, transform .12s, box-shadow .12s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.controls button svg{ width:16px; height:16px; }
+
+.controls button:hover{ background:var(--orange-soft); }
+.controls button:active{
+  transform:translateY(3px);
+  box-shadow:0 1px 0 var(--orange-dark);
+}
+
+/* ===== CARDS GRID ===== */
 
 #out{
-margin-top:16px;
-padding:18px;
-border:1px solid #e5e5e5;
-border-radius:12px;
-min-height:120px;
-white-space:pre-wrap;
-background:#fafafa;
-font-size:26px;
-line-height:1.5;
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+  gap:14px;
+  min-height:100px;
 }
 
-.footer{
-position:absolute;
-bottom:6px;
-right:10px;
-font-size:11px;
-color:#999;
+#out:empty::before{
+  content:'Нажми «Новая партия», чтобы начать';
+  color:var(--text-dim);
+  font-weight:700;
+  font-size:15px;
+  opacity:.6;
+  grid-column:1/-1;
+  text-align:center;
+  padding:40px 0;
+}
+
+/* ===== WORD CARD ===== */
+
+.word-card{
+  perspective:1200px;
+  height:180px;
+  transition:opacity .4s;
+}
+
+.word-card.flipped .card-inner{
+  transform:rotateY(180deg);
+}
+
+.word-card.solved{
+  pointer-events:none;
+}
+
+.card-inner{
+  position:relative;
+  width:100%;
+  height:100%;
+  transition:transform .7s cubic-bezier(.34,1.3,.64,1);
+  transform-style:preserve-3d;
+}
+
+.card-face{
+  position:absolute;
+  inset:0;
+  border-radius:18px;
+  padding:14px 16px;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:space-between;
+  border:2px solid transparent;
+  box-shadow:0 5px 0 rgba(30,63,138,.08);
+  overflow:hidden;
+  transition:background .3s, border-color .3s;
+}
+
+[data-theme="dark"] .card-face{
+  box-shadow:0 5px 0 rgba(0,0,0,.25);
+}
+
+.card-face.front{
+  background:var(--pastel, var(--blue-pale));
+  color:var(--blue);
+}
+
+.card-face.back{
+  background:var(--green-pale);
+  color:#166534;
+  transform:rotateY(180deg);
+  justify-content:center;
+  gap:6px;
+}
+
+[data-theme="dark"] .card-face.back{ color:#4CC46A; }
+
+.word-card.failed .card-face.back{
+  background:var(--red-pale);
+  color:#991B1B;
+}
+
+[data-theme="dark"] .word-card.failed .card-face.back{ color:#E85A5A; }
+
+/* Anagram text */
+.anagram{
+  font-family:"Fredoka",sans-serif;
+  font-size:var(--fsize, 28px);
+  font-weight:700;
+  letter-spacing:2px;
+  line-height:1.1;
+  color:var(--blue);
+  text-align:center;
+  word-break:break-all;
+  padding:6px 0;
+  flex-shrink:0;
+}
+
+/* Input row */
+.input-row{
+  display:flex;
+  gap:6px;
+  width:100%;
+}
+
+.answer-input{
+  flex:1;
+  min-width:0;
+  padding:9px 12px;
+  border:2px solid transparent;
+  border-radius:12px;
+  background:var(--panel);
+  font-family:"Nunito Sans",sans-serif;
+  font-size:14px;
+  font-weight:700;
+  color:var(--text);
+  outline:none;
+  transition:.15s;
+}
+
+.answer-input:focus{
+  border-color:var(--orange);
+}
+
+.answer-input.correct{
+  border-color:var(--green);
+  background:var(--green-pale);
+  color:#166534;
+}
+
+[data-theme="dark"] .answer-input.correct{ color:#4CC46A; }
+
+.answer-input.wrong{
+  border-color:var(--red);
+  background:var(--red-pale);
+  color:#991B1B;
+}
+
+[data-theme="dark"] .answer-input.wrong{ color:#E85A5A; }
+
+.check-btn{
+  width:44px;
+  height:40px;
+  border:none;
+  border-radius:12px;
+  background:var(--orange);
+  color:#fff;
+  cursor:pointer;
+  box-shadow:0 3px 0 var(--orange-dark);
+  transition:.15s;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+}
+
+.check-btn svg{ width:18px; height:18px; }
+
+.check-btn:hover{ background:var(--orange-soft); }
+.check-btn:active{
+  transform:translateY(2px);
+  box-shadow:0 1px 0 var(--orange-dark);
+}
+
+.hint-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  width:100%;
+  padding:6px 10px;
+  border:1px dashed rgba(30,63,138,.25);
+  border-radius:10px;
+  background:transparent;
+  color:var(--blue);
+  font-family:"Nunito Sans",sans-serif;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+  transition:.15s;
+  margin-top:4px;
+}
+
+[data-theme="dark"] .hint-btn{ border-color:rgba(140,170,240,.3); }
+
+.hint-btn svg{ width:14px; height:14px; }
+
+.hint-btn:hover{
+  background:rgba(255,255,255,.6);
+  border-color:var(--orange);
+  color:var(--orange);
+}
+
+[data-theme="dark"] .hint-btn:hover{ background:rgba(255,255,255,.05); }
+
+.hint-btn:disabled{
+  opacity:.4;
+  cursor:default;
+}
+
+/* Back face */
+.correct-word{
+  font-family:"Fredoka",sans-serif;
+  font-size:32px;
+  font-weight:700;
+  letter-spacing:1px;
+}
+
+.back-status{
+  font-size:14px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  opacity:.8;
+}
+
+/* Feedback text inside card */
+.card-feedback{
+  position:absolute;
+  top:8px;
+  right:12px;
+  font-size:12px;
+  font-weight:800;
+  color:var(--red);
+  opacity:0;
+  transition:opacity .2s;
+}
+
+.card-feedback.show{ opacity:1; }
+
+/* Shake animation */
+@keyframes shake{
+  0%,100%{ transform:rotateY(0deg) translateX(0); }
+  25%{ transform:translateX(-4px); }
+  50%{ transform:translateX(4px); }
+  75%{ transform:translateX(-2px); }
+}
+
+.card-inner.shake{
+  animation:shake .35s ease;
+}
+
+/* ===== RESULT BANNER ===== */
+
+.result-banner{
+  display:none;
+  margin-top:20px;
+  padding:24px 28px;
+  background:linear-gradient(135deg, var(--blue), var(--blue-soft));
+  color:#fff;
+  border-radius:22px;
+  text-align:center;
+  box-shadow:0 6px 0 rgba(30,63,138,.25),
+             0 14px 30px rgba(30,63,138,.18);
+  animation:slideIn .5s ease;
+}
+
+.result-banner.visible{ display:block; }
+
+@keyframes slideIn{
+  from{ opacity:0; transform:translateY(20px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+.result-title{
+  font-family:"Fredoka",sans-serif;
+  font-size:28px;
+  font-weight:700;
+  margin-bottom:6px;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+}
+
+.result-title svg{ width:28px; height:28px; }
+
+.result-subtitle{
+  font-size:15px;
+  font-weight:700;
+  opacity:.9;
+  margin-bottom:16px;
+}
+
+.result-stats{
+  display:flex;
+  justify-content:center;
+  gap:24px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+
+.result-stat{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.result-stat .r-label{
+  font-size:11px;
+  font-weight:800;
+  opacity:.75;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+}
+
+.result-stat .r-value{
+  font-family:"Fredoka",sans-serif;
+  font-size:22px;
+  font-weight:700;
+}
+
+.result-banner button{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:12px 24px;
+  border:none;
+  border-radius:14px;
+  background:#fff;
+  color:var(--blue);
+  font-family:"Nunito Sans",sans-serif;
+  font-size:15px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 4px 0 rgba(0,0,0,.18);
+  transition:transform .12s, box-shadow .12s;
+}
+
+.result-banner button svg{ width:16px; height:16px; }
+
+.result-banner button:hover{ background:var(--blue-pale); }
+.result-banner button:active{
+  transform:translateY(3px);
+  box-shadow:0 1px 0 rgba(0,0,0,.18);
+}
+
+/* ===== SIGNATURE ===== */
+
+.signature{
+  position:fixed;
+  bottom:8px;
+  left:14px;
+  font-size:12px;
+  font-weight:600;
+  color:var(--text-dim);
+  opacity:.8;
+  pointer-events:none;
+  user-select:none;
+}
+
+/* ===== МОДАЛКИ ===== */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:var(--overlay);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .25s, visibility .25s, background .3s;
+  z-index:1500;
+}
+
+.modal.open{ opacity:1; visibility:visible; }
+
+.modal-card{
+  background:var(--panel);
+  border-radius:28px;
+  max-width:460px;
+  width:100%;
+  max-height:90vh;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 24px 70px rgba(0,0,0,.35);
+  transform:translateY(24px) scale(.95);
+  transition:transform .42s cubic-bezier(.34, 1.56, .64, 1), background .3s;
+  overflow:hidden;
+}
+
+.modal.open .modal-card{ transform:translateY(0) scale(1); }
+
+.modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:22px 24px 20px;
+  background:linear-gradient(135deg, var(--modal-grad-1) 0%, var(--modal-grad-2) 60%, var(--modal-grad-3) 100%);
+  color:#fff;
+  transition:background .3s;
+}
+
+.modal-header h2{
+  font-family:"Fredoka",sans-serif;
+  font-size:22px;
+  font-weight:600;
+  margin:0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.modal-header h2 svg{ width:22px; height:22px; flex-shrink:0; }
+
+.modal-close{
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:12px;
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  font-size:24px;
+  line-height:1;
+  cursor:pointer;
+  transition:.2s;
+  font-family:inherit;
+  padding:0;
+}
+
+.modal-close:hover{ background:var(--orange); transform:rotate(90deg); }
+
+.modal-body{
+  padding:22px 24px 26px;
+  overflow-y:auto;
+}
+
+.modal-body p{
+  font-size:14.5px;
+  font-weight:700;
+  color:var(--text-dim);
+  line-height:1.6;
+  margin:0 0 10px;
+}
+
+.modal-body p:last-child{ margin-bottom:0; }
+.modal-body b{ color:var(--blue); }
+
+.settings-section{ margin-bottom:22px; }
+.settings-section:last-child{ margin-bottom:0; }
+
+.settings-section h4{
+  font-family:"Fredoka",sans-serif;
+  font-size:16px;
+  color:var(--blue);
+  margin-bottom:10px;
+  font-weight:600;
+}
+
+.settings-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:13px 16px;
+  background:var(--bg);
+  border:2px solid var(--blue-pale);
+  border-radius:16px;
+  cursor:pointer;
+  user-select:none;
+  transition:.2s;
+}
+
+.settings-row:hover{
+  border-color:var(--blue-soft);
+  background:var(--panel);
+}
+
+.settings-row__label{
+  font-size:15px;
+  font-weight:800;
+  color:var(--blue);
+}
+
+.settings-row__label small{
+  display:block;
+  font-size:12px;
+  font-weight:700;
+  color:var(--text-dim);
+  margin-top:2px;
+}
+
+.switch{
+  width:46px;
+  height:26px;
+  border-radius:999px;
+  background:#CBD3E5;
+  position:relative;
+  flex-shrink:0;
+  transition:background .2s;
+}
+
+[data-theme="dark"] .switch{ background:#3A4560; }
+
+.switch::after{
+  content:'';
+  position:absolute;
+  top:3px;
+  left:3px;
+  width:20px;
+  height:20px;
+  background:#fff;
+  border-radius:50%;
+  box-shadow:0 2px 4px rgba(0,0,0,.18);
+  transition:transform .28s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.settings-row.theme-switch-on .switch{ background:var(--orange); }
+.settings-row.theme-switch-on .switch::after{ transform:translateX(20px); }
+
+/* ===== MOBILE ===== */
+
+@media (max-width:700px){
+  header{ padding:18px 20px 22px; }
+  h1{ font-size:24px; }
+  .logo{ width:48px; height:48px; }
+  .logo svg{ width:40px; height:40px; }
+  .logo::after{ width:20px; height:20px; font-size:12px; top:-3px; left:-5px; }
+  .subtitle{ font-size:12px; }
+  .icon-btn{ width:42px; height:42px; border-radius:14px; }
+  .icon-btn svg{ width:20px; height:20px; }
+  .container{ padding:18px 12px 60px; }
+  #panel{ padding:16px 14px; border-radius:18px; }
+  .controls button{ font-size:14px; padding:12px 16px; }
+  #out{
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+  .word-card{ height:170px; }
+  .anagram{ letter-spacing:1px; }
+  .correct-word{ font-size:26px; }
+  .stats-bar{ padding:10px 14px; gap:8px; }
+  .stat{ min-width:60px; }
+  .stat-value{ font-size:17px; }
+  .stat-label{ font-size:10px; }
+  .result-title{ font-size:22px; }
+  .result-stats{ gap:14px; }
+  .modal-card{ border-radius:24px; }
+  .modal-header{ padding:18px 20px 16px; }
+  .modal-header h2{ font-size:20px; }
+  .modal-body{ padding:18px 18px 22px; }
+  .modal-body p{ font-size:13.5px; }
 }
 </style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
 </head>
 
 <body>
 
-<div class="app">
+<header>
+  <div class="header-top">
+    <div class="brand">
+      <button class="logo" onclick="goBack()" title="Назад" aria-label="Назад">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8"/>
+          <path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8"/>
+          <path d="M17.5 16a3.5 3.5 0 0 0 0 -7h-.5"/>
+          <path d="M19 9.3v-2.8a3.5 3.5 0 0 0 -7 0"/>
+          <path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5"/>
+          <path d="M5 9.3v-2.8a3.5 3.5 0 0 1 7 0v10"/>
+        </svg>
+      </button>
+      <div>
+        <h1>Анаграммы</h1>
+        <div class="subtitle">NeuroX · скорочтение</div>
+      </div>
+    </div>
 
-<div class="header">Анаграммы</div>
+    <div class="header-buttons">
+      <button class="icon-btn" id="themeBtn" title="Сменить тему" onclick="toggleTheme()" aria-label="Сменить тему">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+        </svg>
+      </button>
+      <button class="icon-btn" title="Справка" onclick="showHelp()" aria-label="Справка">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 1.5-2.5 2-2.5 3.5"/>
+          <circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+      </button>
+      <button class="icon-btn" title="Настройки" onclick="showSettings()" aria-label="Настройки">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
 
-<div class="content">
+<div class="container">
 
-<button class="toggleBtn" onclick="toggleUI()">⚙ Настройки</button>
+  <div class="stats-bar" id="statsBar">
+    <div class="stat">
+      <span class="stat-label">Решено</span>
+      <span class="stat-value" id="solvedStat">0/0</span>
+    </div>
+    <div class="stat" id="scoreStatWrap" style="display:none;">
+      <span class="stat-label">Очки</span>
+      <span class="stat-value" id="scoreStat">0</span>
+    </div>
+    <div class="stat" id="streakStatWrap" style="display:none;">
+      <span class="stat-label">Серия</span>
+      <span class="stat-value" id="streakStat">0</span>
+    </div>
+    <div class="stat" id="timerStatWrap" style="display:none;">
+      <span class="stat-label">Время</span>
+      <span class="stat-value" id="timerStat">--:--</span>
+    </div>
+  </div>
 
-<div id="panel">
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
 
-<div class="settings">
+  <button class="toggle-btn" onclick="togglePanel()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+    </svg>
+    Настройки
+  </button>
 
-<label>Режим</label>
-<select id="mode">
-<option value="words">Слова</option>
-<option value="text">Текст</option>
-</select>
+  <div id="panel">
+    <div class="settings">
 
-<label>Сложность <span id="lvl">2</span></label>
-<input type="range" id="level" min="1" max="5" value="2">
+      <div>
+        <label>Сложность <span id="lvlVal">2</span></label>
+        <input type="range" id="level" min="1" max="5" value="2">
+      </div>
 
-<label>Шрифт</label>
-<select id="font">
-<option value="Arial">Arial</option>
-<option value="Georgia">Georgia</option>
-<option value="Courier New">Courier New</option>
-<option value="Verdana">Verdana</option>
-</select>
+      <div>
+        <label>Длина слов</label>
+        <select id="length">
+          <option value="all">Любые</option>
+          <option value="short">Короткие (4–6 букв)</option>
+          <option value="medium">Средние (7–9 букв)</option>
+          <option value="long">Длинные (10+ букв)</option>
+        </select>
+      </div>
 
-<label>Размер текста <span id="sz">18</span></label>
-<input type="range" id="size" min="12" max="36" value="18">
+      <div>
+        <label>Количество слов <span id="countVal">6</span></label>
+        <input type="range" id="count" min="3" max="20" value="6">
+      </div>
+
+      <div>
+        <label>Шрифт</label>
+        <select id="font">
+          <option>Arial</option>
+          <option>Georgia</option>
+          <option>Courier New</option>
+          <option>Verdana</option>
+          <option>Tahoma</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Размер <span id="sizeVal">28</span></label>
+        <input type="range" id="size" min="18" max="48" value="28">
+      </div>
+
+      <div>
+        <label class="check-row">
+          <input type="checkbox" id="optTimer"> Таймер на партию
+        </label>
+        <label>Секунд <span id="timerSecVal">120</span></label>
+        <input type="range" id="timerSec" min="30" max="300" step="10" value="120">
+      </div>
+
+      <div>
+        <label class="check-row">
+          <input type="checkbox" id="optScore"> Очки и серии
+        </label>
+      </div>
+
+      <div>
+        <label class="check-row">
+          <input type="checkbox" id="optAttempts"> 3 попытки на слово
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="controls">
+    <button onclick="generate()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="3"/>
+        <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/>
+        <circle cx="15.5" cy="15.5" r="1.5" fill="currentColor" stroke="none"/>
+        <circle cx="15.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/>
+        <circle cx="8.5" cy="15.5" r="1.5" fill="currentColor" stroke="none"/>
+      </svg>
+      Новая партия
+    </button>
+    <button onclick="reshuffle()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a9 9 0 1 1-3-6.7"/>
+        <path d="M21 4v5h-5"/>
+      </svg>
+      Перемешать заново
+    </button>
+  </div>
+
+  <div id="out"></div>
+
+  <div class="result-banner" id="resultBanner">
+    <div class="result-title" id="resultTitle">Готово!</div>
+    <div class="result-subtitle" id="resultSubtitle">Ты справился со всеми словами</div>
+    <div class="result-stats" id="resultStats"></div>
+    <button onclick="generate()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a9 9 0 1 1-3-6.7"/>
+        <path d="M21 4v5h-5"/>
+      </svg>
+      Ещё раз
+    </button>
+  </div>
 
 </div>
 
-<textarea id="input">кот
-дом
-лес
-мама пошла в школу</textarea>
+<div class="signature">© verner</div>
 
+<!-- МОДАЛКА «СПРАВКА» -->
+<div class="modal" id="helpModal" onclick="if(event.target===this) closeHelp()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 1.5-2.5 2-2.5 3.5"/>
+          <circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+        Справка
+      </h2>
+      <button class="modal-close" onclick="closeHelp()" aria-label="Закрыть">×</button>
+    </div>
+    <div class="modal-body">
+      <p><b>Анаграммы</b> — тренажёр на перестановку букв. Каждая карточка показывает слово с перемешанными буквами, задача — собрать его правильно.</p>
+      <p><b>Сложность</b> — от 1 до 5: от перестановки двух букв до полного хаоса. <b>Длина</b> — фильтр по количеству букв в слове.</p>
+      <p><b>3 попытки</b> — если включено, на каждое слово даётся три попытки, после чего слово показывается как нерешённое.</p>
+      <p><b>Очки и серии</b> — добавляет счёт: 10 очков за верный ответ и +2 за серию из 3 подряд.</p>
+      <p><b>Таймер</b> — ограничивает партию по времени.</p>
+    </div>
+  </div>
 </div>
 
-<div class="btns">
-<button onclick="generate()">Сгенерировать</button>
-<button onclick="regenerate()">Повтор</button>
-</div>
+<!-- МОДАЛКА «НАСТРОЙКИ» -->
+<div class="modal" id="settingsModal" onclick="if(event.target===this) closeSettings()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+        </svg>
+        Настройки
+      </h2>
+      <button class="modal-close" onclick="closeSettings()" aria-label="Закрыть">×</button>
+    </div>
+    <div class="modal-body">
 
-<div id="out"></div>
+      <div class="settings-section">
+        <h4>Оформление</h4>
+        <div class="settings-row" id="themeRow" onclick="toggleTheme()">
+          <div class="settings-row__label">
+            Тёмная тема
+            <small>Меньше света вечером</small>
+          </div>
+          <div class="switch"></div>
+        </div>
+      </div>
 
-</div>
+      <div class="settings-section">
+        <h4>Профиль</h4>
+        <p style="font-size: 13px; color: var(--text-dim); font-weight: 700; line-height: 1.5;">
+          Имя, возраст и настройки меняются в главном меню — нажми на мозг в шапке.
+        </p>
+      </div>
 
-<div class="footer">© verner</div>
-
+    </div>
+  </div>
 </div>
 
 <script>
+/* ===== ТЕМА ===== */
+const LS_THEME_KEY = 'neurox_theme';
 
-const out = document.getElementById("out")
+const SVG_SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const SVG_MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
 
-function toggleUI(){
-document.getElementById("panel").classList.toggle("hidden")
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.innerHTML = theme === 'dark' ? SVG_SUN : SVG_MOON;
+
+  const row = document.getElementById('themeRow');
+  if (row) row.classList.toggle('theme-switch-on', theme === 'dark');
 }
 
-document.getElementById("level").oninput = e=>{
-document.getElementById("lvl").textContent = e.target.value
+function getStoredTheme(){ return localStorage.getItem(LS_THEME_KEY) || ''; }
+function saveTheme(theme){ localStorage.setItem(LS_THEME_KEY, theme); }
+
+function initTheme(){
+  let theme = getStoredTheme();
+  if (!theme){
+    const prefersDark = window.matchMedia &&
+                        window.matchMedia('(prefers-color-scheme: dark)').matches;
+    theme = prefersDark ? 'dark' : 'light';
+  }
+  applyTheme(theme);
 }
 
-document.getElementById("size").oninput = e=>{
-document.getElementById("sz").textContent = e.target.value
-out.style.fontSize = e.target.value + "px"
+function toggleTheme(){
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  saveTheme(next);
 }
 
-document.getElementById("font").onchange = e=>{
-out.style.fontFamily = e.target.value
+function showHelp(){ document.getElementById('helpModal').classList.add('open'); }
+function closeHelp(){ document.getElementById('helpModal').classList.remove('open'); }
+
+function showSettings(){ document.getElementById('settingsModal').classList.add('open'); }
+function closeSettings(){ document.getElementById('settingsModal').classList.remove('open'); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape'){
+    closeHelp();
+    closeSettings();
+  }
+});
+
+initTheme();
+
+if (window.matchMedia){
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  mq.addEventListener('change', e => {
+    if (!getStoredTheme()) applyTheme(e.matches ? 'dark' : 'light');
+  });
+}
+</script>
+
+<script>
+/* ============================================
+   ЗВУК
+   ============================================ */
+
+let audioCtx = null;
+
+function initAudio(){
+  if(!audioCtx){
+    try{
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }catch(e){}
+  }
 }
 
-function swap(arr,i,j){
-let t=arr[i];arr[i]=arr[j];arr[j]=t
+document.addEventListener('click', initAudio, {once: true});
+
+function beep(freq, dur = 0.15, type = 'sine', vol = 0.08){
+  if(!audioCtx) return;
+  try{
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = type;
+    osc.frequency.value = freq;
+    const t = audioCtx.currentTime;
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.start(t);
+    osc.stop(t + dur + 0.02);
+  }catch(e){}
 }
 
-/* =========================
-   🧠 НОВАЯ УЧЕБНАЯ ЛЕСТНИЦА
-   ========================= */
+function sfxCorrect(){
+  beep(660, 0.09);
+  setTimeout(() => beep(880, 0.14), 80);
+}
+
+function sfxWrong(){
+  beep(180, 0.28, 'sawtooth', 0.1);
+}
+
+function sfxFail(){
+  beep(220, 0.2, 'square', 0.08);
+  setTimeout(() => beep(160, 0.25, 'square', 0.08), 180);
+}
+
+function sfxWin(){
+  [523, 659, 784, 1047].forEach((f, i) =>
+    setTimeout(() => beep(f, 0.18, 'sine', 0.09), i * 100)
+  );
+}
+
+/* ============================================
+   SVG-ИКОНКИ
+   ============================================ */
+
+const ICONS = {
+  hint: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.6 1 1.4 1 2.3h6c0-.9.4-1.7 1-2.3A7 7 0 0 0 12 2z"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>',
+  timer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  trophy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8v6a4 4 0 0 1-8 0z"/><path d="M8 5H5a2 2 0 0 0 0 4h3"/><path d="M16 5h3a2 2 0 0 1 0 4h-3"/><path d="M10 13h4v5h-4z"/><path d="M8 21h8"/><path d="M12 18v3"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.3 6.8 19l1-5.8-4.2-4.1 5.8-.8z"/></svg>',
+  thumbsUp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.9L14 10h5.8a2 2 0 0 1 1.9 2.4l-1.4 6A2 2 0 0 1 18.4 20H7V10l4-8a2 2 0 0 1 4 0z"/></svg>',
+  muscle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5a2 2 0 0 1 4 0v6"/><path d="M10 8a2 2 0 0 1 4 0v5"/><path d="M14 9a2 2 0 0 1 4 0v5a6 6 0 0 1-6 6h-1a5 5 0 0 1-5-5v-8a2 2 0 0 1 4 0"/></svg>'
+};
+
+/* ============================================
+   БАЗА СЛОВ
+   ============================================ */
+
+const FALLBACK_TEXT = `
+кот дом лес мама папа день ночь свет вода рыба
+мяч стол стул окно дверь снег дождь ветер трава цвет
+сад парк зима лето осень весна лист камень песок берег
+река море гора небо луна поле хлеб соль суп каша
+сыр масло яйцо сок чай ложка вилка нож чашка книга
+ручка листок школа урок доска парта класс друг игра
+кукла поезд город яблоко груша слива ягода гриб птица
+ворона сова утка корова овца коза кошка заяц лиса волк
+тигр слон жираф кит акула краб ёжик белка олень лев
+мышь змея жаба уж осёл конь бык баран свинья гусь
+лебедь павлин грач чиж стриж крот барсук ёрш окунь карп
+сом лещ плотва щука налим судак треска сельдь камбала форель
+медведь верблюд тетрадь ученик учитель игрушка машина автобус дорога улица
+дерево цветок банан лимон персик конфета бутылка кастрюля сковорода чайник
+зеркало лампа фонарь телефон компьютер страница буква слово рассказ история
+сказка герой подарок праздник магазин покупка кошелёк рюкзак одежда рубашка
+куртка платье ботинки сапоги перчатки здоровье болезнь воробей голубь кукушка
+соловей скворец синица ласточка огурец помидор капуста картофель морковь петрушка
+укроп черника клубника малина земляника апельсин мандарин виноград ананас абрикос
+шоколад печенье вафли пирожок сосиска котлета сарделька варенье повидло
+пшеница кукуруза пшено гречка горох фасоль редис редька репа тыква
+кабачок баклажан перец чеснок лук салат шпинат щавель сельдерей спаржа
+холодильник электричество энциклопедия путешествие велосипед приключение медвежонок обезьяна мороженое
+карандаш фотография телевизор библиотека конструктор электричка вертолёт земляника солнечный
+праздничный замечательный восхитительный удивительный таинственный справедливый ответственный
+самостоятельный талантливый сообразительный старательный внимательный любознательный заботливый
+снеговик снегирь снежинка снегоход книжка книжечка читатель писатель художник строитель
+водитель воспитатель покупатель продавец кассир официант библиотекарь повар пекарь кондитер
+столяр маляр портниха кузнец гончар пастух доярка пчеловод рыбак охотник лесник
+садовник доктор медсестра аптекарь программист инженер архитектор дизайнер редактор переводчик
+экскурсовод кондуктор машинист пилот капитан космонавт астроном географ историк биолог
+физик химик математик автомобиль мотоцикл самокат скутер трамвай троллейбус метрополитен
+паровоз теплоход пароход лайнер крейсер фрегат шхуна яхта катер лодка
+байдарка паром природа погода атмосфера вселенная галактика планета астероид метеорит
+комета туманность созвездие орбита космодром телескоп микроскоп бинокль лупа квартира
+комната коридор балкон лестница лифт подъезд фундамент крыша потолок мебель
+диван кровать кресло столик табурет комод шкаф полка вешалка коврик
+гардина шторы посуда тарелка блюдце стакан кувшин кружка половник шумовка
+сито дуршлаг тёрка мясорубка кофемолка соковыжималка инструмент молоток отвёртка напильник
+рубанок стамеска долото пила ножовка топор клещи тиски гвоздь шуруп
+болт гайка шайба шило сверло футболка майка свитер кофта толстовка
+ветровка пальто шуба плащ юбка брюки джинсы шорты сарафан халат
+пижама кроссовки сандалии валенки тапочки шлёпанцы галоши босоножки альпинист
+агроном акробат аптекарь артист астронавт балерина барабанщик библиотекарь биолог ботаник
+вахтёр ветеринар виолончелист гимнаст гонщик дирижёр диспетчер дрессировщик журналист зоолог
+иллюзионист историк капитан картограф кинорежиссёр композитор кондитер конструктор косметолог краевед
+кулинар ландшафтник лесовод логопед массовик машинист металлург метеоролог механик монтажник
+музыкант нотариус океанолог оператор оптик орнитолог охотовед парикмахер парфюмер пасечник
+переводчик печатник пианист плотник полярник портной программист пчеловод радист редактор
+реставратор рыболов садовод сапожник сварщик сейсмолог секретарь слесарь скульптор сомелье
+статистик стоматолог строитель судоводитель таксист технолог токарь тренер фармацевт физиолог
+флорист фотограф фрезеровщик футболист хореограф цветовод часовщик швея шофёр штукатур
+экономист эколог электрик ювелир юморист яхтсмен
+`;
+
+const FALLBACK = FALLBACK_TEXT.trim().split(/\s+/).filter(w => w.length >= 3);
+
+/* ============================================
+   STATE
+   ============================================ */
+
+let words = [];
+let currentWords = [];
+let currentLevel = 2;
+
+let solvedCount = 0;
+let score = 0;
+let streak = 0;
+let maxStreak = 0;
+let timerInterval = null;
+let timeLeft = 0;
+let gameActive = false;
+
+const PASTELS = [
+  '#E8EEF9',
+  '#FFEADB',
+  '#E6F7EC',
+  '#F3E8FA',
+  '#FFE5EC',
+  '#FFF5E0',
+  '#E5F6F8'
+];
+
+const PASTELS_DARK = [
+  '#2A3A5C',
+  '#4A2E1A',
+  '#1A3625',
+  '#3A2A4A',
+  '#4A2A36',
+  '#3D3620',
+  '#1E3A3C'
+];
+
+/* ============================================
+   ЗАГРУЗКА БАЗЫ
+   ============================================ */
+
+async function loadBase(){
+  try{
+    const res = await fetch("./anagrams.json", {cache: "no-cache"});
+    if(!res.ok) throw new Error("no file");
+    const data = await res.json();
+
+    let list = [];
+
+    if(Array.isArray(data)){
+      list = data.filter(w => typeof w === "string");
+    } else if(data && typeof data === "object"){
+      Object.keys(data).forEach(k => {
+        if(k === "9") return;
+        if(Array.isArray(data[k])) list.push(...data[k]);
+      });
+    }
+
+    list = list.filter(w => w.length >= 3 && !/\s/.test(w));
+
+    words = list.length >= 30 ? list : [...FALLBACK];
+  } catch(e){
+    words = [...FALLBACK];
+  }
+
+  generate();
+}
+
+/* ============================================
+   УРОВНИ СЛОЖНОСТИ
+   ============================================ */
+
 function transform(word, level){
+  word = (word || "").trim();
+  if(word.length < 2) return word;
 
-word = (word || "").trim()
-if(word.length < 2) return word
+  const arr = word.split("");
 
-let arr = word.split("")
+  if(level === 1){
+    if(arr.length < 3) return word;
+    const i = 1 + Math.floor(Math.random() * (arr.length - 2));
+    [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
+    return arr.join("");
+  }
 
-// 🟢 LEVEL 1 — мягкое искажение
-if(level == 1){
+  if(level === 2){
+    return arr.reverse().join("");
+  }
 
-if(arr.length >= 4){
-let i = 1
-let j = arr.length - 2
-swap(arr,i,j)
+  if(level === 3){
+    for(let i = 0; i < arr.length - 1; i += 2){
+      [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
+    }
+    return arr.join("");
+  }
+
+  if(level === 4){
+    if(arr.length < 4) return transform(word, 3);
+    const first = arr[0];
+    const last = arr[arr.length - 1];
+    const middle = arr.slice(1, -1).sort(() => Math.random() - 0.5);
+    return first + middle.join("") + last;
+  }
+
+  if(level === 5){
+    const original = arr.join("");
+    const shuffled = arr.slice();
+    let attempts = 0;
+    do {
+      shuffled.sort(() => Math.random() - 0.5);
+      attempts++;
+    } while(shuffled.join("") === original && attempts < 30);
+    if(shuffled.join("") === original) shuffled.reverse();
+    return shuffled.join("");
+  }
+
+  return word;
 }
 
-return arr.join("")
+function filterByLength(list){
+  const mode = document.getElementById("length").value;
+  if(mode === "all") return list;
+  return list.filter(w => {
+    const len = w.length;
+    if(mode === "short")  return len >= 4 && len <= 6;
+    if(mode === "medium") return len >= 7 && len <= 9;
+    if(mode === "long")   return len >= 10;
+    return true;
+  });
 }
 
-// 🟡 LEVEL 2 — попарная структура
-if(level == 2){
-
-for(let i=0;i<arr.length-1;i+=2){
-swap(arr,i,i+1)
+function normalize(s){
+  return String(s || "")
+    .trim()
+    .toLowerCase()
+    .replace(/ё/g, "е")
+    .replace(/\s+/g, "");
 }
 
-return arr.join("")
-}
-
-// 🟠 LEVEL 3 — полублочная деструкция
-if(level == 3){
-
-let mid = Math.floor(arr.length/2)
-
-let left = arr.slice(0,mid)
-let right = arr.slice(mid)
-
-left.sort(()=>Math.random()-0.5)
-right.sort(()=>Math.random()-0.5)
-
-return left.concat(right).join("")
-}
-
-// 🔴 LEVEL 4 — глубокое перемешивание
-if(level == 4){
-
-let original = arr.join("")
-let result = arr.slice()
-
-do{
-result.sort(()=>Math.random()-0.5)
-}while(result.join("") === original)
-
-return result.join("")
-}
-
-// ⚫ LEVEL 5 — хаос
-if(level == 5){
-
-let result = arr.slice()
-
-for(let i=0;i<3;i++){
-result.sort(()=>Math.random()-0.5)
-}
-
-if(result.join("") === arr.join("")){
-result.reverse()
-}
-
-return result.join("")
-}
-
-return word
-}
+/* ============================================
+   ГЕНЕРАЦИЯ
+   ============================================ */
 
 function generate(){
+  stopTimer();
+  hideResult();
 
-let mode = document.getElementById("mode").value
-let level = +document.getElementById("level").value
-let input = document.getElementById("input").value || ""
+  const filtered = filterByLength(words);
 
-let result = ""
+  if(!filtered.length){
+    currentWords = [];
+    document.getElementById("out").innerHTML = "";
+    return;
+  }
 
-if(mode === "words"){
+  const count = +document.getElementById("count").value;
+  const shuffled = [...filtered].sort(() => Math.random() - 0.5);
+  currentWords = shuffled.slice(0, Math.min(count, filtered.length));
+  currentLevel = +document.getElementById("level").value;
 
-let lines = input.split("\n").map(w=>w.trim()).filter(Boolean)
+  solvedCount = 0;
+  score = 0;
+  streak = 0;
+  maxStreak = 0;
 
-for(let w of lines){
-result += transform(w,level) + "\n"
+  renderCards();
+  updateStats();
+  startTimerIfNeeded();
+  gameActive = true;
 }
 
+function reshuffle(){
+  if(!currentWords.length){
+    generate();
+    return;
+  }
+  stopTimer();
+  hideResult();
+
+  currentLevel = +document.getElementById("level").value;
+  solvedCount = 0;
+  score = 0;
+  streak = 0;
+  maxStreak = 0;
+
+  renderCards();
+  updateStats();
+  startTimerIfNeeded();
+  gameActive = true;
 }
 
-else{
+/* ============================================
+   РЕНДЕР КАРТОЧЕК
+   ============================================ */
 
-let parts = input.split(/(\s+|[.,!?;:—])/)
+function renderCards(){
+  const out = document.getElementById("out");
+  out.innerHTML = "";
 
-for(let p of parts){
+  const fontSize = +document.getElementById("size").value;
+  const fontFamily = document.getElementById("font").value;
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const palette = isDark ? PASTELS_DARK : PASTELS;
 
-if(/^[А-Яа-яЁё]+$/.test(p)){
-result += transform(p,level)
-}else{
-result += p
+  currentWords.forEach((word, idx) => {
+    const anagram = transform(word, currentLevel);
+
+    const card = document.createElement("div");
+    card.className = "word-card";
+    card.dataset.original = word;
+    card.dataset.anagram = anagram;
+    card.dataset.attempts = "0";
+    card.dataset.solved = "0";
+
+    const pastel = palette[idx % palette.length];
+
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-face front" style="--pastel:${pastel}; --fsize:${fontSize}px; font-family:${fontFamily};">
+          <div class="anagram">${anagram}</div>
+          <div class="card-feedback"></div>
+          <div class="input-row">
+            <input class="answer-input" type="text" placeholder="Твой ответ" autocomplete="off" spellcheck="false">
+            <button class="check-btn" type="button" aria-label="Проверить">${ICONS.check}</button>
+          </div>
+          <button class="hint-btn" type="button">${ICONS.hint}Подсказка</button>
+        </div>
+        <div class="card-face back">
+          <div class="correct-word">${word}</div>
+          <div class="back-status">Верно!</div>
+        </div>
+      </div>
+    `;
+
+    const input = card.querySelector(".answer-input");
+    const checkBtn = card.querySelector(".check-btn");
+    const hintBtn = card.querySelector(".hint-btn");
+    const feedback = card.querySelector(".card-feedback");
+    const inner = card.querySelector(".card-inner");
+
+    if(idx === 0){
+      setTimeout(() => input.focus(), 100);
+    }
+
+    function check(){
+      if(card.classList.contains("solved")) return;
+      const val = input.value;
+      if(!val.trim()) return;
+
+      const isCorrect = normalize(val) === normalize(word);
+
+      if(isCorrect){
+        card.dataset.solved = "1";
+        card.classList.add("solved");
+        input.classList.remove("wrong");
+        input.classList.add("correct");
+        input.disabled = true;
+        checkBtn.disabled = true;
+        hintBtn.disabled = true;
+
+        if(document.getElementById("optScore").checked){
+          streak++;
+          if(streak > maxStreak) maxStreak = streak;
+          const bonus = streak >= 3 ? 2 : 0;
+          score += 10 + bonus;
+        }
+
+        sfxCorrect();
+        card.classList.add("flipped");
+        solvedCount++;
+        updateStats();
+        checkFinish();
+      } else {
+        input.classList.add("wrong");
+        sfxWrong();
+
+        const attempts = +card.dataset.attempts + 1;
+        card.dataset.attempts = attempts;
+
+        if(document.getElementById("optScore").checked){
+          streak = 0;
+          updateStats();
+        }
+
+        inner.classList.remove("shake");
+        void inner.offsetWidth;
+        inner.classList.add("shake");
+        setTimeout(() => inner.classList.remove("shake"), 400);
+
+        if(document.getElementById("optAttempts").checked){
+          const left = Math.max(0, 3 - attempts);
+          if(left > 0){
+            feedback.textContent = `Осталось: ${left}`;
+            feedback.classList.add("show");
+            input.value = "";
+          } else {
+            card.classList.add("solved", "failed");
+            card.querySelector(".back-status").textContent = "Не угадал";
+            input.disabled = true;
+            checkBtn.disabled = true;
+            hintBtn.disabled = true;
+            sfxFail();
+            setTimeout(() => {
+              card.classList.add("flipped");
+              solvedCount++;
+              updateStats();
+              checkFinish();
+            }, 400);
+          }
+        } else {
+          input.value = "";
+        }
+      }
+    }
+
+    checkBtn.addEventListener("click", check);
+    input.addEventListener("keydown", e => {
+      if(e.key === "Enter"){
+        e.preventDefault();
+        check();
+      }
+    });
+
+    hintBtn.addEventListener("click", () => {
+      if(card.classList.contains("solved")) return;
+      const first = word[0];
+      const current = input.value.trim();
+      if(!current){
+        input.value = first;
+      } else if(current[0].toLowerCase() !== first.toLowerCase()){
+        input.value = first + current.slice(1);
+      } else {
+        input.value = first;
+      }
+      input.focus();
+      beep(520, 0.08, 'triangle', 0.06);
+    });
+
+    out.appendChild(card);
+  });
 }
 
+/* ============================================
+   СТАТИСТИКА
+   ============================================ */
+
+function updateStats(){
+  const total = currentWords.length;
+
+  document.getElementById("solvedStat").textContent = `${solvedCount}/${total}`;
+
+  const bar = document.getElementById("progressBar");
+  const fill = document.getElementById("progressFill");
+  if(total > 0){
+    bar.classList.add("visible");
+    fill.style.width = (solvedCount / total * 100) + "%";
+  } else {
+    bar.classList.remove("visible");
+    fill.style.width = "0%";
+  }
+
+  const sb = document.getElementById("statsBar");
+  sb.classList.add("visible");
+
+  const scoreWrap = document.getElementById("scoreStatWrap");
+  const streakWrap = document.getElementById("streakStatWrap");
+  if(document.getElementById("optScore").checked){
+    scoreWrap.style.display = "";
+    streakWrap.style.display = "";
+    document.getElementById("scoreStat").textContent = score;
+    document.getElementById("streakStat").textContent = streak;
+  } else {
+    scoreWrap.style.display = "none";
+    streakWrap.style.display = "none";
+  }
 }
 
+/* ============================================
+   ТАЙМЕР
+   ============================================ */
+
+function startTimerIfNeeded(){
+  const wrap = document.getElementById("timerStatWrap");
+  if(document.getElementById("optTimer").checked){
+    wrap.style.display = "";
+    timeLeft = +document.getElementById("timerSec").value;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      updateTimerDisplay();
+      if(timeLeft <= 10 && timeLeft > 0){
+        beep(880, 0.05, 'sine', 0.05);
+      }
+      if(timeLeft <= 0){
+        stopTimer();
+        finishByTime();
+      }
+    }, 1000);
+  } else {
+    wrap.style.display = "none";
+  }
 }
 
-out.textContent = result
+function stopTimer(){
+  if(timerInterval){
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
 }
 
-function regenerate(){
-generate()
+function updateTimerDisplay(){
+  const m = Math.floor(timeLeft / 60);
+  const s = timeLeft % 60;
+  const el = document.getElementById("timerStat");
+  el.textContent = `${m}:${String(s).padStart(2, '0')}`;
+  if(timeLeft <= 15){
+    el.classList.add("warn");
+  } else {
+    el.classList.remove("warn");
+  }
 }
 
+/* ============================================
+   ЗАВЕРШЕНИЕ
+   ============================================ */
+
+function checkFinish(){
+  if(solvedCount >= currentWords.length){
+    stopTimer();
+    setTimeout(() => showResult(false), 600);
+  }
+}
+
+function finishByTime(){
+  document.querySelectorAll(".word-card").forEach(card => {
+    if(!card.classList.contains("solved")){
+      card.classList.add("solved", "failed", "flipped");
+      card.querySelector(".back-status").textContent = "Время вышло";
+    }
+  });
+  gameActive = false;
+  setTimeout(() => showResult(true), 500);
+}
+
+function showResult(timeout){
+  sfxWin();
+
+  const total = currentWords.length;
+  const banner = document.getElementById("resultBanner");
+  const title = document.getElementById("resultTitle");
+  const subtitle = document.getElementById("resultSubtitle");
+  const statsEl = document.getElementById("resultStats");
+
+  const percent = Math.round(solvedCount / total * 100);
+
+  let titleIcon = ICONS.muscle;
+  let titleText = "Попробуй ещё!";
+
+  if(timeout){
+    titleIcon = ICONS.timer;
+    titleText = "Время вышло!";
+  } else if(percent === 100){
+    titleIcon = ICONS.trophy;
+    titleText = "Идеально!";
+  } else if(percent >= 70){
+    titleIcon = ICONS.star;
+    titleText = "Отлично!";
+  } else if(percent >= 40){
+    titleIcon = ICONS.thumbsUp;
+    titleText = "Хорошо!";
+  }
+
+  title.innerHTML = `${titleIcon}${titleText}`;
+  subtitle.textContent = `Разгадано ${solvedCount} из ${total} (${percent}%)`;
+
+  let statsHtml = "";
+  if(document.getElementById("optScore").checked){
+    statsHtml += `
+      <div class="result-stat">
+        <div class="r-label">Очки</div>
+        <div class="r-value">${score}</div>
+      </div>
+      <div class="result-stat">
+        <div class="r-label">Макс. серия</div>
+        <div class="r-value">${maxStreak}</div>
+      </div>
+    `;
+  }
+  if(document.getElementById("optTimer").checked){
+    statsHtml += `
+      <div class="result-stat">
+        <div class="r-label">Время</div>
+        <div class="r-value">${timeLeft > 0 ? 'Осталось' : 'Вышло'}</div>
+      </div>
+    `;
+  }
+  statsEl.innerHTML = statsHtml;
+
+  banner.classList.add("visible");
+  banner.scrollIntoView({behavior: "smooth", block: "nearest"});
+}
+
+function hideResult(){
+  document.getElementById("resultBanner").classList.remove("visible");
+}
+
+/* ============================================
+   UI
+   ============================================ */
+
+function goBack(){
+  location.href = "index.html";
+}
+
+function togglePanel(){
+  document.getElementById("panel").classList.toggle("hidden");
+}
+
+document.getElementById("level").addEventListener("input", e => {
+  document.getElementById("lvlVal").textContent = e.target.value;
+  if(currentWords.length && !document.getElementById("resultBanner").classList.contains("visible")){
+    currentLevel = +e.target.value;
+    reshuffle();
+  }
+});
+
+document.getElementById("count").addEventListener("input", e => {
+  document.getElementById("countVal").textContent = e.target.value;
+});
+
+document.getElementById("size").addEventListener("input", e => {
+  document.getElementById("sizeVal").textContent = e.target.value;
+  document.querySelectorAll(".word-card").forEach(card => {
+    const front = card.querySelector(".card-face.front");
+    front.style.setProperty("--fsize", e.target.value + "px");
+  });
+});
+
+document.getElementById("font").addEventListener("change", e => {
+  document.querySelectorAll(".word-card").forEach(card => {
+    const front = card.querySelector(".card-face.front");
+    front.style.fontFamily = e.target.value;
+  });
+});
+
+document.getElementById("length").addEventListener("change", generate);
+
+document.getElementById("timerSec").addEventListener("input", e => {
+  document.getElementById("timerSecVal").textContent = e.target.value;
+});
+
+document.getElementById("optTimer").addEventListener("change", () => {
+  updateStats();
+});
+
+document.getElementById("optScore").addEventListener("change", () => {
+  updateStats();
+});
+
+/* ============================================
+   СТАРТ
+   ============================================ */
+
+loadBase();
+
+/* Перерисовка при смене темы — чтобы карточки перекрасились */
+const observer = new MutationObserver(() => {
+  if(currentWords.length){
+    renderCards();
+  }
+});
+observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 </script>
-<script src="../menu/menu.js"></script>
 
+<!-- ==== БОКОВОЕ МЕНЮ NEUROX ==== -->
+
+
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
 </body>
 </html>

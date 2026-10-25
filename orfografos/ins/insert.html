@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Вставь букву · тренажёр - NeuroX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1E3F8A; --blue-soft:#3A5FA8; --blue-pale:#E8EEF9;
+  --orange:#FF6A00; --orange-soft:#FF8B3D; --orange-dark:#C85100; --orange-pale:#FFEADB;
+  --bg:#F4F6FB; --text:#24324B; --text-dim:#6B7280;
+  --border:rgba(30,63,138,.10); --panel:#FFFFFF; --line:#C3CCE0;
+  --good:#3D6B34; --good-bg:#E6F3E2; --bad:#A03030; --bad-bg:#FBE8E8;
+  --mono:'JetBrains Mono','SF Mono','Consolas','Courier New',monospace;
+}
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body{
+  margin:0; font-family:"Nunito Sans",sans-serif;
+  background-color:var(--bg);
+  background-image:radial-gradient(circle, rgba(30,63,138,.07) 1.5px, transparent 1.6px);
+  background-size:26px 26px; color:var(--text);
+  min-height:100vh; padding-bottom:80px;
+}
+.mode-chooser{
+  position:fixed; inset:0; z-index:2000;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,106,0,.15), transparent 45%),
+    radial-gradient(circle at 80% 80%, rgba(30,63,138,.25), transparent 50%),
+    linear-gradient(135deg, #1E3F8A 0%, #24324B 100%);
+  display:flex; align-items:center; justify-content:center; padding:20px;
+}
+body.mode-trainer .mode-chooser,
+body.mode-theory .mode-chooser,
+body.mode-sprint .mode-chooser{ display:none; }
+.mode-chooser-inner{ max-width:960px; width:100%; text-align:center; }
+.mode-chooser-title{
+  font-family:"Fredoka",sans-serif; font-size:44px; font-weight:700;
+  color:#fff; margin:0 0 8px; letter-spacing:.5px; text-shadow:0 4px 20px rgba(0,0,0,.3);
+}
+.mode-chooser-sub{ color:rgba(255,255,255,.75); font-size:17px; font-weight:600; margin:0 0 40px; }
+.mode-cards{ display:grid; grid-template-columns:repeat(3, 1fr); gap:18px; margin-bottom:32px; }
+.mode-card{
+  background:#fff; border:3px solid transparent; border-radius:24px;
+  padding:30px 22px 28px; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:12px;
+  font-family:inherit; color:var(--text); text-align:center;
+  transition:transform .2s, box-shadow .2s, border-color .2s;
+  box-shadow:0 12px 40px rgba(0,0,0,.25);
+}
+.mode-card:hover{ transform:translateY(-6px) scale(1.02); box-shadow:0 20px 50px rgba(0,0,0,.35); border-color:var(--orange); }
+.mode-icon{ font-size:56px; line-height:1; }
+.mode-name{ font-family:"Fredoka",sans-serif; font-size:22px; font-weight:700; color:var(--blue); margin:0; }
+.mode-desc{ font-size:13px; font-weight:600; color:var(--text-dim); line-height:1.45; }
+.mode-remember{
+  background:transparent; border:none; color:rgba(255,255,255,.7);
+  font:inherit; font-size:14px; font-weight:700; cursor:pointer;
+  padding:10px 16px; border-radius:10px;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.mode-remember:hover{ background:rgba(255,255,255,.1); color:#fff; }
+.mode-remember .mark{
+  display:inline-flex; width:18px; height:18px; border-radius:5px;
+  background:rgba(255,255,255,.2); align-items:center; justify-content:center; font-size:13px;
+}
+.mode-remember.on .mark{ background:var(--orange); color:#fff; }
+@media (max-width:760px){
+  .mode-chooser-title{ font-size:32px; }
+  .mode-cards{ grid-template-columns:1fr; gap:14px; }
+  .mode-card{ padding:22px 18px 20px; }
+  .mode-icon{ font-size:44px; }
+  .mode-name{ font-size:20px; }
+}
+body.mode-theory .trainer-only, body.mode-theory .sprint-only{ display:none !important; }
+body.mode-trainer .theory-only, body.mode-trainer .sprint-only{ display:none !important; }
+body.mode-sprint .theory-only, body.mode-sprint .trainer-only{ display:none !important; }
+
+.topbar{
+  position:sticky; top:0; z-index:100; background:var(--blue); color:#fff;
+  padding:18px 22px 20px; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 6px 20px rgba(30,63,138,.25); overflow:hidden;
+}
+.topbar::before,.topbar::after{ content:''; position:absolute; border-radius:50%; pointer-events:none; }
+.topbar::before{ width:220px; height:220px; top:-120px; right:-60px; background:rgba(255,106,0,.22); }
+.topbar::after{ width:170px; height:170px; bottom:-130px; left:40px; background:rgba(255,255,255,.09); }
+.topbar-title{
+  position:relative; z-index:1; font-family:"Fredoka",sans-serif;
+  font-size:23px; font-weight:700; letter-spacing:.4px; text-shadow:0 2px 6px rgba(0,0,0,.15);
+}
+.topbar-title .mode-badge{
+  display:inline-block; padding:3px 10px; margin-left:10px;
+  background:rgba(255,255,255,.2); border-radius:8px;
+  font-family:"Nunito Sans",sans-serif; font-size:12px; font-weight:800;
+  letter-spacing:.5px; text-transform:uppercase; vertical-align:middle;
+}
+.back-btn,.theme-btn,.switch-btn{
+  position:absolute; top:50%; transform:translateY(-50%);
+  height:44px; border:none; border-radius:14px;
+  background:rgba(255,255,255,.18); color:#fff; cursor:pointer;
+  transition:.22s; z-index:2; display:flex; align-items:center; justify-content:center; padding:0 14px;
+  font:inherit; font-size:13px; font-weight:800;
+}
+.back-btn{ left:16px; width:44px; font-size:20px; padding:0; }
+.theme-btn{ right:16px; width:44px; font-size:18px; padding:0; }
+.switch-btn{ right:70px; gap:6px; }
+.back-btn:hover,.theme-btn:hover,.switch-btn:hover{ background:var(--orange); }
+
+.achievements-strip{
+  display:flex; gap:6px; padding:8px 16px; background:#fff;
+  border-bottom:2px solid var(--border); overflow-x:auto; scrollbar-width:none;
+}
+.achievements-strip::-webkit-scrollbar{ display:none; }
+.achievements-strip .ach{
+  display:inline-flex; align-items:center; gap:5px; padding:5px 10px;
+  background:var(--blue-pale); border-radius:10px; font-size:11.5px;
+  font-weight:800; color:var(--blue); white-space:nowrap; flex:none;
+}
+.achievements-strip .ach.locked{ opacity:.35; }
+.achievements-strip .ach .ico{ font-size:14px; }
+
+.student-bar{
+  background:#fff; border-bottom:2px solid var(--border);
+  padding:10px 16px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+  box-shadow:0 4px 12px rgba(30,63,138,.06);
+}
+.student-bar .label{ font-size:13px; font-weight:800; color:var(--text-dim); }
+.student-bar select{
+  font:inherit; font-size:13px; font-weight:700; color:var(--blue);
+  background:var(--blue-pale); border:2px solid transparent; border-radius:9px;
+  padding:8px 12px; outline:none; cursor:pointer; max-width:200px;
+}
+.student-bar button.mini{
+  font:inherit; font-size:13px; font-weight:800; padding:8px 12px;
+  border:2px solid var(--border); border-radius:9px; background:#fff;
+  color:var(--blue); cursor:pointer;
+}
+.student-bar button.mini:hover{ background:var(--blue-pale); }
+.student-bar .spacer{ flex:1; }
+
+.container{ max-width:1050px; margin:0 auto; padding:18px 20px 40px; }
+
+.toggle-btn{
+  display:block; width:100%; padding:12px 18px; margin-bottom:14px; background:#fff;
+  color:var(--blue); border:2px solid var(--border); border-radius:16px;
+  font-family:"Nunito Sans",sans-serif; font-size:14px; font-weight:800;
+  cursor:pointer; box-shadow:0 4px 0 rgba(30,63,138,.08); text-align:left;
+}
+.toggle-btn:hover{ background:var(--blue-pale); }
+
+#panel{
+  background:var(--panel); border:2px solid var(--border); border-radius:22px;
+  padding:20px 22px; margin-bottom:14px;
+  box-shadow:0 6px 0 rgba(30,63,138,.10), 0 14px 26px rgba(30,63,138,.08);
+}
+#panel.hidden{ display:none; }
+
+.section-head{
+  font-family:"Fredoka",sans-serif; font-size:16px; font-weight:700;
+  color:var(--blue); margin:18px 0 10px; display:flex; align-items:center; gap:8px;
+}
+.section-head:first-child{ margin-top:0; }
+.section-head .badge{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:26px; height:26px; border-radius:8px; background:var(--blue-pale);
+  color:var(--blue); font-size:14px; font-weight:700;
+}
+
+.theme-bar{
+  display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;
+  padding:12px 14px; background:#fff; border:2px solid var(--border);
+  border-radius:16px; box-shadow:0 4px 0 rgba(30,63,138,.06);
+}
+.theme-bar button{
+  font-family:inherit; font-size:13px; font-weight:800; padding:8px 14px;
+  border:2px solid var(--border); border-radius:12px; background:#fff;
+  color:var(--blue); cursor:pointer; transition:.15s;
+}
+.theme-bar button:hover{ background:var(--blue-pale); border-color:var(--blue); }
+.theme-bar button.active{ background:var(--blue); color:#fff; border-color:var(--blue); }
+.theme-bar .count{
+  margin-left:auto; align-self:center; font-size:12px; font-weight:800;
+  color:var(--text-dim); padding-right:6px;
+}
+
+.settings{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px 22px; }
+.settings .full{ grid-column:1 / -1; }
+.settings label{ display:block; font-size:14px; font-weight:800; color:var(--blue); margin-bottom:2px; }
+.settings input[type=text]{ width:100%; font-family:"Nunito Sans",sans-serif; font-size:14px; font-weight:700;
+  color:var(--blue); background:var(--blue-pale); border:2px solid transparent; border-radius:12px;
+  padding:10px 14px; outline:none; margin-top:4px; }
+.settings input[type=range]{ width:100%; accent-color:var(--orange); height:26px; margin-top:4px; cursor:pointer; }
+.settings .check-row{
+  display:flex; align-items:center; gap:8px; font-size:14px; font-weight:700;
+  color:var(--blue); cursor:pointer; padding:6px 0;
+}
+.settings .check-row input[type=checkbox]{ accent-color:var(--orange); width:18px; height:18px; margin:0; cursor:pointer; flex:none; }
+
+.profile-row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+.profile-row button{
+  font:inherit; font-size:13px; font-weight:800; padding:8px 14px;
+  border:2px solid var(--border); border-radius:10px; background:#fff;
+  color:var(--blue); cursor:pointer;
+}
+.profile-row button:hover{ background:var(--blue-pale); }
+.profile-row button.danger{ color:#A03030; border-color:rgba(160,48,48,.25); }
+
+.controls{ display:flex; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
+.controls button{
+  flex:1; min-width:130px; padding:13px 18px; border:none; border-radius:14px;
+  background:var(--orange); color:#fff; font-family:"Nunito Sans",sans-serif;
+  font-size:14px; font-weight:800; cursor:pointer;
+  box-shadow:0 4px 0 var(--orange-dark); transition:.15s;
+}
+.controls button:hover{ background:var(--orange-soft); }
+.controls button.primary{ background:var(--blue); box-shadow:0 4px 0 #12295C; flex:1.4; }
+.controls button.ghost{ background:#fff; color:var(--blue); box-shadow:0 4px 0 rgba(30,63,138,.10); }
+
+.progress-wrap{
+  background:#fff; border:2px solid var(--border); border-radius:12px;
+  padding:4px; margin-bottom:14px; box-shadow:0 4px 0 rgba(30,63,138,.06); display:none;
+}
+.progress-wrap.on{ display:block; }
+.progress-bar{ height:12px; border-radius:8px; background:var(--blue-pale); overflow:hidden; }
+.progress-fill{
+  height:100%; width:0; border-radius:8px;
+  background:linear-gradient(90deg,var(--orange),var(--blue));
+  transition:width .3s ease;
+}
+
+.stats{ display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; justify-content:flex-end; }
+.stat{
+  display:inline-flex; align-items:center; gap:6px; padding:8px 14px;
+  background:#fff; border:2px solid var(--border); border-radius:12px;
+  font-family:var(--mono); font-size:14px; font-weight:700; color:var(--text-dim);
+  box-shadow:0 4px 0 rgba(30,63,138,.06);
+}
+.stat b{ color:var(--blue); font-weight:700; }
+.stat.hidden{ display:none; }
+.stat.record.lvl{ border-color:rgba(61,107,52,.35); }
+.stat.record.streak{ border-color:rgba(200,81,0,.35); }
+
+.sheet{
+  background:#fff; border-radius:18px; padding:30px 34px 34px; margin-bottom:22px;
+  box-shadow:0 6px 0 rgba(30,63,138,.10), 0 14px 26px rgba(30,63,138,.08);
+  position:relative;
+}
+.sheet-head{ text-align:center; margin-bottom:18px; }
+.sheet-title{
+  font-family:"Fredoka",sans-serif; font-size:26px; font-weight:700;
+  color:var(--blue); margin:0 0 14px; letter-spacing:.4px;
+}
+.sheet-fields{
+  display:flex; justify-content:space-between; gap:28px; font-size:13px;
+  font-weight:800; color:var(--text-dim); margin-bottom:12px;
+}
+.sheet-fields span{ display:flex; align-items:flex-end; gap:6px; flex:1; }
+.sheet-fields i{ flex:1; border-bottom:1.4px solid var(--line); height:15px; font-style:normal; }
+.sheet-instruction{
+  font-size:13px; font-weight:700; color:var(--text-dim); padding:9px 14px;
+  background:#F7F9FE; border-radius:10px; margin:0; text-align:left;
+}
+
+.problems-grid{
+  display:grid; grid-template-columns:repeat(var(--cols,2), minmax(0,1fr));
+  gap:14px; margin-top:18px;
+}
+
+.problem{
+  position:relative; border:2px solid var(--border); border-radius:14px;
+  padding:20px 14px 16px; background:#FBFDFF;
+  display:flex; flex-direction:column; align-items:center; gap:12px;
+  transition:border-color .2s, background .2s;
+}
+.problem.correct{ border-color:#7AB86C; background:var(--good-bg); }
+.problem.wrong{ border-color:#E57373; background:var(--bad-bg); }
+.problem .num{
+  position:absolute; top:8px; right:12px; font-size:11px; font-weight:800; color:#98A3BF;
+}
+
+.word-display{
+  display:flex; align-items:baseline; justify-content:center; flex-wrap:wrap;
+  gap:2px; font-family:var(--mono); font-size:34px; font-weight:800;
+  letter-spacing:1px; color:var(--blue); text-align:center;
+  padding:6px 0; line-height:1.3;
+}
+
+.gap-input{
+  font-family:var(--mono);
+  font-size:34px;
+  font-weight:800;
+  letter-spacing:2px;
+  text-align:center;
+  color:var(--orange);
+  background:transparent;
+  border:none;
+  border-bottom:4px solid var(--orange);
+  outline:none;
+  padding:0 8px;
+  transition:.15s;
+  vertical-align:baseline;
+  min-width:1.6ch;
+}
+.gap-input:focus{ border-color:var(--blue); color:var(--blue); background:rgba(30,63,138,.04); }
+.gap-input.correct{ color:var(--good); border-color:var(--good); }
+.gap-input.wrong{ color:var(--bad); border-color:var(--bad); }
+.gap-input:disabled{ cursor:default; }
+.gap-input::placeholder{ color:rgba(255,106,0,.35); font-weight:700; }
+
+.explain{
+  font-size:13.5px; font-weight:700; text-align:center; min-height:20px;
+  color:var(--text-dim); padding:0 4px; line-height:1.4;
+}
+.explain.good{ color:var(--good); }
+.explain.bad{ color:var(--bad); }
+
+.sprint-card{
+  background:#fff; border-radius:18px; padding:26px; margin-bottom:16px;
+  box-shadow:0 6px 0 rgba(30,63,138,.10), 0 14px 26px rgba(30,63,138,.08);
+  text-align:center;
+}
+.hearts{ display:flex; justify-content:center; gap:6px; margin-bottom:12px; font-size:24px; }
+.sprint-timer{ height:10px; border-radius:10px; background:var(--blue-pale); overflow:hidden; margin-bottom:18px; }
+.sprint-fill{
+  height:100%; width:100%;
+  background:linear-gradient(90deg,#4ade80,#fbbf24,#f87171);
+  transition:width .1s linear;
+}
+.sprint-word{
+  display:flex; align-items:baseline; justify-content:center; flex-wrap:wrap;
+  gap:2px; font-family:var(--mono); font-size:38px; font-weight:800;
+  letter-spacing:2px; color:var(--blue); margin:14px 0 6px;
+}
+.sprint-input{
+  font-family:var(--mono);
+  font-size:38px;
+  font-weight:800;
+  letter-spacing:2px;
+  text-align:center;
+  color:var(--orange);
+  background:transparent;
+  border:none;
+  border-bottom:4px solid var(--orange);
+  outline:none;
+  padding:0 8px;
+  min-width:1.6ch;
+}
+.sprint-input:focus{ border-color:var(--blue); color:var(--blue); background:rgba(30,63,138,.04); }
+.sprint-input.correct{ color:var(--good); border-color:var(--good); }
+.sprint-input.wrong{ color:var(--bad); border-color:var(--bad); }
+.sprint-input:disabled{ cursor:default; }
+.sprint-input::placeholder{ color:rgba(255,106,0,.35); font-weight:700; }
+.sprint-feedback{ min-height:22px; font-size:14px; font-weight:800; margin-top:12px; }
+
+.btn-main{
+  display:block; margin:22px auto 0; padding:16px 40px;
+  border:none; border-radius:14px; background:var(--orange); color:#fff;
+  font-family:inherit; font-size:17px; font-weight:800; cursor:pointer;
+  box-shadow:0 4px 0 var(--orange-dark);
+}
+
+.acc-controls{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+.acc-controls button{
+  font-family:inherit; font-size:13px; font-weight:800; padding:10px 16px;
+  border:2px solid var(--border); border-radius:12px; background:#fff;
+  color:var(--blue); cursor:pointer; transition:.15s;
+}
+.acc-controls button:hover{ background:var(--blue-pale); border-color:var(--blue); }
+.acc-list{ display:flex; flex-direction:column; gap:8px; }
+.acc-item{
+  border:2px solid var(--border); border-radius:14px;
+  background:#FBFDFF; overflow:hidden;
+  transition:border-color .2s, box-shadow .2s;
+}
+.acc-item.open{ border-color:var(--blue); box-shadow:0 6px 20px rgba(30,63,138,.10); }
+.acc-head{
+  width:100%; display:flex; align-items:center; gap:12px;
+  padding:14px 18px; border:none; background:transparent; cursor:pointer;
+  font-family:"Fredoka",sans-serif; font-size:16px; font-weight:600;
+  color:var(--blue); text-align:left; transition:.15s;
+}
+.acc-head:hover{ background:rgba(30,63,138,.04); }
+.acc-emoji{ font-size:20px; flex:none; }
+.acc-title{ flex:1; }
+.acc-arrow{ flex:none; font-size:18px; color:var(--text-dim); transition:transform .25s; }
+.acc-item.open .acc-arrow{ transform:rotate(180deg); color:var(--blue); }
+.acc-body{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .3s ease; }
+.acc-item.open .acc-body{ grid-template-rows:1fr; }
+.acc-body > div{ overflow:hidden; padding:0 18px; }
+.acc-item.open .acc-body > div{ padding:0 18px 18px; }
+.acc-body p{ font-size:14px; line-height:1.55; margin:0 0 8px; color:var(--text); }
+.acc-body p:last-child{ margin-bottom:0; }
+.acc-body p + p{ margin-top:8px; }
+.acc-body .ex{
+  font-family:var(--mono); font-size:15px; font-weight:700;
+  color:var(--blue); padding:10px 14px; margin:10px 0;
+  background:rgba(255,204,0,.08); border-left:4px solid var(--orange);
+  border-radius:8px; line-height:1.7;
+}
+.acc-body .ex b{ color:var(--orange); font-weight:900; }
+
+.modal{
+  position:fixed; inset:0; z-index:300; display:none; align-items:center;
+  justify-content:center; background:rgba(30,63,138,.35); padding:20px;
+}
+.modal.on{ display:flex; }
+.modal-box{
+  background:#fff; border-radius:20px; padding:24px; max-width:680px; width:100%;
+  max-height:85vh; overflow-y:auto; position:relative;
+}
+.modal-title{ font-family:"Fredoka",sans-serif; font-size:22px; color:var(--blue); margin:0 0 16px; }
+.modal-close{ position:absolute; top:16px; right:16px; border:none; background:transparent; font-size:24px; color:var(--text-dim); cursor:pointer; }
+.hist-table{ width:100%; border-collapse:collapse; font-size:13px; }
+.hist-table th, .hist-table td{ text-align:left; padding:8px 6px; border-bottom:1px solid var(--border); }
+.hist-table th{ color:var(--text-dim); font-weight:800; font-size:11.5px; text-transform:uppercase; }
+.hist-table td b{ color:var(--blue); }
+
+.signature{ position:fixed; bottom:8px; right:14px; font-size:12px; font-weight:600; color:#98A3BF; opacity:.8; pointer-events:none; }
+
+[data-theme="dark"]{
+  --bg:#131824; --text:#E5E9F0; --text-dim:#94A3B8;
+  --panel:#1C2231; --border:rgba(255,255,255,.08); --line:#374151;
+  --blue:#8AB4FF; --blue-soft:#A8C7FF; --blue-pale:#1E2637;
+  --orange:#FF9550; --orange-soft:#FFA56A; --orange-dark:#8B4A20; --orange-pale:#2A1F17;
+  --good:#6FB25E; --good-bg:#1E2F1A; --bad:#E08B8B; --bad-bg:#2F1E1E;
+}
+[data-theme="dark"] body{ background-color:var(--bg); }
+[data-theme="dark"] .topbar{ background:#1A2440; }
+[data-theme="dark"] .student-bar, [data-theme="dark"] .achievements-strip{ background:#1C2231; }
+[data-theme="dark"] .sheet,[data-theme="dark"] #panel,[data-theme="dark"] .stat,
+[data-theme="dark"] .progress-wrap,[data-theme="dark"] .toggle-btn,
+[data-theme="dark"] .theme-bar, [data-theme="dark"] .theme-bar button,
+[data-theme="dark"] .controls button.ghost,[data-theme="dark"] .student-bar button.mini,
+[data-theme="dark"] .modal-box,[data-theme="dark"] .problem,[data-theme="dark"] .sprint-card,
+[data-theme="dark"] .acc-controls button, [data-theme="dark"] .acc-item{ background:#1C2231; color:var(--text); }
+[data-theme="dark"] .settings input{ background:#232A3D; }
+[data-theme="dark"] .sheet-instruction{ background:#232A3D; color:var(--text-dim); }
+[data-theme="dark"] .acc-body .ex{ background:rgba(255,204,0,.05); }
+
+@media (max-width:760px){
+  .topbar{ padding:12px 14px 14px; }
+  .topbar-title{ font-size:15px; }
+  .topbar-title .mode-badge{ font-size:10px; padding:2px 7px; margin-left:6px; }
+  .back-btn,.theme-btn{ width:38px; height:38px; font-size:16px; border-radius:12px; }
+  .back-btn{ left:10px; } .theme-btn{ right:10px; }
+  .switch-btn{ right:56px; height:38px; padding:0 10px; font-size:11px; border-radius:12px; }
+  .container{ padding:14px 10px 60px; }
+  #panel{ position:fixed; inset:0; z-index:200; border-radius:0; margin:0; padding:16px 14px 100px; overflow-y:auto; box-shadow:none; border:none; }
+  .settings{ grid-template-columns:1fr; gap:12px; }
+  .controls button{ font-size:13px; padding:14px 12px; min-width:calc(50% - 4px); flex:1 1 calc(50% - 4px); }
+  .controls button.primary{ flex:1 1 100%; }
+  .theme-bar{ padding:10px 10px; gap:6px; }
+  .theme-bar button{ font-size:11.5px; padding:6px 10px; }
+  .theme-bar .count{ font-size:11px; }
+  .problems-grid{ grid-template-columns:1fr !important; gap:12px; }
+  .sheet{ padding:18px 12px 20px; border-radius:14px; }
+  .sheet-title{ font-size:19px; }
+  .word-display{ font-size:24px; }
+  .gap-input{ font-size:24px; }
+  .sprint-word{ font-size:26px; }
+  .sprint-input{ font-size:26px; }
+  .sheet-fields{ flex-direction:column; gap:10px; }
+  .acc-head{ font-size:14px; padding:12px 14px; }
+  .acc-emoji{ font-size:17px; }
+  .acc-arrow{ font-size:16px; }
+  .acc-body > div{ padding:0 14px; }
+  .acc-item.open .acc-body > div{ padding:0 14px 14px; }
+  .acc-body p{ font-size:13px; }
+  .acc-body .ex{ font-size:13px; }
+}
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+}
+</style>
+<link rel="stylesheet" href="../../assets/menu-drawer.css">
+</head>
+<body>
+
+<div class="mode-chooser" id="modeChooser">
+  <div class="mode-chooser-inner">
+    <h1 class="mode-chooser-title">Вставь букву</h1>
+    <p class="mode-chooser-sub">25 тем орфографии 1–4 класса · заполни пропуск сам</p>
+    <div class="mode-cards">
+      <button class="mode-card" onclick="pickMode('trainer')">
+        <div class="mode-icon">✍️</div>
+        <div class="mode-name">Тренажёр</div>
+        <div class="mode-desc">Впиши букву, буквы или слово — и нажми Enter. Две попытки на каждое.</div>
+      </button>
+      <button class="mode-card" onclick="pickMode('sprint')">
+        <div class="mode-icon">⚡</div>
+        <div class="mode-name">Спринт</div>
+        <div class="mode-desc">На время. 3 жизни, комбо, ускорение. Только одна попытка!</div>
+      </button>
+      <button class="mode-card" onclick="pickMode('theory')">
+        <div class="mode-icon">📖</div>
+        <div class="mode-name">Справочник</div>
+        <div class="mode-desc">Правила по темам — раскрывай и читай как удобно.</div>
+      </button>
+    </div>
+    <button class="mode-remember" id="rememberBtn" onclick="toggleRemember()">
+      <span class="mark" id="rememberMark">✓</span>
+      <span>Не спрашивать при следующем входе</span>
+    </button>
+  </div>
+</div>
+
+<div class="topbar">
+  <button class="back-btn" onclick="goBack()">☰</button>
+  <div class="topbar-title">
+    ✍️ Вставь букву
+    <span class="mode-badge" id="modeBadge">—</span>
+  </div>
+  <button class="switch-btn" onclick="openModeChooser()">🔄 Сменить</button>
+  <button class="theme-btn" onclick="toggleTheme()">🌙</button>
+</div>
+
+<div class="achievements-strip trainer-only sprint-only" id="achStrip"></div>
+
+<div class="student-bar trainer-only sprint-only">
+  <span class="label">Ученик:</span>
+  <select id="studentSelect"></select>
+  <button class="mini" onclick="addStudent()">+ ученик</button>
+  <span class="spacer"></span>
+  <button class="mini" onclick="openHistory()">📊 История</button>
+</div>
+
+<div class="container">
+  <button class="toggle-btn trainer-only sprint-only" onclick="togglePanel()">⚙ Настройки листа</button>
+
+  <div id="panel" class="trainer-only sprint-only hidden">
+    <div class="settings">
+      <div class="full"><div class="section-head"><span class="badge">📄</span> Лист</div></div>
+      <div class="full"><label>Заголовок</label>
+        <input type="text" id="titleInput" value="Вставь букву" maxlength="60">
+      </div>
+      <div><label>Слов <span id="countVal">10</span></label>
+        <input type="range" id="count" min="4" max="30" value="10">
+      </div>
+      <div><label>Колонок <span id="colsVal">2</span></label>
+        <input type="range" id="cols" min="1" max="3" value="2">
+      </div>
+      <div class="full">
+        <label class="check-row"><input type="checkbox" id="useTimer" checked> Таймер</label>
+        <label class="check-row"><input type="checkbox" id="optName" checked> Поля «Имя» и «Дата»</label>
+        <label class="check-row"><input type="checkbox" id="fbProgress" checked> Прогресс-бар</label>
+        <label class="check-row"><input type="checkbox" id="fbSound"> Звук</label>
+        <label class="check-row"><input type="checkbox" id="showExplain" checked> Показывать правило после ответа</label>
+        <label class="check-row"><input type="checkbox" id="retryAllowed" checked> Разрешать вторую попытку</label>
+      </div>
+
+      <div class="full"><div class="section-head"><span class="badge">💾</span> Профили</div>
+        <label>Название</label>
+        <input type="text" id="profileName" placeholder="например, «2 класс · жи-ши»" maxlength="40">
+        <div class="profile-row">
+          <button type="button" onclick="saveProfile()">💾 Сохранить</button>
+          <select id="profileSelect" style="flex:1;min-width:160px;margin-top:0;padding:8px 12px;border-radius:10px;border:2px solid var(--border);background:var(--blue-pale);color:var(--blue);font-weight:700"></select>
+          <button type="button" onclick="loadProfile()">📂 Загрузить</button>
+          <button type="button" class="danger" onclick="deleteProfile()">🗑</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theory-only" id="theoryBlock" style="display:none">
+    <div class="sheet">
+      <div class="sheet-head">
+        <h1 class="sheet-title">Справочник по орфографии</h1>
+        <p style="color:var(--text-dim);font-weight:700;font-size:14px;margin-top:-6px">Правила, исключения, алгоритмы — 1–4 класс</p>
+      </div>
+
+      <div class="acc-controls">
+        <button type="button" onclick="accOpenAll()">📖 Раскрыть всё</button>
+        <button type="button" onclick="accCloseAll()">📕 Свернуть всё</button>
+      </div>
+
+      <div class="acc-list" id="accList">
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🟡</span><span class="acc-title">ЖИ-ШИ пиши с И</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>После <b>Ж</b> и <b>Ш</b> всегда пишем <b>И</b>, хотя слышим [Ы].</p>
+            <div class="ex">ж<b>и</b>раф · маш<b>и</b>на · ш<b>и</b>шка · лыж<b>и</b> · уж<b>и</b> · ж<b>и</b>знь</div>
+            <p><b>Исключений нет.</b></p>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🟢</span><span class="acc-title">ЧА-ЩА пиши с А</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>После <b>Ч</b> и <b>Щ</b> всегда пишем <b>А</b>, хотя слышим [Я].</p>
+            <div class="ex">ч<b>а</b>шка · рощ<b>а</b> · туч<b>а</b> · площ<b>а</b>дка</div>
+            <p><b>Исключений нет.</b></p>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🔵</span><span class="acc-title">ЧУ-ЩУ пиши с У</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>После <b>Ч</b> и <b>Щ</b> всегда пишем <b>У</b>, хотя слышим [Ю].</p>
+            <div class="ex">ч<b>у</b>до · щ<b>у</b>ка · ч<b>у</b>лок · тащ<b>у</b> · ищ<b>у</b></div>
+            <p><b>Исключений нет.</b></p>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">⚙️</span><span class="acc-title">ЖЮ / ШЮ — слова-исключения</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>Ю после Ж и Ш в русских словах не пишется. Но есть три заимствованных слова, где пишем Ю:</p>
+            <div class="ex">ж<b>ю</b>ри · брош<b>ю</b>ра · параш<b>ю</b>т</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🔴</span><span class="acc-title">ЧК-ЧН-НЧ-ЩН-РЩ — без мягкого знака</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>В этих сочетаниях мягкий знак <b>не пишем</b>.</p>
+            <div class="ex">руч<b>к</b>а · точ<b>н</b>ый · хищ<b>н</b>ик · гон<b>щ</b>ик</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🟣</span><span class="acc-title">-ТСЯ / -ТЬСЯ</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p><b>Что делает?</b> → <b>-тся</b> (без Ь). <b>Что делать?</b> → <b>-ться</b> (с Ь).</p>
+            <div class="ex">он уч<b>и</b>тся — надо уч<b>и</b>ться<br>он смеё<b>т</b>ся — надо смея<b>ть</b>ся</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🟣</span><span class="acc-title">Разделительный Ь</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p><b>Пишем:</b> после согласной, перед <b>Е, Ё, Ю, Я, И</b>, если это НЕ приставка.</p>
+            <div class="ex">сем<b>ь</b>я · в<b>ь</b>юга · ш<b>ь</b>ёт · обез<b>ь</b>яна</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🔴</span><span class="acc-title">Разделительный Ъ</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p><b>Пишем:</b> после приставки на согласную, перед корнем на <b>Е, Ё, Ю, Я</b>.</p>
+            <div class="ex">под<b>ъ</b>езд · с<b>ъ</b>ел · об<b>ъ</b>явил · под<b>ъ</b>ём</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🟢</span><span class="acc-title">Ь после шипящих (сущ.)</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p><b>Женский род</b> → <b>с Ь</b>. <b>Мужской род</b> → <b>без Ь</b>.</p>
+            <div class="ex">мыш<b>ь</b>, ноч<b>ь</b>, рож<b>ь</b> (ж.р.)<br>мяч, плащ, врач (м.р.)</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🟢</span><span class="acc-title">Ь в глаголах 2 лица</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>Глаголы 2 лица единственного числа (что делаешь? — ты) после шипящей всегда с Ь.</p>
+            <div class="ex">пиш<b>е</b>шь · ид<b>ё</b>шь · стуч<b>и</b>шь</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">⚙️</span><span class="acc-title">Удвоенные согласные</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p><b>1. Стык приставки и корня:</b></p>
+            <div class="ex">ра<b>сс</b>ада = рас + сад · ра<b>сс</b>каз = рас + сказ</div>
+            <p><b>2. Стык корня и суффикса:</b></p>
+            <div class="ex">осе<b>нн</b>ий = осень + н · дли<b>нн</b>ый = длина + н</div>
+            <p><b>3. Словарные (заимствованные):</b></p>
+            <div class="ex">кла<b>сс</b> · су<b>бб</b>ота · а<b>лл</b>ея · ру<b>сс</b>кий · програ<b>мм</b>а · хо<b>кк</b>ей · шо<b>сс</b>е · ва<b>нн</b>а · ка<b>сс</b>а · а<b>кк</b>уратный · а<b>пп</b>етит</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🟠</span><span class="acc-title">И/Ы после Ц</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p><b>В корне</b> — И: ц<b>и</b>рк, ц<b>и</b>фра.</p>
+            <p><b>В окончании</b> — Ы: огурц<b>ы</b>, птиц<b>ы</b>.</p>
+            <p><b>Исключения:</b> ц<b>ы</b>ган, ц<b>ы</b>плёнок, ц<b>ы</b>ц, ц<b>ы</b>кнуть, ц<b>ы</b>почки.</p>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🟡</span><span class="acc-title">О/Ё после шипящих в корне</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>Пишем <b>Ё</b>, если можно проверить словом с <b>Е</b>: ш<b>ё</b>пот → шептать.</p>
+            <p><b>Исключения:</b> ш<b>о</b>рох · ш<b>о</b>в · капюш<b>о</b>н · крыж<b>о</b>вник · ш<b>о</b>ссе · ш<b>о</b>колад · ш<b>о</b>фёр</p>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🟡</span><span class="acc-title">О/Е после шипящих и Ц в окончаниях</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p><b>Под ударением</b> — О. <b>Без ударения</b> — Е.</p>
+            <div class="ex">мяч<b>о</b>м · свеч<b>о</b>й — но: товарищ<b>е</b>м · рощ<b>е</b>й</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🟠</span><span class="acc-title">-ИК- / -ЕК-</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>Гласная <b>убегает</b> → -ЕК-, <b>остаётся</b> → -ИК-.</p>
+            <div class="ex">замоч<b>е</b>к → замочка · ключ<b>и</b>к → ключика</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🔴</span><span class="acc-title">Гласные в приставках</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>В приставках <b>за-, на-, до-, по-, про-, об-, от-, о-, под-, над-</b> гласная не меняется.</p>
+            <div class="ex">з<b>а</b>бежать · н<b>а</b>писать · д<b>о</b>читать · п<b>о</b>ставить</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🟢</span><span class="acc-title">Приставки на З/С</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>Перед <b>звонкой</b> → <b>З</b>. Перед <b>глухой</b> → <b>С</b>.</p>
+            <div class="ex">бе<b>з</b>жалостный · бе<b>с</b>конечный · и<b>з</b>дать · и<b>с</b>пугать</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">⚙️</span><span class="acc-title">Ы/И после приставок</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>После русской приставки на согласную И → Ы.</p>
+            <div class="ex">играть → с<b>ы</b>грать · искать → от<b>ы</b>скать</div>
+            <p><b>Исключения:</b> меж<b>и</b>нститутский, сверх<b>и</b>нтересный.</p>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🔴</span><span class="acc-title">Наречия на О/А</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>С приставками <b>из-, до-, с-</b> → А. С приставками <b>в-, на-, за-</b> → О.</p>
+            <div class="ex">издавн<b>а</b> · слев<b>а</b> — но: вправ<b>о</b> · налев<b>о</b></div>
+            <p><b>Исключения:</b> смолоду, сослепу, спьяну, сызнова.</p>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🟡</span><span class="acc-title">Соединительные О/Е</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p><b>О</b> — после твёрдой. <b>Е</b> — после мягкой, шипящей, Ц.</p>
+            <div class="ex">сам<b>о</b>лёт · пар<b>о</b>ход — но: пеш<b>е</b>ход · птиц<b>е</b>лов</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🟢</span><span class="acc-title">Падежные окончания существительных</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p><b>1 скл.:</b> Р. -ы/-и, Д. -е, П. -е.<br>
+            <b>2 скл.:</b> П. -е.<br>
+            <b>3 скл.:</b> Р., Д., П. — всегда <b>-и</b>.</p>
+            <div class="ex">в деревн<b>е</b> · о лошад<b>и</b> · на площад<b>и</b></div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🔵</span><span class="acc-title">Падежные окончания прилагательных</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>Окончание прилагательного = окончание вопроса.</p>
+            <div class="ex">в син<b>ем</b> море · о добр<b>ой</b> маме · к старш<b>ему</b> брату</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🔵</span><span class="acc-title">Безударные гласные</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>Проверяем родственным словом, где она под ударением.</p>
+            <div class="ex">в<b>о</b>да → вÓды · тр<b>а</b>ва → трÁвы</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🔴</span><span class="acc-title">Парные согласные</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>Пары: <b>Б–П, В–Ф, Г–К, Д–Т, Ж–Ш, З–С</b>. Проверяем гласной или <b>Н, Л, М, Р</b>.</p>
+            <div class="ex">зу<b>б</b> → зуБы · сне<b>г</b> → снеГа</div>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">🟢</span><span class="acc-title">Непроизносимые согласные</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>Буквы <b>Л, Д, Т, В</b> пишутся, но не слышатся. Проверяем словом, где они звучат.</p>
+            <div class="ex">со<b>л</b>нце → сОлнышко · сер<b>д</b>це → сердЕчко</div>
+            <p><b>Осторожно:</b> ужасный, опасный, вкусный — непроизносимой НЕТ.</p>
+          </div></div>
+        </div>
+
+        <div class="acc-item">
+          <button type="button" class="acc-head" onclick="accToggle(this)">
+            <span class="acc-emoji">⚠️</span><span class="acc-title">Словарные слова</span><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body"><div>
+            <p>Их нельзя проверить — только запомнить.</p>
+            <div class="ex">к<b>о</b>рова · м<b>о</b>локо · с<b>о</b>бака · т<b>е</b>традь · п<b>е</b>нал</div>
+          </div></div>
+        </div>
+
+      </div>
+
+      <button class="btn-main" onclick="pickMode('trainer')">Попробовать ✍️</button>
+    </div>
+  </div>
+
+  <div class="trainer-only">
+    <div class="theme-bar" id="themeBar"></div>
+    <div class="controls">
+      <button class="primary" onclick="generate()">🎲 Новый набор</button>
+      <button class="ghost" onclick="checkAnswers()">✓ Проверить всё</button>
+      <button class="ghost" onclick="showAllAnswers()">💡 Ответы</button>
+    </div>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+    <div class="stats">
+      <span class="stat" id="statTimer">⏱ <b>00:00</b></span>
+      <span class="stat" id="statScore">✓ <b>0 / 0</b></span>
+      <span class="stat record lvl" id="statLvl">🎓 <b>Ур. 1</b></span>
+      <span class="stat record streak" id="statStreak">🔥 <b>0</b></span>
+    </div>
+    <div id="sheetsContainer"></div>
+  </div>
+
+  <div class="sprint-only">
+    <div class="theme-bar" id="themeBarSprint"></div>
+    <div class="controls">
+      <button class="primary" onclick="startSprint()">⚡ Начать спринт</button>
+      <button class="ghost" onclick="stopSprint();pickMode('trainer')">⏹ Стоп</button>
+    </div>
+    <div class="stats">
+      <span class="stat" id="sprintScore">✓ <b>0</b></span>
+      <span class="stat record streak" id="sprintStreak">🔥 <b>Серия: 0</b></span>
+    </div>
+    <div id="sprintContainer"></div>
+  </div>
+</div>
+
+<div class="modal" id="histModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeHistory()">×</button>
+    <h2 class="modal-title" id="histTitle">История</h2>
+    <div id="histBody"></div>
+  </div>
+</div>
+
+<div class="signature">© verner</div>
+
+<script src="words.js"></script>
+
+<script>
+/* ============================================================
+   БАЗА — из words.js
+   ============================================================ */
+if(!window.WORDS_RAW || !window.WORDS_RAW.length){
+  console.error('[Орфо-Арена] words.js не загрузился. Проверь путь к файлу.');
+}
+
+const RAW = window.WORDS_RAW || [];
+let skipped = 0;
+
+const WORDS = RAW.map((line, i) => {
+  const parts = line.split('|');
+  if(parts.length !== 4){
+    console.warn('[Орфо-Арена] строка ' + (i + 1) + ' битая (ожидалось 4 поля, найдено ' + parts.length + '): «' + line + '»');
+    skipped++;
+    return null;
+  }
+  const [word, answer, rule, cat] = parts;
+  if(!word || !word.includes('_')){ skipped++; return null; }
+  if(!cat){ skipped++; return null; }
+  return { word, answer, rule, cat };
+}).filter(Boolean);
+
+if(skipped > 0) console.warn('[Орфо-Арена] пропущено строк: ' + skipped + '. Рабочих слов: ' + WORDS.length + '.');
+
+
+/* ============================================================
+   ==============  COMMON — общее для обоих режимов  ==========
+   ============================================================ */
+
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+const LS_PROFILES = 'nx-insert-profiles-v8';
+const LS_CURRENT  = 'nx-insert-current-v8';
+const LS_THEME    = 'nx-theme';
+const LS_STUDENTS = 'nx-insert-students-v8';
+const LS_MODE     = 'nx-insert-mode-v8';
+const LS_STATS    = 'nx-insert-stats-v8';
+const LS_REMEMBER = 'nx-insert-remember-v8';
+
+const state = {
+  mode:'none', settings:null,
+  session:[], idx:0, correct:0, wrong:0,
+  timerStart:null, timerInterval:null, timerElapsed:0, timerRunning:false,
+  rememberMode:true, currentStudent:'',
+  sprint:null,
+};
+
+/* ---------- Утилиты ---------- */
+function shuffle(a){
+  const r = [...a];
+  for(let i = r.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [r[i], r[j]] = [r[j], r[i]];
+  }
+  return r;
+}
+const escapeHtml = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function normalizeStr(s){
+  return String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[–—−]/g,'-').trim();
+}
+function verifyAnswer(user, answer){
+  if(answer === '—'){
+    const u = String(user).trim();
+    return u === '' || u === '—' || u === '-' || u === '–';
+  }
+  return normalizeStr(user) === normalizeStr(answer);
+}
+
+/* ---------- Звук ---------- */
+let audioCtx = null;
+function beep(ok){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.type='sine'; o.frequency.value = ok?880:220; g.gain.value=0.05;
+    o.start(); setTimeout(()=>o.stop(), ok?120:220);
+  }catch(e){}
+}
+
+/* ---------- Работа со словом ---------- */
+function splitWord(word){
+  const parts = word.split('_');
+  return { before: parts[0] || '', after: parts[1] || '' };
+}
+
+function pickWords(cat, n){
+  let pool = cat === 'all' ? WORDS : WORDS.filter(w => w.cat === cat);
+  if(!pool.length) pool = WORDS;
+  return shuffle(pool).slice(0, n);
+}
+
+/**
+ * HTML строки с пропуском: [before] [input] [after]
+ * @param word — строка с "_"
+ * @param answer — правильный ответ (используется для длины и placeholder)
+ * @param inputClass — CSS-класс инпута ("gap-input" или "sprint-input")
+ */
+function buildGapHtml(word, answer, inputClass){
+  const { before, after } = splitWord(word);
+  const isDash = answer === '—';
+  const ansLen = isDash ? 2 : Math.max(answer.length, 2);
+  const minCh = Math.max(ansLen, 2);
+  const maxCh = Math.max(minCh, 12);
+  return `
+    <span>${escapeHtml(before)}</span>
+    <input class="${inputClass}" type="text"
+      maxlength="${answer.length + 3}"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+      placeholder="${isDash ? '—' : '?'}"
+      style="min-width:${minCh}ch; max-width:${maxCh}ch">
+    <span>${escapeHtml(after)}</span>
+  `;
+}
+
+/**
+ * Текст для показа после ответа.
+ * Возвращает {html, cls}
+ */
+function feedbackFor(w, isGood){
+  const isDash = w.answer === '—';
+  if(isGood){
+    return { html: '✅ ' + escapeHtml(w.rule), cls: 'explain good' };
+  }
+  return {
+    html: '❌ Правильно: <b>' + escapeHtml(isDash ? 'без буквы' : w.answer) + '</b> · ' + escapeHtml(w.rule),
+    cls: 'explain bad'
+  };
+}
+
+/* ---------- Темы ---------- */
+const THEMES = [
+  { key:'zhi', label:'ЖИ-ШИ' },
+  { key:'cha', label:'ЧА-ЩА' },
+  { key:'chu', label:'ЧУ-ЩУ' },
+  { key:'chk', label:'ЧК-ЧН' },
+  { key:'tsya', label:'-ТСЯ/-ТЬСЯ' },
+  { key:'sep_soft', label:'Разд. Ь' },
+  { key:'sep_hard', label:'Разд. Ъ' },
+  { key:'soft_hiss', label:'Ь после шипящих' },
+  { key:'soft_hiss_verb', label:'Ь в глаголах 2 л.' },
+  { key:'double', label:'Удвоенные' },
+  { key:'ci', label:'И/Ы после Ц' },
+  { key:'o_e', label:'О/Ё в корне' },
+  { key:'o_e_end', label:'О/Е в окончаниях' },
+  { key:'ik_ek', label:'-ИК-/-ЕК-' },
+  { key:'prefix_glas', label:'Гласные в приставках' },
+  { key:'prefix_zs', label:'Приставки на З/С' },
+  { key:'y_i_prefix', label:'Ы/И после приставок' },
+  { key:'narechie', label:'Наречия О/А' },
+  { key:'soed_glas', label:'Соединит. О/Е' },
+  { key:'padezh_sush', label:'Падежи сущ.' },
+  { key:'padezh_pril', label:'Падежи прил.' },
+  { key:'dict', label:'Словарные' },
+  { key:'unstressed', label:'Безударные' },
+  { key:'paired', label:'Парные' },
+  { key:'unpron', label:'Непроизносимые' },
+  { key:'all', label:'Всё подряд' },
+];
+
+function countByCat(cat){
+  return cat === 'all' ? WORDS.length : WORDS.filter(w => w.cat === cat).length;
+}
+
+function renderThemeBar(){
+  const cur = state.settings?.level || 'zhi';
+  const cnt = countByCat(cur);
+  [ $('#themeBar'), $('#themeBarSprint') ].forEach(bar => {
+    if(!bar) return;
+    bar.innerHTML = THEMES.map(t =>
+      `<button data-theme="${t.key}" class="${t.key === cur ? 'active' : ''}">${t.label}</button>`
+    ).join('') + `<span class="count">${cnt} слов</span>`;
+    bar.querySelectorAll('button').forEach(b => {
+      b.onclick = () => {
+        state.settings.level = b.dataset.theme;
+        try{ localStorage.setItem(LS_CURRENT, JSON.stringify(state.settings)); }catch(e){}
+        if(state.mode === 'trainer') generate();
+        else if(state.mode === 'sprint') startSprint();
+      };
+    });
+  });
+}
+
+/* ---------- Режим ---------- */
+function pickMode(m){
+  state.mode = m;
+  try{
+    localStorage.setItem(LS_MODE, m);
+    localStorage.setItem(LS_REMEMBER, state.rememberMode?'1':'0');
+  }catch(e){}
+  applyMode();
+  if(m === 'trainer') generate();
+  else if(m === 'sprint') startSprint();
+}
+function applyMode(){
+  document.body.classList.remove('mode-trainer','mode-theory','mode-sprint');
+  if(state.mode === 'trainer') document.body.classList.add('mode-trainer');
+  else if(state.mode === 'theory') document.body.classList.add('mode-theory');
+  else if(state.mode === 'sprint') document.body.classList.add('mode-sprint');
+  const b = $('#modeBadge');
+  if(b) b.textContent = state.mode === 'trainer' ? 'Тренажёр' : state.mode === 'sprint' ? 'Спринт' : state.mode === 'theory' ? 'Справочник' : '—';
+  $('#theoryBlock').style.display = state.mode === 'theory' ? 'block' : 'none';
+  if(state.mode !== 'trainer') stopTimer();
+  if(state.mode !== 'sprint') stopSprint();
+  renderThemeBar();
+}
+function openModeChooser(){
+  document.body.classList.remove('mode-trainer','mode-theory','mode-sprint');
+  const saved = localStorage.getItem(LS_REMEMBER);
+  state.rememberMode = saved !== '0';
+  updateRememberBtn();
+  stopSprint();
+}
+function toggleRemember(){ state.rememberMode=!state.rememberMode; updateRememberBtn(); }
+function updateRememberBtn(){
+  const btn=$('#rememberBtn'), mark=$('#rememberMark');
+  if(!btn||!mark) return;
+  btn.classList.toggle('on', state.rememberMode);
+  mark.textContent = state.rememberMode ? '✓' : '';
+}
+
+/* ---------- Аккордеон справочника ---------- */
+function accToggle(btn){
+  const item = btn.parentElement;
+  item.classList.toggle('open');
+  if(item.classList.contains('open')){
+    item.parentElement.querySelectorAll('.acc-item').forEach(s => {
+      if(s !== item) s.classList.remove('open');
+    });
+  }
+}
+function accOpenAll(){ document.querySelectorAll('#accList .acc-item').forEach(i => i.classList.add('open')); }
+function accCloseAll(){ document.querySelectorAll('#accList .acc-item').forEach(i => i.classList.remove('open')); }
+
+/* ---------- Ачивки и статистика ---------- */
+const ACH = [
+  { id:'first',   ico:'🎯', name:'Первый набор',   check:s => s.sheets >= 1 },
+  { id:'ten',     ico:'📚', name:'10 наборов',     check:s => s.sheets >= 10 },
+  { id:'fifty',   ico:'✍️', name:'50 правильных',  check:s => s.totalCorrect >= 50 },
+  { id:'hundred', ico:'💯', name:'100 правильных', check:s => s.totalCorrect >= 100 },
+  { id:'perfect', ico:'⭐', name:'Без ошибок',     check:s => s.perfectSheets >= 1 },
+  { id:'five',    ico:'🌟', name:'5 без ошибок',   check:s => s.perfectSheets >= 5 },
+  { id:'streak3', ico:'🔥', name:'3 дня подряд',   check:s => s.streakBest >= 3 },
+  { id:'streak7', ico:'🔥🔥', name:'7 дней подряд', check:s => s.streakBest >= 7 },
+  { id:'lvl5',    ico:'🏅', name:'Уровень 5',      check:s => s.level >= 5 },
+];
+function loadStats(){
+  try{
+    return Object.assign(
+      { sheets:0,totalCorrect:0,totalWrong:0,perfectSheets:0,level:1,xp:0,streak:0,streakBest:0,lastDay:'',achievements:[] },
+      JSON.parse(localStorage.getItem(LS_STATS)||'{}')
+    );
+  }catch(e){
+    return { sheets:0,totalCorrect:0,totalWrong:0,perfectSheets:0,level:1,xp:0,streak:0,streakBest:0,lastDay:'',achievements:[] };
+  }
+}
+function saveStats(s){ try{ localStorage.setItem(LS_STATS, JSON.stringify(s)); }catch(e){} }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function updateStreak(s){
+  const t = todayStr(); if(s.lastDay===t) return;
+  const y = new Date(); y.setDate(y.getDate()-1);
+  const yd = y.toISOString().slice(0,10);
+  s.streak = s.lastDay===yd ? (s.streak||0)+1 : 1;
+  s.streakBest = Math.max(s.streakBest||0, s.streak);
+  s.lastDay = t;
+}
+function levelFromXp(xp){
+  let lvl=1, need=30, total=0;
+  while(xp >= total+need){ total+=need; lvl++; need=Math.round(need*1.4); }
+  return { level:lvl };
+}
+function recordStats(perfect){
+  const st = loadStats();
+  updateStreak(st);
+  st.sheets++;
+  st.totalCorrect += state.correct;
+  st.totalWrong += state.wrong;
+  if(perfect) st.perfectSheets++;
+  st.xp += state.correct * 2 + (perfect ? 10 : 0);
+  st.level = levelFromXp(st.xp).level;
+  const unlocked = new Set(st.achievements||[]);
+  ACH.forEach(a => { if(!unlocked.has(a.id) && a.check(st)) unlocked.add(a.id); });
+  st.achievements = [...unlocked];
+  saveStats(st);
+  renderAchievements(st);
+  renderLevelAndStreak(st);
+}
+function renderAchievements(st){
+  const el = $('#achStrip'); if(!el) return;
+  const u = new Set(st.achievements||[]);
+  el.innerHTML = ACH.map(a => `<span class="ach${u.has(a.id)?'':' locked'}" title="${a.name}"><span class="ico">${a.ico}</span>${a.name}</span>`).join('');
+}
+function renderLevelAndStreak(st){
+  const l = $('#statLvl'); if(l) l.querySelector('b').textContent = `Ур. ${st.level}`;
+  const s = $('#statStreak'); if(s) s.querySelector('b').textContent = `${st.streak} 🔥`;
+}
+
+/* ---------- Ученики ---------- */
+function loadStudents(){ try{ return JSON.parse(localStorage.getItem(LS_STUDENTS)||'{}'); }catch(e){ return {}; } }
+function saveStudents(s){ try{ localStorage.setItem(LS_STUDENTS, JSON.stringify(s)); }catch(e){} }
+function refreshStudentSelect(){
+  const sel = $('#studentSelect'); if(!sel) return;
+  const st = loadStudents();
+  const cur = state.currentStudent;
+  sel.innerHTML = '<option value="">— без имени —</option>' + Object.keys(st).map(k => `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`).join('');
+  if(cur && st[cur]) sel.value = cur;
+}
+function addStudent(){
+  const name = prompt('Имя ученика:'); if(!name) return;
+  const st = loadStudents();
+  if(st[name]){ alert('Такой уже есть'); return; }
+  st[name] = { attempts:[] }; saveStudents(st);
+  state.currentStudent = name; refreshStudentSelect();
+}
+function currentStudentData(){
+  if(!state.currentStudent) return null;
+  const st = loadStudents();
+  return st[state.currentStudent] || null;
+}
+function saveAttempt(data){
+  if(!state.currentStudent) return;
+  const st = loadStudents();
+  if(!st[state.currentStudent]) st[state.currentStudent] = { attempts:[] };
+  st[state.currentStudent].attempts.push(data);
+  saveStudents(st);
+}
+function openHistory(){
+  const modal = $('#histModal'), body = $('#histBody');
+  const data = currentStudentData();
+  $('#histTitle').textContent = data ? `История · ${state.currentStudent}` : 'История';
+  if(!data || !data.attempts.length){
+    body.innerHTML = '<p style="color:var(--text-dim);font-weight:700">Пока нет попыток.</p>';
+    modal.classList.add('on'); return;
+  }
+  let rows = '';
+  data.attempts.slice().reverse().slice(0,30).forEach(a => {
+    const d = new Date(a.date);
+    const date = d.toLocaleDateString('ru') + ' ' + d.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+    const t = a.time ? `${Math.floor(a.time/60)}:${String(a.time%60).padStart(2,'0')}` : '—';
+    rows += `<tr><td>${date}</td><td><b>${a.correct}/${a.total}</b></td><td>${t}</td></tr>`;
+  });
+  body.innerHTML = '<table class="hist-table"><thead><tr><th>Когда</th><th>Результат</th><th>Время</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  modal.classList.add('on');
+}
+function closeHistory(){ $('#histModal').classList.remove('on'); }
+
+/* ---------- Настройки ---------- */
+function readSettings(){
+  return {
+    level: state.settings?.level || 'zhi',
+    count: +$('#count').value,
+    cols: +$('#cols').value,
+    title: $('#titleInput').value.trim() || 'Вставь букву',
+    useTimer: $('#useTimer').checked,
+    optName: $('#optName').checked,
+    fbProgress: $('#fbProgress').checked,
+    fbSound: $('#fbSound').checked,
+    showExplain: $('#showExplain').checked,
+    retryAllowed: $('#retryAllowed').checked,
+  };
+}
+function writeSettings(s){
+  const set = (id,v) => {
+    const el = $('#'+id); if(!el) return;
+    if(el.type==='checkbox') el.checked = !!v; else el.value = v;
+  };
+  set('count', s.count); set('cols', s.cols); set('titleInput', s.title);
+  set('useTimer', s.useTimer); set('optName', s.optName);
+  set('fbProgress', s.fbProgress); set('fbSound', s.fbSound);
+  set('showExplain', s.showExplain);
+  set('retryAllowed', s.retryAllowed !== false);
+  $('#countVal').textContent = s.count;
+  $('#colsVal').textContent = s.cols;
+}
+const DEFAULTS = () => ({
+  level:'zhi', count:10, cols:2, title:'Вставь букву',
+  useTimer:true, optName:true, fbProgress:true, fbSound:false,
+  showExplain:true, retryAllowed:true,
+});
+
+/* ---------- Профили ---------- */
+function loadProfiles(){ try{ return JSON.parse(localStorage.getItem(LS_PROFILES)||'{}'); }catch(e){ return {}; } }
+function saveProfiles(p){ try{ localStorage.setItem(LS_PROFILES, JSON.stringify(p)); }catch(e){} }
+function refreshProfileSelect(){
+  const sel = $('#profileSelect'); if(!sel) return;
+  const p = loadProfiles();
+  sel.innerHTML = '<option value="">— выбери профиль —</option>' +
+    Object.keys(p).map(k => `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`).join('');
+}
+function saveProfile(){
+  const name = ($('#profileName').value||'').trim();
+  if(!name){ alert('Введи название'); return; }
+  const p = loadProfiles(); p[name] = readSettings(); saveProfiles(p);
+  refreshProfileSelect(); $('#profileSelect').value = name;
+}
+function loadProfile(){
+  const name = $('#profileSelect').value; if(!name) return;
+  const p = loadProfiles(); if(!p[name]) return;
+  writeSettings(Object.assign(DEFAULTS(), p[name]));
+  state.settings = readSettings();
+  $('#profileName').value = name;
+  if(state.mode === 'trainer') generate();
+}
+function deleteProfile(){
+  const name = $('#profileSelect').value; if(!name) return;
+  if(!confirm(`Удалить профиль «${name}»?`)) return;
+  const p = loadProfiles(); delete p[name]; saveProfiles(p); refreshProfileSelect();
+}
+
+/* ---------- Тема оформления ---------- */
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  const b = $('.theme-btn'); if(b) b.textContent = t==='dark' ? '☀️' : '🌙';
+  try{ localStorage.setItem(LS_THEME, t); }catch(e){}
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+}
+
+/* ---------- Таймер / прогресс ---------- */
+function startTimerIfNeeded(){
+  if(!state.settings?.useTimer || state.timerRunning) return;
+  if(state.mode !== 'trainer') return;
+  startTimer();
+}
+function startTimer(){
+  stopTimer();
+  state.timerStart = Date.now() - state.timerElapsed;
+  state.timerRunning = true;
+  state.timerInterval = setInterval(() => {
+    state.timerElapsed = Date.now() - state.timerStart;
+    updateTimerDisplay();
+  }, 100);
+}
+function stopTimer(){
+  if(state.timerInterval) clearInterval(state.timerInterval);
+  state.timerInterval = null;
+  state.timerRunning = false;
+}
+function resetTimer(){
+  stopTimer();
+  state.timerElapsed = 0;
+  state.timerStart = null;
+  updateTimerDisplay();
+}
+function updateTimerDisplay(){
+  const el = $('#statTimer'); if(!el) return;
+  if(!state.settings?.useTimer || state.mode !== 'trainer'){ el.classList.add('hidden'); return; }
+  el.classList.remove('hidden');
+  const t = Math.floor(state.timerElapsed/1000);
+  el.querySelector('b').textContent = `${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;
+}
+function updateProgress(){
+  const wrap = $('#progressWrap'); if(!wrap) return;
+  if(!state.settings?.fbProgress || state.mode !== 'trainer'){ wrap.classList.remove('on'); return; }
+  wrap.classList.add('on');
+  const total = state.session.length || 1;
+  const done = state.session.filter(w => w.status !== 'pending').length;
+  $('#progressFill').style.width = (done / total * 100) + '%';
+}
+function togglePanel(){ $('#panel').classList.toggle('hidden'); }
+function goBack(){ location.href = 'index.html'; }
+
+
+/* ============================================================
+   =================  TRAINER — режим «сетка»  ================
+   ============================================================ */
+
+function generate(){
+  state.settings = readSettings();
+  const s = state.settings;
+  const pool = pickWords(s.level, s.count * 3);
+
+  const picked = [];
+  const used = new Set();
+  let i = 0;
+  while(picked.length < s.count && i < pool.length){
+    const w = pool[i++];
+    if(used.has(w.word + w.answer)) continue;
+    used.add(w.word + w.answer);
+    picked.push({
+      word: w.word, answer: w.answer, rule: w.rule, cat: w.cat,
+      status: 'pending', attempts: 0, userAnswer: ''
+    });
+  }
+
+  state.session = picked;
+  state.idx = 0;
+  state.correct = 0;
+  state.wrong = 0;
+  resetTimer();
+  renderSheet();
+  renderThemeBar();
+  updateStats();
+  updateProgress();
+}
+
+function renderSheet(){
+  const s = state.settings;
+  const cont = $('#sheetsContainer');
+  cont.innerHTML = '';
+  if(!state.session.length){
+    cont.innerHTML = '<div class="sheet"><div style="padding:40px;text-align:center;color:var(--text-dim);font-weight:700">Нет слов для этой категории.</div></div>';
+    return;
+  }
+  const sheet = document.createElement('div');
+  sheet.className = 'sheet';
+  sheet.innerHTML = `
+    <div class="sheet-head">
+      <h1 class="sheet-title">${escapeHtml(s.title)}</h1>
+      <div class="sheet-fields" style="${s.optName?'':'display:none'}">
+        <span>Имя: <i></i></span><span>Дата: <i></i></span>
+      </div>
+      <p class="sheet-instruction">Впиши пропущенное и нажми Enter. Если буквы нет — оставь пусто или впиши «—».</p>
+    </div>`;
+  const grid = document.createElement('div');
+  grid.className = 'problems-grid';
+  grid.style.setProperty('--cols', s.cols);
+  state.session.forEach((_, i) => grid.appendChild(renderProblem(i)));
+  sheet.appendChild(grid);
+  cont.appendChild(sheet);
+}
+
+function renderProblem(idx){
+  const w = state.session[idx];
+  const card = document.createElement('div');
+  card.className = 'problem';
+  card.dataset.idx = idx;
+
+  card.innerHTML = `
+    <div class="num">${idx+1}</div>
+    <div class="word-display">${buildGapHtml(w.word, w.answer, 'gap-input')}</div>
+    <div class="explain"></div>
+  `;
+
+  const input = card.querySelector('.gap-input');
+  input.addEventListener('keydown', e => {
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      if(state.session[idx].status !== 'pending'){ focusNextEmpty(idx); return; }
+      checkCard(idx, false);
+    }
+    if(e.key === 'Escape') input.blur();
+  });
+
+  return card;
+}
+
+function focusNextEmpty(idx){
+  const nextIdx = idx + 1;
+  if(nextIdx >= state.session.length) return;
+  if(state.session[nextIdx].status !== 'pending') return;
+  const nextInput = document.querySelector(`.problem[data-idx="${nextIdx}"] .gap-input`);
+  if(nextInput && !nextInput.disabled){
+    setTimeout(() => { nextInput.focus(); nextInput.select(); }, 200);
+  }
+}
+
+function checkCard(idx, isForce){
+  const w = state.session[idx];
+  if(w.status !== 'pending') return;
+  const card = document.querySelector(`.problem[data-idx="${idx}"]`);
+  if(!card) return;
+  const input = card.querySelector('.gap-input');
+  const explain = card.querySelector('.explain');
+  const isDash = w.answer === '—';
+  const good = verifyAnswer(input.value, w.answer);
+
+  w.userAnswer = input.value;
+
+  if(good){
+    w.status = 'correct';
+    card.classList.add('correct');
+    input.classList.add('correct');
+    input.value = isDash ? '' : w.answer;
+    input.disabled = true;
+    state.correct++;
+    if(state.settings.fbSound) beep(true);
+    if(state.settings.showExplain){
+      const fb = feedbackFor(w, true);
+      explain.innerHTML = fb.html;
+      explain.className = fb.cls;
+    }
+    focusNextEmpty(idx);
+    updateStats();
+    updateProgress();
+    checkAllDone();
+    return;
+  }
+
+  w.attempts++;
+  const allowRetry = state.settings.retryAllowed && w.attempts === 1 && !isForce;
+
+  if(allowRetry){
+    input.classList.add('wrong');
+    explain.innerHTML = '🤔 Попробуй ещё раз';
+    explain.className = 'explain bad';
+    if(state.settings.fbSound) beep(false);
+    setTimeout(() => {
+      input.classList.remove('wrong');
+      input.focus();
+      input.select();
+    }, 500);
+    return;
+  }
+
+  w.status = 'wrong';
+  card.classList.add('wrong');
+  input.classList.add('wrong');
+  input.disabled = true;
+  if(isDash) input.value = '';
+  else if(!input.value.trim()) input.value = w.answer;
+  state.wrong++;
+  if(state.settings.fbSound) beep(false);
+  if(state.settings.showExplain){
+    const fb = feedbackFor(w, false);
+    explain.innerHTML = fb.html;
+    explain.className = fb.cls;
+  }
+  focusNextEmpty(idx);
+  updateStats();
+  updateProgress();
+  checkAllDone();
+  startTimerIfNeeded();
+}
+
+function checkAllDone(){
+  const allDone = state.session.length > 0 && state.session.every(w => w.status !== 'pending');
+  if(allDone) setTimeout(() => finishSheet(), 900);
+}
+
+function checkAnswers(){
+  state.session.forEach((w, i) => {
+    if(w.status !== 'pending') return;
+    checkCard(i, true);
+  });
+}
+
+function showAllAnswers(){
+  state.session.forEach((w, i) => {
+    if(w.status !== 'pending') return;
+    const card = document.querySelector(`.problem[data-idx="${i}"]`);
+    if(!card) return;
+    const input = card.querySelector('.gap-input');
+    input.value = w.answer === '—' ? '' : w.answer;
+    checkCard(i, true);
+  });
+}
+
+function resetAllInputs(){ generate(); }
+
+function finishSheet(){
+  const perfect = state.wrong === 0 && state.correct > 0;
+  recordStats(perfect);
+  if(state.currentStudent){
+    saveAttempt({ date: Date.now(), correct: state.correct, total: state.session.length, time: Math.round(state.timerElapsed/1000) });
+  }
+  const cont = $('#sheetsContainer');
+  const pct = state.session.length ? Math.round(state.correct / state.session.length * 100) : 0;
+  const stars = Math.min(3, Math.round(pct/33));
+  cont.innerHTML = `
+    <div class="sheet">
+      <div style="text-align:center;padding:30px">
+        <div style="font-size:64px">${perfect ? '🏆' : pct >= 70 ? '🎉' : '💪'}</div>
+        <h2 style="font-family:Fredoka,sans-serif;color:var(--blue);font-size:26px;margin:12px 0">
+          ${perfect ? 'Всё верно!' : pct >= 70 ? 'Хорошо!' : 'Потренируйся ещё'}
+        </h2>
+        <p style="color:var(--text-dim);font-weight:700;font-size:16px">
+          Правильно: ${state.correct} из ${state.session.length} (${pct}%)
+        </p>
+        <div style="font-size:36px;margin:14px 0">${'⭐'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
+        <button class="btn-main" onclick="generate()">🎲 Новый набор</button>
+      </div>
+    </div>`;
+}
+
+function updateStats(){
+  const el = $('#statScore');
+  if(el) el.querySelector('b').textContent = `${state.correct} / ${state.session.length}`;
+}
+
+
+/* ============================================================
+   ===================  SPRINT — режим «на время»  ============
+   ============================================================ */
+
+function startSprint(){
+  state.settings = readSettings();
+  const s = state.settings;
+  const queue = pickWords(s.level, 40);
+  state.sprint = {
+    queue, idx: 0, score: 0, lives: 3, combo: 0,
+    timer: null, baseTime: 4500, answered: false
+  };
+  renderSprintRound();
+  renderThemeBar();
+}
+
+function stopSprint(){
+  if(state.sprint && state.sprint.timer){ clearInterval(state.sprint.timer); state.sprint.timer = null; }
+  state.sprint = null;
+}
+
+function renderSprintRound(){
+  const sp = state.sprint; if(!sp) return;
+  const cont = $('#sprintContainer');
+
+  if(sp.lives <= 0 || sp.idx >= sp.queue.length){
+    const emoji = sp.score >= 100 ? '🏆' : sp.score >= 50 ? '⚡' : '💨';
+    cont.innerHTML = `
+      <div class="sprint-card">
+        <div style="font-size:64px">${emoji}</div>
+        <h2 style="font-family:Fredoka,sans-serif;color:var(--blue);font-size:26px;margin:12px 0">Спринт окончен</h2>
+        <p style="color:var(--text-dim);font-weight:700">Счёт: ${sp.score} · Пройдено: ${sp.idx}</p>
+        <button class="btn-main" onclick="startSprint()">🎲 Ещё раз</button>
+      </div>`;
+    return;
+  }
+
+  const w = sp.queue[sp.idx];
+  const isDash = w.answer === '—';
+  const timeLimit = Math.max(1500, sp.baseTime - sp.idx * 100);
+  const hearts = '❤️'.repeat(sp.lives) + '🖤'.repeat(3 - sp.lives);
+
+  cont.innerHTML = `
+    <div class="sprint-card">
+      <div class="hearts">${[...hearts].map(h => `<span>${h}</span>`).join('')}</div>
+      <div class="sprint-timer"><div class="sprint-fill" id="sprintFill" style="width:100%"></div></div>
+      <div class="sprint-word">${buildGapHtml(w.word, w.answer, 'sprint-input')}</div>
+      <div class="sprint-feedback" id="sprintFb">Нажми Enter, когда готов</div>
+    </div>`;
+
+  const input = cont.querySelector('.sprint-input');
+  const fb = $('#sprintFb');
+  setTimeout(() => input.focus(), 50);
+
+  sp.answered = false;
+  const startTime = Date.now();
+  const fill = $('#sprintFill');
+
+  input.addEventListener('keydown', e => {
+    if(e.key === 'Enter'){ e.preventDefault(); sprintCheck(input.value, w); }
+  });
+
+  sp.timer = setInterval(() => {
+    if(sp.answered) return;
+    const left = Math.max(0, timeLimit - (Date.now() - startTime));
+    fill.style.width = (left / timeLimit * 100) + '%';
+    if(left <= 0){
+      clearInterval(sp.timer); sp.timer = null;
+      sp.answered = true;
+      input.disabled = true;
+      input.classList.add('wrong');
+      if(state.settings.fbSound) beep(false);
+      fb.textContent = '⏱ Время вышло! Правильно: ' + (isDash ? 'без буквы' : w.answer);
+      fb.style.color = 'var(--bad)';
+      sp.lives--; sp.combo = 0;
+      updateSprintStats();
+      setTimeout(() => { sp.idx++; renderSprintRound(); }, 1300);
+    }
+  }, 80);
+}
+
+function sprintCheck(user, w){
+  const sp = state.sprint; if(!sp || sp.answered) return;
+  sp.answered = true;
+  if(sp.timer){ clearInterval(sp.timer); sp.timer = null; }
+
+  const input = document.querySelector('.sprint-input');
+  if(input) input.disabled = true;
+  const fb = $('#sprintFb');
+  const isDash = w.answer === '—';
+  const good = verifyAnswer(user, w.answer);
+
+  if(good){
+    if(input){
+      input.classList.add('correct');
+      if(!isDash) input.value = w.answer;
+    }
+    sp.combo++;
+    const bonus = sp.combo >= 3 ? 5 : 0;
+    const gained = 10 + bonus;
+    sp.score += gained;
+    fb.textContent = `✅ +${gained}${bonus ? ' (комбо!)' : ''}`;
+    fb.style.color = 'var(--good)';
+    if(state.settings.fbSound) beep(true);
+    updateSprintStats();
+    setTimeout(() => { sp.idx++; renderSprintRound(); }, 500);
+  } else {
+    if(input) input.classList.add('wrong');
+    sp.lives--; sp.combo = 0;
+    fb.textContent = '❌ Правильно: ' + (isDash ? 'без буквы' : w.answer);
+    fb.style.color = 'var(--bad)';
+    if(state.settings.fbSound) beep(false);
+    updateSprintStats();
+    setTimeout(() => { sp.idx++; renderSprintRound(); }, 1300);
+  }
+}
+
+function updateSprintStats(){
+  const s = state.sprint; if(!s) return;
+  const a = $('#sprintScore b'); if(a) a.textContent = String(s.score);
+  const b = $('#sprintStreak b'); if(b) b.textContent = `Серия: ${s.combo}`;
+}
+
+
+/* ============================================================
+   =========================  INIT  ===========================
+   ============================================================ */
+
+(function init(){
+  applyTheme(localStorage.getItem(LS_THEME) || 'light');
+
+  let s = DEFAULTS();
+  try{
+    const cur = JSON.parse(localStorage.getItem(LS_CURRENT) || 'null');
+    if(cur) s = Object.assign(DEFAULTS(), cur);
+  }catch(e){}
+  state.settings = s;
+  writeSettings(s);
+
+  document.addEventListener('change', () => {
+    try{ localStorage.setItem(LS_CURRENT, JSON.stringify(readSettings())); }catch(e){}
+  });
+
+  refreshProfileSelect();
+  refreshStudentSelect();
+
+  const st = loadStats();
+  renderAchievements(st);
+  renderLevelAndStreak(st);
+
+  const savedRemember = localStorage.getItem(LS_REMEMBER);
+  const savedMode = localStorage.getItem(LS_MODE);
+  if(savedMode && savedRemember !== '0'){
+    state.mode = savedMode;
+    applyMode();
+    if(state.mode === 'trainer') generate();
+    else if(state.mode === 'sprint') startSprint();
+  } else {
+    state.rememberMode = savedRemember !== '0';
+    updateRememberBtn();
+  }
+
+  const $c = $('#count');
+  if($c){
+    $c.addEventListener('input', e => { $('#countVal').textContent = e.target.value; });
+    $c.addEventListener('change', generate);
+  }
+  const $col = $('#cols');
+  if($col){
+    $col.addEventListener('input', e => {
+      $('#colsVal').textContent = e.target.value;
+      document.querySelectorAll('.problems-grid').forEach(g => g.style.setProperty('--cols', e.target.value));
+    });
+  }
+
+  ['useTimer','optName','fbProgress','fbSound','showExplain','retryAllowed'].forEach(id => {
+    const el = $('#'+id); if(!el) return;
+    el.addEventListener('change', () => {
+      const s = readSettings();
+      if(id === 'useTimer' && !s.useTimer) resetTimer();
+      updateTimerDisplay();
+      updateProgress();
+      const f = document.querySelector('.sheet-fields');
+      if(f) f.style.display = s.optName ? '' : 'none';
+    });
+  });
+
+  const sel = $('#studentSelect');
+  if(sel) sel.addEventListener('change', e => { state.currentStudent = e.target.value; });
+
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHistory(); });
+  $('#histModal').addEventListener('click', e => { if(e.target.id === 'histModal') closeHistory(); });
+  document.addEventListener('click', () => { if(state.mode === 'trainer') startTimerIfNeeded(); }, { once: true });
+})();
+</script>
+
+
+<script src="../../assets/menu-data.js"></script>
+<script src="../../assets/menu-drawer.js"></script>
+</body>
+</html>

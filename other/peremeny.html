@@ -3,182 +3,429 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Что изменилось?</title>
+<title>Что изменилось - NeuroX</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 :root{
     --blue:#1E3F8A;
+    --blue-soft:#3A5FA8;
+    --blue-light:#2A56C6;
+    --blue-pale:#E8EEF9;
     --orange:#FF6A00;
-    --bg:#0f1b3d;
-    --cell:#2c3e70;
+    --orange-soft:#FF8B3D;
+    --orange-dark:#C85100;
+    --orange-pale:#FFEADB;
+
+    /* размер ячейки */
+    --cell:60px;
+
+    /* ТЁМНАЯ ТЕМА (по умолчанию) */
+    --bg:#0F1B3D;
+    --bg-2:#152657;
+    --cell-bg:#2C3E70;
+    --cell-hover:#384C85;
     --coord:#182952;
-    --text:white;
+    --text:#FFFFFF;
+    --text-dim:rgba(255,255,255,.72);
+    --panel-bg:rgba(255,255,255,.06);
+    --border:rgba(255,255,255,.12);
+    --select-bg:#1B2D5C;
+    --select-text:#FFFFFF;
 }
 
 body.light{
-    --bg:#f5f6fa;
-    --cell:#dbe4ff;
-    --coord:#c9d6ff;
-    --text:#111;
+    --bg:#F4F6FB;
+    --bg-2:#E8EDFF;
+    --cell-bg:#DBE4FF;
+    --cell-hover:#C9D6FF;
+    --coord:#C9D6FF;
+    --text:#1F2937;
+    --text-dim:#6B7280;
+    --panel-bg:#FFFFFF;
+    --border:rgba(30,63,138,.10);
+    --select-bg:#E8EEF9;
+    --select-text:#1E3F8A;
 }
+
+*{ box-sizing:border-box; }
 
 body{
     margin:0;
-    font-family:Arial,sans-serif;
-    background:var(--bg);
+    font-family:"Nunito Sans",sans-serif;
+    background-color:var(--bg);
+    background-image:radial-gradient(circle, rgba(255,255,255,.05) 1.5px, transparent 1.6px);
+    background-size:26px 26px;
     color:var(--text);
     display:flex;
     flex-direction:column;
     align-items:center;
+    min-height:100vh;
+    transition:background-color .3s, color .3s;
 }
 
-/* HEADER */
+body.light{
+    background-image:radial-gradient(circle, rgba(30,63,138,.07) 1.5px, transparent 1.6px);
+}
+
+/* ===== HEADER ===== */
+
 header{
+    position:relative;
     width:100%;
     background:var(--blue);
-    padding:16px;
+    padding:20px 24px 26px;
     text-align:center;
-    font-size:22px;
-    font-style:italic;
-    font-weight:600;
-    box-sizing:border-box;
+    font-family:"Fredoka",sans-serif;
+    font-size:26px;
+    font-weight:700;
+    letter-spacing:.4px;
+    color:#fff;
+    box-shadow:0 6px 20px rgba(30,63,138,.25);
+    overflow:hidden;
 }
 
-/* PANEL */
+header::before,
+header::after{
+    content:'';
+    position:absolute;
+    border-radius:50%;
+    pointer-events:none;
+}
+
+header::before{
+    width:220px; height:220px;
+    top:-110px; right:-60px;
+    background:rgba(255,106,0,.22);
+}
+
+header::after{
+    width:170px; height:170px;
+    bottom:-120px; left:30px;
+    background:rgba(255,255,255,.09);
+}
+
+.header-title{ position:relative; z-index:1; }
+
+.back-btn{
+    position:absolute;
+    left:20px; top:50%;
+    transform:translateY(-50%);
+    width:48px; height:48px;
+    border:none;
+    border-radius:16px;
+    background:rgba(255,255,255,.18);
+    color:#fff;
+    font-size:22px;
+    cursor:pointer;
+    transition:.22s;
+    z-index:2;
+    font-family:inherit;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    box-shadow:none;
+}
+
+.back-btn:hover{
+    background:var(--orange);
+    transform:translateY(-50%) rotate(-6deg) scale(1.06);
+}
+
+/* ===== PANEL ===== */
+
 #panel{
-    margin-top:12px;
+    margin-top:22px;
     display:flex;
     flex-wrap:wrap;
     gap:10px;
     justify-content:center;
     align-items:center;
+    padding:18px 22px;
+    background:var(--panel-bg);
+    border:2px solid var(--border);
+    border-radius:24px;
+    box-shadow:0 6px 0 rgba(0,0,0,.15),
+               0 14px 26px rgba(0,0,0,.08);
+    max-width:min(96vw, 820px);
+}
+
+#panel > label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-weight:700;
+    cursor:pointer;
+    padding:6px 10px;
+    border-radius:12px;
+    transition:background .15s;
+}
+
+#panel > label:hover{ background:rgba(255,106,0,.10); }
+
+#panel input[type="checkbox"]{
+    accent-color:var(--orange);
+    width:18px; height:18px;
+    cursor:pointer;
+    margin:0;
+}
+
+#panel .panel-emoji{
+    font-size:20px;
+    user-select:none;
 }
 
 /* SELECT */
 select{
-    padding:8px 10px;
-    border-radius:8px;
-    border:none;
-    font-weight:bold;
+    padding:10px 14px;
+    border-radius:12px;
+    border:2px solid transparent;
+    font-family:"Nunito Sans",sans-serif;
+    font-weight:800;
+    font-size:14px;
+    color:var(--select-text);
+    background:var(--select-bg);
+    cursor:pointer;
     outline:none;
+    transition:.2s;
 }
+
+select:hover,
+select:focus{ border-color:var(--orange); }
 
 /* BUTTON */
 button{
-    padding:10px 14px;
+    padding:11px 20px;
     border:none;
-    border-radius:10px;
+    border-radius:12px;
     background:var(--orange);
-    color:white;
-    font-weight:bold;
+    color:#fff;
+    font-family:"Nunito Sans",sans-serif;
+    font-size:14px;
+    font-weight:800;
+    letter-spacing:.3px;
     cursor:pointer;
-    box-shadow:0 4px 0 #b84a00;
-    transition:0.08s;
+    box-shadow:0 4px 0 var(--orange-dark);
+    transition:background .15s, transform .12s, box-shadow .12s;
 }
+
+button:hover{ background:var(--orange-soft); }
 
 button:active{
     transform:translateY(3px);
-    box-shadow:0 1px 0 #b84a00;
+    box-shadow:0 1px 0 var(--orange-dark);
 }
 
-/* STATS */
+button:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+    transform:none;
+    box-shadow:0 4px 0 var(--orange-dark);
+}
+
+/* ===== STATS ===== */
+
 #stats{
-    margin-top:12px;
-    font-size:14px;
-    opacity:0.9;
-}
-
-/* FEEDBACK */
-#feedback{
-    margin-top:10px;
-    font-size:18px;
-    font-weight:bold;
-    min-height:24px;
-}
-
-/* GAME */
-#game{
     margin-top:20px;
+    font-size:15px;
+    font-weight:700;
+    color:var(--text-dim);
+    padding:10px 20px;
+    background:var(--panel-bg);
+    border:2px solid var(--border);
+    border-radius:14px;
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    justify-content:center;
+    letter-spacing:.3px;
+}
+
+#stats span{
+    color:var(--text);
+    font-weight:800;
+}
+
+/* ===== FEEDBACK ===== */
+
+#feedback{
+    margin-top:14px;
+    font-family:"Fredoka",sans-serif;
+    font-size:20px;
+    font-weight:600;
+    min-height:28px;
+    text-align:center;
+    color:var(--orange);
+    letter-spacing:.3px;
+    transition:color .2s;
+}
+
+#feedback.good{ color:#2ecc71; }
+#feedback.bad{ color:#e74c3c; }
+
+/* ===== GAME ===== */
+
+#game{
+    margin-top:22px;
     display:grid;
+    grid-template-columns:repeat(var(--cols, 5), var(--cell));
     gap:8px;
+    padding:12px;
+    background:var(--panel-bg);
+    border:2px solid var(--border);
+    border-radius:22px;
+    box-shadow:0 6px 0 rgba(0,0,0,.12),
+               0 14px 26px rgba(0,0,0,.08);
 }
 
 .cell,
 .coord{
-    width:60px;
-    height:60px;
+    width:var(--cell);
+    height:var(--cell);
     display:flex;
     align-items:center;
     justify-content:center;
-    border-radius:10px;
-    box-sizing:border-box;
+    border-radius:12px;
+    transition:.12s;
 }
 
 .cell{
-    background:var(--cell);
+    background:var(--cell-bg);
     font-size:28px;
     cursor:pointer;
-    transition:0.12s;
+    border:2px solid transparent;
+    user-select:none;
+    -webkit-tap-highlight-color:transparent;
+    outline:none;
 }
 
 .cell:hover{
-    transform:scale(1.03);
+    background:var(--cell-hover);
+    transform:scale(1.04);
+    border-color:var(--orange);
+}
+
+.cell:focus-visible{
+    border-color:var(--orange);
+    box-shadow:0 0 0 3px rgba(255,106,0,.35);
 }
 
 .coord{
     background:var(--coord);
-    font-weight:bold;
+    font-weight:800;
     font-size:16px;
+    font-family:"Fredoka",sans-serif;
+    color:var(--text);
+    opacity:.75;
 }
 
 /* STATES */
 .correct{
     background:var(--orange)!important;
+    color:#fff!important;
+    border-color:var(--orange-soft)!important;
+    animation:popMatch .4s ease;
+    cursor:default;
 }
 
 .wrong{
-    background:#e74c3c!important;
+    background:#E74C3C!important;
+    color:#fff!important;
+    animation:shake .35s ease;
+}
+
+@keyframes popMatch{
+    0%{ transform:scale(1); }
+    50%{ transform:scale(1.12); }
+    100%{ transform:scale(1); }
+}
+
+@keyframes shake{
+    0%,100%{ transform:translateX(0); }
+    25%{ transform:translateX(-4px); }
+    50%{ transform:translateX(4px); }
+    75%{ transform:translateX(-3px); }
 }
 
 /* FOOTER SIGN */
 #signature{
     position:fixed;
-    bottom:6px;
-    right:10px;
-    font-size:11px;
-    opacity:0.4;
+    bottom:8px; right:14px;
+    font-size:12px;
+    color:var(--text-dim);
+    font-weight:600;
+    opacity:.6;
     user-select:none;
 }
 
 /* MOBILE */
-@media (max-width:600px){
-    .cell,.coord{
-        width:48px;
-        height:48px;
-        font-size:22px;
-    }
+@media (max-width:700px){
+    :root{ --cell:44px; }
 
     header{
-        font-size:18px;
+        font-size:20px;
+        padding:16px 18px 20px;
     }
+
+    .back-btn{
+        width:42px; height:42px;
+        font-size:20px;
+        border-radius:14px;
+        left:14px;
+    }
+
+    #panel{
+        margin-top:16px;
+        padding:14px 16px;
+        gap:8px;
+        border-radius:20px;
+    }
+
+    select{ padding:8px 10px; font-size:13px; }
+    button{ padding:9px 14px; font-size:13px; }
+
+    #stats{
+        font-size:13px;
+        padding:8px 14px;
+        gap:8px;
+    }
+
+    #feedback{ font-size:17px; }
+
+    #game{
+        gap:6px;
+        padding:8px;
+        border-radius:18px;
+    }
+
+    .cell{ font-size:22px; border-radius:10px; }
+    .coord{ font-size:13px; border-radius:10px; }
 }
 </style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
 </head>
 
 <body>
 
-<header>Что изменилось?</header>
+<header>
+    <button class="back-btn" onclick="goBack()" aria-label="Назад">☰</button>
+    <div class="header-title">👀 Что изменилось?</div>
+</header>
 
 <div id="panel">
 
-📦
+<span class="panel-emoji">📦</span>
 <select id="size">
     <option value="9">3×3</option>
     <option value="16" selected>4×4</option>
     <option value="25">5×5</option>
 </select>
 
-🔀
+<span class="panel-emoji">🔀</span>
 <select id="changes">
     <option value="1">1</option>
     <option value="2">2</option>
@@ -190,34 +437,40 @@ button:active{
     <option value="8" selected>8</option>
 </select>
 
-⏱
+<span class="panel-emoji">⏱</span>
 <select id="speed">
     <option value="3200">Медленно</option>
     <option value="2500" selected>Средне</option>
     <option value="1700">Быстро</option>
 </select>
 
-⚙️
+<span class="panel-emoji">⚙️</span>
 <select id="mode">
     <option value="auto" selected>Авто</option>
     <option value="manual">Ручной</option>
 </select>
 
+<span class="panel-emoji">🔊</span>
 <label>
-<input type="checkbox"
-onchange="document.body.classList.toggle('light')">
+<input type="checkbox" id="sound" checked>
+Звук
+</label>
+
+<label>
+<input type="checkbox" id="themeToggle">
 ☀️
 </label>
 
 <button onclick="startGame()">Старт</button>
-<button onclick="showManual()">ДАЛЬШЕ</button>
+<button id="nextBtn" onclick="showManual()" disabled>ДАЛЬШЕ</button>
 
 </div>
 
 <div id="stats">
 Уровень: <span id="level">1</span> |
 Очки: <span id="score">0</span> |
-Найдено: <span id="found">0</span>/<span id="total">0</span>
+Найдено: <span id="found">0</span>/<span id="total">0</span> |
+Ошибки: <span id="attempts">0</span>/<span id="maxAttempts">0</span>
 </div>
 
 <div id="feedback"></div>
@@ -228,180 +481,275 @@ onchange="document.body.classList.toggle('light')">
 
 <script>
 
-const symbols = [
-"🔵","🟡","🟢","🔺","⬛","⭐","🍎","⚪",
-"🍌","🍇","🍒","🍉","🔥","⚡","🌙","☀️",
-"🚗","🚀","🎯","🎲","🎈","🧩","🍭","🪁"
+/* ============ CONFIG ============ */
+
+const SYMBOLS = [
+    "🔵","🟡","🟢","🔺","⬛","⭐","🍎","⚪",
+    "🍌","🍇","🍒","🍉","🔥","⚡","🌙","☀️",
+    "🚗","🚀","🎯","🎲","🎈","🧩","🍭","🪁"
 ];
 
-const letters = ["А","Б","В","Г","Д"];
+const LETTERS = ["А","Б","В","Г","Д"];
 
-let baseState=[];
-let changedState=[];
-let changedIndices=[];
-let fakeIndices=[];
+const THEME_KEY = "neurox-changed-theme";
 
-let showing=false;
-let mode="auto";
+/* ============ STATE ============ */
 
-let level=1;
-let score=0;
-let found=0;
-let total=0;
-let streak=0;
+let baseState = [];
+let changedState = [];
+let changedIndices = [];
+let fakeIndices = [];
 
-const game=document.getElementById("game");
+let showing = false;
+let locked = false;
+let mode = "auto";
 
-function randomSymbol(){
-    return symbols[Math.floor(Math.random()*symbols.length)];
+let level = 1;
+let score = 0;
+let found = 0;
+let total = 0;
+let streak = 0;
+let attempts = 0;
+let maxAttempts = 0;
+
+/* ============ DOM ============ */
+
+const gameEl       = document.getElementById("game");
+const feedbackEl   = document.getElementById("feedback");
+const nextBtn      = document.getElementById("nextBtn");
+const soundToggle  = document.getElementById("sound");
+const themeToggle  = document.getElementById("themeToggle");
+const modeSelect   = document.getElementById("mode");
+
+/* ============ THEME ============ */
+
+function applyTheme(light){
+    document.body.classList.toggle("light", light);
+    themeToggle.checked = light;
+    try { localStorage.setItem(THEME_KEY, light ? "1" : "0"); } catch(e){}
 }
+
+(function initTheme(){
+    let saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch(e){}
+    applyTheme(saved === "1");
+})();
+
+themeToggle.addEventListener("change", () => applyTheme(themeToggle.checked));
+
+/* ============ NAV ============ */
+
+function goBack(){
+    location.href = "index.html";
+}
+
+/* ============ SOUND ============ */
+
+let audioCtx = null;
+
+function beep(freq, duration, type){
+    if(!soundToggle.checked) return;
+    try{
+        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type || "sine";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }catch(e){}
+}
+
+const sfxGood = () => beep(880, 0.12, "triangle");
+const sfxBad  = () => beep(180, 0.15, "sawtooth");
+const sfxWin  = () => { beep(660,0.1,"triangle"); setTimeout(()=>beep(990,0.18,"triangle"),110); };
+const sfxFail = () => { beep(220,0.15,"sawtooth"); setTimeout(()=>beep(140,0.25,"sawtooth"),140); };
+
+/* ============ UTILS ============ */
+
+function randomSymbol(){ return SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)]; }
 
 function updateStats(){
-    document.getElementById("level").textContent=level;
-    document.getElementById("score").textContent=score;
-    document.getElementById("found").textContent=found;
-    document.getElementById("total").textContent=total;
+    document.getElementById("level").textContent = level;
+    document.getElementById("score").textContent = score;
+    document.getElementById("found").textContent = found;
+    document.getElementById("total").textContent = total;
+    document.getElementById("attempts").textContent = attempts;
+    document.getElementById("maxAttempts").textContent = maxAttempts;
 }
 
-function feedback(t){
-    document.getElementById("feedback").textContent=t;
+function feedback(text, kind){
+    feedbackEl.textContent = text;
+    feedbackEl.className = kind || "";
 }
 
-function createGrid(state,size){
+/* ============ GRID ============ */
 
-    const side=Math.sqrt(size);
+function createGrid(state, size, flashFake){
+    const side = Math.sqrt(size);
 
-    game.innerHTML="";
-    game.style.gridTemplateColumns=`repeat(${side+1},60px)`;
+    gameEl.innerHTML = "";
+    gameEl.style.setProperty("--cols", side + 1);
 
-    const empty=document.createElement("div");
-    empty.className="coord";
-    empty.style.opacity="0";
-    game.appendChild(empty);
+    // верхний левый пустой угол
+    const empty = document.createElement("div");
+    empty.className = "coord";
+    empty.style.opacity = "0";
+    gameEl.appendChild(empty);
 
-    for(let c=0;c<side;c++){
-        let top=document.createElement("div");
-        top.className="coord";
-        top.textContent=letters[c];
-        game.appendChild(top);
+    // верхние координаты
+    for(let c = 0; c < side; c++){
+        const top = document.createElement("div");
+        top.className = "coord";
+        top.textContent = LETTERS[c];
+        gameEl.appendChild(top);
     }
 
-    for(let r=0;r<side;r++){
+    // строки
+    for(let r = 0; r < side; r++){
+        const left = document.createElement("div");
+        left.className = "coord";
+        left.textContent = r + 1;
+        gameEl.appendChild(left);
 
-        let left=document.createElement("div");
-        left.className="coord";
-        left.textContent=r+1;
-        game.appendChild(left);
+        for(let c = 0; c < side; c++){
+            const i = r * side + c;
 
-        for(let c=0;c<side;c++){
+            const cell = document.createElement("div");
+            cell.className = "cell";
+            cell.textContent = state[i];
+            cell.dataset.index = i;
+            cell.setAttribute("role", "button");
+            cell.setAttribute("tabindex", "0");
+            cell.setAttribute("aria-label", `Клетка ${LETTERS[c]}${r+1}`);
 
-            let i=r*side+c;
+            cell.addEventListener("click", () => check(i, cell));
+            cell.addEventListener("keydown", (e) => {
+                if(e.key === "Enter" || e.key === " "){
+                    e.preventDefault();
+                    check(i, cell);
+                }
+            });
 
-            let div=document.createElement("div");
-            div.className="cell";
-            div.textContent=state[i];
-
-            div.onclick=()=>check(i,div);
-
-            game.appendChild(div);
+            gameEl.appendChild(cell);
         }
     }
 
-    /* ЛОЖНЫЕ СИГНАЛЫ — КАК В ТВОЁМ КОДЕ */
-    setTimeout(()=>{
-        document.querySelectorAll(".cell").forEach((el,i)=>{
-            if(fakeIndices.includes(i)){
-                el.style.filter="brightness(1.4)";
-                el.style.transform="scale(1.05)";
-
-                setTimeout(()=>{
-                    el.style.filter="";
-                    el.style.transform="";
-                },220);
-            }
-        });
-    },30);
+    // флеш-подсказки для ложных сигналов (только при второй отрисовке)
+    if(flashFake && fakeIndices.length){
+        setTimeout(() => {
+            gameEl.querySelectorAll(".cell").forEach(el => {
+                const i = +el.dataset.index;
+                if(fakeIndices.includes(i)){
+                    el.style.filter = "brightness(1.4)";
+                    el.style.transform = "scale(1.05)";
+                    setTimeout(() => {
+                        el.style.filter = "";
+                        el.style.transform = "";
+                    }, 220);
+                }
+            });
+        }, 30);
+    }
 }
 
+/* ============ GENERATE ============ */
+
 function generate(){
+    const size        = +document.getElementById("size").value;
+    const changeCount = +document.getElementById("changes").value;
+    const speed       = +document.getElementById("speed").value;
 
-    let size=+document.getElementById("size").value;
-    let changeCount=+document.getElementById("changes").value;
-    let speed=+document.getElementById("speed").value;
+    mode = modeSelect.value;
 
-    mode=document.getElementById("mode").value;
+    baseState      = [];
+    changedState   = [];
+    changedIndices = [];
+    fakeIndices    = [];
 
-    baseState=[];
-    changedState=[];
-    changedIndices=[];
-    fakeIndices=[];
+    found    = 0;
+    total    = changeCount;
+    attempts = 0;
+    // попыток в 2 раза больше изменений — с запасом
+    maxAttempts = Math.max(changeCount * 2, changeCount + 2);
 
-    found=0;
-    total=changeCount;
-
-    for(let i=0;i<size;i++){
+    // база
+    for(let i = 0; i < size; i++){
         baseState.push(randomSymbol());
     }
 
-    changedState=[...baseState];
+    changedState = [...baseState];
 
-    while(changedIndices.length<changeCount){
-        let idx=Math.floor(Math.random()*size);
-
-        if(!changedIndices.includes(idx)){
-            changedIndices.push(idx);
-        }
+    // выбираем индексы, которые будем менять
+    while(changedIndices.length < changeCount){
+        const idx = Math.floor(Math.random() * size);
+        if(!changedIndices.includes(idx)) changedIndices.push(idx);
     }
 
-    changedIndices.forEach(i=>{
-        changedState[i]=randomSymbol();
+    // гарантированно другой символ
+    changedIndices.forEach(i => {
+        let s;
+        do { s = randomSymbol(); } while (s === baseState[i]);
+        changedState[i] = s;
     });
 
-    /* ЛОЖНЫЕ СИГНАЛЫ — КАК БЫЛО */
-    let fakeCount=Math.min(3,Math.floor(changeCount/2));
+    // ложные сигналы, с учётом свободного места
+    const freeSpace = size - changeCount;
+    const fakeCount = Math.max(0, Math.min(3, Math.floor(changeCount / 2), freeSpace));
 
-    while(fakeIndices.length<fakeCount){
-        let idx=Math.floor(Math.random()*size);
-
-        if(
-            !changedIndices.includes(idx)
-            &&
-            !fakeIndices.includes(idx)
-        ){
+    while(fakeIndices.length < fakeCount){
+        const idx = Math.floor(Math.random() * size);
+        if(!changedIndices.includes(idx) && !fakeIndices.includes(idx)){
             fakeIndices.push(idx);
         }
     }
 
-    showing=true;
-    createGrid(baseState,size);
+    showing = true;
+    locked  = false;
 
-    if(mode==="auto"){
+    createGrid(baseState, size, false);
+    updateStats();
 
-        setTimeout(()=>{
-            showing=false;
-            createGrid(changedState,size);
-        },speed);
+    // кнопка "ДАЛЬШЕ" активна только в ручном режиме во время показа
+    nextBtn.disabled = (mode !== "manual");
 
+    if(mode === "auto"){
+        setTimeout(() => {
+            showing = false;
+            nextBtn.disabled = true;
+            createGrid(changedState, size, true);
+        }, speed);
     }
 }
 
-function showManual(){
+/* ============ MANUAL NEXT ============ */
 
-    if(mode!=="manual") return;
+function showManual(){
+    if(mode !== "manual") return;
     if(!showing) return;
 
-    showing=false;
+    showing = false;
+    nextBtn.disabled = true;
 
-    const size=
-    +document.getElementById("size").value;
-
-    createGrid(changedState,size);
+    const size = +document.getElementById("size").value;
+    createGrid(changedState, size, true);
 }
 
+modeSelect.addEventListener("change", () => {
+    mode = modeSelect.value;
+    nextBtn.disabled = (mode !== "manual" || !showing);
+});
+
+/* ============ GAME FLOW ============ */
+
 function startGame(){
-    level=1;
-    score=0;
-    streak=0;
+    level = 1;
+    score = 0;
+    streak = 0;
     updateStats();
     next();
 }
@@ -410,45 +758,98 @@ function next(){
     generate();
 }
 
-function check(i,el){
-
-    if(showing)return;
+function check(i, el){
+    if(showing || locked) return;
+    if(el.classList.contains("correct")) return;
 
     if(changedIndices.includes(i)){
+        el.classList.add("correct");
+        found++;
+        streak++;
 
-        if(!el.classList.contains("correct")){
-            el.classList.add("correct");
-            found++;
-            streak++;
-            score+=10+(streak>=3?2:0);
-            feedback("✅ верно");
+        const bonus = streak >= 3 ? 2 : 0;
+        score += 10 + bonus;
+        feedback("✅ верно" + (bonus ? " (+бонус)" : ""), "good");
+        sfxGood();
+
+    } else {
+        attempts++;
+        streak = 0;
+
+        if(fakeIndices.includes(i)){
+            el.classList.add("wrong");
+            score = Math.max(0, score - 2);
+            feedback("⚠️ ложный сигнал", "bad");
+        } else {
+            el.classList.add("wrong");
+            score = Math.max(0, score - 1);
+            feedback("❌ нет", "bad");
         }
 
-    }else if(fakeIndices.includes(i)){
+        sfxBad();
 
-        el.classList.add("wrong");
-        streak=0;
-        score-=2;
-        feedback("⚠️ ложный сигнал");
+        setTimeout(() => el.classList.remove("wrong"), 400);
 
-    }else{
-
-        el.classList.add("wrong");
-        streak=0;
-        score-=1;
-        feedback("❌ нет");
+        if(attempts >= maxAttempts){
+            endRound(false);
+            return;
+        }
     }
 
     updateStats();
 
-    if(found>=total){
-        level++;
-        feedback("⚡ уровень пройден");
-        setTimeout(next,800);
+    if(found >= total){
+        endRound(true);
     }
 }
 
+function endRound(win){
+    locked = true;
+
+    if(win){
+        level++;
+        feedback("⚡ уровень пройден", "good");
+        sfxWin();
+        updateStats();
+        setTimeout(() => {
+            if(!locked) return;
+            next();
+        }, 900);
+    } else {
+        score = Math.max(0, score - 5);
+        streak = 0;
+        feedback("💥 раунд провален", "bad");
+        sfxFail();
+        updateStats();
+
+        // подсветим все упущенные изменения
+        gameEl.querySelectorAll(".cell").forEach(el => {
+            const i = +el.dataset.index;
+            if(changedIndices.includes(i) && !el.classList.contains("correct")){
+                el.style.outline = "3px solid #FF6A00";
+                el.style.outlineOffset = "-3px";
+            }
+        });
+
+        setTimeout(() => {
+            if(!locked) return;
+            next();
+        }, 1800);
+    }
+}
+
+/* ============ BOOT ============ */
+
+// первая отрисовка пустой сетки, чтобы не было прыжка интерфейса
+(function boot(){
+    createGrid(new Array(16).fill(""), 16, false);
+    nextBtn.disabled = true;
+})();
+
 </script>
 
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
 </body>
 </html>

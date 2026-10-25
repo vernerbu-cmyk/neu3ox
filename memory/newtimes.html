@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ложные новости - Мнемо-Арена</title>
+<style>
+  :root {
+    --blue: #2D6CDF;
+    --blue-dark: #1E4FA8;
+    --blue-light: #EBF2FF;
+    --orange: #FF8C42;
+    --orange-dark: #E86E1F;
+    --orange-light: #FFF2E5;
+    --bg: #F7F9FC;
+    --text: #1F2937;
+    --text-muted: #6B7280;
+    --border: #E5EAF2;
+    --green: #22C55E;
+    --red: #EF4444;
+    --yellow: #F59E0B;
+    --purple: #A855F7;
+    --purple-light: #F5EDFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--text);
+    padding: 16px;
+    overflow-x: hidden;
+  }
+
+  .container { max-width: 800px; margin: 0 auto; }
+
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding: 16px 22px;
+    background: #fff; border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(45,108,223,.06);
+    flex-wrap: wrap; gap: 10px;
+  }
+
+  .back-btn {
+    width: 46px; height: 46px;
+    border: none; border-radius: 14px;
+    background: var(--blue-light);
+    color: var(--blue);
+    font-size: 22px; font-weight: 700;
+    cursor: pointer; transition: .18s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .back-btn:hover { background: var(--blue); color: #fff; transform: translateY(-1px); }
+
+  h1 { font-size: 20px; letter-spacing: .5px; color: var(--blue-dark); font-weight: 800; }
+
+  .score-bar {
+    background: var(--orange); color: #fff;
+    padding: 8px 18px; border-radius: 30px; font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(255,140,66,.3);
+  }
+  .score-bar span { color: #fff; font-weight: 800; font-size: 17px; }
+
+  main { min-height: 520px; }
+
+  .game-header { text-align: center; margin-bottom: 20px; }
+  .game-header h2 { font-size: 22px; margin-bottom: 6px; color: var(--blue-dark); font-weight: 800; }
+  .subtitle { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+
+  .status {
+    text-align: center; font-size: 16px; margin: 16px 0;
+    min-height: 26px; font-weight: 700; color: var(--text); transition: .3s;
+  }
+  .status.good { color: #16A34A; }
+  .status.bad { color: #DC2626; }
+  .status.warn { color: var(--orange-dark); }
+
+  .panel {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 22px; padding: 26px;
+    box-shadow: 0 8px 24px rgba(45,108,223,.06);
+  }
+
+  .presets {
+    display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap;
+  }
+  .preset-btn {
+    flex: 1 1 auto; min-width: 90px;
+    padding: 10px 8px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: #fff;
+    color: var(--blue-dark);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: .18s;
+    font-family: inherit;
+  }
+  .preset-btn:hover { border-color: var(--orange); color: var(--orange-dark); transform: translateY(-1px); }
+  .preset-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  .segment {
+    display: flex; gap: 8px; margin-top: 8px;
+  }
+  .segment-btn {
+    flex: 1;
+    padding: 12px 10px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: #fff;
+    color: var(--blue-dark);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: .18s;
+    font-family: inherit;
+    line-height: 1.3;
+  }
+  .segment-btn:hover { border-color: var(--orange); }
+  .segment-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .segment-btn small {
+    display: block;
+    font-size: 11px;
+    opacity: .7;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .segment-btn.active small { opacity: .9; }
+
+  .slider-disabled {
+    opacity: .35;
+    pointer-events: none;
+  }
+
+  .news-card {
+    background: linear-gradient(145deg, var(--orange-light), var(--purple-light));
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    padding: 30px 26px;
+    margin: 20px 0;
+    animation: popIn .4s cubic-bezier(.34,1.56,.64,1);
+    position: relative;
+  }
+
+  .news-card::before {
+    content: '📰';
+    position: absolute;
+    top: -14px;
+    left: 24px;
+    font-size: 28px;
+    background: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+  }
+
+  .news-headline {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--orange-dark);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 14px;
+  }
+
+  .news-text {
+    font-size: 19px;
+    line-height: 1.75;
+    font-weight: 600;
+    color: var(--blue-dark);
+    word-wrap: break-word;
+  }
+
+  .news-text p {
+    margin-bottom: 14px;
+  }
+  .news-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .news-text.syllables {
+    font-size: 20px;
+    line-height: 1.9;
+    font-weight: 700;
+    letter-spacing: .3px;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .question-label {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--blue-dark);
+    margin-bottom: 6px;
+  }
+
+  .question-context {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+
+  .options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .option-text {
+    padding: 20px 16px;
+    font-size: 17px;
+    font-weight: 700;
+    border-radius: 16px;
+    background: #fff;
+    border: 2px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+    transition: .15s;
+    text-align: center;
+    user-select: none;
+    word-break: break-word;
+    font-family: inherit;
+    line-height: 1.3;
+  }
+
+  .option-text:hover:not(:disabled) {
+    background: var(--blue-light);
+    border-color: var(--blue);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(45,108,223,.12);
+  }
+
+  .option-text:disabled { cursor: default; }
+
+  .option-text.correct {
+    background: #DCFCE7;
+    border-color: var(--green);
+    transform: scale(1.02);
+    box-shadow: 0 0 0 4px rgba(34,197,94,.15);
+  }
+
+  .option-text.wrong {
+    background: #FEE2E2;
+    border-color: var(--red);
+    animation: shake .35s ease;
+  }
+
+  .option-text.dimmed { opacity: .35; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    50% { transform: translateX(6px); }
+    75% { transform: translateX(-4px); }
+  }
+
+  .progress-dots {
+    display: flex; gap: 6px; justify-content: center;
+    margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border);
+    transition: .3s;
+  }
+  .dot.active { background: var(--orange); transform: scale(1.4); }
+  .dot.correct { background: var(--green); }
+  .dot.wrong { background: var(--red); }
+
+  .settings-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; font-size: 15px; color: var(--text); font-weight: 700;
+  }
+  .settings-row b { color: var(--blue-dark); font-size: 16px; font-weight: 800; }
+  input[type="range"] { width: 100%; accent-color: #FF8C42; height: 26px; }
+
+  .time-hint {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 700;
+    padding: 10px;
+    background: var(--blue-light);
+    border-radius: 10px;
+    margin-top: 6px;
+  }
+  .time-hint b { color: var(--blue-dark); }
+
+  .btn-main {
+    display: block; margin: 24px auto 0; padding: 16px 40px;
+    border-radius: 14px; border: none;
+    background: var(--orange); color: #fff;
+    font-size: 17px; font-weight: 800; cursor: pointer;
+    transition: .2s; letter-spacing: .5px;
+    box-shadow: 0 8px 20px rgba(255,140,66,.3);
+    font-family: inherit;
+  }
+  .btn-main:hover {
+    background: var(--orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(255,140,66,.4);
+  }
+  .btn-main:active { transform: translateY(0); }
+
+  .btn-secondary {
+    display: block; margin: 8px auto 0; padding: 12px 30px;
+    border-radius: 14px; border: none;
+    background: transparent; color: var(--blue-dark);
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: .2s;
+    font-family: inherit;
+  }
+  .btn-secondary:hover { background: var(--blue-light); }
+
+  .timer-bar {
+    height: 10px; border-radius: 10px; background: var(--border);
+    overflow: hidden; margin-bottom: 20px;
+  }
+  .timer-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--yellow), var(--red));
+    transition: width 0.5s linear;
+    width: 100%;
+  }
+
+  .result-screen { text-align: center; padding: 20px 0; }
+  .result-screen .big {
+    font-size: 72px; margin-bottom: 12px;
+    animation: popIn .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .result-screen h2 { font-size: 26px; margin-bottom: 10px; color: var(--blue-dark); font-weight: 800; }
+  .result-screen p { color: var(--text-muted); font-size: 16px; margin: 6px 0; font-weight: 600; }
+  .stars { font-size: 40px; margin: 20px 0; letter-spacing: 6px; }
+
+  .review-full-news {
+    margin-top: 20px;
+    padding: 18px;
+    background: rgba(45,108,223,.05);
+    border-radius: 14px;
+    text-align: left;
+  }
+
+  .review-full-news .label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .review-full-news .text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--blue-dark);
+    font-weight: 600;
+  }
+
+  .review-full-news .text p {
+    margin-bottom: 10px;
+  }
+  .review-full-news .text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .review-answers {
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+  }
+
+  .review-answers .ans {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 800;
+    border: 2px solid;
+  }
+  .review-answers .ans.ok { background: #DCFCE7; border-color: var(--green); }
+  .review-answers .ans.bad { background: #FEE2E2; border-color: var(--red); }
+
+  @media (max-width: 500px) {
+    .news-text { font-size: 16px; line-height: 1.6; }
+    .news-text.syllables { font-size: 17px; line-height: 1.85; }
+    .option-text { font-size: 14px; padding: 12px 8px; }
+    .preset-btn { font-size: 12px; }
+    .news-card { padding: 22px 18px; }
+    .segment-btn { font-size: 12px; padding: 10px 6px; }
+  }
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <button class="back-btn" onclick="location.href='index.html'">←</button>
+    <h1>🐙 ЛОЖНЫЕ НОВОСТИ</h1>
+    <div class="score-bar">Очки: <span id="globalScore">0</span></div>
+  </header>
+  <main id="game"></main>
+</div>
+
+<script>
+/* ============ УТИЛИТЫ ============ */
+const $ = id => document.getElementById(id);
+const gameEl = $('game');
+let globalScore = 0;
+$('globalScore').textContent = globalScore;
+function addScore(n) { globalScore += n; $('globalScore').textContent = globalScore; }
+
+function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+const rand = n => Math.floor(Math.random() * n);
+
+let timeouts = [];
+function wait(ms, fn) {
+  const id = setTimeout(fn, ms);
+  timeouts.push(id);
+  return id;
+}
+function clearTimeouts() {
+  timeouts.forEach(clearTimeout);
+  timeouts = [];
+}
+
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+}
+function beep(freq, dur = 0.15, type = 'sine', vol = 0.08) {
+  if (!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = type;
+    osc.frequency.value = freq;
+    const t = audioCtx.currentTime;
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.start(t); osc.stop(t + dur + 0.02);
+  } catch(e) {}
+}
+function sfxCorrect() { beep(660, 0.1); setTimeout(() => beep(880, 0.15), 90); }
+function sfxWrong() { beep(180, 0.3, 'sawtooth', 0.12); }
+function sfxClick() { beep(440, 0.05, 'triangle', 0.06); }
+function sfxWin() {
+  [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.2), i * 120));
+}
+
+/* ============ РАЗБИЕНИЕ ПО СЛОГАМ ============ */
+const VOWELS = 'аеёиоуыэюяАЕЁИОУЫЭЮЯ';
+
+function groupConsonants(str) {
+  const groups = [];
+  let i = 0;
+  while (i < str.length) {
+    if (i + 1 < str.length && (str[i+1] === 'ь' || str[i+1] === 'ъ')) {
+      groups.push(str[i] + str[i+1]);
+      i += 2;
+    } else {
+      groups.push(str[i]);
+      i++;
+    }
+  }
+  return groups;
+}
+
+function splitIntoSyllables(word) {
+  if (word.length <= 3) return word;
+  // если нет гласных — оставить как есть
+  if (![...word].some(c => VOWELS.includes(c))) return word;
+
+  const syllables = [];
+  let current = '';
+  let i = 0;
+
+  while (i < word.length) {
+    current += word[i];
+    if (!VOWELS.includes(word[i])) {
+      i++;
+      continue;
+    }
+    // гласная
+    i++;
+    let j = i;
+    let consonants = '';
+    while (j < word.length && !VOWELS.includes(word[j])) {
+      consonants += word[j];
+      j++;
+    }
+
+    if (j >= word.length) {
+      // конец слова
+      current += consonants;
+      syllables.push(current);
+      current = '';
+      i = word.length;
+    } else {
+      const groups = groupConsonants(consonants);
+      if (groups.length <= 1) {
+        syllables.push(current);
+        current = '';
+      } else {
+        current += groups[0];
+        syllables.push(current);
+        current = '';
+        i += groups[0].length;
+      }
+    }
+  }
+  if (current) {
+    if (![...current].some(c => VOWELS.includes(c))) {
+      if (syllables.length > 0) {
+        syllables[syllables.length - 1] += current;
+      } else {
+        syllables.push(current);
+      }
+    } else {
+      syllables.push(current);
+    }
+  }
+  return syllables.join('-');
+}
+
+function syllableTransform(text) {
+  return text.replace(/[а-яёА-ЯЁ]+/g, w => splitIntoSyllables(w));
+}
+
+function applySyllablesToParagraphs(paragraphs) {
+  return paragraphs.map(p => syllableTransform(p));
+}
+
+/* ============ БАЗА ============ */
+
+const PLACES = [
+  { nom: 'Тверь', in: 'в Твери' },
+  { nom: 'Пермь', in: 'в Перми' },
+  { nom: 'Омск', in: 'в Омске' },
+  { nom: 'Волгоград', in: 'в Волгограде' },
+  { nom: 'Иркутск', in: 'в Иркутске' },
+  { nom: 'Красноярск', in: 'в Красноярске' },
+  { nom: 'Челябинск', in: 'в Челябинске' },
+  { nom: 'Саратов', in: 'в Саратове' },
+  { nom: 'Барнаул', in: 'в Барнауле' },
+  { nom: 'Тула', in: 'в Туле' },
+  { nom: 'Уфа', in: 'в Уфе' },
+  { nom: 'Казань', in: 'в Казани' }
+];
+
+const CREATURES = [
+  'кот', 'ёжик', 'пингвин', 'хомяк', 'крокодил', 'петух', 'бегемот',
+  'динозавр', 'робот', 'дракон', 'осьминог', 'дворник', 'программист',
+  'космонавт', 'велосипедист', 'говорящий тапок', 'призрак', 'гном',
+  'клоун', 'волшебник'
+];
+
+const ACTIONS = [
+  { verb: 'родил', object: 'швабру', ability: 'швабра сразу начала петь оперу' },
+  { verb: 'съел', object: 'месяц', ability: 'теперь его видно из космоса' },
+  { verb: 'украл', object: 'радугу', ability: 'теперь радуга висит у него в гараже' },
+  { verb: 'потерял', object: 'память', ability: 'теперь он разговаривает с кошками' },
+  { verb: 'выиграл', object: 'миллион', ability: 'он потратил всё на морковь' },
+  { verb: 'продал', object: 'облако', ability: 'вместо него он купил вулкан' },
+  { verb: 'проглотил', object: 'трамвай', ability: 'теперь он весит как слон' },
+  { verb: 'спас', object: 'чебурашку', ability: 'за это ему дали медаль из сыра' },
+  { verb: 'купил', object: 'чемодан', ability: 'внутри чемодана оказался дракон' },
+  { verb: 'поймал', object: 'молнию', ability: 'теперь у него волосы дыбом' },
+  { verb: 'вырастил', object: 'банан размером с дом', ability: 'теперь он кормит всю деревню' },
+  { verb: 'открыл', object: 'пекарню для ежей', ability: 'к ней стоит очередь из 300 колючих' },
+  { verb: 'построил', object: 'бассейн из киселя', ability: 'плавать в нём нельзя, зато вкусно' },
+  { verb: 'изобрёл', object: 'шапку-невидимку', ability: 'но сам он её не видит' },
+  { verb: 'сварил', object: 'компот из облаков', ability: 'на вкус он как понедельник' },
+  { verb: 'обменял', object: 'велосипед на звезду', ability: 'звезда оказалась обычной лампочкой' },
+  { verb: 'выпустил', object: '300 пингвинов в метро', ability: 'теперь они ездят там бесплатно' },
+  { verb: 'выучил', object: 'дельфиний язык', ability: 'но говорит на нём только по вторникам' }
+];
+
+const TIMES = [
+  'вчера утром',
+  'в понедельник днём',
+  'в три часа ночи',
+  'в субботу вечером',
+  'на прошлой неделе',
+  'в среду после обеда',
+  'в воскресенье на рассвете',
+  'во вторник ровно в полдень'
+];
+
+const CIRCUMSTANCES = [
+  'на центральной площади',
+  'возле старой пекарни',
+  'в парке у фонтана',
+  'на автобусной остановке',
+  'во дворе дома номер семь',
+  'у входа в метро',
+  'на рынке возле сырного ряда',
+  'в очереди за мороженым'
+];
+
+const WITNESS_NAMES = [
+  'пенсионер Иван Петрович',
+  'школьница Маша из 5 «Б»',
+  'продавщица тётя Зина',
+  'почтальон Печкин',
+  'сосед дядя Гриша',
+  'прохожий Аркадий',
+  'дворник Степан',
+  'водитель автобуса Николай',
+  'бариста Кирилл',
+  'библиотекарь Ольга Ивановна'
+];
+
+const WITNESS_QUOTES = [
+  'Я такого за сорок лет не видел!',
+  'Сначала подумал, что мне мерещится.',
+  'Мой кот до сих пор не может успокоиться.',
+  'Я просто шёл мимо с батоном — и тут такое!',
+  'Дети кричали от восторга, а я испугалась.',
+  'Пришлось вызывать сразу три службы.',
+  'Это было хуже, чем в прошлый раз.',
+  'Мы сфотографировали всё, но телефон разрядился.',
+  'Я вызвал полицию, но они не поверили.',
+  'Пришлось звонить в зоопарк.',
+  'Такого даже в новостях не показывают.'
+];
+
+const EXPERTS = [
+  'профессор Синичкин из института Очень Странных Явлений',
+  'доктор Пельменев из академии Абсурдных Наук',
+  'эксперт по странностям Курочкин',
+  'кандидат наук Бубликов',
+  'известный специалист Пирожков',
+  'магистр Всевозможных Наук Тарарам'
+];
+
+const EXPERT_QUOTES = [
+  'Это первый подобный случай в истории.',
+  'Наука пока не может это объяснить.',
+  'Мы будем изучать это не меньше года.',
+  'Такое бывает раз в сто лет.',
+  'Нужно срочно собрать комиссию.',
+  'Главное — не паниковать.',
+  'Мы уже написали об этом статью.',
+  'Природа полна сюрпризов.'
+];
+
+const CONSEQUENCES = [
+  'Теперь к этому месту выстроилась очередь на три квартала.',
+  'Мэрия решила поставить там памятник.',
+  'Билеты на это зрелище раскупили на год вперёд.',
+  'Местные школьники требуют сделать это школьным уроком.',
+  'Соседние города просят повторить это у них.',
+  'Учёные подали заявку на грант.',
+  'Телеканалы приехали снимать сюжет.',
+  'В соцсетях уже появился мем.',
+  'Туристы начали приезжать целыми автобусами.',
+  'Фермеры просят продать им это чудо.'
+];
+
+const ENDINGS = [
+  'Подробности уточняются.',
+  'Следим за развитием событий.',
+  'К счастью, никто не пострадал.',
+  'Это уже не первый такой случай.',
+  'Никто не знает, что будет дальше.',
+  'Местные уже придумали новый праздник.',
+  'История пока не получила продолжения.',
+  'Продолжение — в следующем выпуске.'
+];
+
+const DETAILS = [
+  'Рядом стояла машина с мороженым, и все свидетели сначала подумали, что это шутка.',
+  'Всё это происходило под музыку из соседнего кафе.',
+  'Погода в тот день была самая обычная, ничто не предвещало.',
+  'Никто из прохожих сначала не понял, что происходит.',
+  'К месту событий сразу сбежались голуби.',
+  'Где-то вдалеке играла гармонь, и это добавляло странности.',
+  'На асфальте остались следы, которые никто не смог объяснить.',
+  'Один из свидетелей снимал всё на старый телефон с кнопками.'
+];
+
+/* ============ ГЕНЕРАЦИЯ ============ */
+function generateNews(size) {
+  const place = PLACES[rand(PLACES.length)];
+  const creature = CREATURES[rand(CREATURES.length)];
+  const action = ACTIONS[rand(ACTIONS.length)];
+  const time = TIMES[rand(TIMES.length)];
+  const circumstance = CIRCUMSTANCES[rand(CIRCUMSTANCES.length)];
+  const witness = WITNESS_NAMES[rand(WITNESS_NAMES.length)];
+  const witnessQuote = WITNESS_QUOTES[rand(WITNESS_QUOTES.length)];
+  const expert = EXPERTS[rand(EXPERTS.length)];
+  const expertQuote = EXPERT_QUOTES[rand(EXPERT_QUOTES.length)];
+  const consequence = CONSEQUENCES[rand(CONSEQUENCES.length)];
+  const ending = ENDINGS[rand(ENDINGS.length)];
+  const detail = DETAILS[rand(DETAILS.length)];
+
+  const p1 = `${time.charAt(0).toUpperCase() + time.slice(1)} ${place.in} ${creature} ${action.verb} ${action.object}.`;
+  const p2 = `По словам очевидцев, всё произошло ${circumstance}.`;
+  const p3 = `${witness.charAt(0).toUpperCase() + witness.slice(1)} рассказал: «${witnessQuote}»`;
+  const p4 = `Теперь ${action.ability}. ${consequence}`;
+  const p5 = `${detail}`;
+  const p6 = `${expert.charAt(0).toUpperCase() + expert.slice(1)} прокомментировал: «${expertQuote}»`;
+  const p7 = `${ending}`;
+
+  let paragraphs;
+  if (size === 'short') {
+    paragraphs = [p1, p3, p7];
+  } else if (size === 'medium') {
+    paragraphs = [p1, p3, p4, p6, p7];
+  } else {
+    paragraphs = [p1, p2, p3, p4, p5, p6, p7];
+  }
+
+  return {
+    paragraphs,
+    facts: {
+      place: place.nom,
+      creature,
+      action: `${action.verb} ${action.object}`,
+      time,
+      circumstance,
+      witness,
+      witnessQuote,
+      expert,
+      expertQuote,
+      consequence,
+      detail,
+      ending
+    },
+    actionObj: action
+  };
+}
+
+function wrongOptions(correct, pool, count = 3) {
+  const filtered = pool.filter(v => v !== correct);
+  return shuffle(filtered).slice(0, count);
+}
+
+/* ============ НАСТРОЙКИ ============ */
+let newsCfg = {
+  questions: 5,
+  showTime: 40,
+  timerMode: true,
+  size: 'medium',
+  headlines: true,
+  syllables: false
+};
+try {
+  const s = localStorage.getItem('newsCfg');
+  if (s) newsCfg = { ...newsCfg, ...JSON.parse(s) };
+} catch(e) {}
+
+/* ============ ЭКРАН НАСТРОЕК ============ */
+function startNews() {
+  clearTimeouts();
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🐙 Ложные новости</h2>
+      <div class="subtitle">Прочитай абсурдную статью — потом ответь на вопросы</div>
+    </div>
+    <div class="panel">
+      <div style="max-width: 480px; margin: 0 auto;">
+
+        <div class="presets" id="presets">
+          <button class="preset-btn" data-size="short" data-q="3" data-timer="0" data-time="30">🌱 Разминка</button>
+          <button class="preset-btn" data-size="medium" data-q="5" data-timer="1" data-time="40">⚡ Стандарт</button>
+          <button class="preset-btn" data-size="medium" data-q="6" data-timer="1" data-time="25">🔥 Сложнее</button>
+          <button class="preset-btn" data-size="long" data-q="8" data-timer="1" data-time="20">💀 Хардкор</button>
+        </div>
+
+        <div style="margin-bottom: 22px;">
+          <div class="settings-row"><span>Размер статьи</span><b id="sizeVal">${newsCfg.size === 'short' ? 'короткая' : newsCfg.size === 'medium' ? 'средняя' : 'длинная'}</b></div>
+          <div class="segment" id="sizeRow">
+            <button class="segment-btn" data-size="short">Короткая<small>3 абзаца</small></button>
+            <button class="segment-btn" data-size="medium">Средняя<small>5 абзацев</small></button>
+            <button class="segment-btn" data-size="long">Длинная<small>7 абзацев</small></button>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 22px;">
+          <div class="settings-row"><span>Формат текста</span><b id="syllablesVal">${newsCfg.syllables ? 'по слогам' : 'обычный'}</b></div>
+          <div class="segment" id="syllablesRow">
+            <button class="segment-btn" data-syllables="0">Обычный<small>целыми словами</small></button>
+            <button class="segment-btn" data-syllables="1">По слогам<small>для чтения</small></button>
+          </div>
+        </div>
+
+        <label style="display:block; margin-bottom: 22px;">
+          <div class="settings-row"><span>Сколько вопросов</span><b id="qVal">${newsCfg.questions}</b></div>
+          <input type="range" id="qRange" min="3" max="8" value="${newsCfg.questions}">
+        </label>
+
+        <div style="margin-bottom: 22px;">
+          <div class="settings-row"><span>Режим чтения</span><b id="timerModeVal">${newsCfg.timerMode ? 'с таймером' : 'без таймера'}</b></div>
+          <div class="segment" id="timerRow">
+            <button class="segment-btn" data-timer="1">С таймером<small>на время</small></button>
+            <button class="segment-btn" data-timer="0">Без таймера<small>сам решаю</small></button>
+          </div>
+        </div>
+
+        <label style="display:block; margin-bottom: 22px;" id="timeBlock">
+          <div class="settings-row"><span>Время на чтение</span><b id="timeVal">${newsCfg.showTime} сек</b></div>
+          <input type="range" id="timeRange" min="3" max="120" step="1" value="${newsCfg.showTime}">
+        </label>
+
+        <label style="display:flex; align-items:center; gap:12px; margin-bottom: 8px; cursor:pointer; font-weight:700;">
+          <input type="checkbox" id="headlines" ${newsCfg.headlines ? 'checked' : ''}
+            style="width:20px; height:20px; accent-color:#FF8C42;">
+          <span>Оформление "СРОЧНО В НОМЕР!"</span>
+        </label>
+
+        <div class="subtitle" style="text-align:left; padding: 14px; background: var(--blue-light); border-radius: 12px; line-height: 1.5; margin-top: 14px;">
+          💡 <b>Как играть:</b> увидишь абсурдную статью. Прочитай и запомни детали — потом ответишь на вопросы. В режиме «По слогам» слова разбиты дефисами — так легче читать.
+        </div>
+
+        <button class="btn-main" id="startBtn">Начать 📰</button>
+      </div>
+    </div>
+  `;
+
+  const qRange = $('qRange');
+  const timeRange = $('timeRange');
+  const timeBlock = $('timeBlock');
+
+  function updateTimerUI() {
+    $('timerModeVal').textContent = newsCfg.timerMode ? 'с таймером' : 'без таймера';
+    gameEl.querySelectorAll('#timerRow .segment-btn').forEach(b => {
+      b.classList.toggle('active', (b.dataset.timer === '1') === newsCfg.timerMode);
+    });
+    timeBlock.classList.toggle('slider-disabled', !newsCfg.timerMode);
+  }
+
+  function updateSizeUI() {
+    $('sizeVal').textContent = newsCfg.size === 'short' ? 'короткая' : newsCfg.size === 'medium' ? 'средняя' : 'длинная';
+    gameEl.querySelectorAll('#sizeRow .segment-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.size === newsCfg.size);
+    });
+  }
+
+  function updateSyllablesUI() {
+    $('syllablesVal').textContent = newsCfg.syllables ? 'по слогам' : 'обычный';
+    gameEl.querySelectorAll('#syllablesRow .segment-btn').forEach(b => {
+      b.classList.toggle('active', (b.dataset.syllables === '1') === newsCfg.syllables);
+    });
+  }
+
+  function markPresetActive() {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.preset-btn').forEach(b => {
+      if (b.dataset.size === newsCfg.size &&
+          +b.dataset.q === +qRange.value &&
+          (b.dataset.timer === '1') === newsCfg.timerMode &&
+          +b.dataset.time === +timeRange.value) {
+        b.classList.add('active');
+      }
+    });
+  }
+
+  gameEl.querySelectorAll('#sizeRow .segment-btn').forEach(b => {
+    b.onclick = () => {
+      newsCfg.size = b.dataset.size;
+      updateSizeUI();
+      markPresetActive();
+      sfxClick();
+    };
+  });
+
+  gameEl.querySelectorAll('#syllablesRow .segment-btn').forEach(b => {
+    b.onclick = () => {
+      newsCfg.syllables = b.dataset.syllables === '1';
+      updateSyllablesUI();
+      sfxClick();
+    };
+  });
+
+  gameEl.querySelectorAll('#timerRow .segment-btn').forEach(b => {
+    b.onclick = () => {
+      newsCfg.timerMode = b.dataset.timer === '1';
+      updateTimerUI();
+      markPresetActive();
+      sfxClick();
+    };
+  });
+
+  document.querySelectorAll('.preset-btn').forEach(b => {
+    b.onclick = () => {
+      newsCfg.size = b.dataset.size;
+      qRange.value = b.dataset.q;
+      newsCfg.timerMode = b.dataset.timer === '1';
+      timeRange.value = b.dataset.time;
+      $('qVal').textContent = b.dataset.q;
+      $('timeVal').textContent = b.dataset.time + ' сек';
+      updateSizeUI();
+      updateTimerUI();
+      markPresetActive();
+      sfxClick();
+    };
+  });
+
+  qRange.oninput = () => { $('qVal').textContent = qRange.value; markPresetActive(); sfxClick(); };
+  timeRange.oninput = () => { $('timeVal').textContent = timeRange.value + ' сек'; markPresetActive(); sfxClick(); };
+
+  updateSizeUI();
+  updateSyllablesUI();
+  updateTimerUI();
+  markPresetActive();
+
+  $('startBtn').onclick = () => {
+    newsCfg.questions = +qRange.value;
+    newsCfg.showTime = +timeRange.value;
+    newsCfg.headlines = $('headlines').checked;
+    try { localStorage.setItem('newsCfg', JSON.stringify(newsCfg)); } catch(e) {}
+    newsShow();
+  };
+}
+
+/* ============ ФАЗА 1: ПОКАЗ ============ */
+function newsShow() {
+  clearTimeouts();
+  const showTime = newsCfg.showTime;
+  const timerMode = newsCfg.timerMode;
+  const news = generateNews(newsCfg.size);
+
+  // Преобразуем абзацы по слогам, если включено
+  const displayParagraphs = newsCfg.syllables
+    ? applySyllablesToParagraphs(news.paragraphs)
+    : news.paragraphs;
+
+  const syllablesClass = newsCfg.syllables ? ' syllables' : '';
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🐙 Ложные новости</h2>
+      <div class="subtitle" id="subtitleLine">${timerMode ? `Читай и запоминай... <span id="time">${showTime}</span> сек` : 'Читай и запоминай — сам реши, когда готов'}</div>
+    </div>
+    <div class="panel">
+      ${timerMode ? `<div class="timer-bar"><div class="timer-fill" id="tfill" style="width:100%"></div></div>` : ''}
+      ${newsCfg.headlines ? `<div class="status warn">📰 СРОЧНО В НОМЕР!</div>` : ''}
+      <div class="news-card">
+        ${newsCfg.headlines ? `<div class="news-headline">Экстренный выпуск</div>` : ''}
+        <div class="news-text${syllablesClass}">
+          ${displayParagraphs.map(p => `<p>${p}</p>`).join('')}
+        </div>
+      </div>
+      ${timerMode ? '' : `<button class="btn-main" id="readyBtn">Я запомнил →</button>`}
+    </div>
+  `;
+
+  beep(600, 0.15);
+
+  if (timerMode) {
+    let left = showTime;
+    const intervalId = setInterval(() => {
+      left--;
+      const t = $('time'); if (t) t.textContent = Math.max(0, left);
+      const f = $('tfill'); if (f) f.style.width = (Math.max(0, left) / showTime * 100) + '%';
+      if (left <= 0) clearInterval(intervalId);
+    }, 1000);
+    timeouts.push(intervalId);
+
+    wait(showTime * 1000, () => newsAsk(news));
+  } else {
+    $('readyBtn').onclick = () => {
+      sfxClick();
+      newsAsk(news);
+    };
+  }
+}
+
+/* ============ ФАЗА 2: ВОПРОСЫ ============ */
+function newsAsk(news) {
+  clearTimeouts();
+
+  const allQuestions = [
+    {
+      key: 'place', q: 'ГДЕ это произошло?', context: 'Место',
+      correct: news.facts.place,
+      wrongs: wrongOptions(news.facts.place, PLACES.map(p => p.nom), 3)
+    },
+    {
+      key: 'creature', q: 'КТО герой новости?', context: 'Герой',
+      correct: news.facts.creature,
+      wrongs: wrongOptions(news.facts.creature, CREATURES, 3)
+    },
+    {
+      key: 'action', q: 'ЧТО он сделал?', context: 'Действие',
+      correct: news.facts.action,
+      wrongs: shuffle(ACTIONS.filter(a =>
+        !(a.verb === news.actionObj.verb && a.object === news.actionObj.object)
+      ).map(a => `${a.verb} ${a.object}`)).slice(0, 3)
+    },
+    {
+      key: 'time', q: 'КОГДА это случилось?', context: 'Время',
+      correct: news.facts.time,
+      wrongs: wrongOptions(news.facts.time, TIMES, 3)
+    },
+    {
+      key: 'circumstance', q: 'ГДЕ ИМЕННО произошло событие?', context: 'Обстоятельства',
+      correct: news.facts.circumstance,
+      wrongs: wrongOptions(news.facts.circumstance, CIRCUMSTANCES, 3)
+    },
+    {
+      key: 'witness', q: 'КТО был свидетелем?', context: 'Свидетель',
+      correct: news.facts.witness,
+      wrongs: wrongOptions(news.facts.witness, WITNESS_NAMES, 3)
+    },
+    {
+      key: 'witnessQuote', q: 'ЧТО сказал свидетель?', context: 'Цитата свидетеля',
+      correct: news.facts.witnessQuote,
+      wrongs: wrongOptions(news.facts.witnessQuote, WITNESS_QUOTES, 3)
+    },
+    {
+      key: 'expert', q: 'КТО дал комментарий как эксперт?', context: 'Эксперт',
+      correct: news.facts.expert,
+      wrongs: wrongOptions(news.facts.expert, EXPERTS, 3)
+    },
+    {
+      key: 'expertQuote', q: 'ЧТО сказал эксперт?', context: 'Цитата эксперта',
+      correct: news.facts.expertQuote,
+      wrongs: wrongOptions(news.facts.expertQuote, EXPERT_QUOTES, 3)
+    },
+    {
+      key: 'consequence', q: 'ЧТО произошло ПОСЛЕ?', context: 'Последствия',
+      correct: news.facts.consequence,
+      wrongs: wrongOptions(news.facts.consequence, CONSEQUENCES, 3)
+    },
+    {
+      key: 'ending', q: 'ЧЕМ закончилась новость?', context: 'Концовка',
+      correct: news.facts.ending,
+      wrongs: wrongOptions(news.facts.ending, ENDINGS, 3)
+    },
+    {
+      key: 'detail', q: 'КАКАЯ деталь ещё была в тексте?', context: 'Детали',
+      correct: news.facts.detail,
+      wrongs: wrongOptions(news.facts.detail, DETAILS, 3)
+    }
+  ];
+
+  // Оставляем только те, чей правильный ответ реально был в тексте
+  const paragraphText = news.paragraphs.join(' ');
+  const validQuestions = allQuestions.filter(q => {
+    if (!q.correct || q.wrongs.length < 3) return false;
+    return paragraphText.includes(q.correct);
+  });
+
+  const questionCount = Math.min(newsCfg.questions, validQuestions.length);
+  const questionPool = shuffle([...validQuestions]).slice(0, questionCount);
+  const history = [];
+
+  // Для режима "по слогам" опции тоже разбиваем
+  const transformOption = (text) => newsCfg.syllables ? syllableTransform(text) : text;
+
+  function askNext(idx) {
+    if (idx >= questionPool.length) {
+      return newsResult(news, history);
+    }
+    const q = questionPool[idx];
+    const correctDisplay = transformOption(q.correct);
+    const optionsDisplay = shuffle([q.correct, ...q.wrongs]).map(transformOption);
+
+    const dotsHtml = questionPool.map((_, i) => {
+      let cls = 'dot';
+      if (i < idx) cls += history[i] ? ' correct' : ' wrong';
+      else if (i === idx) cls += ' active';
+      return `<div class="${cls}"></div>`;
+    }).join('');
+
+    gameEl.innerHTML = `
+      <div class="game-header">
+        <h2>🐙 Ложные новости</h2>
+        <div class="subtitle">Вопрос ${idx + 1} / ${questionPool.length}</div>
+      </div>
+      <div class="panel">
+        <div class="progress-dots">${dotsHtml}</div>
+        <div class="question-label">${q.q}</div>
+        <div class="question-context">${q.context}</div>
+        <div class="options" id="opts"></div>
+      </div>
+    `;
+
+    const opts = $('opts');
+    let answered = false;
+
+    optionsDisplay.forEach(o => {
+      const b = document.createElement('div');
+      b.className = 'option-text';
+      b.textContent = o;
+      b.onclick = () => {
+        if (answered) return;
+        answered = true;
+
+        const good = o === correctDisplay;
+
+        opts.querySelectorAll('.option-text').forEach(x => {
+          x.style.pointerEvents = 'none';
+          if (x.textContent !== correctDisplay && x !== b) x.classList.add('dimmed');
+        });
+
+        if (good) {
+          b.classList.add('correct');
+          sfxCorrect();
+          addScore(10);
+        } else {
+          b.classList.add('wrong');
+          sfxWrong();
+          opts.querySelectorAll('.option-text').forEach(x => {
+            if (x.textContent === correctDisplay) {
+              x.classList.add('correct');
+              x.classList.remove('dimmed');
+            }
+          });
+        }
+
+        history.push(good);
+        wait(1100, () => askNext(idx + 1));
+      };
+      opts.appendChild(b);
+    });
+  }
+
+  askNext(0);
+}
+
+/* ============ ФАЗА 3: РЕЗУЛЬТАТ ============ */
+function newsResult(news, history) {
+  const score = history.filter(Boolean).length;
+  const max = history.length;
+
+  let emoji, title, textResult, stars, points;
+
+  if (score === max) {
+    emoji = '🏆'; title = 'Журналист года!';
+    textResult = `Все ${max} деталей запомнил`;
+    stars = 3; points = 40;
+    sfxWin();
+  } else if (score >= max * 0.8) {
+    emoji = '📰'; title = 'Почти идеально';
+    textResult = `Правильно: ${score} из ${max}`;
+    stars = 2; points = 25;
+    sfxCorrect();
+  } else if (score >= Math.ceil(max / 2)) {
+    emoji = '🐙'; title = 'Неплохо';
+    textResult = `Правильно: ${score} из ${max}`;
+    stars = 1; points = 12;
+    sfxCorrect();
+  } else {
+    emoji = '🌪'; title = 'Газета врёт';
+    textResult = `Правильно: ${score} из ${max}`;
+    stars = 0; points = 5;
+    sfxWrong();
+  }
+
+  addScore(points);
+  const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+
+  const historyRow = history.map(ok => `
+    <div class="ans ${ok ? 'ok' : 'bad'}">${ok ? '✓' : '✗'}</div>
+  `).join('');
+
+  const displayParagraphs = newsCfg.syllables
+    ? applySyllablesToParagraphs(news.paragraphs)
+    : news.paragraphs;
+  const syllablesClass = newsCfg.syllables ? ' syllables' : '';
+  const newsHtml = displayParagraphs.map(p => `<p>${p}</p>`).join('');
+
+  gameEl.innerHTML = `
+    <div class="panel">
+      <div class="result-screen">
+        <div class="big">${emoji}</div>
+        <h2>${title}</h2>
+        <p>${textResult}</p>
+        <div class="stars">${starStr}</div>
+        <p style="opacity:.6; font-size: 14px;">+${points} очков</p>
+
+        <div class="review-full-news">
+          <div class="label">📰 А вот что было в новости:</div>
+          <div class="text${syllablesClass}">${newsHtml}</div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <div style="font-size: 13px; color: var(--text-muted); font-weight: 800; margin-bottom: 10px;">ТВОИ ОТВЕТЫ:</div>
+          <div class="review-answers">${historyRow}</div>
+        </div>
+
+        <button class="btn-main" id="retry">Ещё раз 🔄</button>
+        <button class="btn-secondary" id="menuBtn">← Настройки</button>
+      </div>
+    </div>
+  `;
+  $('retry').onclick = () => newsShow();
+  $('menuBtn').onclick = () => startNews();
+}
+
+/* ============ СТАРТ ============ */
+document.addEventListener('click', initAudio, { once: true });
+startNews();
+</script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

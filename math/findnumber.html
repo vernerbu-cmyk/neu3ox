@@ -1,526 +1,763 @@
 <!DOCTYPE html>
 <html lang="ru">
 
-  <head>
-    <link rel="stylesheet" href="../menu/menu.css">
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Найди цифру</title>
+<head>
 
-    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@200..900&family=Comfortaa:wght@300..700&family=Caveat:wght@400..700&family=Nunito:wght@200..900&family=Pacifico&family=Montserrat:wght@300..900&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Найди цифру</title>
 
-    <style>
-      html,
-      body {
-        margin: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@200..900&family=Comfortaa:wght@300..700&family=Caveat:wght@400..700&family=Nunito:wght@200..900&family=Pacifico&family=Montserrat:wght@300..900&display=swap" rel="stylesheet">
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      background: #0B1220;
+      font-family: Montserrat, sans-serif;
+    }
+
+    #panel {
+      width: 220px;
+      min-width: 220px;
+      background: #16233f;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px;
+      box-sizing: border-box;
+      transition: .25s;
+      overflow: hidden;
+      z-index: 20;
+    }
+
+    #panel.closed {
+      width: 0;
+      min-width: 0;
+      padding: 0;
+    }
+
+    #toggleBtn {
+      position: fixed;
+      left: 220px;
+      top: 12px;
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 10px;
+      background: #FF6A00;
+      color: white;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      z-index: 50;
+      transition: .25s;
+    }
+
+    #panel.closed + #toggleBtn {
+      left: 10px;
+    }
+
+    .box {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 10px;
+      font-weight: 700;
+    }
+
+    button,
+    select,
+    input[type="range"] {
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      font-family: inherit;
+      font-weight: 800;
+      box-sizing: border-box;
+    }
+
+    button {
+      background: #FF6A00;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: translateY(2px);
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: default;
+      transform: none;
+    }
+
+    select {
+      width: 100%;
+    }
+
+    .speed-control {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .speed-control label {
+      font-size: 0.9em;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 8px;
+      background: #2a3b5e;
+      border-radius: 5px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #FF6A00;
+      margin-top: -5px;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 8px;
+      background: #2a3b5e;
+      border-radius: 5px;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #FF6A00;
+      cursor: pointer;
+      border: none;
+    }
+
+    /* ---------- КОСМИЧЕСКИЙ ФОН ---------- */
+    #wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+
+      background:
+        radial-gradient(ellipse 60% 50% at 15% 20%, rgba(120, 60, 200, 0.35), transparent 70%),
+        radial-gradient(ellipse 70% 60% at 85% 75%, rgba(200, 60, 140, 0.22), transparent 70%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(40, 60, 140, 0.30), transparent 70%),
+        #05060f;
+
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #wrap::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-repeat: repeat;
+      background-image:
+        radial-gradient(1px 1px at 15% 25%, #fff, transparent),
+        radial-gradient(1px 1px at 42% 62%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 70% 32%, #fff, transparent),
+        radial-gradient(1px 1px at 88% 78%, #fff, transparent),
+        radial-gradient(1.8px 1.8px at 22% 88%, #fff, transparent),
+        radial-gradient(1px 1px at 55% 12%, #fff, transparent),
+        radial-gradient(1px 1px at 92% 48%, #fff, transparent),
+        radial-gradient(1.4px 1.4px at 12% 58%, #fff, transparent),
+        radial-gradient(1px 1px at 65% 90%, #fff, transparent),
+        radial-gradient(1.2px 1.2px at 35% 8%, #fff, transparent);
+      background-size: 500px 500px;
+      opacity: 0.85;
+    }
+
+    #wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-repeat: repeat;
+      background-image:
+        radial-gradient(1px 1px at 30% 45%, #cfe3ff, transparent),
+        radial-gradient(1px 1px at 72% 68%, #ffe9c9, transparent),
+        radial-gradient(1.3px 1.3px at 50% 85%, #fff, transparent),
+        radial-gradient(1px 1px at 8% 22%, #ffd6e8, transparent),
+        radial-gradient(1px 1px at 85% 35%, #cfe3ff, transparent),
+        radial-gradient(1.2px 1.2px at 20% 78%, #fff, transparent),
+        radial-gradient(1px 1px at 60% 18%, #ffe9c9, transparent);
+      background-size: 320px 320px;
+      animation: twinkle 7s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      from { opacity: 0.35; }
+      to   { opacity: 0.75; }
+    }
+
+    .num {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      user-select: none;
+      cursor: pointer;
+      pointer-events: auto;
+      font-weight: 800;
+      will-change: transform, left, top;
+      z-index: 2;
+    }
+
+    .num.hint {
+      z-index: 300;
+      animation: hintPulse .4s ease-in-out 6 alternate;
+    }
+
+    @keyframes hintPulse {
+      from {
+        text-shadow: 0 0 0 rgba(255, 255, 255, 0);
+        filter: brightness(1);
       }
-      
-      body {
-        display: flex;
-        background: #0B1220;
-        font-family: Montserrat, sans-serif;
+      to {
+        text-shadow: 0 0 6px #fff, 0 0 16px #FFD166, 0 0 30px #FF6A00;
+        filter: brightness(2);
       }
-      /* PANEL */
-      
-      #panel {
-        width: 220px;
-        min-width: 220px;
-        background: #16233f;
-        color: white;
-        display: flex;
+    }
+
+    #center {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 150px;
+      font-weight: 900;
+      color: #FF6A00;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+      z-index: 100;
+    }
+
+    @media (max-width:768px) {
+      body {
         flex-direction: column;
-        gap: 10px;
-        padding: 12px;
-        box-sizing: border-box;
-        transition: .25s;
-        overflow: hidden;
-        z-index: 20;
       }
-      
+      #panel {
+        width: 100%;
+        min-width: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
       #panel.closed {
-        width: 0;
-        min-width: 0;
-        padding: 0;
-      }
-      /* TOGGLE */
-      
-      #toggleBtn {
-        position: fixed;
-        left: 220px;
-        top: 12px;
-        width: 34px;
-        height: 34px;
-        border: none;
-        border-radius: 10px;
-        background: #FF6A00;
-        color: white;
-        font-size: 18px;
-        font-weight: 900;
-        cursor: pointer;
-        z-index: 50;
-        transition: .25s;
-      }
-      
-      #panel.closed + #toggleBtn {
-        left: 10px;
-      }
-      
-      .box {
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 10px;
-        padding: 10px;
-        font-weight: 700;
-      }
-      
-      button,
-      select {
-        border: none;
-        border-radius: 10px;
-        padding: 10px;
-        font-family: inherit;
-        font-weight: 800;
-        box-sizing: border-box;
-      }
-      
-      button {
-        background: #FF6A00;
-        color: white;
-        cursor: pointer;
-      }
-      
-      button:active {
-        transform: translateY(2px);
-      }
-      
-      select {
+        height: 0;
+        min-height: 0;
         width: 100%;
       }
-      /* FIELD */
-      
-      #wrap {
-        flex: 1;
-        position: relative;
-        overflow: hidden;
-        background: #111827;
+      #toggleBtn {
+        left: auto;
+        right: 10px;
+        top: 10px;
       }
-      /* NUMBERS */
-      
-      .num {
-        position: absolute;
-        transform: translate(-50%, -50%);
-        user-select: none;
-        cursor: pointer;
-        pointer-events: auto;
-        font-weight: 800;
-        will-change: transform, left, top;
+      .box {
+        flex: 1 1 45%;
       }
-      /* CENTER */
-      
-      #center {
-        position: fixed;
-        inset: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 150px;
-        font-weight: 900;
-        color: #FF6A00;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity .2s;
-        z-index: 100;
+      button {
+        flex: 1 1 45%;
       }
-      /* MOBILE */
-      
-      @media (max-width:768px) {
-        body {
-          flex-direction: column;
-        }
-        #panel {
-          width: 100%;
-          min-width: auto;
-          flex-direction: row;
-          flex-wrap: wrap;
-        }
-        #panel.closed {
-          height: 0;
-          min-height: 0;
-          width: 100%;
-        }
-        #toggleBtn {
-          left: auto;
-          right: 10px;
-          top: 10px;
-        }
-        .box {
-          flex: 1 1 45%;
-        }
-        button {
-          flex: 1 1 45%;
-        }
-      }
-    </style>
-  </head>
+    }
+  </style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
 
-  <body>
+<body>
 
-    <div id="panel">
+  <div id="panel">
 
-      <div class="box" id="target">
-        Найди: —
-      </div>
-
-      <div class="box" id="timer">
-        0.000
-      </div>
-
-      <div class="box">
-
-        Сложность
-
-        <select id="diff">
-
-          <option value="easy">
-            easy
-          </option>
-
-          <option value="normal" selected>
-            normal
-          </option>
-
-          <option value="hard">
-            hard
-          </option>
-
-        </select>
-
-      </div>
-
-      <button id="pauseBtn">
-        Пауза
-      </button>
-
-      <button id="restartBtn">
-        Заново
-      </button>
-
-      <button id="phoneBtn">📱 Телефон</button>
-
+    <div class="box" id="target">
+      Найди: —
     </div>
 
-    <button id="toggleBtn">
-      ◀
-    </button>
+    <div class="box" id="timer">
+      0.000
+    </div>
 
-    <div id="wrap"></div>
+    <div class="box">
+      Сложность
+      <select id="diff">
+        <option value="normal" selected>обычная</option>
+        <option value="preschool">дошкольники</option>
+        <option value="hard">хард (150 чисел)</option>
+        <option value="hardplus">хард+ (200 чисел)</option>
+      </select>
+    </div>
 
-    <div id="center"></div>
+    <div class="box speed-control">
+      <label for="speedSlider">
+        Скорость
+        <span id="speedValue">1.0</span>
+      </label>
+      <input type="range" id="speedSlider" min="0.2" max="3.0" step="0.1" value="1.0">
+    </div>
 
-    <script>
-      const wrap = document.getElementById("wrap");
-      const targetEl =
-        document.getElementById("target");
-      const timerEl =
-        document.getElementById("timer");
-      const centerEl =
-        document.getElementById("center");
-      const pauseBtn =
-        document.getElementById("pauseBtn");
-      const restartBtn =
-        document.getElementById("restartBtn");
-      const diffSelect =
-        document.getElementById("diff");
-      const panel =
-        document.getElementById("panel");
-      const toggleBtn =
-        document.getElementById("toggleBtn");
-      const COUNT = 99;
-      const fonts = [
-        "Unbounded",
-        "Comfortaa",
-        "Caveat",
-        "Nunito",
-        "Pacifico",
-        "Montserrat"
-      ];
-      const DIFF = {
-        easy: {
-          speed: 0.7,
-          size: 1.25,
-          force: 0.8
-        },
-        normal: {
-          speed: 1.4,
-          size: 1,
-          force: 1.2
-        },
-        hard: {
-          speed: 2.2,
-          size: 0.75,
-          force: 1.8
-        }
-      };
-      let difficulty = DIFF.normal;
-      let items = [];
-      let currentNumbers = [];
-      let target = 1;
-      let paused = false;
-      let mouseX = -9999;
-      let mouseY = -9999;
-      let phoneMode = false;
-      let pressed = false;
-      let start = performance.now();
-      /* HELPERS */
-      function rand(a, b) {
-        return Math.random() * (b - a) + a;
-      }
+    <button id="pauseBtn">Пауза</button>
+    <button id="restartBtn">Заново</button>
+    <button id="hintBtn">💡 Подсказка</button>
+    <button id="phoneBtn">📱 Телефон</button>
 
-      function pick(arr) {
-        return arr[
-          Math.floor(Math.random() * arr.length)
-        ];
-      }
-      /* TIMER */
-      setInterval(() => {
-        if (paused) return;
-        timerEl.textContent =
-        ((performance.now() - start) / 1000)
-        .toFixed(3);
-      }, 50);
-      /* POINTER */
-      wrap.addEventListener("pointermove", (e) => {
-        const rect =
-          wrap.getBoundingClientRect();
-        mouseX = e.clientX - rect.left;
-        mouseY = e.clientY - rect.top;
-      });
-      wrap.addEventListener("pointerdown", () => {
-        pressed = true;
-      });
-      window.addEventListener("pointerup", () => {
+  </div>
+
+  <button id="toggleBtn">◀</button>
+
+  <div id="wrap"></div>
+
+  <div id="center"></div>
+
+  <script>
+    const wrap = document.getElementById("wrap");
+    const targetEl = document.getElementById("target");
+    const timerEl = document.getElementById("timer");
+    const centerEl = document.getElementById("center");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const hintBtn = document.getElementById("hintBtn");
+    const diffSelect = document.getElementById("diff");
+    const panel = document.getElementById("panel");
+    const toggleBtn = document.getElementById("toggleBtn");
+    const phoneBtn = document.getElementById("phoneBtn");
+    const speedSlider = document.getElementById("speedSlider");
+    const speedValue = document.getElementById("speedValue");
+
+    const fonts = [
+      "Unbounded",
+      "Comfortaa",
+      "Caveat",
+      "Nunito",
+      "Pacifico",
+      "Montserrat"
+    ];
+
+    /* ---------- СЛОЖНОСТИ ----------
+       minSize / maxSize — диапазон размера шрифта (px)
+       bias — насколько сильно «перекос» в сторону мелких:
+              1.0  = равномерно
+              2.0  = большинство мелких, изредка крупные
+              2.5  = почти всё мелкое, крупные — редкость
+    -------------------------------------------------- */
+    const DIFF = {
+  normal:    { speed: 1.4, size: 1.0, force: 1.2, max: 99,  minSize: 22, maxSize: 88,  bias: 1.8 },
+  preschool: { speed: 0.5, size: 1.0, force: 0.4, max: 99,  minSize: 22, maxSize: 88,  bias: 1.8 },
+  hard:      { speed: 1.7, size: 1.0, force: 1.3, max: 150, minSize: 20, maxSize: 88, bias: 2.0 },
+  hardplus:  { speed: 1.9, size: 1.0, force: 1.4, max: 200, minSize: 14, maxSize: 64,  bias: 2.8 }
+};
+
+    const HINT_TIME = 2500;
+    const HINT_COOLDOWN = 3000;
+
+    let difficulty = DIFF.normal;
+    let speedMultiplier = 1.0;
+    let items = [];
+    let currentNumbers = [];
+    let target = 1;
+    let paused = false;
+    let mouseX = -9999;
+    let mouseY = -9999;
+    let phoneMode = false;
+
+    /* ---------- ТАЙМЕР ---------- */
+    let start = performance.now();
+    let pausedTotal = 0;
+    let pauseStart = 0;
+
+    function elapsedMs() {
+      const now = paused ? pauseStart : performance.now();
+      return now - start - pausedTotal;
+    }
+
+    function resetTimer() {
+      start = performance.now();
+      pausedTotal = 0;
+      if (paused) pauseStart = performance.now();
+    }
+
+    setInterval(() => {
+      if (paused) return;
+      timerEl.textContent = (elapsedMs() / 1000).toFixed(3);
+    }, 50);
+
+    /* ---------- ХЕЛПЕРЫ ---------- */
+    function rand(a, b) {
+      return Math.random() * (b - a) + a;
+    }
+
+    function safeRand(a, b) {
+      if (b < a) return (a + b) / 2;
+      return rand(a, b);
+    }
+
+    function pick(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    /* ---------- УКАЗАТЕЛЬ ---------- */
+    let pressing = false;
+    let isDragging = false;
+    let pressed = false;
+    let downX = 0, downY = 0;
+    const DRAG_THRESHOLD = 8;
+
+    function updatePointer(e) {
+      const rect = wrap.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    }
+
+    wrap.addEventListener("pointerdown", (e) => {
+      updatePointer(e);
+      downX = mouseX;
+      downY = mouseY;
+      pressing = true;
+
+      if (e.pointerType === "touch") {
+        isDragging = false;
         pressed = false;
-      });
-      /* PANEL */
-      toggleBtn.addEventListener("click", () => {
-        panel.classList.toggle("closed");
-        const closed =
-          panel.classList.contains("closed");
-        toggleBtn.textContent =
-        closed ? "▶" : "◀";
-      });
-      /* CENTER */
-      function showCenter() {
-        centerEl.textContent = target;
-        centerEl.style.opacity = 1;
-        setTimeout(() => {
-          centerEl.style.opacity = 0;
-        }, 400);
+      } else {
+        isDragging = true;
+        pressed = true;
       }
-      /* TARGET */
-      function setTarget() {
-        target = currentNumbers[
-          Math.floor(Math.random() * currentNumbers.length)
-        ];
-        targetEl.textContent =
-          "Найди: " + target;
-        showCenter();
+    });
+
+    wrap.addEventListener("pointermove", (e) => {
+      updatePointer(e);
+      if (!pressing || isDragging) return;
+      if (Math.hypot(mouseX - downX, mouseY - downY) > DRAG_THRESHOLD) {
+        isDragging = true;
+        pressed = true;
       }
-      /* BUILD */
-      function build() {
-        wrap.innerHTML = "";
-        items = [];
-        const W = wrap.clientWidth;
-        const H = wrap.clientHeight;
-        const nums = phoneMode ? Array.from({
-            length: 99
-          }, (_, i) => i + 1)
-          .sort(() => Math.random() - 0.5)
-          .slice(0, 50) : Array.from({
-            length: 99
-          }, (_, i) => i + 1)
-          .sort(() => Math.random() - 0.5);
-        currentNumbers = [...nums];
-        for (const n of nums) {
-          const el =
-            document.createElement("div");
-          el.className = "num";
-          el.textContent = n;
-          const baseSize =
-            Math.random() < 0.15 ? 84 :
-            Math.random() < 0.40 ? 58 :
-            Math.random() < 0.75 ? 38 : 24;
-          const size =
-            baseSize *
-            difficulty.size *
-            (phoneMode ? 0.65 : 1);
-          el.style.fontSize =
-            size + "px";
-          el.style.fontFamily =
-            pick(fonts);
-          el.style.color =
-            `hsl(${Math.random()*360},85%,65%)`;
-          wrap.appendChild(el);
-          const obj = {
-            el,
-            val: n,
-            r: size * 0.6,
-            x: rand(size, W - size),
-            y: rand(size, H - size),
-            vx: rand(-2.8, 2.8) * difficulty.speed,
-            vy: rand(-2.8, 2.8) * difficulty.speed,
-            rot: rand(-35, 35),
-            skew: rand(-0.25, 0.25)
-          };
-          el.addEventListener(
-            "pointerdown",
-            (e) => {
-              e.stopPropagation();
-              if (obj.val !== target)
-                return;
-              start =
-              performance.now();
-              resetGame();
-            }
-          );
-          items.push(obj);
+    });
+
+    function releasePointer() {
+      pressing = false;
+      isDragging = false;
+      pressed = false;
+    }
+
+    window.addEventListener("pointerup", releasePointer);
+    window.addEventListener("pointercancel", releasePointer);
+    window.addEventListener("blur", releasePointer);
+
+    wrap.addEventListener("contextmenu", (e) => e.preventDefault());
+
+    /* ---------- ПАНЕЛЬ ---------- */
+    toggleBtn.addEventListener("click", () => {
+      panel.classList.toggle("closed");
+      const closed = panel.classList.contains("closed");
+      toggleBtn.textContent = closed ? "▶" : "◀";
+    });
+
+    /* ---------- ЦЕНТР ---------- */
+    let centerTimer = null;
+
+    function showCenter() {
+      centerEl.textContent = target;
+      centerEl.style.opacity = 1;
+      clearTimeout(centerTimer);
+      centerTimer = setTimeout(() => {
+        centerEl.style.opacity = 0;
+      }, 400);
+    }
+
+    /* ---------- ЦЕЛЬ ---------- */
+    function setTarget() {
+      let pool;
+      if (diffSelect.value === 'preschool') {
+        pool = currentNumbers.filter(n => n >= 1 && n <= 20);
+      } else {
+        pool = currentNumbers;
+      }
+      if (pool.length === 0) pool = currentNumbers;
+      target = pool[Math.floor(Math.random() * pool.length)];
+      targetEl.textContent = "Найди: " + target;
+      showCenter();
+    }
+
+    /* ---------- ЧАСТИЦЫ ---------- */
+    function createParticles(x, y, color) {
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+          position: absolute;
+          left: ${x}px;
+          top: ${y}px;
+          width: 10px;
+          height: 10px;
+          background: ${color};
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: 200;
+        `;
+        wrap.appendChild(particle);
+        const angle = (Math.PI * 2 * i) / 20;
+        const velocity = rand(2, 6);
+        const dx = Math.cos(angle) * velocity;
+        const dy = Math.sin(angle) * velocity;
+        particle.animate(
+          [
+            { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+            { transform: `translate(${dx * 30}px, ${dy * 30}px) scale(0)`, opacity: 0 }
+          ],
+          { duration: 600, easing: 'ease-out' }
+        ).onfinish = () => particle.remove();
+      }
+    }
+
+    /* ---------- ПОДСКАЗКА ---------- */
+    let hintReadyAt = 0;
+    let hintTick = null;
+
+    function updateHintBtn() {
+      const left = hintReadyAt - performance.now();
+      if (left <= 0) {
+        if (hintTick) {
+          clearInterval(hintTick);
+          hintTick = null;
         }
-        setTarget();
+        hintBtn.disabled = false;
+        hintBtn.textContent = "💡 Подсказка";
+      } else {
+        hintBtn.disabled = true;
+        hintBtn.textContent = "💡 " + Math.ceil(left / 1000);
       }
-      /* RESET */
-      function resetGame() {
-        const W = wrap.clientWidth;
-        const H = wrap.clientHeight;
-        for (const o of items) {
-          o.x = rand(o.r, W - o.r);
-          o.y = rand(o.r, H - o.r);
-          o.vx =
-            rand(-2.8, 2.8) * difficulty.speed;
-          o.vy =
-            rand(-2.8, 2.8) * difficulty.speed;
-        }
-        setTarget();
-      }
-      /* PAUSE */
-      function togglePause() {
-        paused = !paused;
-        pauseBtn.textContent =
-          paused ? "Продолжить" : "Пауза";
-      }
-      pauseBtn.addEventListener(
-        "click",
-        togglePause
-      );
-      const phoneBtn = document.getElementById("phoneBtn");
-      phoneBtn.addEventListener("click", () => {
-        phoneMode = !phoneMode;
-        phoneBtn.textContent =
-        phoneMode ? "🖥 ПК режим" : "📱 Телефон";
-        build(); // пересоздать цифры
-        start = performance.now(); // обнулить таймер (по желанию)
-      });
-      restartBtn.addEventListener(
-        "click",
-        () => {
-          start = performance.now();
+    }
+
+    function showHint() {
+      if (performance.now() < hintReadyAt) return;
+
+      const obj = items.find(o => o.val === target);
+      if (!obj) return;
+
+      clearTimeout(obj.hintTimer);
+      obj.el.classList.remove("hint");
+      void obj.el.offsetWidth;
+      obj.el.classList.add("hint");
+      obj.hintTimer = setTimeout(() => obj.el.classList.remove("hint"), HINT_TIME);
+
+      hintReadyAt = performance.now() + HINT_COOLDOWN;
+      updateHintBtn();
+      if (!hintTick) hintTick = setInterval(updateHintBtn, 200);
+    }
+
+    hintBtn.addEventListener("click", showHint);
+
+    /* ---------- СБОРКА ---------- */
+    function build() {
+      wrap.innerHTML = "";
+      items = [];
+      const W = wrap.clientWidth;
+      const H = wrap.clientHeight;
+
+      const cfg = DIFF[diffSelect.value];
+
+      let nums = Array.from({ length: cfg.max }, (_, i) => i + 1)
+        .sort(() => Math.random() - 0.5);
+      if (phoneMode) nums = nums.slice(0, 50);
+
+      currentNumbers = [...nums];
+
+      for (const n of nums) {
+        const el = document.createElement("div");
+        el.className = "num";
+        el.textContent = n;
+
+        /* Плавное распределение размера: большинство — мелкие,
+           изредка попадаются крупные. bias задаёт «перекос». */
+        const t = Math.pow(Math.random(), cfg.bias);       // 0..1, тянется к 0
+        const baseSize = cfg.minSize + (cfg.maxSize - cfg.minSize) * t;
+        const size = baseSize * cfg.size * (phoneMode ? 0.65 : 1);
+
+        el.style.fontSize = size + "px";
+        el.style.fontFamily = pick(fonts);
+        const color = `hsl(${Math.random()*360},85%,65%)`;
+        el.style.color = color;
+        wrap.appendChild(el);
+
+        const obj = {
+          el,
+          val: n,
+          r: size * 0.6,
+          x: safeRand(size, W - size),
+          y: safeRand(size, H - size),
+          vx: rand(-2.8, 2.8) * difficulty.speed * speedMultiplier,
+          vy: rand(-2.8, 2.8) * difficulty.speed * speedMultiplier,
+          rot: rand(-35, 35),
+          skew: rand(-0.25, 0.25),
+          color: color,
+          hintTimer: null
+        };
+
+        el.addEventListener("pointerdown", (e) => {
+          e.stopPropagation();
+          if (obj.val !== target) return;
+          createParticles(obj.x, obj.y, obj.color);
+          resetTimer();
           resetGame();
-        }
-      );
-      diffSelect.addEventListener(
-        "change",
-        (e) => {
-          difficulty =
-          DIFF[e.target.value];
-          resetGame();
-        }
-      );
-      /* ANIMATE */
-      function animate() {
-        const W = wrap.clientWidth;
-        const H = wrap.clientHeight;
-        for (const o of items) {
-          if (!paused) {
-            o.x += o.vx;
-            o.y += o.vy;
-            /* LESS FRICTION */
-            o.vx *= 0.999;
-            o.vy *= 0.999;
-            /* SPEED LIMIT */
-            const MAX =
-              8 * difficulty.speed;
-            o.vx =
-              Math.max(-MAX,
-                Math.min(MAX, o.vx)
-              );
-            o.vy =
-              Math.max(-MAX,
-                Math.min(MAX, o.vy)
-              );
-            /* WALLS */
-            if (o.x < o.r) {
-              o.x = o.r;
-              o.vx *= -1;
-            }
-            if (o.x > W - o.r) {
-              o.x = W - o.r;
-              o.vx *= -1;
-            }
-            if (o.y < o.r) {
-              o.y = o.r;
-              o.vy *= -1;
-            }
-            if (o.y > H - o.r) {
-              o.y = H - o.r;
-              o.vy *= -1;
-            }
-            /* AGGRESSIVE PUSH */
-            if (pressed) {
-              const dx =
-                o.x - mouseX;
-              const dy =
-                o.y - mouseY;
-              const d =
-                Math.hypot(dx, dy);
-              const radius = 240;
-              if (d < radius && d > 0.01) {
-                const power =
-                  (1 - d / radius)
-                * 8
-                  * difficulty.force;
-                /* velocity */
-                o.vx +=
-                  (dx / d) * power;
-                o.vy +=
-                  (dy / d) * power;
-                /* direct shove */
-                o.x +=
-                  (dx / d) * power * 4;
-                o.y +=
-                  (dy / d) * power * 4;
-              }
+        });
+
+        items.push(obj);
+      }
+
+      setTarget();
+    }
+
+    /* ---------- СБРОС РАУНДА ---------- */
+    function resetGame() {
+      const W = wrap.clientWidth;
+      const H = wrap.clientHeight;
+      for (const o of items) {
+        clearTimeout(o.hintTimer);
+        o.el.classList.remove("hint");
+
+        o.x = safeRand(o.r, W - o.r);
+        o.y = safeRand(o.r, H - o.r);
+        o.vx = rand(-2.8, 2.8) * difficulty.speed * speedMultiplier;
+        o.vy = rand(-2.8, 2.8) * difficulty.speed * speedMultiplier;
+      }
+      setTarget();
+    }
+
+    /* ---------- ПАУЗА ---------- */
+    function togglePause() {
+      paused = !paused;
+      if (paused) {
+        pauseStart = performance.now();
+      } else {
+        pausedTotal += performance.now() - pauseStart;
+      }
+      pauseBtn.textContent = paused ? "Продолжить" : "Пауза";
+    }
+
+    pauseBtn.addEventListener("click", togglePause);
+
+    document.addEventListener('keydown', (e) => {
+      const t = e.target;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' ||
+                t.tagName === 'BUTTON' || t.tagName === 'TEXTAREA')) return;
+
+      if (e.code === 'Space') {
+        if (e.repeat) return;
+        e.preventDefault();
+        togglePause();
+        return;
+      }
+
+      if (e.code === 'KeyH') {
+        e.preventDefault();
+        showHint();
+      }
+    }, true);
+
+    /* ---------- РЕЖИМ ТЕЛЕФОНА ---------- */
+    phoneBtn.addEventListener("click", () => {
+      phoneMode = !phoneMode;
+      phoneBtn.textContent = phoneMode ? "🖥 ПК режим" : "📱 Телефон";
+      build();
+      resetTimer();
+    });
+
+    /* ---------- ЗАНОВО ---------- */
+    restartBtn.addEventListener("click", () => {
+      resetTimer();
+      resetGame();
+    });
+
+    /* ---------- СЛОЖНОСТЬ ---------- */
+    diffSelect.addEventListener("change", () => {
+      difficulty = DIFF[diffSelect.value];
+      build();
+      resetTimer();
+    });
+
+    /* ---------- СКОРОСТЬ ---------- */
+    speedSlider.addEventListener('input', function () {
+      const newMultiplier = parseFloat(this.value);
+      speedValue.textContent = newMultiplier.toFixed(1);
+
+      const ratio = newMultiplier / speedMultiplier;
+      speedMultiplier = newMultiplier;
+
+      for (const o of items) {
+        o.vx *= ratio;
+        o.vy *= ratio;
+      }
+    });
+
+    /* ---------- АНИМАЦИЯ ---------- */
+    function animate() {
+      const W = wrap.clientWidth;
+      const H = wrap.clientHeight;
+      for (const o of items) {
+        if (!paused) {
+          o.x += o.vx;
+          o.y += o.vy;
+          o.vx *= 0.999;
+          o.vy *= 0.999;
+          const MAX = 8 * difficulty.speed * speedMultiplier;
+          o.vx = Math.max(-MAX, Math.min(MAX, o.vx));
+          o.vy = Math.max(-MAX, Math.min(MAX, o.vy));
+          if (o.x < o.r) { o.x = o.r; o.vx *= -1; }
+          if (o.x > W - o.r) { o.x = W - o.r; o.vx *= -1; }
+          if (o.y < o.r) { o.y = o.r; o.vy *= -1; }
+          if (o.y > H - o.r) { o.y = H - o.r; o.vy *= -1; }
+          if (pressed) {
+            const dx = o.x - mouseX;
+            const dy = o.y - mouseY;
+            const d = Math.hypot(dx, dy);
+            const radius = 240;
+            if (d < radius && d > 0.01) {
+              const power = (1 - d / radius) * 8 * difficulty.force;
+              o.vx += (dx / d) * power;
+              o.vy += (dy / d) * power;
+              o.x += (dx / d) * power * 4;
+              o.y += (dy / d) * power * 4;
             }
           }
-          o.el.style.left =
-            o.x + "px";
-          o.el.style.top =
-            o.y + "px";
-          o.el.style.transform =
-            `translate(-50%,-50%)
-
-            rotate(${o.rot}deg)
-
-            skew(${o.skew}deg,
-            ${o.skew}deg)`;
         }
-        requestAnimationFrame(animate);
+        o.el.style.left = o.x + "px";
+        o.el.style.top = o.y + "px";
+        o.el.style.transform = `translate(-50%,-50%) rotate(${o.rot}deg) skew(${o.skew}deg, ${o.skew}deg)`;
       }
-      /* START */
-      build();
-      animate();
-    </script>
-    <script src="../menu/menu.js"></script>
-  </body>
+      requestAnimationFrame(animate);
+    }
+
+    /* ---------- СТАРТ ---------- */
+    build();
+    animate();
+  </script>
+
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
 
 </html>

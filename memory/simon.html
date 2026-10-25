@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Саймон - Мнемо-Арена</title>
+<style>
+  :root {
+    --blue: #2D6CDF;
+    --blue-dark: #1E4FA8;
+    --blue-light: #EBF2FF;
+    --orange: #FF8C42;
+    --orange-dark: #E86E1F;
+    --orange-light: #FFF2E5;
+    --bg: #F7F9FC;
+    --text: #1F2937;
+    --text-muted: #6B7280;
+    --border: #E5EAF2;
+    --green: #22C55E;
+    --red: #EF4444;
+    --yellow: #F59E0B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--text);
+    padding: 16px;
+    overflow-x: hidden;
+  }
+
+  .container { max-width: 800px; margin: 0 auto; }
+
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding: 16px 22px;
+    background: #fff; border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(45,108,223,.06);
+    flex-wrap: wrap; gap: 10px;
+  }
+
+  .back-btn {
+    width: 46px; height: 46px;
+    border: none; border-radius: 14px;
+    background: var(--blue-light);
+    color: var(--blue);
+    font-size: 22px; font-weight: 700;
+    cursor: pointer; transition: .18s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .back-btn:hover { background: var(--blue); color: #fff; transform: translateY(-1px); }
+
+  h1 { font-size: 20px; letter-spacing: .5px; color: var(--blue-dark); font-weight: 800; }
+
+  .score-bar {
+    background: var(--orange); color: #fff;
+    padding: 8px 18px; border-radius: 30px; font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(255,140,66,.3);
+  }
+  .score-bar span { color: #fff; font-weight: 800; font-size: 17px; }
+
+  main { min-height: 520px; }
+
+  .game-header { text-align: center; margin-bottom: 20px; }
+  .game-header h2 { font-size: 22px; margin-bottom: 6px; color: var(--blue-dark); font-weight: 800; }
+  .subtitle { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+
+  .status {
+    text-align: center; font-size: 16px; margin: 16px 0;
+    min-height: 26px; font-weight: 700; color: var(--text); transition: .3s;
+  }
+  .status.good { color: #16A34A; }
+  .status.bad { color: #DC2626; }
+  .status.warn { color: var(--orange-dark); }
+
+  .panel {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 22px; padding: 26px;
+    box-shadow: 0 8px 24px rgba(45,108,223,.06);
+  }
+
+  /* ---------- Пресеты ---------- */
+  .presets {
+    display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap;
+  }
+  .preset-btn {
+    flex: 1 1 auto; min-width: 100px;
+    padding: 10px 8px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: #fff;
+    color: var(--blue-dark);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: .18s;
+    font-family: inherit;
+  }
+  .preset-btn:hover { border-color: var(--orange); color: var(--orange-dark); transform: translateY(-1px); }
+  .preset-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  /* ---------- Саймон-сетка ---------- */
+  .simon-grid {
+    display: grid;
+    gap: 14px;
+    max-width: 460px;
+    margin: 24px auto;
+    position: relative;
+  }
+  .simon-btn {
+    aspect-ratio: 1;
+    border-radius: 24px;
+    border: 3px solid var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    font-size: 56px;
+    display: flex; align-items: center; justify-content: center;
+    transition: .12s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+  .simon-btn:not(.lit):hover {
+    background: var(--blue-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(45,108,223,.12);
+  }
+  .simon-btn:active:not(.lit) { transform: scale(.98); }
+
+  /* ---------- Результат ---------- */
+  .result-screen { text-align: center; padding: 30px 20px; }
+  .result-screen .big {
+    font-size: 72px; margin-bottom: 12px;
+    animation: popIn .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .result-screen h2 { font-size: 26px; margin-bottom: 10px; color: var(--blue-dark); font-weight: 800; }
+  .result-screen p { color: var(--text-muted); font-size: 16px; margin: 6px 0; font-weight: 600; }
+  .stars { font-size: 40px; margin: 20px 0; letter-spacing: 6px; }
+
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* ---------- Настройки ---------- */
+  .settings-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; font-size: 15px; color: var(--text); font-weight: 700;
+  }
+  .settings-row b { color: var(--blue-dark); font-size: 16px; font-weight: 800; }
+  input[type="range"] { width: 100%; accent-color: #FF8C42; height: 26px; }
+
+  .checkbox-row {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 14px; cursor: pointer; font-weight: 700;
+  }
+  .checkbox-row input {
+    width: 20px; height: 20px;
+    accent-color: #FF8C42;
+    cursor: pointer;
+  }
+
+  .btn-main {
+    display: block; margin: 24px auto 0; padding: 16px 40px;
+    border-radius: 14px; border: none;
+    background: var(--orange); color: #fff;
+    font-size: 17px; font-weight: 800; cursor: pointer;
+    transition: .2s; letter-spacing: .5px;
+    box-shadow: 0 8px 20px rgba(255,140,66,.3);
+    font-family: inherit;
+  }
+  .btn-main:hover {
+    background: var(--orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(255,140,66,.4);
+  }
+  .btn-main:active { transform: translateY(0); }
+
+  .btn-secondary {
+    display: block; margin: 8px auto 0; padding: 12px 30px;
+    border-radius: 14px; border: none;
+    background: transparent; color: var(--blue-dark);
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: .2s;
+    font-family: inherit;
+  }
+  .btn-secondary:hover { background: var(--blue-light); }
+
+  /* Дистракторы */
+  #distractorLayer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  @media (max-width: 500px) {
+    .simon-btn { font-size: 42px; border-radius: 18px; }
+    .simon-grid { gap: 10px; max-width: 340px; }
+    .preset-btn { font-size: 12px; min-width: 80px; }
+  }
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <button class="back-btn" onclick="location.href='index.html'">←</button>
+    <h1>🎵 САЙМОН</h1>
+    <div class="score-bar">Очки: <span id="globalScore">0</span></div>
+  </header>
+  <main id="game"></main>
+</div>
+
+<script>
+/* ============ УТИЛИТЫ ============ */
+const $ = id => document.getElementById(id);
+const gameEl = $('game');
+let globalScore = 0;
+$('globalScore').textContent = globalScore;
+function addScore(n) { globalScore += n; $('globalScore').textContent = globalScore; }
+
+function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+const rand = n => Math.floor(Math.random() * n);
+
+let timeouts = [];
+function wait(ms, fn) {
+  const id = setTimeout(fn, ms);
+  timeouts.push(id);
+  return id;
+}
+function clearTimeouts() {
+  timeouts.forEach(clearTimeout);
+  timeouts = [];
+}
+
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+}
+function beep(freq, dur = 0.15, type = 'sine', vol = 0.08) {
+  if (!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = type;
+    osc.frequency.value = freq;
+    const t = audioCtx.currentTime;
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.start(t); osc.stop(t + dur + 0.02);
+  } catch(e) {}
+}
+function sfxCorrect() { beep(660, 0.1); setTimeout(() => beep(880, 0.15), 90); }
+function sfxWrong() { beep(180, 0.3, 'sawtooth', 0.12); }
+function sfxClick() { beep(440, 0.05, 'triangle', 0.06); }
+function sfxWin() {
+  [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.2), i * 120));
+}
+
+/* ============ ДАННЫЕ ============ */
+const SIMON_CHARS = [
+  { emoji: '🥁', freq: 261, name: 'Барабанщик', color: '#EF4444' },
+  { emoji: '🐱', freq: 329, name: 'Кот', color: '#F97316' },
+  { emoji: '🤖', freq: 392, name: 'Робот', color: '#3B82F6' },
+  { emoji: '👻', freq: 523, name: 'Привидение', color: '#A855F7' },
+  { emoji: '🐉', freq: 659, name: 'Дракон', color: '#22C55E' },
+  { emoji: '🦄', freq: 784, name: 'Единорог', color: '#EC4899' }
+];
+
+const DISTRACTOR_EMOJIS = ['💥','⚡','🌟','❓','❗','🔥','💫','🌀','🎯','💣','🎲','🍀','👁️','⚙️','🌪️','💎','🎈','🍕'];
+
+let simonState = null;
+let simonCfg = {
+  buttons: 6,
+  startLevel: 3,
+  speed: 500,
+  speedUp: true,
+  reverseEvery: 4,
+  distractors: false,
+  doubleShowEvery: 5
+};
+try {
+  const saved = localStorage.getItem('simonCfg');
+  if (saved) simonCfg = { ...simonCfg, ...JSON.parse(saved) };
+} catch(e) {}
+
+/* ============ ЭКРАН НАСТРОЕК ============ */
+function startSimon() {
+  clearTimeouts();
+  stopDistractors();
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🎵 Саймон</h2>
+      <div class="subtitle">Повтори последовательность</div>
+    </div>
+    <div class="panel">
+      <div style="max-width: 480px; margin: 0 auto;">
+
+        <div class="presets" id="presets">
+          <button class="preset-btn" data-buttons="4" data-start="2" data-speed="600" data-rev="0" data-dbl="0" data-dist="0" data-up="0">🌱 Разминка</button>
+          <button class="preset-btn" data-buttons="6" data-start="3" data-speed="500" data-rev="5" data-dbl="0" data-dist="0" data-up="1">⚡ Стандарт</button>
+          <button class="preset-btn" data-buttons="6" data-start="4" data-speed="400" data-rev="3" data-dbl="5" data-dist="0" data-up="1">🔥 Хардкор</button>
+          <button class="preset-btn" data-buttons="6" data-start="5" data-speed="300" data-rev="2" data-dbl="4" data-dist="1" data-up="1">💀 Психо</button>
+        </div>
+
+        <div style="margin-bottom: 18px;">
+          <div class="settings-row"><span>Кнопок</span><b id="btnVal">${simonCfg.buttons}</b></div>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            ${[4,6].map(n => `
+              <button data-buttons="${n}" class="mode-btn"
+                style="flex:1; padding:12px; border-radius:12px; border:2px solid ${simonCfg.buttons === n ? 'transparent' : 'var(--border)'};
+                background:${simonCfg.buttons === n ? 'var(--blue)' : '#fff'};
+                color:${simonCfg.buttons === n ? '#fff' : 'var(--blue-dark)'}; font-weight:800; cursor:pointer; font-size:15px;
+                font-family: inherit; transition: .18s;">
+                ${n} ${n === 4 ? '· легко' : '· хардкор'}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+
+        <label style="display:block; margin-bottom: 18px;">
+          <div class="settings-row"><span>Стартовый уровень</span><b id="startVal">${simonCfg.startLevel}</b></div>
+          <input type="range" id="startRange" min="1" max="8" value="${simonCfg.startLevel}">
+        </label>
+
+        <label style="display:block; margin-bottom: 18px;">
+          <div class="settings-row"><span>Скорость показа</span><b id="speedVal">${simonCfg.speed} мс</b></div>
+          <input type="range" id="speedRange" min="200" max="800" step="50" value="${simonCfg.speed}">
+        </label>
+
+        <label style="display:block; margin-bottom: 18px;">
+          <div class="settings-row"><span>Реверс каждые N раундов</span><b id="revVal">${simonCfg.reverseEvery === 0 ? 'выкл' : simonCfg.reverseEvery}</b></div>
+          <input type="range" id="revRange" min="0" max="8" value="${simonCfg.reverseEvery}">
+        </label>
+
+        <label style="display:block; margin-bottom: 18px;">
+          <div class="settings-row"><span>Двойной показ каждые N раундов</span><b id="dblVal">${simonCfg.doubleShowEvery === 0 ? 'выкл' : simonCfg.doubleShowEvery}</b></div>
+          <input type="range" id="dblRange" min="0" max="8" value="${simonCfg.doubleShowEvery}">
+        </label>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="spdUp" ${simonCfg.speedUp ? 'checked' : ''}>
+          <span>Ускорять каждые 3 раунда (-15%)</span>
+        </label>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="distr" ${simonCfg.distractors ? 'checked' : ''}>
+          <span>Дистракторы (мигающие эмодзи на экране)</span>
+        </label>
+
+        <div class="subtitle" style="text-align:left; padding: 12px; background: var(--blue-light); border-radius: 12px; line-height: 1.5; margin-bottom: 8px;">
+          💡 <b>Как играть:</b> персонажи вспыхивают по очереди — запомни порядок и повтори. Каждый раунд добавляется один символ. На раундах с ⚠️ РЕВЕРС повторяй <b>в обратном порядке</b>. На 🔁 ДВОЙНОЙ ПОКАЗ последовательность проиграется дважды.
+        </div>
+
+        <button class="btn-main" id="startBtn">Начать 🎵</button>
+      </div>
+    </div>
+  `;
+
+  // --- Режим 4/6 кнопок ---
+  gameEl.querySelectorAll('.mode-btn').forEach(b => {
+    b.onclick = () => {
+      simonCfg.buttons = +b.dataset.buttons;
+      $('btnVal').textContent = simonCfg.buttons;
+      gameEl.querySelectorAll('.mode-btn').forEach(x => {
+        const on = +x.dataset.buttons === simonCfg.buttons;
+        x.style.background = on ? 'var(--blue)' : '#fff';
+        x.style.color = on ? '#fff' : 'var(--blue-dark)';
+        x.style.border = on ? '2px solid transparent' : '2px solid var(--border)';
+      });
+      sfxClick();
+    };
+  });
+
+  const startRange = $('startRange');
+  const speedRange = $('speedRange');
+  const revRange = $('revRange');
+  const dblRange = $('dblRange');
+  const spdUp = $('spdUp');
+  const distr = $('distr');
+
+  startRange.oninput = () => { $('startVal').textContent = startRange.value; sfxClick(); };
+  speedRange.oninput = () => { $('speedVal').textContent = speedRange.value + ' мс'; sfxClick(); };
+  revRange.oninput = () => {
+    const v = +revRange.value;
+    $('revVal').textContent = v === 0 ? 'выкл' : v;
+    sfxClick();
+  };
+  dblRange.oninput = () => {
+    const v = +dblRange.value;
+    $('dblVal').textContent = v === 0 ? 'выкл' : v;
+    sfxClick();
+  };
+
+  // --- Пресеты ---
+  function markPresetActive() {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.preset-btn').forEach(b => {
+      const match =
+        +b.dataset.buttons === simonCfg.buttons &&
+        +b.dataset.start === +startRange.value &&
+        +b.dataset.speed === +speedRange.value &&
+        +b.dataset.rev === +revRange.value &&
+        +b.dataset.dbl === +dblRange.value &&
+        (+b.dataset.dist === 1) === distr.checked &&
+        (+b.dataset.up === 1) === spdUp.checked;
+      if (match) b.classList.add('active');
+    });
+  }
+
+  document.querySelectorAll('.preset-btn').forEach(b => {
+    b.onclick = () => {
+      const d = b.dataset;
+      // Кнопки 4/6
+      simonCfg.buttons = +d.buttons;
+      $('btnVal').textContent = simonCfg.buttons;
+      gameEl.querySelectorAll('.mode-btn').forEach(x => {
+        const on = +x.dataset.buttons === simonCfg.buttons;
+        x.style.background = on ? 'var(--blue)' : '#fff';
+        x.style.color = on ? '#fff' : 'var(--blue-dark)';
+        x.style.border = on ? '2px solid transparent' : '2px solid var(--border)';
+      });
+      startRange.value = d.start;
+      speedRange.value = d.speed;
+      revRange.value = d.rev;
+      dblRange.value = d.dbl;
+      spdUp.checked = d.up === '1';
+      distr.checked = d.dist === '1';
+
+      $('startVal').textContent = startRange.value;
+      $('speedVal').textContent = speedRange.value + ' мс';
+      $('revVal').textContent = +revRange.value === 0 ? 'выкл' : revRange.value;
+      $('dblVal').textContent = +dblRange.value === 0 ? 'выкл' : dblRange.value;
+
+      markPresetActive();
+      sfxClick();
+    };
+  });
+
+  // при ручном изменении — снимаем активный пресет
+  [startRange, speedRange, revRange, dblRange, spdUp, distr].forEach(el => {
+    el.addEventListener('input', markPresetActive);
+    el.addEventListener('change', markPresetActive);
+  });
+
+  markPresetActive();
+
+  $('startBtn').onclick = () => {
+    simonCfg.startLevel = +startRange.value;
+    simonCfg.speed = +speedRange.value;
+    simonCfg.reverseEvery = +revRange.value;
+    simonCfg.doubleShowEvery = +dblRange.value;
+    simonCfg.speedUp = spdUp.checked;
+    simonCfg.distractors = distr.checked;
+    try { localStorage.setItem('simonCfg', JSON.stringify(simonCfg)); } catch(e) {}
+    simonPlay();
+  };
+}
+
+/* ============ ИГРА ============ */
+function simonPlay() {
+  clearTimeouts();
+  stopDistractors();
+
+  const btnCount = simonCfg.buttons;
+  const chars = SIMON_CHARS.slice(0, btnCount);
+  const cols = btnCount === 4 ? 2 : 3;
+
+  simonState = {
+    sequence: [],
+    userIdx: 0,
+    level: 1,
+    reverse: false,
+    accepting: false,
+    currentSpeed: simonCfg.speed,
+    isDouble: false,
+    distractorTimer: null,
+    btnCount,
+    chars
+  };
+
+  for (let i = 0; i < simonCfg.startLevel; i++) {
+    simonState.sequence.push(rand(btnCount));
+  }
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🎵 Саймон</h2>
+      <div class="subtitle" id="subtitle">Приготовься...</div>
+    </div>
+    <div class="panel" style="position: relative; overflow: hidden;">
+      <div class="status warn" id="status">Смотри...</div>
+      <div class="simon-grid" id="grid"
+        style="grid-template-columns: repeat(${cols}, 1fr); max-width: ${cols === 2 ? 360 : 460}px;">
+      </div>
+      <div id="distractorLayer"></div>
+    </div>
+  `;
+
+  const grid = $('grid');
+  chars.forEach((c, i) => {
+    const b = document.createElement('div');
+    b.className = 'simon-btn';
+    b.dataset.i = i;
+    b.textContent = c.emoji;
+    b.style.borderColor = c.color + '88';
+    if (btnCount === 6) b.style.fontSize = '46px';
+    b.onclick = () => simonClick(i);
+    grid.appendChild(b);
+  });
+
+  wait(700, nextSimonRound);
+}
+
+function nextSimonRound() {
+  const s = simonState;
+  if (!s) return;
+
+  const level = s.level;
+  s.userIdx = 0;
+  s.accepting = false;
+
+  s.reverse = simonCfg.reverseEvery > 0 && level > 1 && level % simonCfg.reverseEvery === 0;
+  s.isDouble = simonCfg.doubleShowEvery > 0 && level > 1 && level % simonCfg.doubleShowEvery === 0;
+
+  if (simonCfg.speedUp && level > 1 && level % 3 === 1) {
+    s.currentSpeed = Math.max(180, Math.round(s.currentSpeed * 0.85));
+  }
+
+  s.sequence.push(rand(s.btnCount));
+
+  let subtitle = `Уровень ${level} · длина ${s.sequence.length} · ${s.currentSpeed}мс`;
+  if (s.reverse) subtitle = `⚠️ РЕВЕРС · ` + subtitle;
+  if (s.isDouble) subtitle = `🔁 ДВОЙНОЙ ПОКАЗ · ` + subtitle;
+  $('subtitle').textContent = subtitle;
+
+  $('status').textContent = s.reverse ? 'Смотри... потом в ОБРАТНОМ порядке!' : 'Смотри...';
+  $('status').className = 'status warn';
+
+  if (simonCfg.distractors) startDistractors();
+
+  playSimonSequence(0, 1);
+}
+
+function startDistractors() {
+  const layer = $('distractorLayer');
+  if (!layer) return;
+  if (simonState.distractorTimer) clearInterval(simonState.distractorTimer);
+
+  simonState.distractorTimer = setInterval(() => {
+    const emoji = DISTRACTOR_EMOJIS[rand(DISTRACTOR_EMOJIS.length)];
+    const el = document.createElement('div');
+    el.textContent = emoji;
+    el.style.position = 'absolute';
+    el.style.fontSize = (24 + rand(30)) + 'px';
+    el.style.left = (5 + rand(80)) + '%';
+    el.style.top = (5 + rand(80)) + '%';
+    el.style.opacity = '0';
+    el.style.transition = 'opacity 0.15s';
+    el.style.zIndex = '5';
+    layer.appendChild(el);
+    requestAnimationFrame(() => { el.style.opacity = '0.85'; });
+    setTimeout(() => {
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 200);
+    }, 180 + rand(150));
+  }, 500);
+}
+
+function stopDistractors() {
+  if (simonState && simonState.distractorTimer) {
+    clearInterval(simonState.distractorTimer);
+    simonState.distractorTimer = null;
+  }
+  const layer = $('distractorLayer');
+  if (layer) layer.innerHTML = '';
+}
+
+function playSimonSequence(i, passNumber) {
+  const s = simonState;
+  if (!s) return;
+
+  if (i >= s.sequence.length) {
+    if (s.isDouble && passNumber === 1) {
+      wait(600, () => playSimonSequence(0, 2));
+      return;
+    }
+    stopDistractors();
+    wait(350, () => {
+      s.accepting = true;
+      $('status').textContent = s.reverse ? 'Теперь в ОБРАТНОМ порядке!' : 'Твой ход!';
+      $('status').className = 'status';
+    });
+    return;
+  }
+
+  const idx = s.sequence[i];
+  lightSimon(idx);
+  wait(s.currentSpeed, () => playSimonSequence(i + 1, passNumber));
+}
+
+function lightSimon(i) {
+  const btn = document.querySelector(`.simon-btn[data-i="${i}"]`);
+  if (!btn) return;
+  const char = SIMON_CHARS[i];
+  btn.classList.add('lit');
+  btn.style.background = char.color;
+  btn.style.borderColor = char.color;
+  btn.style.boxShadow = `0 0 30px ${char.color}80`;
+  btn.style.transform = 'scale(1.04)';
+  beep(char.freq, 0.2, 'triangle', 0.1);
+  wait(Math.max(120, (simonState ? simonState.currentSpeed : 500) - 150), () => {
+    btn.classList.remove('lit');
+    btn.style.background = '';
+    btn.style.borderColor = char.color + '88';
+    btn.style.boxShadow = '';
+    btn.style.transform = '';
+  });
+}
+
+function simonClick(i) {
+  const s = simonState;
+  if (!s || !s.accepting) return;
+  lightSimon(i);
+  const seq = s.reverse ? [...s.sequence].reverse() : s.sequence;
+  if (i === seq[s.userIdx]) {
+    s.userIdx++;
+    if (s.userIdx === seq.length) {
+      s.accepting = false;
+      const reward = 5 + s.level * 3;
+      addScore(reward);
+      s.level++;
+      $('status').textContent = `✅ Верно! +${reward}`;
+      $('status').className = 'status good';
+      sfxCorrect();
+      wait(900, nextSimonRound);
+    }
+  } else {
+    s.accepting = false;
+    stopDistractors();
+    sfxWrong();
+    $('status').textContent = '❌ Ошибка!';
+    $('status').className = 'status bad';
+    const reached = s.level - 1;
+    const correctSeq = s.sequence.map(x => SIMON_CHARS[x].emoji).join(' ');
+    wait(1200, () => simonResult(reached, correctSeq));
+  }
+}
+
+/* ============ РЕЗУЛЬТАТ ============ */
+function simonResult(reached, correctSeq) {
+  let emoji, title, stars;
+
+  if (reached >= 10) {
+    emoji = '🏆'; title = 'Легенда Саймона!'; stars = 3;
+    sfxWin();
+  } else if (reached >= 7) {
+    emoji = '🎵'; title = 'Отличный результат'; stars = 3;
+    sfxWin();
+  } else if (reached >= 5) {
+    emoji = '✨'; title = 'Хорошо!'; stars = 2;
+    sfxCorrect();
+  } else if (reached >= 3) {
+    emoji = '🎶'; title = 'Неплохо для старта'; stars = 1;
+    sfxCorrect();
+  } else {
+    emoji = '🎵'; title = 'Попробуй ещё'; stars = 0;
+    sfxWrong();
+  }
+
+  const points = reached * 5;
+  addScore(points);
+  const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+
+  gameEl.innerHTML = `
+    <div class="panel">
+      <div class="result-screen">
+        <div class="big">${emoji}</div>
+        <h2>${title}</h2>
+        <p>Ты прошёл до уровня <b style="color: var(--blue-dark); font-size: 20px;">${reached}</b></p>
+        <p style="font-size: 14px;">Длина последней последовательности: ${reached + 1}</p>
+        <div class="stars">${starStr}</div>
+        <p style="opacity:.6; font-size: 14px;">+${points} очков</p>
+        <div style="margin-top: 20px; padding: 14px; background: rgba(45,108,223,.05); border-radius: 14px;">
+          <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px; font-weight: 700;">Правильная последовательность:</div>
+          <div style="display:flex; flex-wrap:wrap; justify-content:center; gap: 4px; font-size: 28px; word-break: break-word;">
+            ${correctSeq}
+          </div>
+        </div>
+        <button class="btn-main" id="retry">Ещё раз 🔄</button>
+        <button class="btn-secondary" id="menuBtn">← Настройки</button>
+      </div>
+    </div>
+  `;
+  $('retry').onclick = () => simonPlay();
+  $('menuBtn').onclick = () => startSimon();
+}
+
+/* ============ СТАРТ ============ */
+document.addEventListener('click', initAudio, { once: true });
+startSimon();
+</script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

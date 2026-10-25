@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Изложение - Мнемо-Арена</title>
+<style>
+  :root {
+    --blue: #2D6CDF; --blue-dark: #1E4FA8; --blue-light: #EBF2FF;
+    --orange: #FF8C42; --orange-dark: #E86E1F; --orange-light: #FFF2E5;
+    --bg: #F7F9FC; --text: #1F2937; --text-muted: #6B7280;
+    --border: #E5EAF2; --green: #22C55E; --red: #EF4444;
+    --yellow: #F59E0B; --purple: #A855F7; --purple-light: #F5EDFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, 'Nunito Sans', sans-serif;
+    background: var(--bg); min-height: 100vh; color: var(--text);
+    padding: 16px; overflow-x: hidden;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding: 16px 22px;
+    background: #fff; border-radius: 20px; border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(45,108,223,.06); flex-wrap: wrap; gap: 10px;
+  }
+  .back-btn {
+    width: 46px; height: 46px; border: none; border-radius: 14px;
+    background: var(--blue-light); color: var(--blue);
+    font-size: 22px; font-weight: 700; cursor: pointer; transition: .18s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .back-btn:hover { background: var(--blue); color: #fff; transform: translateY(-1px); }
+  h1 { font-size: 20px; letter-spacing: .5px; color: var(--blue-dark); font-weight: 800; }
+  .score-bar {
+    background: var(--orange); color: #fff;
+    padding: 8px 18px; border-radius: 30px; font-size: 14px;
+    font-weight: 700; box-shadow: 0 4px 12px rgba(255,140,66,.3);
+  }
+  .score-bar span { color: #fff; font-weight: 800; font-size: 17px; }
+  main { min-height: 520px; }
+  .game-header { text-align: center; margin-bottom: 20px; }
+  .game-header h2 { font-size: 22px; margin-bottom: 6px; color: var(--blue-dark); font-weight: 800; }
+  .subtitle { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+  .status {
+    text-align: center; font-size: 16px; margin: 16px 0;
+    min-height: 26px; font-weight: 700; color: var(--text); transition: .3s;
+  }
+  .status.good { color: #16A34A; }
+  .status.bad { color: #DC2626; }
+  .status.warn { color: var(--orange-dark); }
+  .panel {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 22px; padding: 26px;
+    box-shadow: 0 8px 24px rgba(45,108,223,.06);
+  }
+  .presets { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
+  .preset-btn {
+    flex: 1 1 auto; min-width: 90px; padding: 10px 8px;
+    border-radius: 12px; border: 2px solid var(--border);
+    background: #fff; color: var(--blue-dark);
+    font-weight: 700; font-size: 13px; cursor: pointer; transition: .18s; font-family: inherit;
+  }
+  .preset-btn:hover { border-color: var(--orange); color: var(--orange-dark); transform: translateY(-1px); }
+  .preset-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .segment { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .segment-btn {
+    flex: 1 1 auto; padding: 12px 10px; border-radius: 12px;
+    border: 2px solid var(--border); background: #fff; color: var(--blue-dark);
+    font-weight: 700; font-size: 13px; cursor: pointer; transition: .18s;
+    font-family: inherit; line-height: 1.25; min-width: 100px;
+  }
+  .segment-btn:hover { border-color: var(--orange); }
+  .segment-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .segment-btn small { display: block; font-size: 10px; opacity: .7; font-weight: 600; margin-top: 3px; }
+  .segment-btn.active small { opacity: .9; }
+  .text-card {
+    background: linear-gradient(145deg, var(--orange-light), var(--purple-light));
+    border-radius: 20px; border: 2px solid var(--border);
+    padding: 30px 26px; margin: 20px 0;
+    animation: popIn .4s cubic-bezier(.34,1.56,.64,1); position: relative;
+  }
+  .text-card::before {
+    content: '📖'; position: absolute; top: -14px; left: 24px;
+    font-size: 28px; background: #fff; padding: 4px 12px;
+    border-radius: 20px; border: 2px solid var(--border);
+  }
+  .text-title {
+    font-size: 14px; font-weight: 800; color: var(--orange-dark);
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px;
+  }
+  .text-body { font-size: 19px; line-height: 1.7; font-weight: 600; color: var(--blue-dark); word-wrap: break-word; }
+  .text-body p { margin-bottom: 14px; text-indent: 1.5em; }
+  .text-body p:last-child { margin-bottom: 0; }
+  @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .keys-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
+  .key-tile {
+    padding: 20px 12px; font-size: 17px; font-weight: 800;
+    border-radius: 16px; background: #fff; border: 2px solid var(--border);
+    color: var(--blue-dark); cursor: pointer; transition: .15s;
+    text-align: center; user-select: none; word-break: break-word;
+    font-family: inherit; line-height: 1.25;
+    animation: popIn .3s cubic-bezier(.34,1.56,.64,1) backwards;
+  }
+  .key-tile:hover { background: var(--blue-light); border-color: var(--blue); transform: translateY(-2px); }
+  .key-tile.selected { background: var(--orange-light); border-color: var(--orange); color: var(--orange-dark); }
+  .key-tile.correct { background: #DCFCE7; border-color: var(--green); color: #166534; }
+  .key-tile.wrong { background: #FEE2E2; border-color: var(--red); color: #991B1B; animation: shake .35s ease; }
+  .key-tile.missed { background: #FEF3C7; border-color: var(--yellow); color: #92400E; }
+  .key-tile.dimmed { opacity: .35; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    50% { transform: translateX(6px); }
+    75% { transform: translateX(-4px); }
+  }
+  .progress-dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 18px; flex-wrap: wrap; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: .3s; }
+  .dot.active { background: var(--orange); transform: scale(1.4); }
+  .dot.correct { background: var(--green); }
+  .dot.wrong { background: var(--red); }
+  .question-label { text-align: center; font-size: 18px; font-weight: 800; color: var(--blue-dark); margin-bottom: 6px; }
+  .question-context {
+    text-align: center; font-size: 13px; color: var(--text-muted);
+    font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;
+  }
+  .options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .option-text {
+    padding: 20px 16px; font-size: 17px; font-weight: 700;
+    border-radius: 16px; background: #fff; border: 2px solid var(--border);
+    color: var(--text); cursor: pointer; transition: .15s;
+    text-align: center; user-select: none; word-break: break-word;
+    font-family: inherit; line-height: 1.3;
+  }
+  .option-text:hover:not(:disabled) { background: var(--blue-light); border-color: var(--blue); transform: translateY(-2px); box-shadow: 0 8px 18px rgba(45,108,223,.12); }
+  .option-text:disabled { cursor: default; }
+  .option-text.correct { background: #DCFCE7; border-color: var(--green); transform: scale(1.02); box-shadow: 0 0 0 4px rgba(34,197,94,.15); }
+  .option-text.wrong { background: #FEE2E2; border-color: var(--red); animation: shake .35s ease; }
+  .option-text.dimmed { opacity: .35; }
+
+  .plan-block {
+    margin-bottom: 20px; padding: 18px;
+    background: var(--bg); border-radius: 16px;
+    border: 2px solid var(--border);
+    animation: popIn .35s cubic-bezier(.34,1.56,.64,1) backwards;
+    transition: .2s;
+  }
+  .plan-block.correct { border-color: var(--green); background: #F0FDF4; }
+  .plan-block.wrong { border-color: var(--red); background: #FEF2F2; }
+  .plan-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--blue); color: #fff; font-weight: 900; font-size: 15px;
+    margin-right: 10px; vertical-align: middle; flex-shrink: 0;
+  }
+  .plan-block.correct .plan-num { background: var(--green); }
+  .plan-block.wrong .plan-num { background: var(--red); }
+  .plan-paragraph {
+    font-size: 15px; line-height: 1.55; color: var(--text);
+    font-weight: 600; margin-bottom: 14px;
+    padding-left: 42px; position: relative;
+  }
+  .plan-paragraph::before {
+    content: ''; display: block; position: absolute;
+    left: 0; top: 4px; bottom: 4px;
+    width: 3px; background: var(--border); border-radius: 2px;
+  }
+  .plan-label { font-size: 12px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .plan-input {
+    width: 100%; padding: 14px 16px; font-size: 16px;
+    font-family: inherit; font-weight: 600;
+    border-radius: 12px; border: 2px solid var(--border);
+    background: #fff; color: var(--blue-dark); transition: .15s;
+  }
+  .plan-input:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 4px var(--orange-light); }
+  .plan-input:disabled { background: #fff; cursor: default; }
+  .plan-block.correct .plan-input { border-color: var(--green); }
+  .plan-block.wrong .plan-input { border-color: var(--red); }
+  .plan-hint { margin-top: 10px; font-size: 13px; color: var(--text-muted); font-weight: 600; }
+  .plan-hint b { color: var(--blue-dark); }
+  .plan-keys { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .plan-keys .k {
+    padding: 4px 10px; border-radius: 8px;
+    font-size: 12px; font-weight: 800;
+    background: var(--blue-light); color: var(--blue-dark);
+  }
+  .plan-match {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+  .plan-match b { color: var(--green); }
+  .plan-match.miss b { color: var(--red); }
+
+  .retell-label { text-align: center; font-size: 15px; font-weight: 800; color: var(--blue-dark); margin-bottom: 12px; }
+  .retell-hint { text-align: center; font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 16px; }
+  .retell-textarea {
+    width: 100%; min-height: 160px; padding: 18px;
+    font-size: 16px; line-height: 1.6; font-family: inherit; font-weight: 600;
+    border-radius: 16px; border: 2px solid var(--border);
+    background: #fff; color: var(--blue-dark); resize: vertical; transition: .15s;
+  }
+  .retell-textarea:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 4px var(--orange-light); }
+  .retell-stats { display: flex; justify-content: space-between; margin-top: 10px; font-size: 13px; font-weight: 700; color: var(--text-muted); }
+  .retell-stats b { color: var(--blue-dark); }
+  .timer-bar { height: 10px; border-radius: 10px; background: var(--border); overflow: hidden; margin-bottom: 20px; }
+  .timer-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--yellow), var(--red)); transition: width 0.5s linear; width: 100%; }
+  .settings-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 15px; color: var(--text); font-weight: 700; }
+  .settings-row b { color: var(--blue-dark); font-size: 16px; font-weight: 800; }
+  input[type="range"] { width: 100%; accent-color: #FF8C42; height: 26px; }
+  .slider-disabled { opacity: .35; pointer-events: none; }
+  .btn-main {
+    display: block; margin: 24px auto 0; padding: 16px 40px;
+    border-radius: 14px; border: none;
+    background: var(--orange); color: #fff;
+    font-size: 17px; font-weight: 800; cursor: pointer;
+    transition: .2s; letter-spacing: .5px;
+    box-shadow: 0 8px 20px rgba(255,140,66,.3); font-family: inherit;
+  }
+  .btn-main:hover { background: var(--orange-dark); transform: translateY(-2px); box-shadow: 0 12px 28px rgba(255,140,66,.4); }
+  .btn-main:active { transform: translateY(0); }
+  .btn-main:disabled { opacity: .4; cursor: default; transform: none !important; }
+  .btn-secondary {
+    display: block; margin: 8px auto 0; padding: 12px 30px;
+    border-radius: 14px; border: none;
+    background: transparent; color: var(--blue-dark);
+    font-size: 15px; font-weight: 700; cursor: pointer; transition: .2s; font-family: inherit;
+  }
+  .btn-secondary:hover { background: var(--blue-light); }
+  .result-screen { text-align: center; padding: 20px 0; }
+  .result-screen .big { font-size: 72px; margin-bottom: 12px; animation: popIn .5s cubic-bezier(.34,1.56,.64,1); }
+  .result-screen h2 { font-size: 26px; margin-bottom: 10px; color: var(--blue-dark); font-weight: 800; }
+  .result-screen p { color: var(--text-muted); font-size: 16px; margin: 6px 0; font-weight: 600; }
+  .stars { font-size: 40px; margin: 20px 0; letter-spacing: 6px; }
+  .review-block { margin-top: 20px; padding: 18px; background: rgba(45,108,223,.05); border-radius: 14px; text-align: left; }
+  .review-block .label {
+    font-size: 12px; color: var(--text-muted); font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; text-align: center;
+  }
+  .review-block .text { font-size: 15px; line-height: 1.6; color: var(--blue-dark); font-weight: 600; }
+  .review-block .text p { margin-bottom: 10px; text-indent: 1.5em; }
+  .review-block .text p:last-child { margin-bottom: 0; }
+  .review-block .text p.title-line { text-indent: 0; font-weight: 800; color: var(--orange-dark); }
+  .review-keys { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 10px; }
+  .review-keys .k {
+    padding: 6px 12px; border-radius: 10px;
+    font-size: 13px; font-weight: 800; border: 2px solid;
+  }
+  .review-keys .k.found { background: #DCFCE7; border-color: var(--green); color: #166534; }
+  .review-keys .k.missed { background: #FEE2E2; border-color: var(--red); color: #991B1B; }
+  @media (max-width: 500px) {
+    .text-body { font-size: 16px; line-height: 1.6; }
+    .key-tile { font-size: 14px; padding: 14px 8px; }
+    .options { grid-template-columns: 1fr; }
+    .option-text { font-size: 15px; padding: 16px 10px; }
+    .preset-btn { font-size: 12px; }
+    .segment-btn { font-size: 12px; padding: 10px 6px; }
+    .keys-grid { grid-template-columns: repeat(2, 1fr); }
+    .text-card { padding: 22px 18px; }
+    .plan-paragraph { padding-left: 0; font-size: 14px; }
+    .plan-paragraph::before { display: none; }
+  }
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <button class="back-btn" onclick="location.href='index.html'">←</button>
+    <h1>📖 ИЗЛОЖЕНИЕ</h1>
+    <div class="score-bar">Очки: <span id="globalScore">0</span></div>
+  </header>
+  <main id="game"></main>
+</div>
+
+<script src="texts.js"></script>
+
+<script>
+/* ============ УТИЛИТЫ ============ */
+const $ = id => document.getElementById(id);
+const gameEl = $('game');
+let globalScore = 0;
+$('globalScore').textContent = globalScore;
+function addScore(n) { globalScore += n; $('globalScore').textContent = globalScore; }
+
+function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+const rand = n => Math.floor(Math.random() * n);
+
+let timeouts = [];
+function wait(ms, fn) { const id = setTimeout(fn, ms); timeouts.push(id); return id; }
+function clearTimeouts() { timeouts.forEach(clearTimeout); timeouts = []; }
+
+let audioCtx = null;
+function initAudio() { if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} } }
+function beep(freq, dur = 0.15, type = 'sine', vol = 0.08) {
+  if (!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = type; osc.frequency.value = freq;
+    const t = audioCtx.currentTime;
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.start(t); osc.stop(t + dur + 0.02);
+  } catch(e) {}
+}
+function sfxCorrect() { beep(660, 0.1); setTimeout(() => beep(880, 0.15), 90); }
+function sfxWrong() { beep(180, 0.3, 'sawtooth', 0.12); }
+function sfxClick() { beep(440, 0.05, 'triangle', 0.06); }
+function sfxWin() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.2), i * 120)); }
+
+/* ============ ХЕЛПЕРЫ ============ */
+function getParagraphs(text) {
+  return text.split('\n\n').map(p => p.trim()).filter(p => p);
+}
+
+// Стоп-слова — для fallback-режима (когда у текста нет planKeys)
+const STOP_WORDS = new Set([
+  'и','а','но','или','да','же','ли','бы','не','ни','нет',
+  'в','во','на','за','из','к','ко','по','о','об','обо','от','ото','до','для','при','про','без','через','над','под','перед','между',
+  'с','со','у',
+  'что','чтобы','как','когда','где','куда','откуда','кто','чей','какой','какая','какие',
+  'это','этот','эта','эти','тот','та','те','такой',
+  'он','она','оно','они','я','ты','мы','вы','его','её','их','мне','тебе','нам','вам',
+  'был','была','было','были','быть','есть','стал','стала','стало','стали',
+  'весь','вся','всё','все','себя','себе','собой',
+  'уже','ещё','еще','только','даже','ведь','вот','вон','тут','там',
+  'очень','совсем','почти','чуть',
+  'потом','затем','сначала','наконец','опять','снова',
+  'моя','мой','моё','мои','твой','твоя','твоё','твои','наш','наша','наше','наши','ваш','ваша','ваше','ваши',
+  'один','одна','одно','одни','два','две','три','четыре','пять',
+  'который','которая','которое','которые'
+]);
+
+function extractRoots(text) {
+  const words = text.toLowerCase()
+    .replace(/ё/g, 'е')
+    .replace(/[^а-я\s]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length >= 4 && !STOP_WORDS.has(w));
+  return [...new Set(words.map(w => w.slice(0, 5)))];
+}
+
+function getKeyWords(paragraph) {
+  const words = paragraph.toLowerCase()
+    .replace(/ё/g, 'е')
+    .replace(/[^а-я\s]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length >= 5 && !STOP_WORDS.has(w));
+  const seen = new Set();
+  const result = [];
+  for (const w of words) {
+    if (!seen.has(w)) { seen.add(w); result.push(w); if (result.length >= 6) break; }
+  }
+  return result;
+}
+
+// Возвращает массив ключевых слов для абзаца
+function getPlanKeysForParagraph(textObj, i, paragraph) {
+  // Если у текста есть свои planKeys — используем их
+  if (textObj.planKeys && Array.isArray(textObj.planKeys[i]) && textObj.planKeys[i].length) {
+    return textObj.planKeys[i];
+  }
+  // Иначе — fallback на автокорни
+  return getKeyWords(paragraph).slice(0, 4);
+}
+
+// Сколько корней из ответа совпало с ключами
+function countMatches(userInput, planKeys) {
+  const userRoots = extractRoots(userInput);
+  if (userRoots.length === 0) return 0;
+
+  const keyRoots = planKeys.map(k => k.toLowerCase().replace(/ё/g, 'е').slice(0, 5));
+  let matches = 0;
+  const usedKeys = new Set();
+
+  for (const ur of userRoots) {
+    for (let i = 0; i < keyRoots.length; i++) {
+      if (usedKeys.has(i)) continue;
+      const kr = keyRoots[i];
+      // Совпадение первых 4+ символов или полное совпадение
+      const minLen = Math.min(ur.length, kr.length);
+      let prefix = 0;
+      for (let j = 0; j < minLen; j++) {
+        if (ur[j] === kr[j]) prefix++;
+        else break;
+      }
+      if (prefix >= 4) {
+        matches++;
+        usedKeys.add(i);
+        break;
+      }
+    }
+  }
+  return matches;
+}
+
+if (typeof window.TEXTS === 'undefined' || !window.TEXTS.length) {
+  document.addEventListener('DOMContentLoaded', () => {
+    gameEl.innerHTML = `
+      <div class="panel">
+        <div class="result-screen">
+          <div class="big">⚠️</div>
+          <h2>Не загрузилась база текстов</h2>
+          <p>Проверь, что файл <b>texts.js</b> лежит в той же папке, что и <b>retelling.html</b>.</p>
+        </div>
+      </div>
+    `;
+  });
+}
+
+/* ============ НАСТРОЙКИ ============ */
+let retellCfg = {
+  mode: 'keys',
+  showTime: 40,
+  timerMode: true,
+  textLength: 'medium',
+  planMode: 'soft'   // 'soft' = 1 слово, 'strict' = 2+ слова
+};
+try {
+  const s = localStorage.getItem('retellCfg');
+  if (s) retellCfg = { ...retellCfg, ...JSON.parse(s) };
+} catch(e) {}
+
+/* ============ ЭКРАН НАСТРОЕК ============ */
+function startRetelling() {
+  clearTimeouts();
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>📖 Изложение</h2>
+      <div class="subtitle">Запомни текст — воспроизведи его по-своему</div>
+    </div>
+    <div class="panel">
+      <div style="max-width: 500px; margin: 0 auto;">
+
+        <div class="presets" id="presets">
+          <button class="preset-btn" data-mode="plan" data-time="40" data-timer="1" data-len="medium" data-plan="soft">📋 План · мягкий</button>
+          <button class="preset-btn" data-mode="plan" data-time="40" data-timer="1" data-len="medium" data-plan="strict">📋 План · строгий</button>
+          <button class="preset-btn" data-mode="retell" data-time="60" data-timer="0" data-len="medium" data-plan="soft">✍️ Своими словами</button>
+          <button class="preset-btn" data-mode="questions" data-time="40" data-timer="1" data-len="medium" data-plan="soft">📋 По вопросам</button>
+        </div>
+
+        <div style="margin-bottom: 22px;">
+          <div class="settings-row"><span>Режим тренировки</span><b id="modeVal">Три опоры</b></div>
+          <div class="segment" id="modeRow" style="flex-direction: column;">
+            <button class="segment-btn" data-mode="plan" style="text-align:left; padding: 14px 16px;">
+              📋 Составь план<small>Озаглавь каждый абзац — ключевой навык для изложения</small>
+            </button>
+            <button class="segment-btn" data-mode="keys" style="text-align:left; padding: 14px 16px;">
+              🎯 Три опоры<small>Выбери 4 главных слова из 9</small>
+            </button>
+            <button class="segment-btn" data-mode="questions" style="text-align:left; padding: 14px 16px;">
+              📋 По вопросам<small>Ответь на 5 вопросов по порядку событий</small>
+            </button>
+            <button class="segment-btn" data-mode="retell" style="text-align:left; padding: 14px 16px;">
+              ✍️ Своими словами<small>Напиши пересказ — система проверит ключевые слова</small>
+            </button>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 22px;">
+          <div class="settings-row"><span>Проверка плана</span><b id="planModeVal">мягкая</b></div>
+          <div class="segment" id="planRow">
+            <button class="segment-btn" data-plan="soft">Мягкая<small>1 главное слово</small></button>
+            <button class="segment-btn" data-plan="strict">Строгая<small>2+ главных слова</small></button>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 22px;">
+          <div class="settings-row"><span>Размер текста</span><b id="lenVal">средний</b></div>
+          <div class="segment" id="lenRow">
+            <button class="segment-btn" data-len="short">Короткий<small>1–2 абзаца</small></button>
+            <button class="segment-btn" data-len="medium">Полный<small>все 3 абзаца</small></button>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 22px;">
+          <div class="settings-row"><span>Режим чтения</span><b id="timerModeVal">с таймером</b></div>
+          <div class="segment" id="timerRow">
+            <button class="segment-btn" data-timer="1">С таймером<small>на время</small></button>
+            <button class="segment-btn" data-timer="0">Без таймера<small>сам решаю</small></button>
+          </div>
+        </div>
+
+        <label style="display:block; margin-bottom: 22px;" id="timeBlock">
+          <div class="settings-row"><span>Время на чтение</span><b id="timeVal">40 сек</b></div>
+          <input type="range" id="timeRange" min="10" max="120" step="5" value="${retellCfg.showTime}">
+        </label>
+
+        <div class="subtitle" style="text-align:left; padding: 14px; background: var(--blue-light); border-radius: 12px; line-height: 1.5;">
+          💡 <b>Как играть:</b> увидишь текст из 3 абзацев. Запомни сюжет. Потом — в зависимости от режима — озаглавь каждый абзац (план), выбери опоры, ответь на вопросы или напиши пересказ.
+        </div>
+
+        <button class="btn-main" id="startBtn">Начать 📖</button>
+      </div>
+    </div>
+  `;
+
+  const timeRange = $('timeRange');
+  const timeBlock = $('timeBlock');
+
+  function updateModeUI() {
+    const names = { plan: 'Составь план', keys: 'Три опоры', questions: 'По вопросам', retell: 'Своими словами' };
+    $('modeVal').textContent = names[retellCfg.mode];
+    gameEl.querySelectorAll('#modeRow .segment-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === retellCfg.mode);
+    });
+  }
+  function updateLenUI() {
+    $('lenVal').textContent = retellCfg.textLength === 'short' ? 'короткий' : 'полный';
+    gameEl.querySelectorAll('#lenRow .segment-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.len === retellCfg.textLength);
+    });
+  }
+  function updateTimerUI() {
+    $('timerModeVal').textContent = retellCfg.timerMode ? 'с таймером' : 'без таймера';
+    gameEl.querySelectorAll('#timerRow .segment-btn').forEach(b => {
+      b.classList.toggle('active', (b.dataset.timer === '1') === retellCfg.timerMode);
+    });
+    timeBlock.classList.toggle('slider-disabled', !retellCfg.timerMode);
+  }
+  function updatePlanUI() {
+    $('planModeVal').textContent = retellCfg.planMode === 'strict' ? 'строгая' : 'мягкая';
+    gameEl.querySelectorAll('#planRow .segment-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.plan === retellCfg.planMode);
+    });
+  }
+  function markPresetActive() {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.preset-btn').forEach(b => {
+      if (b.dataset.mode === retellCfg.mode &&
+          +b.dataset.time === +timeRange.value &&
+          (b.dataset.timer === '1') === retellCfg.timerMode &&
+          b.dataset.len === retellCfg.textLength &&
+          b.dataset.plan === retellCfg.planMode) {
+        b.classList.add('active');
+      }
+    });
+  }
+
+  gameEl.querySelectorAll('#modeRow .segment-btn').forEach(b => {
+    b.onclick = () => { retellCfg.mode = b.dataset.mode; updateModeUI(); markPresetActive(); sfxClick(); };
+  });
+  gameEl.querySelectorAll('#planRow .segment-btn').forEach(b => {
+    b.onclick = () => { retellCfg.planMode = b.dataset.plan; updatePlanUI(); markPresetActive(); sfxClick(); };
+  });
+  gameEl.querySelectorAll('#lenRow .segment-btn').forEach(b => {
+    b.onclick = () => { retellCfg.textLength = b.dataset.len; updateLenUI(); markPresetActive(); sfxClick(); };
+  });
+  gameEl.querySelectorAll('#timerRow .segment-btn').forEach(b => {
+    b.onclick = () => { retellCfg.timerMode = b.dataset.timer === '1'; updateTimerUI(); markPresetActive(); sfxClick(); };
+  });
+
+  document.querySelectorAll('.preset-btn').forEach(b => {
+    b.onclick = () => {
+      retellCfg.mode = b.dataset.mode;
+      retellCfg.timerMode = b.dataset.timer === '1';
+      retellCfg.textLength = b.dataset.len;
+      retellCfg.planMode = b.dataset.plan || 'soft';
+      timeRange.value = b.dataset.time;
+      $('timeVal').textContent = b.dataset.time + ' сек';
+      updateModeUI(); updateLenUI(); updateTimerUI(); updatePlanUI(); markPresetActive();
+      sfxClick();
+    };
+  });
+
+  timeRange.oninput = () => { $('timeVal').textContent = timeRange.value + ' сек'; markPresetActive(); sfxClick(); };
+
+  updateModeUI(); updateLenUI(); updateTimerUI(); updatePlanUI(); markPresetActive();
+
+  $('startBtn').onclick = () => {
+    retellCfg.showTime = +timeRange.value;
+    try { localStorage.setItem('retellCfg', JSON.stringify(retellCfg)); } catch(e) {}
+    retellShow();
+  };
+}
+
+/* ============ ФАЗА 1: ПОКАЗ ============ */
+function retellShow() {
+  clearTimeouts();
+  if (!window.TEXTS || !window.TEXTS.length) { alert('База текстов не загружена.'); return; }
+
+  const textObj = TEXTS[rand(TEXTS.length)];
+  const showTime = retellCfg.showTime;
+  const timerMode = retellCfg.timerMode;
+
+  const allParagraphs = getParagraphs(textObj.text);
+  let displayParagraphs;
+  if (retellCfg.textLength === 'short') {
+    displayParagraphs = allParagraphs.slice(0, 2);
+  } else {
+    displayParagraphs = allParagraphs;
+  }
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>📖 Изложение</h2>
+      <div class="subtitle" id="subtitleLine">${timerMode ? `Читай и запоминай... <span id="time">${showTime}</span> сек` : 'Читай и запоминай — сам реши, когда готов'}</div>
+    </div>
+    <div class="panel">
+      ${timerMode ? `<div class="timer-bar"><div class="timer-fill" id="tfill" style="width:100%"></div></div>` : ''}
+      <div class="text-card">
+        <div class="text-title">${textObj.title}${textObj.author ? ' · ' + textObj.author : ''}</div>
+        <div class="text-body">
+          ${displayParagraphs.map(p => `<p>${p}</p>`).join('')}
+        </div>
+      </div>
+      ${timerMode ? '' : `<button class="btn-main" id="readyBtn">Я запомнил →</button>`}
+    </div>
+  `;
+
+  beep(600, 0.15);
+
+  const goNext = () => {
+    if (retellCfg.mode === 'plan') retellPlan(textObj, displayParagraphs);
+    else if (retellCfg.mode === 'keys') retellKeys(textObj);
+    else if (retellCfg.mode === 'questions') retellQuestions(textObj);
+    else retellWrite(textObj);
+  };
+
+  if (timerMode) {
+    let left = showTime;
+    const intervalId = setInterval(() => {
+      left--;
+      const t = $('time'); if (t) t.textContent = Math.max(0, left);
+      const f = $('tfill'); if (f) f.style.width = (Math.max(0, left) / showTime * 100) + '%';
+      if (left <= 0) clearInterval(intervalId);
+    }, 1000);
+    timeouts.push(intervalId);
+    wait(showTime * 1000, goNext);
+  } else {
+    $('readyBtn').onclick = () => { sfxClick(); goNext(); };
+  }
+}
+
+/* ============ РЕЖИМ: СОСТАВЬ ПЛАН ============ */
+function retellPlan(textObj, paragraphs) {
+  clearTimeouts();
+  const planMode = retellCfg.planMode;
+  const requiredMatches = planMode === 'strict' ? 2 : 1;
+  const modeLabel = planMode === 'strict' ? 'строгий (минимум 2 слова)' : 'мягкий (минимум 1 слово)';
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>📖 Изложение</h2>
+      <div class="subtitle">📋 Озаглавь каждый абзац · режим ${planMode === 'strict' ? 'строгий' : 'мягкий'}</div>
+    </div>
+    <div class="panel">
+      <div class="status" id="status">Режим проверки: ${modeLabel}. Придумай короткий заголовок к каждому абзацу.</div>
+      <div id="planBlocks"></div>
+      <button class="btn-main" id="checkBtn" disabled>Проверить ✓</button>
+    </div>
+  `;
+
+  const blocks = $('planBlocks');
+  const checkBtn = $('checkBtn');
+  const inputs = [];
+
+  paragraphs.forEach((p, i) => {
+    const block = document.createElement('div');
+    block.className = 'plan-block';
+    block.style.animationDelay = (i * 0.1) + 's';
+    block.innerHTML = `
+      <div style="display:flex; align-items:center; margin-bottom:12px;">
+        <div class="plan-num">${i + 1}</div>
+        <div class="plan-label" style="margin:0;">Абзац ${i + 1}</div>
+      </div>
+      <div class="plan-paragraph">${p}</div>
+      <input class="plan-input" type="text" placeholder="Заголовок абзаца..." data-idx="${i}" autocomplete="off">
+    `;
+    blocks.appendChild(block);
+    const input = block.querySelector('input');
+    inputs.push(input);
+
+    input.addEventListener('input', () => {
+      const filled = inputs.every(inp => inp.value.trim().length >= 3);
+      checkBtn.disabled = !filled;
+      $('status').textContent = filled
+        ? 'Все заголовки заполнены — жми «Проверить»'
+        : `Заполнено: ${inputs.filter(x => x.value.trim().length >= 3).length} из ${inputs.length}`;
+    });
+  });
+
+  wait(200, () => { try { inputs[0].focus(); } catch(e){} });
+
+  checkBtn.onclick = () => {
+    let correctCount = 0;
+    inputs.forEach((input, i) => {
+      input.disabled = true;
+      const block = input.closest('.plan-block');
+      const planKeys = getPlanKeysForParagraph(textObj, i, paragraphs[i]);
+      const matches = countMatches(input.value, planKeys);
+      const good = matches >= requiredMatches;
+
+      if (good) {
+        block.classList.add('correct');
+        correctCount++;
+        sfxCorrect();
+      } else {
+        block.classList.add('wrong');
+        sfxWrong();
+      }
+
+      const hint = document.createElement('div');
+      hint.className = 'plan-hint';
+      hint.innerHTML = good
+        ? `✓ Зачёт — совпало ${matches} ${matches === 1 ? 'слово' : 'слова'} из списка`
+        : `✗ Найдено совпадений: ${matches}. Нужно минимум ${requiredMatches}.`;
+      block.appendChild(hint);
+
+      const matchLine = document.createElement('div');
+      matchLine.className = 'plan-match' + (good ? '' : ' miss');
+      matchLine.innerHTML = `Совпало: <b>${matches}</b> из ${planKeys.length}`;
+      block.appendChild(matchLine);
+
+      const keysRow = document.createElement('div');
+      keysRow.className = 'plan-keys';
+      planKeys.forEach(k => {
+        keysRow.insertAdjacentHTML('beforeend', `<div class="k">${k}</div>`);
+      });
+      block.appendChild(keysRow);
+    });
+
+    const total = paragraphs.length;
+    let emoji, title, text, stars, points;
+    if (correctCount === total) {
+      emoji = '🏆'; title = 'Идеальный план!';
+      text = `Все ${total} пунктов названы верно`;
+      stars = 3; points = 40;
+      sfxWin();
+    } else if (correctCount >= total - 1) {
+      emoji = '📋'; title = 'Почти идеально';
+      text = `Верно: ${correctCount} из ${total}`;
+      stars = 2; points = 25;
+      sfxCorrect();
+    } else if (correctCount >= Math.ceil(total / 2)) {
+      emoji = '🔍'; title = 'Неплохо';
+      text = `Верно: ${correctCount} из ${total}`;
+      stars = 1; points = 15;
+      sfxCorrect();
+    } else {
+      emoji = '🌀'; title = 'План расплылся';
+      text = `Верно: ${correctCount} из ${total}`;
+      stars = 0; points = 5;
+      sfxWrong();
+    }
+
+    addScore(points);
+
+    checkBtn.disabled = true;
+    checkBtn.textContent = 'Дальше →';
+    checkBtn.onclick = () => retellResult(textObj, {
+      emoji, title, text, stars, points,
+      planReview: true,
+      paragraphs,
+      planHistory: inputs.map((inp, i) => {
+        const keys = getPlanKeysForParagraph(textObj, i, paragraphs[i]);
+        return countMatches(inp.value, keys) >= requiredMatches;
+      })
+    });
+  };
+}
+
+/* ============ РЕЖИМ 1: ТРИ ОПОРЫ ============ */
+function retellKeys(textObj) {
+  clearTimeouts();
+  const correct = shuffle([...textObj.keysFor3]);
+  const wrong = shuffle([...textObj.distractors]).slice(0, 9 - correct.length);
+  const tiles = shuffle([...correct, ...wrong]);
+  const needed = correct.length;
+  const selected = new Set();
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>📖 Изложение</h2>
+      <div class="subtitle">🎯 Выбери ${needed} главных слова из ${tiles.length}</div>
+    </div>
+    <div class="panel">
+      <div class="status" id="status">Кликай по словам, которые были в тексте</div>
+      <div class="keys-grid" id="keysGrid"></div>
+      <button class="btn-main" id="checkBtn" disabled>Проверить ✓</button>
+    </div>
+  `;
+
+  const grid = $('keysGrid');
+  const checkBtn = $('checkBtn');
+
+  tiles.forEach((t, i) => {
+    const el = document.createElement('div');
+    el.className = 'key-tile';
+    el.textContent = t;
+    el.style.animationDelay = (i * 0.05) + 's';
+    el.onclick = () => {
+      if (selected.has(t)) {
+        selected.delete(t); el.classList.remove('selected'); beep(360, 0.05, 'triangle', 0.05);
+      } else {
+        if (selected.size >= needed) return;
+        selected.add(t); el.classList.add('selected'); beep(620, 0.05, 'triangle', 0.06);
+      }
+      checkBtn.disabled = selected.size !== needed;
+      $('status').textContent = `Выбрано: ${selected.size} из ${needed}`;
+    };
+    grid.appendChild(el);
+  });
+
+  checkBtn.onclick = () => {
+    const correctSet = new Set(textObj.keysFor3);
+    let hits = 0, falseHits = 0;
+
+    grid.querySelectorAll('.key-tile').forEach(el => {
+      const t = el.textContent;
+      el.onclick = null; el.style.cursor = 'default';
+      const sel = selected.has(t);
+      const isCorrect = correctSet.has(t);
+      if (sel && isCorrect) { hits++; el.classList.remove('selected'); el.classList.add('correct'); }
+      else if (sel && !isCorrect) { falseHits++; el.classList.remove('selected'); el.classList.add('wrong'); }
+      else if (!sel && isCorrect) { el.classList.add('missed'); }
+      else el.classList.add('dimmed');
+    });
+
+    let emoji, title, text, stars, points;
+    if (hits === needed && falseHits === 0) {
+      emoji = '🏆'; title = 'Идеально!'; text = `Все ${needed} главных слова найдены`; stars = 3; points = 40; sfxWin();
+    } else if (hits >= needed - 1 && falseHits === 0) {
+      emoji = '🎯'; title = 'Почти!'; text = `Нашёл ${hits} из ${needed}`; stars = 2; points = 25; sfxCorrect();
+    } else if (hits >= 2) {
+      emoji = '🔍'; title = 'Не всё главное'; text = `Правильных: ${hits} из ${needed}`; stars = 1; points = 12; sfxCorrect();
+    } else {
+      emoji = '🌀'; title = 'Опоры потеряны'; text = `Правильных: ${hits} из ${needed}`; stars = 0; points = 5; sfxWrong();
+    }
+
+    addScore(points);
+    checkBtn.disabled = true;
+    checkBtn.textContent = 'Дальше →';
+    checkBtn.onclick = () => retellResult(textObj, { emoji, title, text, stars, points, keys: textObj.keysFor3 });
+  };
+}
+
+/* ============ РЕЖИМ 2: ПО ВОПРОСАМ ============ */
+function retellQuestions(textObj) {
+  clearTimeouts();
+  const questions = textObj.questions;
+  const history = [];
+
+  function askNext(idx) {
+    if (idx >= questions.length) {
+      const score = history.filter(Boolean).length;
+      return retellResult(textObj, {
+        emoji: score === questions.length ? '🏆' : score >= questions.length * 0.7 ? '📋' : score >= questions.length / 2 ? '🔍' : '🌀',
+        title: score === questions.length ? 'Все ответы верны!' : score >= questions.length * 0.7 ? 'Хорошо' : score >= questions.length / 2 ? 'Неплохо' : 'Сюжет размылся',
+        text: `Правильно: ${score} из ${questions.length}`,
+        stars: score === questions.length ? 3 : score >= questions.length * 0.7 ? 2 : score >= questions.length / 2 ? 1 : 0,
+        points: Math.round(score / questions.length * 40),
+        history
+      });
+    }
+
+    const q = questions[idx];
+    const options = shuffle([q.correct, ...q.wrongs]);
+    const dotsHtml = questions.map((_, i) => {
+      let cls = 'dot';
+      if (i < idx) cls += history[i] ? ' correct' : ' wrong';
+      else if (i === idx) cls += ' active';
+      return `<div class="${cls}"></div>`;
+    }).join('');
+
+    gameEl.innerHTML = `
+      <div class="game-header">
+        <h2>📖 Изложение</h2>
+        <div class="subtitle">Вопрос ${idx + 1} / ${questions.length}</div>
+      </div>
+      <div class="panel">
+        <div class="progress-dots">${dotsHtml}</div>
+        <div class="question-label">${q.q}</div>
+        <div class="question-context">По тексту</div>
+        <div class="options" id="opts"></div>
+      </div>
+    `;
+
+    const opts = $('opts');
+    let answered = false;
+    options.forEach(o => {
+      const b = document.createElement('div');
+      b.className = 'option-text';
+      b.textContent = o;
+      b.onclick = () => {
+        if (answered) return;
+        answered = true;
+        const good = o === q.correct;
+        opts.querySelectorAll('.option-text').forEach(x => {
+          x.style.pointerEvents = 'none';
+          if (x.textContent !== q.correct && x !== b) x.classList.add('dimmed');
+        });
+        if (good) { b.classList.add('correct'); sfxCorrect(); addScore(10); }
+        else {
+          b.classList.add('wrong'); sfxWrong();
+          opts.querySelectorAll('.option-text').forEach(x => {
+            if (x.textContent === q.correct) { x.classList.add('correct'); x.classList.remove('dimmed'); }
+          });
+        }
+        history.push(good);
+        wait(1100, () => askNext(idx + 1));
+      };
+      opts.appendChild(b);
+    });
+  }
+  askNext(0);
+}
+
+/* ============ РЕЖИМ 3: СВОИМИ СЛОВАМИ ============ */
+function retellWrite(textObj) {
+  clearTimeouts();
+  const keywords = textObj.keysForRetell;
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>📖 Изложение</h2>
+      <div class="subtitle">✍️ Напиши пересказ своими словами</div>
+    </div>
+    <div class="panel">
+      <div class="retell-label">Попробуй написать 3–5 предложений</div>
+      <div class="retell-hint">Пиши как помнишь — не обязательно дословно</div>
+      <textarea class="retell-textarea" id="retell" placeholder="Однажды..."></textarea>
+      <div class="retell-stats">
+        <span>Символов: <b id="charCount">0</b></span>
+        <span>Предложений: <b id="sentCount">0</b></span>
+      </div>
+      <button class="btn-main" id="checkBtn" disabled>Проверить ✓</button>
+    </div>
+  `;
+
+  const textarea = $('retell');
+  const checkBtn = $('checkBtn');
+
+  textarea.oninput = () => {
+    const val = textarea.value.trim();
+    $('charCount').textContent = val.length;
+    const sentences = val.split(/[.!?]+/).filter(s => s.trim().length > 3).length;
+    $('sentCount').textContent = sentences;
+    checkBtn.disabled = val.length < 30;
+  };
+
+  wait(200, () => { try { textarea.focus(); } catch(e){} });
+
+  checkBtn.onclick = () => {
+    const val = textarea.value.trim();
+    if (val.length < 30) return;
+    const lower = val.toLowerCase();
+    const found = [], missed = [];
+    keywords.forEach(k => {
+      if (lower.includes(k.toLowerCase())) found.push(k);
+      else missed.push(k);
+    });
+    const percent = Math.round(found.length / keywords.length * 100);
+
+    let emoji, title, text, stars, points;
+    if (percent >= 80) { emoji = '🏆'; title = 'Отличный пересказ!'; text = `Ты упомянул ${found.length} из ${keywords.length} главных слов (${percent}%)`; stars = 3; points = 50; sfxWin(); }
+    else if (percent >= 60) { emoji = '✍️'; title = 'Хорошо!'; text = `Упомянуто ${found.length} из ${keywords.length} (${percent}%)`; stars = 2; points = 30; sfxCorrect(); }
+    else if (percent >= 40) { emoji = '🔍'; title = 'Сократил слишком сильно'; text = `Упомянуто ${found.length} из ${keywords.length} (${percent}%)`; stars = 1; points = 15; sfxCorrect(); }
+    else { emoji = '🌀'; title = 'Потерял сюжет'; text = `Упомянуто только ${found.length} из ${keywords.length}`; stars = 0; points = 5; sfxWrong(); }
+
+    addScore(points);
+    retellResult(textObj, { emoji, title, text, stars, points, userText: val, foundKeys: found, missedKeys: missed });
+  };
+}
+
+/* ============ РЕЗУЛЬТАТ ============ */
+function retellResult(textObj, data) {
+  const { emoji, title, text, stars, points, userText, foundKeys, missedKeys, keys, history, planReview, paragraphs, planHistory } = data;
+  const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+
+  const keysHtml = (foundKeys || missedKeys) ? `
+    <div style="margin-top: 12px;">
+      <div style="font-size: 13px; color: var(--text-muted); font-weight: 800; margin-bottom: 8px; text-align: center;">КЛЮЧЕВЫЕ СЛОВА:</div>
+      <div class="review-keys">
+        ${(foundKeys || []).map(k => `<div class="k found">✓ ${k}</div>`).join('')}
+        ${(missedKeys || []).map(k => `<div class="k missed">✗ ${k}</div>`).join('')}
+      </div>
+    </div>` : '';
+
+  const keysReview = keys ? `
+    <div style="margin-top: 12px;">
+      <div style="font-size: 13px; color: var(--text-muted); font-weight: 800; margin-bottom: 8px; text-align: center;">ГЛАВНЫЕ СЛОВА:</div>
+      <div class="review-keys">${keys.map(k => `<div class="k found">${k}</div>`).join('')}</div>
+    </div>` : '';
+
+  const historyRow = history ? `
+    <div style="margin-top: 12px; display:flex; flex-wrap: wrap; gap: 6px; justify-content: center;">
+      ${history.map(ok => `<div style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;border:2px solid;${ok ? 'background:#DCFCE7;border-color:#22C55E;' : 'background:#FEE2E2;border-color:#EF4444;'}">${ok ? '✓' : '✗'}</div>`).join('')}
+    </div>` : '';
+
+  const planHistoryRow = planHistory ? `
+    <div style="margin-top: 12px; display:flex; flex-wrap: wrap; gap: 6px; justify-content: center;">
+      ${planHistory.map(ok => `<div style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;border:2px solid;${ok ? 'background:#DCFCE7;border-color:#22C55E;' : 'background:#FEE2E2;border-color:#EF4444;'}">${ok ? '✓' : '✗'}</div>`).join('')}
+    </div>` : '';
+
+  const userTextHtml = userText ? `
+    <div class="review-block">
+      <div class="label">✍️ Твой пересказ:</div>
+      <div class="text">${userText.replace(/\n/g, '<br>')}</div>
+    </div>` : '';
+
+  const planReviewHtml = planReview ? `
+    <div class="review-block">
+      <div class="label">📋 Ключевые слова по абзацам:</div>
+      ${paragraphs.map((p, i) => {
+        const keys = getPlanKeysForParagraph(textObj, i, p);
+        return `<p style="text-indent:0; font-size:15px; font-weight:700; color:var(--blue-dark); margin-bottom:10px;">
+          <b style="color:var(--orange-dark);">${i + 1}.</b> ${keys.join(' · ')}
+        </p>`;
+      }).join('')}
+    </div>` : '';
+
+  const correctParagraphs = getParagraphs(textObj.text);
+
+  gameEl.innerHTML = `
+    <div class="panel">
+      <div class="result-screen">
+        <div class="big">${emoji}</div>
+        <h2>${title}</h2>
+        <p>${text}</p>
+        <div class="stars">${starStr}</div>
+        <p style="opacity:.6; font-size: 14px;">+${points} очков</p>
+
+        ${userTextHtml}
+        ${planReviewHtml}
+
+        <div class="review-block">
+          <div class="label">📖 Правильный текст:</div>
+          <div class="text">
+            <p class="title-line">${textObj.title}${textObj.author ? ' · ' + textObj.author : ''}</p>
+            ${correctParagraphs.map(p => `<p>${p}</p>`).join('')}
+          </div>
+          ${keysReview}${keysHtml}${historyRow}${planHistoryRow}
+        </div>
+
+        <button class="btn-main" id="retry">Ещё раз 🔄</button>
+        <button class="btn-secondary" id="menuBtn">← Настройки</button>
+      </div>
+    </div>
+  `;
+  $('retry').onclick = () => retellShow();
+  $('menuBtn').onclick = () => startRetelling();
+}
+
+document.addEventListener('click', initAudio, { once: true });
+window.addEventListener('load', () => { startRetelling(); });
+</script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

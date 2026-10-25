@@ -1,507 +1,1847 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<link rel="stylesheet" href="../menu/menu.css">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Точки</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Точки — Мнемо-Арена</title>
 <style>
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f5f7fb;
-  text-align:center;
-}
+  :root {
+    --blue: #2D6CDF;
+    --blue-dark: #1E4FA8;
+    --blue-light: #EBF2FF;
+    --orange: #FF8C42;
+    --orange-dark: #E86E1F;
+    --orange-light: #FFF2E5;
+    --bg: #F7F9FC;
+    --panel: #FFFFFF;
+    --text: #1F2937;
+    --text-muted: #6B7280;
+    --border: #E5EAF2;
+    --green: #22C55E;
+    --red: #EF4444;
+    --yellow: #F59E0B;
+    --cell-bg: #FFFFFF;
+    --cell-shape: #1F2937;
+  }
+  body.dark {
+    --bg: #0F172A; --panel: #1E293B; --text: #E2E8F0; --text-muted: #94A3B8;
+    --border: #334155; --blue-light: #1E3A5F; --blue-dark: #93C5FD;
+    --orange-light: #4A2E1A; --cell-bg: #1E293B; --cell-shape: #E2E8F0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, 'Nunito Sans', sans-serif;
+    background: var(--bg); min-height: 100vh; color: var(--text);
+    padding: 16px; overflow-x: hidden; transition: background .25s, color .25s;
+  }
+  .container { max-width: 820px; margin: 0 auto; }
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding: 14px 20px;
+    background: var(--panel); border-radius: 20px; border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(45,108,223,.06); flex-wrap: wrap; gap: 10px;
+  }
+  .back-btn {
+    width: 44px; height: 44px; border: none; border-radius: 14px;
+    background: var(--blue-light); color: var(--blue);
+    font-size: 22px; font-weight: 700; cursor: pointer; transition: .18s;
+    display: flex; align-items: center; justify-content: center; font-family: inherit;
+  }
+  .back-btn:hover { background: var(--blue); color: #fff; transform: translateY(-1px); }
+  h1 { font-size: 19px; letter-spacing: .5px; color: var(--blue-dark); font-weight: 800; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    background: var(--orange); color: #fff; padding: 7px 14px;
+    border-radius: 30px; font-size: 13px; font-weight: 700;
+    box-shadow: 0 4px 12px rgba(255,140,66,.3);
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .chip.blue { background: var(--blue); box-shadow: 0 4px 12px rgba(45,108,223,.3); }
 
-.topbar{
-  background:#1E3F8A;
-  padding:10px;
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:6px;
-  position:sticky;
-  top:0;
-  z-index:10;
-}
+  main { min-height: 520px; }
+  .game-header { text-align: center; margin-bottom: 20px; }
+  .game-header h2 { font-size: 22px; margin-bottom: 6px; color: var(--blue-dark); font-weight: 800; }
+  .subtitle { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 22px;
+    padding: 24px; box-shadow: 0 8px 24px rgba(45,108,223,.06);
+  }
+  .section-title {
+    font-size: 12px; font-weight: 800; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1px; margin: 18px 0 10px;
+  }
+  .section-title:first-child { margin-top: 0; }
+  .settings-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px; font-size: 15px; color: var(--text); font-weight: 700;
+  }
+  .settings-row b { color: var(--blue-dark); font-size: 16px; font-weight: 800; }
+  input[type="range"] { width: 100%; accent-color: var(--orange); height: 26px; }
 
-.title{
-  width:100%;
-  color:#fff;
-  font-size:20px;
-  font-style:italic;
-}
+  .opt-row { display: flex; flex-wrap: wrap; gap: 7px; }
+  .opt-chip {
+    padding: 8px 12px; border-radius: 11px; border: 2px solid var(--border);
+    background: var(--panel); color: var(--text-muted); font-size: 12.5px; font-weight: 800;
+    cursor: pointer; transition: .15s; font-family: inherit;
+  }
+  .opt-chip:hover { border-color: var(--blue); color: var(--blue); }
+  .opt-chip.active { background: var(--blue); border-color: var(--blue); color: #fff; box-shadow: 0 4px 12px rgba(45,108,223,.3); }
 
-button,select,input{font-size:14px;}
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; margin-bottom: 8px; background: var(--bg);
+    border-radius: 12px; border: 2px solid var(--border);
+    cursor: pointer; transition: .15s; font-size: 14px; font-weight: 700;
+  }
+  .toggle-row:hover { border-color: var(--blue); }
+  .toggle-row.on { border-color: var(--blue); background: var(--blue-light); }
+  .toggle-row.on.locked { cursor: not-allowed; opacity: .85; }
+  .toggle-row .sub { font-size: 11.5px; font-weight: 600; color: var(--text-muted); display: block; margin-top: 2px; }
+  .toggle-switch {
+    width: 42px; height: 24px; border-radius: 12px; background: #CBD5E1;
+    position: relative; transition: .2s; flex-shrink: 0;
+  }
+  .toggle-row.on .toggle-switch { background: var(--blue); }
+  .toggle-switch::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 20px; height: 20px; background: #fff; border-radius: 50%;
+    transition: .2s; box-shadow: 0 2px 4px rgba(0,0,0,.15);
+  }
+  .toggle-row.on .toggle-switch::after { transform: translateX(18px); }
 
-button{
-  background:#FF6A00;
-  color:#fff;
-  border:none;
-  padding:8px 12px;
-  border-radius:10px;
-}
+  .btn-main {
+    display: block; margin: 20px auto 0; padding: 15px 38px;
+    border-radius: 14px; border: none; background: var(--orange); color: #fff;
+    font-size: 16px; font-weight: 800; cursor: pointer; transition: .2s;
+    letter-spacing: .5px; box-shadow: 0 8px 20px rgba(255,140,66,.3); font-family: inherit;
+  }
+  .btn-main:hover:not(:disabled) { background: var(--orange-dark); transform: translateY(-2px); box-shadow: 0 12px 28px rgba(255,140,66,.4); }
+  .btn-main:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-main:active:not(:disabled) { transform: translateY(0); }
+  .btn-secondary {
+    display: block; margin: 8px auto 0; padding: 12px 28px;
+    border-radius: 14px; border: 2px solid var(--border); background: var(--panel);
+    color: var(--blue-dark); font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: .2s; font-family: inherit;
+  }
+  .btn-secondary:hover:not(:disabled) { background: var(--blue-light); border-color: var(--blue); }
+  .btn-secondary:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-ghost {
+    display: inline-block; padding: 10px 16px; border-radius: 12px;
+    border: 2px solid var(--border); background: var(--panel);
+    color: var(--text-muted); font-size: 13.5px; font-weight: 800;
+    cursor: pointer; transition: .2s; font-family: inherit;
+  }
+  .btn-ghost:hover:not(:disabled) { border-color: var(--blue); color: var(--blue); }
+  .btn-ghost:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-ghost.accent { border-color: var(--orange); color: var(--orange-dark); }
+  .btn-ghost.accent:hover:not(:disabled) { background: var(--orange-light); }
+  .btn-ghost.green { border-color: var(--green); color: var(--green); }
+  .btn-ghost.green:hover:not(:disabled) { background: #DCFCE7; }
+  .btn-ghost.yellow { border-color: var(--yellow); color: var(--yellow); }
+  .btn-ghost.yellow:hover:not(:disabled) { background: #FEF3C7; }
+  .btn-ghost.red { border-color: var(--red); color: var(--red); }
+  .btn-ghost.red:hover:not(:disabled) { background: #FEE2E2; }
 
-#progress{margin:10px;}
+  .stats-row { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .stat {
+    background: var(--blue-light); color: var(--blue-dark);
+    padding: 7px 13px; border-radius: 12px; font-size: 13px; font-weight: 800; letter-spacing: .3px;
+  }
+  .stat.warm { background: var(--orange-light); color: var(--orange-dark); }
 
-#grid{
-  display:grid;
-  gap:6px;
-  width:min(92vw,520px);
-  margin:0 auto 15px;
-}
+  .progress-bar { width: 100%; height: 8px; background: var(--border); border-radius: 5px; overflow: hidden; margin: 6px 0 14px; }
+  .progress-bar > div { height: 100%; background: var(--orange); width: 0%; transition: width .3s cubic-bezier(.34,1.2,.64,1); border-radius: 5px; }
 
-.cell{
-  background:#fff;
-  border:1px solid #d0d7e6;
-  border-radius:12px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  aspect-ratio:1/1;
-}
+  .status-line {
+    text-align: center; font-size: 14.5px; color: var(--text);
+    font-weight: 700; margin-bottom: 16px; min-height: 22px;
+  }
+  .status-line b { color: var(--blue-dark); }
+  .status-line .countdown { display: inline-block; background: var(--orange-light); color: var(--orange-dark); padding: 2px 10px; border-radius: 8px; font-weight: 800; }
+  .status-line .ok { color: var(--green); font-weight: 800; }
+  .status-line .bad { color: var(--red); font-weight: 800; }
+  .status-line .peek-badge { display: inline-block; background: var(--orange-light); color: var(--orange-dark); padding: 2px 10px; border-radius: 8px; font-weight: 800; margin-right: 6px; }
+  .status-line .paper-badge { display: inline-block; background: var(--blue-light); color: var(--blue-dark); padding: 2px 10px; border-radius: 8px; font-weight: 800; margin-right: 6px; }
 
-/* фигуры */
-.dot,.square,.star{
-  width:55%;
-  height:55%;
-}
+  .board-wrap { display: flex; justify-content: center; margin-bottom: 14px; padding: 0 4px; }
+  .board-frame { display: grid; gap: 3px; width: 100%; max-width: 540px; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .coord { font-size: 11px; font-weight: 800; color: var(--text-muted); display: flex; align-items: center; justify-content: center; }
+  .coord.corner { font-size: 0; }
+  .cell {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    background: var(--cell-bg); border: 2px solid var(--border); border-radius: 10px;
+    transition: background .12s, border-color .12s, transform .12s, box-shadow .12s;
+    position: relative;
+  }
+  .cell.clickable { cursor: pointer; }
+  .cell.clickable:hover { background: var(--blue-light); border-color: var(--blue); }
+  .cell.marked { background: var(--orange-light); border-color: var(--orange); box-shadow: 0 4px 12px rgba(255,140,66,.25); }
+  .cell.correct { background: #DCFCE7; border-color: var(--green); }
+  .cell.wrong { background: #FEE2E2; border-color: var(--red); animation: shakeCell .3s; }
+  .cell.missed { background: #FEF3C7; border-color: var(--yellow); }
+  .cell.blink { animation: blinkCell .6s ease-in-out; }
+  .cell.peek-mode { box-shadow: 0 0 0 2px var(--orange) inset; }
+  @keyframes blinkCell {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,140,66,0); }
+    50% { transform: scale(1.12); box-shadow: 0 0 0 8px rgba(255,140,66,.3); }
+  }
+  @keyframes shakeCell { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+  @keyframes popIn { from { transform: scale(.6); opacity: .4; } to { transform: scale(1); opacity: 1; } }
 
-.dot{border-radius:50%;background:#111;}
-.square{background:#111;}
+  .shape { width: 55%; height: 55%; position: relative; color: var(--cell-shape); }
+  .shape.dot { background: currentColor; border-radius: 50%; }
+  .shape.square { background: currentColor; border-radius: 4px; }
+  .shape.triangle {
+    width: 0; height: 0; background: transparent !important;
+    border-left: 15px solid transparent; border-right: 15px solid transparent;
+    border-bottom: 26px solid currentColor;
+  }
+  .shape.star { background: currentColor; clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%); }
+  .shape.diamond { background: currentColor; transform: rotate(45deg); border-radius: 4px; }
+  .shape.hexagon { background: currentColor; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+  .shape.ring { background: transparent; border: 4px solid currentColor; border-radius: 50%; }
+  .shape.cross { background: currentColor; clip-path: polygon(35% 0, 65% 0, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0 65%, 0 35%, 35% 35%); }
 
-.triangle{
-  width:0;
-  height:0;
-  border-left:18px solid transparent;
-  border-right:18px solid transparent;
-  border-bottom:32px solid #111;
-}
+  .palette { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .palette:empty { display: none; margin: 0; }
+  .palette-btn {
+    width: 50px; height: 50px; border-radius: 14px; border: 2px solid var(--border);
+    background: var(--panel); cursor: pointer; display: flex; align-items: center;
+    justify-content: center; padding: 0; transition: .15s; font-family: inherit; color: var(--cell-shape);
+  }
+  .palette-btn:hover { border-color: var(--orange); }
+  .palette-btn.active { border-color: var(--orange); background: var(--orange-light); box-shadow: 0 4px 12px rgba(255,140,66,.25); }
+  .palette-btn .shape { width: 22px; height: 22px; }
+  .palette-btn .shape.triangle { border-left-width: 11px; border-right-width: 11px; border-bottom-width: 19px; }
 
-.star{
-  background:#111;
-  clip-path:polygon(
-    50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,
-    50% 70%,21% 91%,32% 57%,2% 35%,39% 35%
-  );
-}
+  .actions-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; align-items: center; }
+  .actions-row button { margin: 0; }
 
-/* история */
-#history{
-  display:none;
-  grid-template-columns:repeat(4,1fr);
-  gap:6px;
-  width:min(95vw,900px);
-  margin:10px auto;
-}
+  .result-screen { text-align: center; padding: 20px 12px; }
+  .result-screen .big { font-size: 64px; margin-bottom: 8px; animation: popIn .5s cubic-bezier(.34,1.56,.64,1); }
+  .result-screen h2 { font-size: 24px; margin-bottom: 8px; color: var(--blue-dark); font-weight: 800; }
+  .result-screen p { color: var(--text-muted); font-size: 15px; margin: 5px 0; font-weight: 600; }
+  .result-screen p b { color: var(--blue-dark); }
+  .stars { font-size: 36px; margin: 16px 0; letter-spacing: 6px; }
 
-.histGrid{
-  width:100%;
-}
+  /* Самооценка — сводка */
+  .selfcheck-summary {
+    display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;
+    margin: 16px 0;
+  }
+  .selfcheck-item {
+    padding: 12px 18px; border-radius: 14px; font-weight: 800;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    min-width: 90px; border: 2px solid transparent;
+  }
+  .selfcheck-item .num { font-size: 26px; line-height: 1; }
+  .selfcheck-item .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; opacity: .8; }
+  .selfcheck-item.hit { background: #DCFCE7; color: #16A34A; border-color: #86EFAC; }
+  .selfcheck-item.partial { background: #FEF3C7; color: #D97706; border-color: #FCD34D; }
+  .selfcheck-item.miss { background: #FEE2E2; color: #DC2626; border-color: #FCA5A5; }
 
-.histWrap{
-  border:1px solid #ccc;
-  padding:4px;
-  background:#fff;
-}
+  .history-wrap { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .history-wrap.show { display: block; }
+  .history-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .hist-cell { border: 1px solid var(--border); border-radius: 10px; padding: 4px; background: var(--panel); display: grid; gap: 2px; }
+  .hist-cell .h-item { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 4px; }
+  .hist-cell .shape { width: 60%; height: 60%; }
 
-.histGrid{
-  display:grid;
-  gap:2px;
-}
+  .heat-frame { display: grid; gap: 3px; max-width: 320px; margin: 12px auto; }
+  .heat-cell { aspect-ratio: 1; border-radius: 6px; background: var(--border); border: 1px solid var(--border); }
 
-.histCell{
-  border:1px solid #ddd;
-  aspect-ratio:1/1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
+  /* Сетка превью всех раундов */
+  .rounds-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    margin-top: 12px;
+  }
+  @media (max-width: 620px) { .rounds-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 400px) { .rounds-grid { grid-template-columns: repeat(2, 1fr); } }
 
-.mini.dot{border-radius:50%;width:60%;height:60%;}
-.mini.square{width:60%;height:60%;background:#111;}
-.mini.triangle{
-  width:0;height:0;
-  border-left:6px solid transparent;
-  border-right:6px solid transparent;
-  border-bottom:10px solid #111;
-}
+  .round-card {
+    border: 2px solid var(--border); border-radius: 12px; padding: 8px;
+    background: var(--panel); cursor: pointer; transition: .15s; position: relative;
+  }
+  .round-card:hover { border-color: var(--orange); }
+  .round-card .r-title {
+    font-size: 10.5px; font-weight: 800; color: var(--text-muted);
+    margin-bottom: 6px; text-align: center;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .round-card .r-board { display: grid; gap: 2px; aspect-ratio: 1/1; }
+  .round-card .r-board .rc {
+    aspect-ratio: 1; border: 1px solid var(--border); border-radius: 3px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--cell-bg); position: relative;
+  }
+  .round-card .r-board .rc .shape { width: 62%; height: 62%; }
+  .round-card .r-board .rc .shape.triangle {
+    border-left-width: 5px; border-right-width: 5px; border-bottom-width: 9px;
+  }
+  .round-card .r-board .rc .num {
+    position: absolute; top: 1px; left: 3px;
+    font-size: 9px; font-weight: 800; color: var(--orange-dark);
+  }
+  .round-card .r-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .round-card .r-pair .r-board { aspect-ratio: 1/1; }
+  .round-card .r-tag { font-size: 9px; font-weight: 800; color: var(--text-muted); text-align: center; margin-bottom: 2px; }
+  .round-card .sc-badge {
+    position: absolute; top: -6px; right: -6px; width: 22px; height: 22px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; color: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  }
+  .round-card .sc-badge.hit { background: var(--green); }
+  .round-card .sc-badge.partial { background: var(--yellow); }
+  .round-card .sc-badge.miss { background: var(--red); }
+
+  .round-big .r-board { max-width: 380px; margin: 0 auto; }
+  .round-big .r-board .rc .shape { width: 55%; height: 55%; }
+  .round-big .r-board .rc .shape.triangle { border-left-width: 12px; border-right-width: 12px; border-bottom-width: 20px; }
+  .round-big .r-board .rc .num { top: 4px; left: 6px; font-size: 13px; }
+  .round-big .r-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .round-big .r-pair .r-board { max-width: none; }
+  .round-big .r-tag { font-size: 12px; margin-bottom: 4px; }
+  .round-big .r-title { font-size: 14px; margin-bottom: 10px; }
+
+  .ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .ach-card {
+    padding: 12px; border-radius: 14px; border: 2px solid var(--border);
+    background: var(--panel); display: flex; gap: 10px; align-items: flex-start;
+    opacity: .45; transition: .2s; text-align: left;
+  }
+  .ach-card.unlocked { opacity: 1; border-color: var(--orange); background: var(--orange-light); }
+  .ach-card .ic { font-size: 28px; line-height: 1; }
+  .ach-card .nm { font-size: 13.5px; font-weight: 800; color: var(--text); }
+  .ach-card .ds { font-size: 11.5px; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
+
+  #toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--blue-dark); color: #fff; padding: 12px 22px;
+    border-radius: 14px; font-weight: 800; font-size: 14px;
+    box-shadow: 0 12px 32px rgba(0,0,0,.25); opacity: 0; pointer-events: none;
+    transition: transform .3s, opacity .3s; z-index: 100;
+    display: flex; gap: 10px; align-items: center;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast .ic { font-size: 22px; }
+
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200;
+    display: flex; align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal {
+    background: var(--panel); border-radius: 22px; padding: 24px;
+    max-width: 640px; width: 100%; max-height: 85vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,.35); border: 1px solid var(--border);
+  }
+  .modal h3 { font-size: 20px; color: var(--blue-dark); font-weight: 800; margin-bottom: 4px; }
+  .modal p { color: var(--text-muted); font-size: 14px; margin-bottom: 12px; }
+
+  @media (max-width: 520px) {
+    .panel { padding: 16px; border-radius: 18px; }
+    .board-frame { gap: 2px; }
+    .cell { border-radius: 7px; border-width: 1.5px; }
+    .stat { padding: 5px 10px; font-size: 12px; }
+    .opt-chip { padding: 7px 10px; font-size: 11.5px; }
+    .palette-btn { width: 44px; height: 44px; }
+    .history-grid { grid-template-columns: repeat(3, 1fr); }
+    .coord { font-size: 9px; }
+  }
 </style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
 </head>
-
 <body>
-
-<div class="topbar">
-
-<div class="title">Точки</div>
-
-<select id="gridSize">
-<option value="3">3×3</option>
-<option value="4">4×4</option>
-<option value="5">5×5</option>
-</select>
-
-<select id="difficulty">
-<option value="easy">Лёгкий</option>
-<option value="medium">Средний</option>
-<option value="hard">Сложный</option>
-</select>
-
-<label style="color:white;font-size:13px;">
-<input type="checkbox" id="colorMode"> Окрашивание
-</label>
-
-<label style="color:white;font-size:13px;">
-<input type="checkbox" id="autoMode"> Авто
-</label>
-
-<!-- ⏱ ДОБАВЛЕНО -->
-<label style="color:white;font-size:13px;">
-Скорость
-<input type="range" id="speed" min="500" max="5000" value="2000">
-</label>
-
-<label style="color:white;font-size:13px;">
-<input type="checkbox" id="interactive"> Интерактив
-</label>
-
-<button onclick="nextStep()">Далее</button>
-<button onclick="prevStep()">Назад</button>
-<button onclick="toggleMemory()">Запомнил</button>
-
-<!-- 🖨 ДОБАВЛЕНО -->
-<button onclick="printTemplates()">Печать</button>
-
-<button onclick="resetTrainer()">Сброс</button>
-<button onclick="toggleHistory()">История</button>
-
-<!-- ✔ ДОБАВЛЕНО -->
-<button onclick="checkResult()">Проверка</button>
-
+<div class="container">
+  <header>
+    <button class="back-btn" id="backBtn" title="Назад">←</button>
+    <h1>👁 ТОЧКИ</h1>
+    <div class="chips">
+      <div class="chip" id="streakChip" title="Текущая серия">🔥 <span id="streakVal">0</span></div>
+      <div class="chip blue" id="stepChip">🎯 <span id="stepVal">0</span>/<span id="totalVal">12</span></div>
+    </div>
+  </header>
+  <main id="game"></main>
 </div>
-
-<div id="progress">0 / 16</div>
-<div id="grid"></div>
-<div id="history"></div>
+<div id="toast"><span class="ic">🏆</span><span class="msg"></span></div>
 
 <script>
+"use strict";
 
-let step = 0;
-let historyData = [];
-let memoryHidden = false;
-let autoTimer = null;
-let userAnswers = {};
-let usedPatterns = new Set();
-
-const rainbow = ["#FF0000","#FF8C00","#FFD700","#00C800","#00A2FF","#003CFF","#8A00FF"];
-
-function getBaseCount(size){
-  if(size===3) return 3;
-  if(size===4) return 4;
-  return 5;
-}
-
-function getTypes(step,diff){
-  if(diff==="easy") return ["dot"];
-  if(diff==="medium"){
-    if(step < 12) return ["dot","square"];
-    return ["dot","square","triangle"];
+/* ═══════════════ UTILS ═══════════════ */
+const $ = id => document.getElementById(id);
+const gameEl = $('game');
+const rnd = n => Math.floor(Math.random() * n);
+const shuffle = a => {
+  const r = [...a];
+  for (let i = r.length - 1; i > 0; i--) {
+    const j = rnd(i + 1); [r[i], r[j]] = [r[j], r[i]];
   }
-  return ["dot","square","triangle","star"];
-}
+  return r;
+};
+let timeouts = [];
+const wait = (ms, fn) => { const id = setTimeout(fn, ms); timeouts.push(id); return id; };
+const clearTimeouts = () => { timeouts.forEach(clearTimeout); timeouts = []; };
 
-function nextStep(){
-
-  memoryHidden = false;
-
-  if(step >= 16) return;
-
-  const size = +gridSize.value;
-  const diff = difficulty.value;
-  const colorMode = colorModeEl.checked;
-
-  const count = getBaseCount(size);
-  const types = getTypes(step,diff);
-
-  let figs;
-  let pattern;
-
-  do {
-
-    let used = [];
-
-    while(used.length < count){
-      let n = Math.floor(Math.random() * size * size);
-
-      if(!used.includes(n)){
-        used.push(n);
-      }
-    }
-
-    figs = used.map(i => ({
-      index: i,
-      type: types[Math.floor(Math.random() * types.length)],
-      color: colorMode
-        ? rainbow[Math.floor(Math.random() * rainbow.length)]
-        : "#111"
-    }));
-
-    // уникальный отпечаток
-    pattern = figs
-      .map(f => `${f.index}-${f.type}-${f.color}`)
-      .sort()
-      .join("|");
-
-  } while(usedPatterns.has(pattern));
-
-  usedPatterns.add(pattern);
-
-  historyData[step] = {
-    size,
-    figs: structuredClone(figs)
+function mulberry32(seed) {
+  return function () {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
-
-  step++;
-  progress.textContent = step + " / 16";
-
-  drawGrid(size, figs);
-
-  autoRun();
 }
 
-function drawGrid(size, figs, hide=false){
+/* ═══════════════ AUDIO ═══════════════ */
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+}
+function beep(freq, dur = 0.15, type = 'sine', vol = 0.08) {
+  if (!audioCtx || !cfg.sound) return;
+  const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.type = type; osc.frequency.value = freq;
+  const t = audioCtx.currentTime;
+  gain.gain.setValueAtTime(vol, t);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  osc.start(t); osc.stop(t + dur + 0.02);
+}
+const sfxCorrect = () => { beep(660, .1); setTimeout(() => beep(880, .15), 90); };
+const sfxWrong = () => beep(180, .28, 'sawtooth', .12);
+const sfxClick = () => beep(440, .05, 'triangle', .05);
+const sfxTick = () => beep(560, .03, 'triangle', .04);
+const sfxWin = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .2), i * 120));
 
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
-  grid.style.gridTemplateColumns = `repeat(${size},1fr)`;
+/* ═══════════════ STORAGE ═══════════════ */
+const CFG_DEFAULT = {
+  gridSize: 4, difficulty: 'medium', modes: ['classic'],
+  totalSteps: 12, speed: 2000,
+  colorMode: false, autoMode: false, interactive: true,
+  showCoords: false, adaptive: true, sound: true, dark: false
+};
+let cfg = { ...CFG_DEFAULT };
+try {
+  const s = localStorage.getItem('tochkiV4');
+  if (s) {
+    const parsed = JSON.parse(s);
+    cfg = { ...cfg, ...parsed };
+    if (!Array.isArray(cfg.modes) || !cfg.modes.length) cfg.modes = ['classic'];
+  }
+} catch (e) {}
+function saveCfg() {
+  try { localStorage.setItem('tochkiV4', JSON.stringify(cfg)); } catch (e) {}
+  document.body.classList.toggle('dark', cfg.dark);
+}
 
-  for(let i=0;i<size*size;i++){
+const ALL_MODES = {
+  classic: { name: '👁 Классика',        desc: 'Запомнить и отметить фигуры' },
+  changes: { name: '🔍 Хирург',           desc: 'Найти изменившиеся клетки между двумя картинками' },
+  reverse: { name: '↩ Обратный порядок', desc: 'Повторить последовательность задом наперёд' }
+};
 
-    const cell = document.createElement("div");
-    cell.className = "cell";
+const ACHIEVEMENTS = {
+  first_session:  { ic: '🎉', name: 'Первая сессия',   desc: 'Завершите тренировку' },
+  perfect_5:      { ic: '🎯', name: 'Снайпер',         desc: '5 раундов подряд без ошибок' },
+  perfect_session:{ ic: '🏆', name: 'Идеально',        desc: 'Сессия без единой ошибки' },
+  streak_10:      { ic: '🔥', name: 'На волне',        desc: 'Серия из 10 верных' },
+  speedster:      { ic: '⚡', name: 'Скорость света',  desc: 'Ответ быстрее 1 секунды' },
+  big_brain:      { ic: '🧠', name: 'Большая память',  desc: '6×6+ без ошибок' },
+  explorer:       { ic: '🗺️', name: 'Исследователь',   desc: 'Сыграно во все режимы' },
+  night_owl:      { ic: '🦉', name: 'Полуночник',      desc: 'Тренировка после 23:00' },
+  daily_hero:     { ic: '📅', name: 'Ежедневный герой',desc: 'Пройден daily-вызов' },
+  marathon:       { ic: '🏃', name: 'Марафонец',       desc: 'Сессия из 30 раундов' },
+  honest:         { ic: '🤝', name: 'Честный',         desc: 'Прошёл self-check без единого «мимо»' },
+};
+let achState = { unlocked: [], modes: [] };
+try {
+  const s = localStorage.getItem('tochkiAch');
+  if (s) achState = { ...achState, ...JSON.parse(s) };
+} catch (e) {}
+function saveAch() { try { localStorage.setItem('tochkiAch', JSON.stringify(achState)); } catch (e) {} }
+function unlockAch(id) {
+  if (achState.unlocked.includes(id)) return;
+  achState.unlocked.push(id); saveAch();
+  showToast(ACHIEVEMENTS[id].ic + ' ' + ACHIEVEMENTS[id].name);
+  sfxWin();
+}
+function showToast(msg) {
+  const t = $('toast');
+  t.querySelector('.msg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._id);
+  t._id = setTimeout(() => t.classList.remove('show'), 3200);
+}
 
-    const fig = figs.find(f => f.index === i);
+/* ═══════════════ SHAPES ═══════════════ */
+const BASIC_SHAPES = ['dot', 'square', 'triangle', 'star'];
+const EXTENDED = ['diamond', 'hexagon', 'ring', 'cross'];
 
-    // ✔ интерактивная проверка
-    cell.onclick = () => {
+function getTypes(step, diff) {
+  if (diff === 'easy') return ['dot'];
+  if (diff === 'medium') {
+    if (step < 6) return ['dot', 'square'];
+    if (step < 12) return ['dot', 'square', 'triangle'];
+    return ['dot', 'square', 'triangle', 'star'];
+  }
+  if (step < 4) return ['dot', 'square', 'triangle', 'star'];
+  return [...BASIC_SHAPES, ...EXTENDED];
+}
+function makeShape(type, color) {
+  const el = document.createElement('div');
+  el.className = 'shape ' + type;
+  el.style.color = color;
+  return el;
+}
 
-      if(!interactive.checked) return;
-      if(!memoryHidden) return;
+/* ═══════════════ STATE ═══════════════ */
+const S = {
+  step: 0, phase: 'idle', mode: 'classic', modeCursor: 0, peeking: false,
+  history: [], answers: {}, undoStacks: {}, selfCheck: {},
+  usedPatterns: new Set(), currentType: null,
+  t1: null, t2: null, tick: null, seq: null,
+  correctCount: 0, totalMisses: 0, totalFalse: 0, totalWrongType: 0,
+  streak: 0, bestStreak: 0,
+  startTime: 0, stepStartTime: 0, reactionTimes: [],
+  heatmap: {}, daily: false, seed: 0,
+  changesB: null, seqOrder: [], seqUser: []
+};
 
-      if(!userAnswers[step]) userAnswers[step] = new Set();
+function cancelTimers() {
+  clearTimeout(S.t1); clearTimeout(S.t2);
+  clearInterval(S.tick); clearInterval(S.seq);
+  S.t1 = S.t2 = S.tick = S.seq = null;
+}
+function getRng() { return S.daily ? mulberry32(S.seed) : Math.random; }
 
-      if(userAnswers[step].has(i)){
-        userAnswers[step].delete(i);
-        cell.style.background = "#fff";
-      } else {
-        userAnswers[step].add(i);
-        cell.style.background = "#d6ecff";
+/* ═══════════════ GENERATION ═══════════════ */
+function getBaseCount(size, step) {
+  const base = size === 3 ? 3 : size === 4 ? 4 : size === 5 ? 5 : size === 6 ? 6 : size === 7 ? 7 : 8;
+  const bonus = cfg.adaptive ? Math.floor(step / 6) : 0;
+  return Math.min(base + bonus, size * size - 1);
+}
+function idxToRC(i, size) { return [Math.floor(i / size), i % size]; }
+function dist(a, b, size) {
+  const [r1, c1] = idxToRC(a, size);
+  const [r2, c2] = idxToRC(b, size);
+  return Math.hypot(r1 - r2, c1 - c2);
+}
+function pickPositions(count, size, rng) {
+  const total = size * size;
+  const minDist = size <= 3 ? 1.05 : size <= 5 ? 1.15 : 1.2;
+  const spots = [];
+  let guard = 0;
+  while (spots.length < count && guard++ < 600) {
+    const idx = Math.floor(rng() * total);
+    if (spots.includes(idx)) continue;
+    if (spots.some(s => dist(s, idx, size) < minDist)) continue;
+    spots.push(idx);
+  }
+  while (spots.length < count) {
+    const idx = Math.floor(rng() * total);
+    if (!spots.includes(idx)) spots.push(idx);
+  }
+  return spots;
+}
+function fingerprint(figs) {
+  return figs.map(f => `${f.index}-${f.type}-${f.color}`).sort().join('|');
+}
+function generatePattern(size, step, rng) {
+  const types = getTypes(step, cfg.difficulty);
+  const count = getBaseCount(size, step);
+  let figs, fp, guard = 0;
+  do {
+    const positions = pickPositions(count, size, rng);
+    figs = positions.map(i => ({
+      index: i,
+      type: types[Math.floor(rng() * types.length)],
+      color: cfg.colorMode ? RAINBOW[Math.floor(rng() * RAINBOW.length)] : (cfg.dark ? '#E2E8F0' : '#1F2937')
+    }));
+    fp = fingerprint(figs);
+  } while (S.usedPatterns.has(fp) && guard++ < 25);
+  S.usedPatterns.add(fp);
+  return figs;
+}
+const RAINBOW = ['#FF0000','#FF8C00','#FFD700','#00C800','#00A2FF','#003CFF','#8A00FF'];
+
+function mutatePattern(figs, size, rng, changesCount) {
+  const b = JSON.parse(JSON.stringify(figs));
+  const usedIndices = new Set(b.map(f => f.index));
+  const freeIndices = [];
+  for (let i = 0; i < size * size; i++) if (!usedIndices.has(i)) freeIndices.push(i);
+  let made = 0;
+  const toMove = Math.min(changesCount, b.length);
+  const order = shuffle([...b.keys()]);
+  for (let k = 0; k < toMove && made < changesCount; k++) {
+    const idx = order[k];
+    if (!freeIndices.length) break;
+    const newPos = freeIndices.splice(Math.floor(rng() * freeIndices.length), 1)[0];
+    const oldPos = b[idx].index;
+    b[idx].index = newPos;
+    usedIndices.delete(oldPos);
+    usedIndices.add(newPos);
+    freeIndices.push(oldPos);
+    made++;
+  }
+  return b;
+}
+
+/* ═══════════════ BOARD ═══════════════ */
+function renderBoard(opts) {
+  const { size, figures, phase, userAnswers = new Map(), correctAnswers = null, showCoords = false } = opts;
+  const frame = document.createElement('div');
+  frame.className = 'board-frame';
+  const useCoords = showCoords;
+  frame.style.gridTemplateColumns = useCoords ? `auto repeat(${size}, 1fr)` : `repeat(${size}, 1fr)`;
+  frame.style.gridTemplateRows = useCoords ? `auto repeat(${size}, 1fr)` : `repeat(${size}, 1fr)`;
+
+  if (useCoords) {
+    const corner = document.createElement('div');
+    corner.className = 'coord corner';
+    frame.appendChild(corner);
+    for (let c = 0; c < size; c++) {
+      const el = document.createElement('div');
+      el.className = 'coord';
+      el.textContent = String.fromCharCode(65 + c);
+      frame.appendChild(el);
+    }
+  }
+
+  const figMap = new Map(figures.map(f => [f.index, f]));
+
+  for (let r = 0; r < size; r++) {
+    if (useCoords) {
+      const rl = document.createElement('div');
+      rl.className = 'coord';
+      rl.textContent = String(r + 1);
+      frame.appendChild(rl);
+    }
+    for (let c = 0; c < size; c++) {
+      const i = r * size + c;
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.idx = i;
+      const fig = figMap.get(i);
+
+      if (phase === 'show' && fig) {
+        cell.appendChild(makeShape(fig.type, fig.color));
+      } else if (phase === 'input' && cfg.interactive) {
+        const t = userAnswers.get(i);
+        if (t) {
+          cell.classList.add('marked');
+          cell.appendChild(makeShape(t, cfg.dark ? '#E2E8F0' : '#1F2937'));
+        }
+        cell.classList.add('clickable');
+      } else if (phase === 'peek-show' && fig) {
+        cell.appendChild(makeShape(fig.type, fig.color));
+        cell.classList.add('peek-mode');
+        const t = userAnswers.get(i);
+        if (t) cell.style.background = 'var(--orange-light)';
+      } else if (phase === 'result') {
+        const userType = userAnswers.get(i);
+        const correctType = fig ? fig.type : null;
+        if (userType && correctType && userType === correctType) {
+          cell.classList.add('correct');
+          cell.appendChild(makeShape(userType, cfg.dark ? '#E2E8F0' : '#1F2937'));
+        } else if (userType && correctType && userType !== correctType) {
+          cell.classList.add('wrong');
+          cell.appendChild(makeShape(userType, '#1F2937'));
+        } else if (userType && !correctType) {
+          cell.classList.add('wrong');
+          cell.appendChild(makeShape(userType, '#1F2937'));
+        } else if (!userType && correctType) {
+          cell.classList.add('missed');
+          const el = makeShape(correctType, fig.color);
+          el.style.opacity = '.35';
+          cell.appendChild(el);
+        }
+      } else if (phase === 'showB' && fig) {
+        cell.appendChild(makeShape(fig.type, fig.color));
       }
+
+      frame.appendChild(cell);
+    }
+  }
+  return frame;
+}
+
+/* ═══════════════ HEADER ═══════════════ */
+function updateHeader() {
+  $('stepVal').textContent = S.step;
+  $('totalVal').textContent = cfg.totalSteps;
+  $('streakVal').textContent = S.streak;
+}
+
+/* ═══════════════ SETTINGS ═══════════════ */
+function renderSettings() {
+  cancelTimers(); clearTimeouts();
+  Object.assign(S, {
+    step: 0, phase: 'idle', mode: 'classic', modeCursor: 0, peeking: false,
+    history: [], answers: {}, undoStacks: {}, selfCheck: {},
+    usedPatterns: new Set(), correctCount: 0, totalMisses: 0, totalFalse: 0,
+    totalWrongType: 0, streak: 0, bestStreak: 0, reactionTimes: [], heatmap: {},
+    daily: false, changesB: null, seqOrder: [], seqUser: []
+  });
+  updateHeader();
+  saveCfg();
+
+  const sizeChips = [3, 4, 5, 6, 7, 8].map(v =>
+    `<button class="opt-chip ${cfg.gridSize === v ? 'active' : ''}" data-size="${v}">${v}×${v}</button>`
+  ).join('');
+
+  const diffChips = [
+    ['easy', '😊 Лёгкий'], ['medium', '😐 Средний'], ['hard', '🔥 Сложный']
+  ].map(([v, l]) =>
+    `<button class="opt-chip ${cfg.difficulty === v ? 'active' : ''}" data-diff="${v}">${l}</button>`
+  ).join('');
+
+  const modeToggles = Object.entries(ALL_MODES).map(([id, m]) => {
+    const on = cfg.modes.includes(id);
+    const locked = on && cfg.modes.length === 1;
+    return `
+      <div class="toggle-row ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-mode-toggle="${id}" title="${locked ? 'Хотя бы один режим должен быть включён' : ''}">
+        <span>${m.name}<span class="sub">${m.desc}</span></span>
+        <div class="toggle-switch"></div>
+      </div>
+    `;
+  }).join('');
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>👁 Тренажёр «Точки»</h2>
+      <div class="subtitle">Память · внимание · пространственное мышление</div>
+    </div>
+    <div class="panel">
+      <div style="max-width: 620px; margin: 0 auto;">
+
+        <div class="section-title">Режимы тренировки</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;font-weight:600;">
+          Включите один или несколько. Если активны несколько — раунды будут идти по кругу.
+        </div>
+        ${modeToggles}
+
+        <div class="section-title">Размер поля</div>
+        <div class="opt-row" id="sizeRow">${sizeChips}</div>
+
+        <div class="section-title">Сложность</div>
+        <div class="opt-row" id="diffRow">${diffChips}</div>
+
+        <div class="section-title">Раундов в сессии</div>
+        <label style="display:block;">
+          <div class="settings-row"><span>Количество</span><b id="totalValS">${cfg.totalSteps}</b></div>
+          <input type="range" id="totalRange" min="4" max="30" step="1" value="${cfg.totalSteps}">
+        </label>
+
+        <div class="section-title">Скорость</div>
+        <label style="display:block;">
+          <div class="settings-row"><span>Показ / авто-режим</span><b id="speedValS">${(cfg.speed / 1000).toFixed(1)} с</b></div>
+          <input type="range" id="speedRange" min="500" max="6000" step="250" value="${cfg.speed}">
+        </label>
+
+        <div class="section-title">Опции</div>
+        <div class="toggle-row ${cfg.colorMode ? 'on' : ''}" id="tColor"><span>🎨 Окрашивание фигур</span><div class="toggle-switch"></div></div>
+        <div class="toggle-row ${cfg.autoMode ? 'on' : ''}" id="tAuto"><span>⏱ Автоматический режим</span><div class="toggle-switch"></div></div>
+        <div class="toggle-row ${cfg.interactive ? 'on' : ''}" id="tInteractive"><span>👆 Интерактивный ввод<span class="sub">Выкл — играем на бумаге, в браузере только показ + самооценка</span></span><div class="toggle-switch"></div></div>
+        <div class="toggle-row ${cfg.showCoords ? 'on' : ''}" id="tCoords"><span>🔤 Координаты (A1, B3…)</span><div class="toggle-switch"></div></div>
+        <div class="toggle-row ${cfg.adaptive ? 'on' : ''}" id="tAdaptive"><span>📈 Адаптивная сложность</span><div class="toggle-switch"></div></div>
+        <div class="toggle-row ${cfg.sound ? 'on' : ''}" id="tSound"><span>🔊 Звук</span><div class="toggle-switch"></div></div>
+        <div class="toggle-row ${cfg.dark ? 'on' : ''}" id="tDark"><span>🌙 Тёмная тема</span><div class="toggle-switch"></div></div>
+
+        <button class="btn-main" id="startBtn">Начать тренировку ▶</button>
+        <button class="btn-secondary" id="dailyBtn">📅 Ежедневный вызов</button>
+        <div class="actions-row" style="margin-top:14px;">
+          <button class="btn-ghost" id="achBtn">🏆 Достижения</button>
+          <button class="btn-ghost" id="printBtn">🖨 Печать шаблонов</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  bindChip('sizeRow', 'data-size', v => cfg.gridSize = +v);
+  bindChip('diffRow', 'data-diff', v => cfg.difficulty = v);
+
+  document.querySelectorAll('[data-mode-toggle]').forEach(row => {
+    row.onclick = () => {
+      const id = row.dataset.modeToggle;
+      const isOn = cfg.modes.includes(id);
+      if (isOn && cfg.modes.length === 1) { showToast('⚠️ Хотя бы один режим должен быть включён'); return; }
+      if (isOn) cfg.modes = cfg.modes.filter(m => m !== id);
+      else cfg.modes.push(id);
+      saveCfg(); sfxClick(); renderSettings();
     };
+  });
 
-    if(fig && !memoryHidden){
+  $('totalRange').oninput = e => $('totalValS').textContent = e.target.value;
+  $('totalRange').onchange = e => { cfg.totalSteps = +e.target.value; saveCfg(); };
+  $('speedRange').oninput = e => $('speedValS').textContent = (e.target.value / 1000).toFixed(1) + ' с';
+  $('speedRange').onchange = e => { cfg.speed = +e.target.value; saveCfg(); };
 
-      const el = document.createElement("div");
-      el.className = fig.type;
+  bindToggle('tColor', 'colorMode');
+  bindToggle('tAuto', 'autoMode');
+  bindToggle('tInteractive', 'interactive');
+  bindToggle('tCoords', 'showCoords');
+  bindToggle('tAdaptive', 'adaptive');
+  bindToggle('tSound', 'sound');
+  bindToggle('tDark', 'dark', () => document.body.classList.toggle('dark', cfg.dark));
 
-      if(fig.type === "triangle"){
-        el.style.borderBottomColor = fig.color;
+  $('startBtn').onclick = () => { saveCfg(); startGame(false); };
+  $('dailyBtn').onclick = () => { saveCfg(); startGame(true); };
+  $('achBtn').onclick = showAchievementsModal;
+  $('printBtn').onclick = printTemplates;
+}
+
+function bindChip(rowId, attr, setter) {
+  const row = $(rowId);
+  row.querySelectorAll('[' + attr + ']').forEach(b => {
+    b.onclick = () => {
+      const v = b.getAttribute(attr);
+      setter(v);
+      row.querySelectorAll('.opt-chip').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      saveCfg(); sfxClick();
+    };
+  });
+}
+function bindToggle(id, key, cb) {
+  const el = $(id);
+  el.onclick = () => {
+    cfg[key] = !cfg[key];
+    el.classList.toggle('on', cfg[key]);
+    saveCfg(); sfxClick();
+    if (cb) cb();
+  };
+}
+
+/* ═══════════════ ACHIEVEMENTS MODAL ═══════════════ */
+function showAchievementsModal() {
+  const cards = Object.entries(ACHIEVEMENTS).map(([id, a]) => `
+    <div class="ach-card ${achState.unlocked.includes(id) ? 'unlocked' : ''}">
+      <div class="ic">${a.ic}</div>
+      <div><div class="nm">${a.name}</div><div class="ds">${a.desc}</div></div>
+    </div>
+  `).join('');
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  bg.innerHTML = `
+    <div class="modal">
+      <h3>🏆 Достижения</h3>
+      <p>Открыто ${achState.unlocked.length} из ${Object.keys(ACHIEVEMENTS).length}</p>
+      <div class="ach-grid">${cards}</div>
+      <button class="btn-main" style="margin-top:18px;" id="closeModal">Закрыть</button>
+    </div>
+  `;
+  document.body.appendChild(bg);
+  bg.onclick = e => { if (e.target === bg) bg.remove(); };
+  $('closeModal').onclick = () => bg.remove();
+}
+
+/* ═══════════════ GAME START ═══════════════ */
+function startGame(daily) {
+  cancelTimers(); clearTimeouts();
+  Object.assign(S, {
+    step: 0, phase: 'idle', modeCursor: 0, peeking: false,
+    history: [], answers: {}, undoStacks: {}, selfCheck: {},
+    usedPatterns: new Set(),
+    correctCount: 0, totalMisses: 0, totalFalse: 0, totalWrongType: 0,
+    streak: 0, bestStreak: 0, startTime: Date.now(), stepStartTime: 0,
+    reactionTimes: [], heatmap: {},
+    daily: !!daily, seed: daily ? getDailySeed() : 0,
+    changesB: null, seqOrder: [], seqUser: []
+  });
+  cfg.modes.forEach(m => { if (!achState.modes.includes(m)) achState.modes.push(m); });
+  saveAch();
+  if (achState.modes.length >= 3) unlockAch('explorer');
+
+  const h = new Date().getHours();
+  if (h >= 23 || h < 5) unlockAch('night_owl');
+  if (cfg.totalSteps >= 30) unlockAch('marathon');
+
+  renderGameShell();
+  updateHeader();
+  nextStep();
+}
+function getDailySeed() {
+  const d = new Date();
+  return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+}
+function pickNextMode() {
+  if (!cfg.modes.length) return 'classic';
+  if (cfg.modes.length === 1) return cfg.modes[0];
+  const m = cfg.modes[S.modeCursor % cfg.modes.length];
+  S.modeCursor++;
+  return m;
+}
+
+function renderGameShell() {
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2 id="gameTitle">👁</h2>
+      <div class="subtitle" id="gameSubtitle"></div>
+    </div>
+    <div class="panel">
+      <div class="stats-row">
+        <div class="stat">✅ <span id="stCorrect">0</span></div>
+        <div class="stat">❌ <span id="stWrong">0</span></div>
+        <div class="stat warm">🔥 <span id="stStreak">0</span></div>
+        <div class="stat">⏱ <span id="stTimer">0.0с</span></div>
+      </div>
+      <div class="progress-bar"><div id="progressFill"></div></div>
+      <div class="status-line" id="statusLine">Подготовка…</div>
+      <div class="palette" id="palette"></div>
+      <div class="board-wrap" id="boardWrap"></div>
+      <div class="actions-row" id="actionsRow"></div>
+      <div class="actions-row" style="margin-top:8px;">
+        <button class="btn-ghost" id="undoBtn" disabled>↶ Отменить</button>
+        <button class="btn-ghost" id="historyBtn">📜 История</button>
+        <button class="btn-ghost" id="settingsBtn">⚙ Настройки</button>
+      </div>
+      <div class="history-wrap" id="historyWrap">
+        <div class="section-title" style="margin-top:0;">История раундов</div>
+        <div class="history-grid" id="historyGrid"></div>
+      </div>
+    </div>
+  `;
+  $('undoBtn').onclick = undoLast;
+  $('historyBtn').onclick = toggleHistory;
+  $('settingsBtn').onclick = () => { if (confirm('Вернуться к настройкам? Прогресс сессии сбросится.')) renderSettings(); };
+}
+
+/* ═══════════════ ACTIONS ROW ═══════════════ */
+function renderActionsRow() {
+  const row = $('actionsRow');
+  if (!row) return;
+  const isLast = S.step >= cfg.totalSteps;
+  let html = '';
+
+  if (S.phase === 'show') {
+    html = `<button class="btn-ghost" id="memorizeBtn" ${cfg.autoMode ? 'disabled' : ''}>✅ Запомнил</button>`;
+
+  } else if (S.phase === 'showB') {
+    html = `<button class="btn-ghost" id="checkBtn">🔍 Проверить</button>`;
+
+  } else if (S.phase === 'input') {
+    if (!cfg.interactive) {
+      html = `<button class="btn-ghost" id="revealBtn">👁 Показать ответы</button>
+              <button class="btn-main" id="skipBtn" style="margin:0;">${isLast ? '🏁 Финиш' : 'Далее →'}</button>`;
+    } else if (S.mode === 'reverse') {
+      html = `<button class="btn-ghost" id="checkBtn">🔍 Проверить</button>`;
+    } else {
+      const peekLabel = S.peeking ? '✅ Скрыть' : '👁 Подсмотреть';
+      const peekCls = S.peeking ? 'accent' : '';
+      html = `<button class="btn-ghost ${peekCls}" id="memorizeBtn">${peekLabel}</button>
+              <button class="btn-ghost" id="checkBtn" ${S.peeking ? 'disabled' : ''}>🔍 Проверить</button>`;
+    }
+
+  } else if (S.phase === 'result') {
+    if (!cfg.interactive) {
+      // Бумажный режим: самооценка
+      const sc = S.selfCheck[S.step - 1];
+      if (!sc) {
+        html = `
+          <span style="font-size:12.5px;color:var(--text-muted);font-weight:800;text-transform:uppercase;letter-spacing:.5px;width:100%;margin-bottom:2px;">Сверьтесь с ответом</span>
+          <button class="btn-ghost green" id="scHit">✔ Угадал</button>
+          <button class="btn-ghost yellow" id="scPartial">≈ Частично</button>
+          <button class="btn-ghost red" id="scMiss">✖ Мимо</button>
+        `;
       } else {
-        el.style.background = fig.color;
+        const labels = { hit: '✔ Угадал', partial: '≈ Частично', miss: '✖ Мимо' };
+        html = `<button class="btn-ghost" id="prevBtn" ${S.step <= 1 ? 'disabled' : ''}>← Назад</button>
+                <span style="font-size:13px;color:var(--text-muted);font-weight:700;align-self:center;margin:0 4px;">
+                  Отмечено: <b style="color:var(--text);">${labels[sc]}</b>
+                </span>
+                <button class="btn-main" id="nextBtn" style="margin:0;">${isLast ? '🏁 Финиш' : 'Далее →'}</button>`;
       }
+    } else {
+      html = `<button class="btn-ghost" id="prevBtn" ${S.step <= 1 ? 'disabled' : ''}>← Назад</button>
+              <button class="btn-main" id="nextBtn" style="margin:0;">${isLast ? '🏁 Финиш' : 'Далее →'}</button>`;
+    }
+  }
+  row.innerHTML = html;
 
-      cell.appendChild(el);
+  if ($('memorizeBtn')) $('memorizeBtn').onclick = memorize;
+  if ($('checkBtn'))    $('checkBtn').onclick    = checkResult;
+  if ($('revealBtn'))   $('revealBtn').onclick   = revealAnswers;
+  if ($('skipBtn'))     $('skipBtn').onclick     = () => { isLast ? finishSession() : nextStep(); };
+  if ($('prevBtn'))     $('prevBtn').onclick     = prevStep;
+  if ($('nextBtn'))     $('nextBtn').onclick     = () => { isLast ? finishSession() : nextStep(); };
+  if ($('scHit'))       $('scHit').onclick       = () => setSelfCheck('hit');
+  if ($('scPartial'))   $('scPartial').onclick   = () => setSelfCheck('partial');
+  if ($('scMiss'))      $('scMiss').onclick      = () => setSelfCheck('miss');
+}
+
+function setSelfCheck(v) {
+  S.selfCheck[S.step - 1] = v;
+  sfxClick();
+  renderActionsRow();
+}
+
+function updateStats() {
+  if ($('stCorrect')) $('stCorrect').textContent = S.correctCount;
+  if ($('stWrong')) $('stWrong').textContent = S.totalMisses + S.totalFalse + S.totalWrongType;
+  if ($('stStreak')) $('stStreak').textContent = S.streak;
+  if ($('progressFill')) $('progressFill').style.width = (S.step / cfg.totalSteps * 100) + '%';
+  updateHeader();
+}
+function setStatus(html) { if ($('statusLine')) $('statusLine').innerHTML = html; }
+
+/* ═══════════════ FLOW ═══════════════ */
+function nextStep() {
+  if (S.step >= cfg.totalSteps) { finishSession(); return; }
+  cancelTimers();
+
+  const rng = getRng();
+  const size = cfg.gridSize;
+  const mode = pickNextMode();
+  S.mode = mode;
+  S.peeking = false;
+
+  const figures = generatePattern(size, S.step, rng);
+  S.history[S.step] = { size, figures, mode };
+  S.answers[S.step] = new Map();
+  S.undoStacks[S.step] = [];
+  S.step++;
+  S.stepStartTime = 0;
+
+  const title = $('gameTitle');
+  if (title) title.innerHTML = ALL_MODES[mode].name;
+
+  if (mode === 'changes') startChangesMode();
+  else if (mode === 'reverse') startReverseMode();
+  else startClassicMode();
+
+  updateStats();
+}
+
+function startClassicMode() {
+  S.phase = 'show';
+  S.peeking = false;
+  const types = [...new Set(S.history[S.step - 1].figures.map(f => f.type))];
+  S.currentType = types[0] || null;
+  renderPalette();
+  drawBoard();
+  renderActionsRow();
+  $('gameSubtitle').textContent = 'Запомните расположение и тип фигур';
+  if (cfg.autoMode) startAutoShow();
+  else setStatus(`Раунд <b>${S.step}</b> из ${cfg.totalSteps}. Запомните и нажмите <b>«Запомнил»</b>.`);
+}
+
+function memorize() {
+  if (S.phase === 'show') {
+    cancelTimers();
+
+    if (S.mode === 'changes') {
+      S.phase = 'showB';
+      drawBoard();
+      renderActionsRow();
+      setStatus(`Картинка B. Смотрите внимательно…`);
+      wait(1200, () => {
+        S.phase = 'input';
+        S.stepStartTime = Date.now();
+        drawBoard();
+        renderActionsRow();
+        setStatus(cfg.interactive
+          ? `Отметьте изменившиеся клетки и нажмите <b>«Проверить»</b>`
+          : `<span class="paper-badge">📝 На бумаге</span>Запишите изменения. Потом <b>«Показать ответы»</b> или <b>«Далее»</b>.`);
+      });
+      return;
     }
 
-    grid.appendChild(cell);
-  }
-}
-
-/* ⏱ ДОБАВЛЕНО */
-function autoRun(){
-
-  const autoMode = document.getElementById("autoMode");
-  const speed = document.getElementById("speed");
-
-  if(!autoMode.checked) return;
-
-  clearTimeout(autoTimer);
-
-  autoTimer = setTimeout(() => {
-
-    toggleMemory();
-
-    setTimeout(() => {
-      toggleMemory();
-      nextStep();
-    }, +speed.value);
-
-  }, +speed.value);
-}
-
-function toggleMemory(){
-
-  const last = historyData[step-1];
-  if(!last) return;
-
-  memoryHidden = !memoryHidden;
-
-  drawGrid(last.size, last.figs);
-}
-
-function prevStep(){
-  if(step <= 1) return;
-  step--;
-  drawGrid(historyData[step-1].size, historyData[step-1].figs);
-  progress.textContent = step + " / 16";
-}
-
-function resetTrainer(){
-  step = 0;
-  historyData = [];
-usedPatterns.clear();
-memoryHidden = false;
-  userAnswers = {};
-  clearTimeout(autoTimer);
-  grid.innerHTML = "";
-  progress.textContent = "0 / 16";
-}
-
-/* 🖨 ПЕЧАТЬ */
-function printTemplates(){
-
-  const size = +gridSize.value;
-
-  let w = window.open("");
-
-  let html = `
-<html>
-<head>
-<style>
-@page{size:A4;margin:8mm;}
-body{margin:0;}
-.sheet{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:6mm;
-}
-.grid{
-display:grid;
-grid-template-columns:repeat(${size},1fr);
-aspect-ratio:1/1;
-border:1px solid #000;
-}
-.cell{
-border:1px solid #000;
-aspect-ratio:1/1;
-}
-</style>
-</head>
-<body>
-<div class="sheet">
-`;
-
-  for(let i=0;i<16;i++){
-    html += `<div class="grid">`;
-    for(let j=0;j<size*size;j++){
-      html += `<div class="cell"></div>`;
-    }
-    html += `</div>`;
-  }
-
-  html += `</div></body></html>`;
-
-  w.document.write(html);
-  w.document.close();
-  w.print();
-}
-
-/* ✔ ПРОВЕРКА */
-function checkResult(){
-
-  const last = historyData[step-1];
-  if(!last) return;
-
-  const correct = new Set(last.figs.map(f => f.index));
-  const user = userAnswers[step] || new Set();
-
-  let ok = correct.size === user.size;
-
-  for(let v of correct){
-    if(!user.has(v)) ok = false;
-  }
-
-  alert(ok ? "✔ правильно" : "✖ ошибки");
-}
-
-const gridSize = document.getElementById("gridSize");
-const difficulty = document.getElementById("difficulty");
-const colorModeEl = document.getElementById("colorMode");
-const progress = document.getElementById("progress");
-const grid = document.getElementById("grid");
-
-function toggleHistory(){
-
-  const h = document.getElementById("history");
-
-  if(h.style.display === "grid"){
-    h.style.display = "none";
+    S.phase = 'input';
+    S.peeking = false;
+    S.stepStartTime = Date.now();
+    renderPalette();
+    drawBoard();
+    renderActionsRow();
+    setStatus(cfg.interactive
+      ? `Отметьте фигуры и нажмите <b>«Проверить»</b>`
+      : `<span class="paper-badge">📝 На бумаге</span>Расставьте фигурки. Потом <b>«Показать ответы»</b> или <b>«Далее»</b>.`);
     return;
   }
 
-  h.innerHTML = "";
-
-  historyData.forEach(item => {
-
-    const wrap = document.createElement("div");
-    wrap.className = "histWrap";
-
-    const g = document.createElement("div");
-    g.className = "histGrid";
-    g.style.display = "grid";
-    g.style.gridTemplateColumns = `repeat(${item.size}, 1fr)`;
-    g.style.gridTemplateRows = `repeat(${item.size}, 1fr)`;
-    g.style.gap = "2px";
-    g.style.aspectRatio = "1/1";
-
-    for(let i=0;i<item.size*item.size;i++){
-
-      const c = document.createElement("div");
-      c.className = "histCell";
-
-      const fig = item.figs.find(f => f.index === i);
-
-      if(fig){
-
-        const d = document.createElement("div");
-        d.className = "mini " + fig.type;
-
-        if(fig.type === "triangle"){
-          d.style.width = "0";
-          d.style.height = "0";
-          d.style.borderLeft = "6px solid transparent";
-          d.style.borderRight = "6px solid transparent";
-          d.style.borderBottom = `10px solid ${fig.color}`;
-          d.style.background = "transparent";
-        } else {
-          d.style.background = fig.color;
-        }
-
-        c.appendChild(d);
-      }
-
-      g.appendChild(c);
+  if (S.phase === 'input' && S.mode !== 'reverse' && cfg.interactive) {
+    S.peeking = !S.peeking;
+    renderPalette();
+    drawBoard();
+    renderActionsRow();
+    if (S.peeking) {
+      const hint = S.mode === 'changes' ? 'Картинка B с изменениями.' : 'Паттерн показан поверх ваших отметок.';
+      setStatus(`<span class="peek-badge">👁 Подсмотр</span>${hint} Нажмите <b>«Скрыть»</b>, чтобы продолжить.`);
+    } else {
+      setStatus(`Отметьте фигуры и нажмите <b>«Проверить»</b>`);
     }
-
-    wrap.appendChild(g);
-    h.appendChild(wrap);
-  });
-
-  h.style.display = "grid";
+  }
 }
 
+function revealAnswers() {
+  if (S.phase !== 'input') return;
+  cancelTimers();
+  S.peeking = false;
+  S.phase = 'result';
+  drawBoard();
+
+  if (S.mode === 'reverse') {
+    const wrap = $('boardWrap');
+    if (wrap) {
+      const cells = wrap.querySelectorAll('.cell');
+      cells.forEach(c => { c.classList.remove('marked'); c.innerHTML = ''; });
+      const correctRev = [...S.seqOrder].reverse();
+      correctRev.forEach((idx, n) => {
+        const cell = wrap.querySelector('.cell[data-idx="' + idx + '"]');
+        if (!cell) return;
+        cell.classList.add('correct');
+        const badge = document.createElement('div');
+        badge.style.cssText = 'position:absolute;top:2px;left:4px;font-size:11px;font-weight:800;color:var(--green)';
+        badge.textContent = n + 1;
+        cell.appendChild(badge);
+        cell.appendChild(makeShape('dot', cfg.dark ? '#E2E8F0' : '#1F2937'));
+      });
+    }
+  }
+
+  renderActionsRow();
+  setStatus(`👁 Ответы показаны. Сверьтесь с бумагой и отметьте результат.`);
+}
+
+function startChangesMode() {
+  const size = S.history[S.step - 1].size;
+  const rng = getRng();
+  const changesCount = Math.max(2, Math.min(5, Math.round(size * 0.5)));
+  S.changesB = mutatePattern(S.history[S.step - 1].figures, size, rng, changesCount);
+  S.history[S.step - 1].changesB = S.changesB;
+  S.phase = 'show';
+  S.peeking = false;
+  drawBoard();
+  renderActionsRow();
+  $('gameSubtitle').textContent = 'Запомните картинку. Потом покажем вторую — отметьте изменившиеся клетки.';
+  setStatus(`Раунд <b>${S.step}</b>. Запоминайте картинку A…`);
+
+  if (cfg.autoMode) {
+    startAutoShow(() => {
+      cancelTimers();
+      S.phase = 'showB';
+      drawBoard();
+      renderActionsRow();
+      setStatus(`Картинка B. Смотрите внимательно…`);
+      wait(1200, () => {
+        S.phase = 'input';
+        S.stepStartTime = Date.now();
+        drawBoard();
+        renderActionsRow();
+        setStatus(cfg.interactive
+          ? `Отметьте изменившиеся клетки и нажмите <b>«Проверить»</b>`
+          : `<span class="paper-badge">📝 На бумаге</span>Запишите изменения. Потом <b>«Показать ответы»</b> или <b>«Далее»</b>.`);
+      });
+    });
+  }
+}
+
+function startReverseMode() {
+  const data = S.history[S.step - 1];
+  const order = shuffle(data.figures.map(f => f.index));
+  S.seqOrder = order;
+  data.seqOrder = order;
+  S.seqUser = [];
+  S.phase = 'show';
+  S.peeking = false;
+
+  $('gameSubtitle').textContent = 'Запомните порядок. Затем кликайте в ОБРАТНОМ порядке.';
+  drawBoard();
+  renderActionsRow();
+  setStatus('Смотрите внимательно…');
+
+  let i = 0;
+  const showNext = () => {
+    if (i >= order.length) {
+      cancelTimers();
+      document.querySelectorAll('.cell.blink').forEach(el => el.classList.remove('blink'));
+      wait(500, () => {
+        S.phase = 'input';
+        S.stepStartTime = Date.now();
+        drawBoard();
+        renderActionsRow();
+        setStatus(cfg.interactive
+          ? `Кликните <b>в обратном порядке</b>: начните с последней. (0 / ${order.length})`
+          : `<span class="paper-badge">📝 На бумаге</span>Запишите порядок задом наперёд. Потом <b>«Показать ответы»</b>.`);
+      });
+      return;
+    }
+    document.querySelectorAll('.cell.blink').forEach(el => el.classList.remove('blink'));
+    const idx = order[i];
+    const cell = document.querySelector('.cell[data-idx="' + idx + '"]');
+    if (cell) {
+      cell.innerHTML = '';
+      cell.appendChild(makeShape('dot', cfg.dark ? '#E2E8F0' : '#1F2937'));
+      cell.classList.add('blink');
+    }
+    sfxTick();
+    i++;
+    S.tick = setTimeout(showNext, 850);
+  };
+  S.tick = setTimeout(showNext, 400);
+}
+
+function startAutoShow(afterShow) {
+  const totalMs = cfg.speed;
+  let left = Math.ceil(totalMs / 1000);
+  setStatus(`Раунд <b>${S.step}</b>. Запоминайте… <span class="countdown">${left}</span>`);
+  S.tick = setInterval(() => {
+    left--;
+    if (left <= 0) {
+      clearInterval(S.tick); S.tick = null;
+      if (afterShow) afterShow();
+      else { memorize(); scheduleAutoCheck(); }
+      return;
+    }
+    setStatus(`Раунд <b>${S.step}</b>. Запоминайте… <span class="countdown">${left}</span>`);
+  }, 1000);
+}
+function scheduleAutoCheck() {
+  if (!cfg.autoMode) return;
+  if (!cfg.interactive) {
+    // Бумажный режим: не навязываем самооценку — даём пользователю время.
+    // Просто показываем кнопки и ждём действий.
+    return;
+  }
+  S.t1 = setTimeout(() => {
+    checkResult();
+    S.t2 = setTimeout(() => {
+      if (S.step >= cfg.totalSteps) finishSession();
+      else nextStep();
+    }, cfg.speed);
+  }, cfg.speed);
+}
+
+/* ═══════════════ DRAW ═══════════════ */
+function drawBoard() {
+  const data = S.history[S.step - 1];
+  const wrap = $('boardWrap');
+  if (!wrap || !data) return;
+  wrap.innerHTML = '';
+  const answers = S.answers[S.step - 1] || new Map();
+
+  let figuresForShow;
+  if (data.mode === 'changes') {
+    figuresForShow = (S.phase === 'showB' || S.peeking) ? (S.changesB || data.figures) : data.figures;
+  } else {
+    figuresForShow = data.figures;
+  }
+
+  let phaseForRender;
+  if (data.mode === 'changes') {
+    if (S.phase === 'show') phaseForRender = 'show';
+    else if (S.phase === 'showB') phaseForRender = 'showB';
+    else if (S.phase === 'input') phaseForRender = S.peeking ? 'peek-show' : 'input';
+    else phaseForRender = 'result';
+  } else if (data.mode === 'reverse') {
+    phaseForRender = S.phase;
+  } else {
+    phaseForRender = (S.phase === 'input' && S.peeking) ? 'peek-show' : S.phase;
+  }
+
+  let correctAnswers = null;
+  if (S.phase === 'result') {
+    if (data.mode === 'changes') {
+      const a = new Map(data.figures.map(f => [f.index, f.type]));
+      const b = new Map((S.changesB || []).map(f => [f.index, f.type]));
+      correctAnswers = new Map();
+      for (const [i, t] of b) if (a.get(i) !== t) correctAnswers.set(i, t);
+      for (const [i] of a) if (!b.has(i)) correctAnswers.set(i, '__removed__');
+    } else {
+      correctAnswers = new Map(data.figures.map(f => [f.index, f.type]));
+    }
+  }
+
+  const frame = renderBoard({
+    size: data.size,
+    figures: figuresForShow,
+    phase: phaseForRender,
+    userAnswers: answers,
+    correctAnswers,
+    showCoords: cfg.showCoords
+  });
+  wrap.appendChild(frame);
+
+  if (S.phase === 'input' && cfg.interactive && !S.peeking) {
+    frame.querySelectorAll('.cell').forEach(cell => {
+      cell.onclick = () => onCellClick(+cell.dataset.idx);
+    });
+  }
+
+  if ($('undoBtn')) $('undoBtn').disabled = (S.undoStacks[S.step - 1] || []).length === 0;
+}
+
+/* ═══════════════ INPUT ═══════════════ */
+function onCellClick(i) {
+  initAudio();
+  if (S.mode === 'reverse') { handleReverseClick(i); return; }
+  if (S.peeking) return;
+
+  const answers = S.answers[S.step - 1];
+  const undo = S.undoStacks[S.step - 1];
+  const prev = answers.get(i);
+  if (prev !== undefined) {
+    undo.push({ idx: i, prev });
+    answers.delete(i);
+  } else {
+    const data = S.history[S.step - 1];
+    const types = [...new Set(data.figures.map(f => f.type))];
+    const t = S.currentType && types.includes(S.currentType) ? S.currentType : types[0] || 'dot';
+    undo.push({ idx: i, prev: undefined });
+    answers.set(i, t);
+  }
+  if (!S.stepStartTime) S.stepStartTime = Date.now();
+  sfxClick();
+  drawBoard();
+}
+function handleReverseClick(i) {
+  if (S.seqUser.includes(i)) S.seqUser = S.seqUser.filter(x => x !== i);
+  else S.seqUser.push(i);
+  if (!S.stepStartTime) S.stepStartTime = Date.now();
+  sfxClick();
+  drawReverseUserInput();
+  setStatus(`Кликните <b>в обратном порядке</b>: ${S.seqUser.length} / ${S.seqOrder.length}`);
+}
+function drawReverseUserInput() {
+  const wrap = $('boardWrap');
+  if (!wrap) return;
+  const cells = wrap.querySelectorAll('.cell');
+  cells.forEach(c => { c.classList.remove('marked'); c.innerHTML = ''; });
+  S.seqUser.forEach((idx, n) => {
+    const cell = wrap.querySelector('.cell[data-idx="' + idx + '"]');
+    if (cell) {
+      cell.classList.add('marked');
+      const badge = document.createElement('div');
+      badge.style.cssText = 'position:absolute;top:2px;left:4px;font-size:11px;font-weight:800;color:var(--orange-dark)';
+      badge.textContent = n + 1;
+      cell.appendChild(badge);
+      cell.appendChild(makeShape('dot', cfg.dark ? '#E2E8F0' : '#1F2937'));
+    }
+  });
+}
+function undoLast() {
+  const undo = S.undoStacks[S.step - 1];
+  if (!undo || !undo.length) return;
+  const answers = S.answers[S.step - 1];
+  const action = undo.pop();
+  if (action.prev === undefined) answers.delete(action.idx);
+  else answers.set(action.idx, action.prev);
+  drawBoard();
+  sfxClick();
+}
+
+/* ═══════════════ CHECK (интерактив) ═══════════════ */
+function checkResult() {
+  if (S.phase !== 'input' && S.phase !== 'showB') return;
+  cancelTimers();
+  S.peeking = false;
+  S.phase = 'result';
+  drawBoard();
+  renderActionsRow();
+
+  const data = S.history[S.step - 1];
+  const user = S.answers[S.step - 1] || new Map();
+  const reaction = Date.now() - (S.stepStartTime || Date.now());
+  S.reactionTimes.push(reaction);
+  if (reaction < 1000) unlockAch('speedster');
+
+  if (data.mode === 'reverse') {
+    const correctRev = [...S.seqOrder].reverse();
+    let ok = correctRev.length === S.seqUser.length;
+    if (ok) for (let i = 0; i < correctRev.length; i++) if (correctRev[i] !== S.seqUser[i]) { ok = false; break; }
+    if (ok) {
+      S.correctCount++; S.streak++;
+      if (S.streak > S.bestStreak) S.bestStreak = S.streak;
+      sfxCorrect();
+      setStatus(`<span class="ok">✔ Верно!</span> Порядок угадан`);
+      if (S.streak >= 5) unlockAch('perfect_5');
+      if (S.streak >= 10) unlockAch('streak_10');
+    } else {
+      S.totalMisses++; S.streak = 0;
+      sfxWrong();
+      setStatus(`<span class="bad">✖</span> Порядок не совпал. Правильно было: ${correctRev.map(x => {
+        const r = Math.floor(x / data.size), c = x % data.size;
+        return String.fromCharCode(65 + c) + (r + 1);
+      }).join(' → ')}`);
+    }
+    updateStats();
+    return;
+  }
+
+  let correct;
+  if (data.mode === 'changes') {
+    const a = new Map(data.figures.map(f => [f.index, f.type]));
+    const b = new Map((S.changesB || []).map(f => [f.index, f.type]));
+    correct = new Set();
+    for (const [i, t] of b) if (a.get(i) !== t) correct.add(i);
+    for (const [i] of a) if (!b.has(i)) correct.add(i);
+  } else {
+    correct = new Set(data.figures.map(f => f.index));
+  }
+
+  let hits = 0, misses = 0, falsePos = 0, wrongType = 0;
+  const correctMap = data.mode === 'changes' ? null : new Map(data.figures.map(f => [f.index, f.type]));
+  for (const i of correct) {
+    if (!user.has(i)) { misses++; S.heatmap[i] = (S.heatmap[i] || 0) + 1; }
+    else if (data.mode === 'classic' && user.get(i) !== correctMap.get(i)) wrongType++;
+    else hits++;
+  }
+  for (const [i] of user) {
+    if (!correct.has(i)) { falsePos++; S.heatmap[i] = (S.heatmap[i] || 0) + 1; }
+  }
+
+  if (misses + falsePos + wrongType === 0) {
+    S.correctCount++; S.streak++;
+    if (S.streak > S.bestStreak) S.bestStreak = S.streak;
+    sfxCorrect();
+    setStatus(`<span class="ok">✔ Верно!</span> ${hits} из ${correct.size}`);
+    if (S.streak >= 5) unlockAch('perfect_5');
+    if (S.streak >= 10) unlockAch('streak_10');
+    if (cfg.gridSize >= 6) unlockAch('big_brain');
+  } else {
+    S.totalMisses += misses; S.totalFalse += falsePos; S.totalWrongType += wrongType;
+    S.streak = 0;
+    sfxWrong();
+    setStatus(`<span class="bad">✖</span> верно ${hits}, пропущено ${misses}, лишних ${falsePos}, не тот тип ${wrongType}`);
+  }
+  updateStats();
+}
+
+/* ═══════════════ PREV ═══════════════ */
+function prevStep() {
+  if (S.step <= 1) return;
+  cancelTimers();
+  S.step--;
+  S.phase = 'result';
+  S.peeking = false;
+  S.mode = S.history[S.step - 1].mode;
+  const title = $('gameTitle');
+  if (title) title.innerHTML = ALL_MODES[S.mode].name;
+  drawBoard();
+  renderActionsRow();
+  updateStats();
+}
+
+/* ═══════════════ ROUND THUMBNAIL ═══════════════ */
+function renderRoundThumb(roundIdx, big) {
+  const item = S.history[roundIdx];
+  if (!item) return null;
+  const size = item.size;
+  const gridStyle = `grid-template-columns: repeat(${size}, 1fr);`;
+
+  const makeBoard = (figures, opts = {}) => {
+    const board = document.createElement('div');
+    board.className = 'r-board';
+    board.style.cssText = gridStyle;
+    const figMap = new Map(figures.map(f => [f.index, f]));
+    const seqMap = opts.seq ? new Map(opts.seq.map((idx, n) => [idx, n + 1])) : null;
+
+    for (let i = 0; i < size * size; i++) {
+      const c = document.createElement('div');
+      c.className = 'rc';
+      const fig = figMap.get(i);
+      if (seqMap) {
+        if (seqMap.has(i)) {
+          c.appendChild(makeShape('dot', fig ? fig.color : (cfg.dark ? '#E2E8F0' : '#1F2937')));
+          const num = document.createElement('div');
+          num.className = 'num';
+          num.textContent = seqMap.get(i);
+          c.appendChild(num);
+        }
+      } else if (fig) {
+        c.appendChild(makeShape(fig.type, fig.color));
+      }
+      board.appendChild(c);
+    }
+    return board;
+  };
+
+  const wrap = document.createElement('div');
+  wrap.className = 'round-card' + (big ? ' round-big' : '');
+  wrap.dataset.roundIdx = roundIdx;
+
+  const title = document.createElement('div');
+  title.className = 'r-title';
+  title.textContent = `Раунд ${roundIdx + 1} · ${ALL_MODES[item.mode].name}`;
+  wrap.appendChild(title);
+
+  if (item.mode === 'changes') {
+    const pair = document.createElement('div');
+    pair.className = 'r-pair';
+
+    const aWrap = document.createElement('div');
+    const aTag = document.createElement('div');
+    aTag.className = 'r-tag';
+    aTag.textContent = 'A';
+    aWrap.appendChild(aTag);
+    aWrap.appendChild(makeBoard(item.figures));
+    pair.appendChild(aWrap);
+
+    const bWrap = document.createElement('div');
+    const bTag = document.createElement('div');
+    bTag.className = 'r-tag';
+    bTag.textContent = 'B';
+    bWrap.appendChild(bTag);
+    bWrap.appendChild(item.changesB ? makeBoard(item.changesB) : makeBoard(item.figures));
+    pair.appendChild(bWrap);
+
+    wrap.appendChild(pair);
+  } else if (item.mode === 'reverse') {
+    wrap.appendChild(makeBoard(item.figures, { seq: item.seqOrder }));
+  } else {
+    wrap.appendChild(makeBoard(item.figures));
+  }
+
+  // Бейдж самооценки
+  const sc = S.selfCheck[roundIdx];
+  if (sc && !big) {
+    const b = document.createElement('div');
+    b.className = 'sc-badge ' + sc;
+    b.textContent = { hit: '✔', partial: '≈', miss: '✖' }[sc];
+    wrap.appendChild(b);
+  }
+
+  if (!big) wrap.onclick = () => openRoundModal(roundIdx);
+  return wrap;
+}
+
+function openRoundModal(roundIdx) {
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  const inner = document.createElement('div');
+  inner.className = 'modal';
+  inner.appendChild(renderRoundThumb(roundIdx, true));
+  const close = document.createElement('button');
+  close.className = 'btn-main';
+  close.style.marginTop = '18px';
+  close.textContent = 'Закрыть';
+  close.onclick = () => bg.remove();
+  inner.appendChild(close);
+  bg.appendChild(inner);
+  bg.onclick = e => { if (e.target === bg) bg.remove(); };
+  document.body.appendChild(bg);
+}
+
+/* ═══════════════ FINISH ═══════════════ */
+function finishSession() {
+  cancelTimers(); clearTimeouts();
+  S.phase = 'done';
+  unlockAch('first_session');
+
+  const total = cfg.totalSteps;
+  const isPaper = !cfg.interactive;
+  const correct = S.correctCount;
+
+  // Самооценка по всем раундам (только для бумажного режима)
+  let hit = 0, partial = 0, miss = 0, unchecked = 0;
+  if (isPaper) {
+    for (let i = 0; i < S.history.length; i++) {
+      const v = S.selfCheck[i];
+      if (v === 'hit') hit++;
+      else if (v === 'partial') partial++;
+      else if (v === 'miss') miss++;
+      else unchecked++;
+    }
+    if (miss === 0 && partial === 0 && hit > 0) unlockAch('honest');
+  }
+
+  let stars = 1;
+  if (correct >= total * 0.9) stars = 3;
+  else if (correct >= total * 0.6) stars = 2;
+  const perfect = correct === total && !isPaper;
+  if (perfect) unlockAch('perfect_session');
+  if (S.daily && !isPaper && correct >= Math.floor(total * 0.7)) unlockAch('daily_hero');
+
+  const elapsed = Math.floor((Date.now() - S.startTime) / 1000);
+  const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const ss = String(elapsed % 60).padStart(2, '0');
+  const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+  const avgReaction = S.reactionTimes.length
+    ? (S.reactionTimes.reduce((a, b) => a + b, 0) / S.reactionTimes.length / 1000).toFixed(2)
+    : '0.00';
+
+  // Хитмап (только интерактив)
+  const heatSize = cfg.gridSize;
+  let heatCells = '';
+  const maxHeat = Math.max(1, ...Object.values(S.heatmap));
+  for (let i = 0; i < heatSize * heatSize; i++) {
+    const v = S.heatmap[i] || 0;
+    const intensity = v / maxHeat;
+    const alpha = intensity * 0.85;
+    const bg = v ? `rgba(239,68,68,${alpha.toFixed(2)})` : 'var(--border)';
+    heatCells += `<div class="heat-cell" style="background:${bg}" title="${v} ошибок"></div>`;
+  }
+  const heatFrame = `<div class="heat-frame" style="grid-template-columns: repeat(${heatSize},1fr);">${heatCells}</div>`;
+
+  const modeNames = cfg.modes.map(m => ALL_MODES[m].name).join(' · ');
+
+  // Заголовок/иконка
+  let bigIcon, bigTitle;
+  if (isPaper) {
+    bigIcon = '📝';
+    bigTitle = 'Сессия на бумаге завершена';
+  } else {
+    bigIcon = perfect ? '🏆' : stars === 2 ? '👍' : '💪';
+    bigTitle = perfect ? 'Идеальная сессия!' : 'Тренировка завершена';
+  }
+
+  // Итоговые блоки
+  const interactiveStats = !isPaper ? `
+    <p>Правильно: <b>${correct}</b> из ${total}</p>
+    <p>Время: <b>${mm}:${ss}</b> · ср. реакция: <b>${avgReaction}с</b></p>
+    <p>Лучшая серия: <b>🔥 ${S.bestStreak}</b></p>
+    <div class="stars">${starStr}</div>
+    <div class="section-title" style="margin-top:16px;">Карта ошибок</div>
+    ${heatFrame}
+  ` : '';
+
+  const paperStats = isPaper ? `
+    <p>Время: <b>${mm}:${ss}</b> · раундов: <b>${total}</b></p>
+    <div class="section-title" style="margin-top:14px;">Самооценка</div>
+    <div class="selfcheck-summary">
+      <div class="selfcheck-item hit"><div class="num">${hit}</div><div class="lbl">✔ Угадал</div></div>
+      <div class="selfcheck-item partial"><div class="num">${partial}</div><div class="lbl">≈ Частично</div></div>
+      <div class="selfcheck-item miss"><div class="num">${miss}</div><div class="lbl">✖ Мимо</div></div>
+    </div>
+    ${unchecked > 0 ? `<p style="color:var(--text-muted);font-size:12.5px;">Не отмечено: ${unchecked}</p>` : ''}
+  ` : '';
+
+  gameEl.innerHTML = `
+    <div class="panel">
+      <div class="result-screen">
+        <div class="big">${bigIcon}</div>
+        <h2>${bigTitle}</h2>
+        <p>Режимы: <b>${modeNames}</b></p>
+        ${interactiveStats}
+        ${paperStats}
+
+        <div class="section-title" style="margin-top:20px;">Все раунды (${S.history.length})</div>
+        <div class="rounds-grid" id="roundsGrid"></div>
+
+        <div class="actions-row" style="justify-content:center; margin-top:20px;">
+          <button class="btn-main" id="againBtn" style="margin:0;">Ещё раз 🔄</button>
+          <button class="btn-secondary" id="menuBtn" style="margin:0;">⚙ Настройки</button>
+          <button class="btn-ghost" id="printAnsBtn" style="margin:0;">🖨 Печать ответов</button>
+          <button class="btn-ghost" id="achBtn2" style="margin:0;">🏆 Достижения</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const grid = $('roundsGrid');
+  S.history.forEach((_, idx) => {
+    const thumb = renderRoundThumb(idx, false);
+    if (thumb) grid.appendChild(thumb);
+  });
+
+  sfxWin();
+  $('againBtn').onclick = () => startGame(S.daily);
+  $('menuBtn').onclick = renderSettings;
+  $('printAnsBtn').onclick = printSessionAnswers;
+  $('achBtn2').onclick = showAchievementsModal;
+}
+
+/* ═══════════════ PALETTE ═══════════════ */
+function renderPalette() {
+  const palette = $('palette');
+  if (!palette) return;
+  palette.innerHTML = '';
+  if (!cfg.interactive) return;
+  if (S.phase === 'show' || S.phase === 'showB') return;
+  if (S.mode === 'reverse' || S.mode === 'changes') return;
+  if (S.phase === 'result') return;
+
+  const data = S.history[S.step - 1];
+  if (!data) return;
+  const types = [...new Set(data.figures.map(f => f.type))];
+  if (types.length <= 1) return;
+
+  types.forEach(t => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'palette-btn' + (S.currentType === t ? ' active' : '');
+    b.title = t;
+    b.appendChild(makeShape(t, cfg.dark ? '#E2E8F0' : '#1F2937'));
+    b.onclick = () => { S.currentType = t; renderPalette(); sfxClick(); };
+    palette.appendChild(b);
+  });
+}
+
+/* ═══════════════ HISTORY ═══════════════ */
+function toggleHistory() {
+  const wrap = $('historyWrap');
+  if (!wrap) return;
+  if (wrap.classList.contains('show')) { wrap.classList.remove('show'); return; }
+  const grid = $('historyGrid');
+  grid.innerHTML = '';
+  S.history.forEach((item, idx) => {
+    if (!item) return;
+    const cell = document.createElement('div');
+    cell.className = 'hist-cell';
+    cell.style.gridTemplateColumns = `repeat(${item.size}, 1fr)`;
+    cell.title = `Раунд ${idx + 1} · ${ALL_MODES[item.mode].name}`;
+    for (let i = 0; i < item.size * item.size; i++) {
+      const h = document.createElement('div');
+      h.className = 'h-item';
+      const fig = item.figures.find(f => f.index === i);
+      if (fig) h.appendChild(makeShape(fig.type, fig.color));
+      cell.appendChild(h);
+    }
+    grid.appendChild(cell);
+  });
+  wrap.classList.add('show');
+}
+
+/* ═══════════════ PRINT ═══════════════ */
+function printTemplates() {
+  const size = cfg.gridSize;
+  const w = window.open('', '_blank');
+  if (!w) { alert('Разрешите всплывающие окна'); return; }
+  let html = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Точки — шаблоны</title>
+  <style>
+  @page{size:A4;margin:8mm;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:Arial,sans-serif;padding:8mm;color:#1F2937;}
+  h1{font-size:16pt;color:#1E4FA8;text-align:center;margin-bottom:3mm;}
+  p{font-size:10pt;color:#6B7280;text-align:center;margin-bottom:6mm;}
+  .sheet{display:grid;grid-template-columns:repeat(4,1fr);gap:5mm;}
+  .grid{display:grid;grid-template-columns:repeat(${size},1fr);aspect-ratio:1/1;border:1.5px solid #1F2937;border-radius:4px;}
+  .cell{border:1px solid #9CA3AF;aspect-ratio:1/1;}
+  </style></head><body>
+  <h1>👁 Точки — 16 шаблонов (${size}×${size})</h1>
+  <p>Мнемо-Арена · для режима «на бумаге»</p>
+  <div class="sheet">`;
+  for (let i = 0; i < 16; i++) {
+    html += '<div class="grid">';
+    for (let j = 0; j < size * size; j++) html += '<div class="cell"></div>';
+    html += '</div>';
+  }
+  html += '</div><scr' + 'ipt>setTimeout(function(){window.print();},350);</scr' + 'ipt></body></html>';
+  w.document.open(); w.document.write(html); w.document.close();
+}
+
+function printSessionAnswers() {
+  const w = window.open('', '_blank');
+  if (!w) { alert('Разрешите всплывающие окна'); return; }
+
+  const shapeHtml = (type, color) => {
+    const c = color && color !== '#111' ? color : '#1F2937';
+    switch (type) {
+      case 'dot':      return `<span style="display:inline-block;width:60%;height:60%;border-radius:50%;background:${c};"></span>`;
+      case 'square':   return `<span style="display:inline-block;width:60%;height:60%;background:${c};border-radius:2px;"></span>`;
+      case 'triangle': return `<span style="display:inline-block;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid ${c};"></span>`;
+      case 'star':     return `<span style="font-size:11px;color:${c};line-height:1;">★</span>`;
+      case 'diamond':  return `<span style="display:inline-block;width:55%;height:55%;background:${c};transform:rotate(45deg);border-radius:2px;"></span>`;
+      case 'hexagon':  return `<span style="font-size:11px;color:${c};line-height:1;">⬢</span>`;
+      case 'ring':     return `<span style="display:inline-block;width:55%;height:55%;border:3px solid ${c};border-radius:50%;"></span>`;
+      case 'cross':    return `<span style="font-size:11px;color:${c};line-height:1;">✚</span>`;
+      default:         return '';
+    }
+  };
+
+  const renderField = (figures, size, opts = {}) => {
+    const figMap = new Map(figures.map(f => [f.index, f]));
+    const seqMap = opts.seq ? new Map(opts.seq.map((idx, n) => [idx, n + 1])) : null;
+    const cellSize = Math.max(12, Math.min(22, Math.floor(170 / size)));
+    let html = `<div style="display:grid;grid-template-columns:repeat(${size},1fr);gap:1px;width:${cellSize * size + size - 1}px;">`;
+    for (let i = 0; i < size * size; i++) {
+      const fig = figMap.get(i);
+      let inner = '';
+      if (seqMap && seqMap.has(i)) {
+        inner = `<span style="font-size:8px;font-weight:800;color:#E86E1F;position:absolute;top:0;left:1px;">${seqMap.get(i)}</span>`
+              + shapeHtml('dot', fig ? fig.color : '#1F2937');
+      } else if (fig) {
+        inner = shapeHtml(fig.type, fig.color);
+      }
+      html += `<div style="width:${cellSize}px;height:${cellSize}px;border:1px solid #D1D5DB;border-radius:2px;display:flex;align-items:center;justify-content:center;position:relative;background:#fff;">${inner}</div>`;
+    }
+    html += '</div>';
+    return html;
+  };
+
+  let body = '';
+  S.history.forEach((item, idx) => {
+    const sc = S.selfCheck[idx];
+    const scMark = sc ? { hit: '✔', partial: '≈', miss: '✖' }[sc] : '';
+    const scColor = sc ? ({ hit: '#22C55E', partial: '#F59E0B', miss: '#EF4444' })[sc] : '#9CA3AF';
+    body += `<div style="border:1px solid #E5EAF2;border-radius:8px;padding:6px;break-inside:avoid;position:relative;">
+      ${sc ? `<div style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:${scColor};color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;">${scMark}</div>` : ''}
+      <div style="font-size:8pt;font-weight:800;color:#6B7280;text-align:center;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;">
+        Раунд ${idx + 1} · ${ALL_MODES[item.mode].name}
+      </div>`;
+
+    if (item.mode === 'changes') {
+      body += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+        <div><div style="font-size:7pt;font-weight:800;color:#6B7280;text-align:center;">A</div>${renderField(item.figures, item.size)}</div>
+        <div><div style="font-size:7pt;font-weight:800;color:#6B7280;text-align:center;">B</div>${renderField(item.changesB || item.figures, item.size)}</div>
+      </div>`;
+    } else if (item.mode === 'reverse') {
+      body += renderField(item.figures, item.size, { seq: item.seqOrder });
+      body += `<div style="font-size:7pt;color:#6B7280;margin-top:3px;text-align:center;">Порядок 1 → 2 → 3…</div>`;
+    } else {
+      body += renderField(item.figures, item.size);
+    }
+
+    body += `</div>`;
+  });
+
+  const html = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Точки — ответы сессии</title>
+  <style>
+  @page{size:A4;margin:10mm;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:Arial,sans-serif;padding:10mm;color:#1F2937;}
+  h1{font-size:14pt;color:#1E4FA8;text-align:center;margin-bottom:2mm;}
+  p.meta{font-size:9pt;color:#6B7280;text-align:center;margin-bottom:5mm;}
+  .sheet{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;}
+  </style></head><body>
+  <h1>👁 Точки — ответы сессии</h1>
+  <p class="meta">${S.history.length} раундов · поля ${cfg.gridSize}×${cfg.gridSize} · ${new Date().toLocaleString('ru-RU')}</p>
+  <div class="sheet">${body}</div>
+  <scr` + `ipt>setTimeout(function(){window.print();},350);</scr` + `ipt>
+  </body></html>`;
+
+  w.document.open(); w.document.write(html); w.document.close();
+}
+
+/* ═══════════════ KEYBOARD ═══════════════ */
+document.addEventListener('keydown', e => {
+  if (S.phase === 'idle' || S.phase === 'done') return;
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    if ($('memorizeBtn') && !$('memorizeBtn').disabled) $('memorizeBtn').click();
+    else if ($('revealBtn')) revealAnswers();
+    else if ($('skipBtn')) $('skipBtn').click();
+    else if ($('scHit')) setSelfCheck('hit');
+    else if ($('scPartial')) setSelfCheck('partial');
+    else if ($('scMiss')) setSelfCheck('miss');
+    else if ($('checkBtn') && !$('checkBtn').disabled) checkResult();
+    else if ($('nextBtn')) $('nextBtn').click();
+  }
+  if (e.key === '1' && $('scHit')) setSelfCheck('hit');
+  if (e.key === '2' && $('scPartial')) setSelfCheck('partial');
+  if (e.key === '3' && $('scMiss')) setSelfCheck('miss');
+  if ((e.key === 'z' || e.key === 'Z') && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    undoLast();
+  }
+});
+
+/* ═══════════════ BACK ═══════════════ */
+$('backBtn').onclick = () => {
+  const inGame = ['show', 'showB', 'input', 'result'].includes(S.phase);
+  if (inGame) {
+    if (confirm('Вернуться к настройкам? Прогресс сбросится.')) renderSettings();
+  } else {
+    location.href = 'index.html';
+  }
+};
+
+/* ═══════════════ INIT ═══════════════ */
+document.addEventListener('click', () => initAudio(), { once: true });
+document.body.classList.toggle('dark', cfg.dark);
+renderSettings();
 </script>
-<script src="../menu/menu.js"></script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
 </body>
 </html>

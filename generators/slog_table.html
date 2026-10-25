@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Слоговые таблицы — генератор</title>
+<style>
+  :root {
+    --ink: #1d4e89;
+    --ink-strong: #123a6b;
+    --accent: #f08c1c;
+    --accent-soft: #fdf0dc;
+    --soft: #eaf2fb;
+    --line: #b9cfe7;
+    --paper: #ffffff;
+    --page: #eef3fa;
+
+    --vowel-red: #d32f2f;
+    --cons-blue: #1d4e89;
+    --soft-green: #2e9e2e;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--page);
+    color: var(--ink);
+  }
+
+  .controls {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px 16px;
+    background: var(--paper);
+    border-bottom: 2px solid var(--ink);
+  }
+  .controls h1 {
+    margin: 0 0 14px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  fieldset {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin: 0 0 12px;
+    padding: 10px 12px 12px;
+    background: #fbfdff;
+  }
+  legend {
+    font-weight: 700;
+    padding: 0 6px;
+    font-size: 14px;
+    color: var(--ink);
+  }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips label {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 9px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    cursor: pointer; user-select: none;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--paper);
+    transition: background .12s, border-color .12s, opacity .15s, color .12s;
+  }
+  .chips label:hover { background: var(--soft); }
+  .chips label:has(input:checked) {
+    background: var(--soft);
+    border-color: var(--ink);
+    color: var(--ink-strong);
+  }
+  .chips input { margin: 0; accent-color: var(--ink); }
+
+  .chips.locked { opacity: 0.4; pointer-events: none; }
+  .lock-note {
+    font-size: 12px; color: var(--accent);
+    margin-top: 6px; display: none; font-weight: 600;
+  }
+  .lock-note.visible { display: block; }
+
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+  button {
+    font: inherit;
+    padding: 7px 13px;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background .12s, color .12s, border-color .12s;
+  }
+  button:hover { background: var(--soft); }
+  button.primary {
+    background: var(--ink-strong);
+    color: #fff;
+    border-color: var(--ink-strong);
+  }
+  button.primary:hover { background: var(--ink); }
+  button.small { padding: 4px 9px; font-size: 13px; }
+
+  .pair-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .pair-btn.active:hover {
+    background: #d97a10;
+    border-color: #d97a10;
+  }
+
+  .subhead {
+    font-size: 13px; color: var(--ink); opacity: .65;
+    margin: 10px 0 6px; font-weight: 600;
+  }
+
+  .size-slider {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px;
+  }
+  .size-slider input[type=range] {
+    width: 220px; accent-color: var(--accent);
+  }
+  .size-slider .val {
+    font-weight: 700; color: var(--ink);
+    min-width: 70px;
+  }
+  .size-slider.disabled { opacity: 0.4; pointer-events: none; }
+
+  .auto-info {
+    display: none;
+    font-size: 13px;
+    color: var(--ink);
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: var(--soft);
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  .auto-info.visible { display: inline-block; }
+
+  .hidden { display: none !important; }
+
+  .warning-msg {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    border-radius: 7px;
+    padding: 8px 12px;
+    font-size: 13px;
+    margin-top: 8px;
+    display: none;
+  }
+  .warning-msg.visible { display: block; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--ink-strong);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    opacity: 0;
+    transition: transform .3s, opacity .3s;
+    z-index: 1000;
+    pointer-events: none;
+  }
+  .toast.visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  /* ---------- Лист A4 ---------- */
+  .sheet-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 12px 48px;
+    gap: 24px;
+  }
+  .sheet {
+    background: var(--paper);
+    box-shadow: 0 6px 28px rgba(29,78,137,.18);
+    display: flex;
+    flex-direction: column;
+  }
+  .sheet.portrait {
+    width: 210mm;
+    height: 297mm;
+    padding: 12mm;
+  }
+  .sheet.landscape {
+    width: 297mm;
+    height: 210mm;
+    padding: 12mm;
+  }
+  .sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4mm;
+    font-size: 11pt;
+    color: var(--ink);
+    opacity: .65;
+  }
+  .sheet-header .title {
+    font-weight: 700;
+    color: var(--ink);
+    opacity: 1;
+  }
+  .sheet-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8mm;
+    min-height: 0;
+    justify-content: space-around;
+    align-items: center;
+  }
+  .table-block {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2mm;
+    max-width: 100%;
+  }
+  .table-block-title {
+    font-size: 9pt;
+    font-weight: 700;
+    color: var(--ink);
+    text-align: center;
+  }
+  .grid {
+    display: grid;
+    gap: 1mm;
+    font-weight: 700;
+    line-height: 1;
+    justify-content: center;
+    align-content: start;
+  }
+  .cell {
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 2mm;
+    overflow: hidden;
+    white-space: nowrap;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .cell.header {
+    background: var(--soft);
+    border-color: var(--ink);
+  }
+  .cell.vowel {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+  }
+  .cell.corner { border: none; background: transparent; }
+  .cell.unreadable {
+    background: #f7f7f7;
+    border-color: #eee;
+    color: #eee;
+  }
+
+  /* Цвета букв */
+  .l-vowel { color: var(--vowel-red); }
+  .l-cons  { color: var(--cons-blue); }
+  .l-soft  { color: var(--soft-green); }
+
+  .empty-msg {
+    display: flex; align-items: center; justify-content: center;
+    flex: 1; color: var(--ink); opacity: .4;
+    font-size: 16pt; font-weight: 600;
+  }
+
+  .cards-grid {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3mm;
+    justify-content: center;
+    align-content: center;
+  }
+  .card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--line);
+    border-radius: 3mm;
+    background: var(--paper);
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  @page { margin: 0; }
+  @media print {
+    body { background: #fff; }
+    .controls { display: none !important; }
+    .sheet-wrap { padding: 0; gap: 0; }
+    .sheet {
+      box-shadow: none;
+      page-break-after: always;
+    }
+    .sheet:last-child {
+      page-break-after: auto;
+    }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+
+<div class="controls">
+  <h1>Слоговые таблицы</h1>
+
+  <fieldset>
+    <legend>Тип таблицы (можно выбрать несколько)</legend>
+    <div class="chips" id="typeChips">
+      <label title="МА, МО, МУ, МЫ, МЭ — классическая таблица"><input type="checkbox" name="tableType" value="CV" checked> Открытый слог</label>
+      <label title="АМ, ОМ, УМ — гласная в начале, согласная в конце"><input type="checkbox" name="tableType" value="VC"> Закрытый слог</label>
+      <label title="МАЛЬ, МЪ — слоги с мягким или твёрдым знаком"><input type="checkbox" name="tableType" value="C_SIGN"> С ь / ъ</label>
+      <label title="КРА, БЛО, ВТО — сочетание из двух согласных + гласная"><input type="checkbox" name="tableType" value="CCV"> Сочетание согласных + гласная</label>
+      <label title="МАМ, МОЛ, СОН — согласная + гласная + согласная"><input type="checkbox" name="tableType" value="CVC"> Слог с гласной посередине</label>
+    </div>
+    <div class="row" style="margin-top: 10px;">
+      <label style="display:inline-flex; align-items:center; gap:6px; padding:4px 9px; border:1px solid var(--line); border-radius:7px; cursor:pointer; background:var(--paper);" title="Слоги идут в случайном порядке — ребёнок не сможет заучить таблицу">
+        <input type="checkbox" id="shuffleCheck"> 🔀 Перемешивать порядок
+      </label>
+      <button class="small" id="randomBtn" title="Случайно выбрать согласные и гласные">🎲 Случайные слоги</button>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Количество слогов</legend>
+    <div class="size-slider">
+      <input type="range" id="countRange" min="5" max="200" step="5" value="30">
+      <span class="val" id="countVal">30 слогов</span>
+    </div>
+    <div style="font-size:12px; color:#777; margin-top:6px;">
+      Автоматически подбирает количество букв. Ручной выбор будет перезаписан.
+    </div>
+  </fieldset>
+
+  <fieldset id="consFieldset">
+    <legend id="consLegend">Согласные (строки)</legend>
+    <div class="chips" id="consonantsChips"></div>
+    <div class="lock-note" id="consLockNote">Включён режим пар — выбор по одной букве отключён</div>
+    <div class="row">
+      <button class="small" data-cons="all">Все</button>
+      <button class="small" data-cons="clear">Снять всё</button>
+    </div>
+    <div class="pairs-container" id="consPairsContainer">
+      <div class="subhead">Быстрый выбор парами:</div>
+      <div class="chips" id="consPairs"></div>
+    </div>
+  </fieldset>
+
+  <fieldset id="vowFieldset">
+    <legend id="vowLegend">Гласные (столбцы)</legend>
+    <div class="chips" id="vowelsChips"></div>
+    <div class="lock-note" id="vowLockNote">Включён режим пар — выбор по одной букве отключён</div>
+    <div class="row">
+      <button class="small" data-vow="hard">Твёрдые</button>
+      <button class="small" data-vow="soft">Мягкие</button>
+      <button class="small" data-vow="all">Все</button>
+      <button class="small" data-vow="clear">Снять всё</button>
+    </div>
+    <div class="pairs-container" id="vowPairsContainer">
+      <div class="subhead">Быстрый выбор парами:</div>
+      <div class="chips" id="vowPairs"></div>
+    </div>
+  </fieldset>
+
+  <fieldset id="ccvFieldset" class="hidden">
+    <legend>Сочетания согласных (для типа «Сочетание согласных + гласная»)</legend>
+    <div class="chips" id="clustersChips"></div>
+    <div class="row">
+      <button class="small" data-clusters="common">Частые</button>
+      <button class="small" data-clusters="all">Все</button>
+      <button class="small" data-clusters="clear">Снять всё</button>
+    </div>
+    <div style="font-size:12px; color:#777; margin-top:6px;">
+      Чем больше сочетаний — тем длиннее таблица. Для А4 обычно достаточно 10–16.
+    </div>
+  </fieldset>
+
+  <fieldset id="endConsFieldset" class="hidden">
+    <legend>Конечные согласные (для слога типа МАМ)</legend>
+    <div class="chips" id="endConsonantsChips"></div>
+    <div class="row">
+      <button class="small" data-endcons="sonorous">Только звонкие (М, Н, Л, Р, Й)</button>
+      <button class="small" data-endcons="voiceless">Только глухие (П, Т, К, С, Ш, Х, Ф)</button>
+      <button class="small" data-endcons="all">Все</button>
+    </div>
+    <div style="font-size:12px; color:#777; margin-top:6px;">
+      Ограничение конечных согласных не даёт таблице стать слишком широкой и нечитаемой.
+    </div>
+  </fieldset>
+
+  <fieldset id="signFieldset" class="hidden">
+    <legend>Знаки для выбора</legend>
+    <div class="chips" id="signsChips"></div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Параметры листа</legend>
+    <div class="row" style="margin-top:0;">
+      <label style="display:inline-flex; align-items:center; gap:6px; padding:4px 9px; border:1px solid var(--line); border-radius:7px; cursor:pointer; background:var(--paper);" title="Автоматически подгоняет размер клеток под лист">
+        <input type="checkbox" id="autoFitCheck" checked> Автозаполнение
+      </label>
+      <label style="display:inline-flex; align-items:center; gap:6px; padding:4px 9px; border:1px solid var(--line); border-radius:7px; cursor:pointer; background:var(--paper);" title="Показывать слоги в виде карточек для вырезания">
+        <input type="checkbox" id="cardsCheck"> Режим карточек
+      </label>
+      <label style="display:inline-flex; align-items:center; gap:6px; padding:4px 9px; border:1px solid var(--line); border-radius:7px; cursor:pointer; background:var(--paper);" title="Скрыть сочетания, которых не бывает в русском языке (ЖЯ, ШЫ, ЦЮ и т.д.)">
+        <input type="checkbox" id="hideUnreadableCheck" checked> Скрывать нечитаемые
+      </label>
+      <label style="display:inline-flex; align-items:center; gap:6px; padding:4px 9px; border:1px solid var(--line); border-radius:7px; cursor:pointer; background:var(--paper);" title="Мягкие согласные (перед Я, Ё, Ю, И, Е, Ь) — зелёные, твёрдые — синие">
+        <input type="checkbox" id="softColorCheck" checked> 🟢 Мягкие согласные зелёным
+      </label>
+      <label style="display:inline-flex; align-items:center; gap:6px; padding:4px 9px; border:1px solid var(--line); border-radius:7px; cursor:pointer; background:var(--paper);" title="Красить гласные красным, согласные — синим">
+        <input type="checkbox" id="colorLettersCheck" checked> 🔴🟦 Красить буквы
+      </label>
+    </div>
+    <div class="row">
+      <label style="display:inline-flex; align-items:center; gap:6px; padding:4px 9px; border:1px solid var(--line); border-radius:7px; cursor:pointer; background:var(--paper);">
+        <input type="radio" name="orientation" value="portrait" checked> Портрет (210×297)
+      </label>
+      <label style="display:inline-flex; align-items:center; gap:6px; padding:4px 9px; border:1px solid var(--line); border-radius:7px; cursor:pointer; background:var(--paper);">
+        <input type="radio" name="orientation" value="landscape"> Альбом (297×210)
+      </label>
+    </div>
+    <span class="auto-info" id="autoInfo">Текущий размер: 26 мм</span>
+    <div class="size-slider" id="sizeSliderBox" style="margin-top:10px;">
+      <input type="range" id="sizeRange" min="20" max="34" step="1" value="26">
+      <span class="val" id="sizeVal">26 мм</span>
+    </div>
+    <div id="sizeWarning" class="warning-msg">
+      ⚠️ Таблица слишком большая для листа А4. Клетки автоматически уменьшены до минимально читаемого размера. Рекомендуется снять часть галочек с букв.
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Заголовок листа</legend>
+    <div class="row" style="margin-top:0;">
+      <input id="titleInput" type="text" value="Слоговые таблицы"
+             style="flex:1; min-width:220px; padding:7px 10px; border:1px solid var(--line); border-radius:7px; font:inherit; color:var(--ink);">
+      <label style="display:inline-flex; align-items:center; gap:6px; padding:4px 9px; border:1px solid var(--line); border-radius:7px; cursor:pointer;">
+        <input type="checkbox" id="showTitle" checked> Показывать
+      </label>
+    </div>
+  </fieldset>
+
+  <div class="row">
+    <button class="primary" id="printBtn">🖨️ Печать / PDF</button>
+    <button id="copyLinkBtn" title="Скопировать ссылку с текущими настройками">🔗 Скопировать ссылку</button>
+  </div>
+</div>
+
+<div class="sheet-wrap" id="sheetWrap"></div>
+
+<div class="toast" id="toast">Ссылка скопирована!</div>
+
+<script>
+(() => {
+  const ALL_CONSONANTS = ['Б','В','Г','Д','Ж','З','Й','К','Л','М','Н','П','Р','С','Т','Ф','Х','Ц','Ч','Ш','Щ'];
+  const DEFAULT_CONSONANTS = ['М','Н','П','Б','Т','Д','К','Г','В','Ф','Л','Р','С','З'];
+  const SONOROUS_CONSONANTS = ['М', 'Н', 'Л', 'Р', 'Й'];
+  const VOICELESS_CONSONANTS = ['П', 'Т', 'К', 'С', 'Ш', 'Х', 'Ф'];
+
+  const ALL_VOWELS = ['А','О','У','Ы','Э','Я','Ё','Ю','И','Е'];
+  const HARD_VOWELS = ['А','О','У','Ы','Э'];
+  const SOFT_VOWELS = ['Я','Ё','Ю','И','Е'];
+  const DEFAULT_VOWELS = HARD_VOWELS;
+
+  const VOWELS_CHARS = new Set(ALL_VOWELS);
+
+  const ALL_SIGNS     = ['Ь', 'ЪЕ', 'ЪЁ', 'ЪЮ', 'ЪЯ'];
+  const DEFAULT_SIGNS = ['Ь', 'ЪЕ', 'ЪЁ', 'ЪЮ', 'ЪЯ'];
+
+  const CC_CLUSTERS = [
+    'БЛ','БР','ВЛ','ВР','ГЛ','ГР','ДР','ЖД','ЗЛ','ЗР',
+    'КЛ','КР','ПЛ','ПР','СК','СЛ','СН','СП','СТ','ТР',
+    'ФЛ','ФР','ХЛ','ХР','ШТ','ЦВ','ЧС'
+  ];
+  const DEFAULT_CLUSTERS = ['БЛ','БР','ВР','ГР','ДР','КЛ','КР','ПЛ','ПР','СК','СЛ','СН','СП','СТ','ТР','ФЛ'];
+  const COMMON_CLUSTERS  = ['БР','ГР','ДР','КР','ПР','ТР','СП','СТ','СН','СЛ','КЛ','ПЛ'];
+
+  const UNREADABLE_COMBOS = new Set([
+    'ЖЯ','ЖЮ','ЖЫ',
+    'ШЯ','ШЮ','ШЫ',
+    'ЦЯ','ЦЮ','ЦЫ',
+    'ЧЫ','ЧЭ','ЧЯ','ЧЮ',
+    'ЩЫ','ЩЭ','ЩЯ','ЩЮ','ЩО'
+  ]);
+
+  const ALWAYS_SOFT_CONS = ['Ч', 'Щ', 'Й'];
+  const ALWAYS_HARD_CONS = ['Ж', 'Ш', 'Ц'];
+  const SOFTENING = ['Я', 'Ё', 'Ю', 'И', 'Е', 'Ь'];
+
+  const CONSONANT_PAIRS = [
+    ['Д','Т'], ['Ж','Ш'], ['Ш','Щ'], ['З','С'], ['С','Ш'],
+    ['Б','П'], ['В','Ф'], ['Г','К'], ['Р','Л']
+  ];
+  const VOWEL_PAIRS = [
+    ['И','Е'], ['И','Ы'], ['А','Я'], ['О','Ё'], ['Е','Ё'], ['Э','Е'], ['У','Ю']
+  ];
+
+  const TYPE_NAMES = {
+    'CV': 'Открытый слог',
+    'VC': 'Закрытый слог',
+    'C_SIGN': 'С ь / ъ',
+    'CCV': 'Сочетание согласных + гласная',
+    'CVC': 'Слог с гласной посередине'
+  };
+
+  const GAP_MM = 1;
+  const RATIO = 0.62;
+  const HEADER_HEIGHT_MM = 8;
+  const SHEET_PADDING_MM = 12;
+  const AUTO_MIN_MM = 8;
+  const AUTO_MAX_MM = 40;
+  const READABLE_MIN_MM = 12;
+
+  const state = {
+    types: ['CV'],
+    consonants: new Set(DEFAULT_CONSONANTS),
+    vowels: new Set(DEFAULT_VOWELS),
+    endConsonants: new Set(SONOROUS_CONSONANTS),
+    signs: new Set(DEFAULT_SIGNS),
+    clusters: new Set(DEFAULT_CLUSTERS),
+    activeConsPairs: new Set(),
+    activeVowPairs: new Set(),
+    cellWidthMm: 26,
+    title: 'Слоговые таблицы',
+    showTitle: true,
+    shuffle: false,
+    autoFit: true,
+    targetCount: 30,
+    hideUnreadable: true,
+    softColor: true,
+    colorLetters: true,
+    orientation: 'portrait',
+    displayMode: 'table'
+  };
+
+  let consBackup = null;
+  let vowBackup = null;
+
+  const sheetWrap = document.getElementById('sheetWrap');
+  const titleInput = document.getElementById('titleInput');
+  const showTitleBox = document.getElementById('showTitle');
+
+  const consonantsChips = document.getElementById('consonantsChips');
+  const vowelsChips = document.getElementById('vowelsChips');
+  const consPairsBox = document.getElementById('consPairs');
+  const vowPairsBox = document.getElementById('vowPairs');
+  const consLockNote = document.getElementById('consLockNote');
+  const vowLockNote = document.getElementById('vowLockNote');
+
+  const endConsFieldset = document.getElementById('endConsFieldset');
+  const endConsonantsChips = document.getElementById('endConsonantsChips');
+
+  const signFieldset = document.getElementById('signFieldset');
+  const signsChips = document.getElementById('signsChips');
+
+  const ccvFieldset = document.getElementById('ccvFieldset');
+  const clustersChips = document.getElementById('clustersChips');
+
+  const consLegend = document.getElementById('consLegend');
+  const vowLegend = document.getElementById('vowLegend');
+  const consPairsContainer = document.getElementById('consPairsContainer');
+  const vowPairsContainer = document.getElementById('vowPairsContainer');
+
+  const sizeRange = document.getElementById('sizeRange');
+  const sizeVal = document.getElementById('sizeVal');
+  const sizeWarning = document.getElementById('sizeWarning');
+  const sizeSliderBox = document.getElementById('sizeSliderBox');
+  const shuffleCheck = document.getElementById('shuffleCheck');
+  const typeChips = document.getElementById('typeChips');
+  const autoFitCheck = document.getElementById('autoFitCheck');
+  const autoInfo = document.getElementById('autoInfo');
+  const countRange = document.getElementById('countRange');
+  const countVal = document.getElementById('countVal');
+  const randomBtn = document.getElementById('randomBtn');
+  const hideUnreadableCheck = document.getElementById('hideUnreadableCheck');
+  const softColorCheck = document.getElementById('softColorCheck');
+  const colorLettersCheck = document.getElementById('colorLettersCheck');
+  const cardsCheck = document.getElementById('cardsCheck');
+  const copyLinkBtn = document.getElementById('copyLinkBtn');
+  const toast = document.getElementById('toast');
+
+  const sortRu = arr => [...arr].sort((a, b) => a.localeCompare(b, 'ru'));
+  const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('visible');
+    setTimeout(() => toast.classList.remove('visible'), 2000);
+  }
+
+  function getSheetDimensions() {
+    if (state.orientation === 'landscape') return { w: 297, h: 210 };
+    return { w: 210, h: 297 };
+  }
+
+  function isReadable(combo) {
+    return !UNREADABLE_COMBOS.has(combo);
+  }
+
+  function isConsonantSoftAt(text, i) {
+    const ch = text[i];
+    if (ALWAYS_SOFT_CONS.includes(ch)) return true;
+    if (ALWAYS_HARD_CONS.includes(ch)) return false;
+    for (let j = i + 1; j < text.length; j++) {
+      const n = text[j];
+      if (n === 'Ъ') return false;
+      if (n === 'Ь') return true;
+      if (VOWELS_CHARS.has(n)) return SOFTENING.includes(n);
+    }
+    return false;
+  }
+
+  function renderSyllableHTML(text) {
+    if (!state.colorLetters) return text;
+    let html = '';
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      let cls;
+      if (VOWELS_CHARS.has(ch)) {
+        cls = 'l-vowel';
+      } else if (ch === 'Ь') {
+        cls = state.softColor ? 'l-soft' : 'l-cons';
+      } else if (ch === 'Ъ') {
+        cls = 'l-cons';
+      } else if (state.softColor && isConsonantSoftAt(text, i)) {
+        cls = 'l-soft';
+      } else {
+        cls = 'l-cons';
+      }
+      html += `<span class="${cls}">${ch}</span>`;
+    }
+    return html;
+  }
+
+  function makeChip(text, checked, onToggle) {
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.checked = checked;
+    input.addEventListener('change', () => onToggle(input.checked, input));
+    label.appendChild(input);
+    label.appendChild(document.createTextNode(text));
+    return label;
+  }
+
+  function updateUIForType() {
+    const types = state.types;
+    const showPairs = types.includes('CV') || types.includes('VC');
+
+    consPairsContainer.classList.toggle('hidden', !showPairs);
+    vowPairsContainer.classList.toggle('hidden', !showPairs);
+    signFieldset.classList.toggle('hidden', !types.includes('C_SIGN'));
+    ccvFieldset.classList.toggle('hidden', !types.includes('CCV'));
+    endConsFieldset.classList.toggle('hidden', !types.includes('CVC'));
+
+    if (types.length === 1) {
+      const t = types[0];
+      if (t === 'CV') {
+        consLegend.textContent = 'Согласные (строки)';
+        vowLegend.textContent = 'Гласные (столбцы)';
+      } else if (t === 'VC') {
+        consLegend.textContent = 'Согласные (столбцы)';
+        vowLegend.textContent = 'Гласные (строки)';
+      } else if (t === 'C_SIGN') {
+        consLegend.textContent = 'Согласные (строки)';
+        vowLegend.textContent = 'Гласные (скрыты в этом режиме)';
+      } else if (t === 'CCV') {
+        consLegend.textContent = 'Сочетания согласных (строки — настраиваются ниже)';
+        vowLegend.textContent = 'Гласные (столбцы)';
+      } else if (t === 'CVC') {
+        consLegend.textContent = 'Начальные согласные (для строк)';
+        vowLegend.textContent = 'Гласные (для середины слога)';
+      }
+    } else {
+      consLegend.textContent = 'Согласные';
+      vowLegend.textContent = 'Гласные';
+    }
+
+    if (!showPairs) {
+      state.activeConsPairs.clear();
+      state.activeVowPairs.clear();
+      consBackup = null;
+      vowBackup = null;
+    }
+  }
+
+  function renderConsonantChips() {
+    const types = state.types;
+    const locked = state.activeConsPairs.size > 0 && (types.includes('CV') || types.includes('VC'));
+    consonantsChips.classList.toggle('locked', locked);
+    consLockNote.classList.toggle('visible', locked);
+
+    consonantsChips.innerHTML = '';
+    ALL_CONSONANTS.forEach(ch => {
+      consonantsChips.appendChild(makeChip(ch, state.consonants.has(ch), (checked, input) => {
+        if (checked) state.consonants.add(ch);
+        else {
+          if (state.consonants.size <= 1) { input.checked = true; return; }
+          state.consonants.delete(ch);
+        }
+        render();
+      }));
+    });
+  }
+
+  function renderVowelChips() {
+    const types = state.types;
+    const locked = state.activeVowPairs.size > 0 && (types.includes('CV') || types.includes('VC'));
+    vowelsChips.classList.toggle('locked', locked);
+    vowLockNote.classList.toggle('visible', locked);
+
+    vowelsChips.innerHTML = '';
+    ALL_VOWELS.forEach(ch => {
+      vowelsChips.appendChild(makeChip(ch, state.vowels.has(ch), (checked, input) => {
+        if (checked) state.vowels.add(ch);
+        else {
+          if (state.vowels.size <= 1) { input.checked = true; return; }
+          state.vowels.delete(ch);
+        }
+        render();
+      }));
+    });
+  }
+
+  function renderEndConsonantChips() {
+    endConsonantsChips.innerHTML = '';
+    ALL_CONSONANTS.forEach(ch => {
+      endConsonantsChips.appendChild(makeChip(ch, state.endConsonants.has(ch), (checked, input) => {
+        if (checked) state.endConsonants.add(ch);
+        else {
+          if (state.endConsonants.size <= 1) { input.checked = true; return; }
+          state.endConsonants.delete(ch);
+        }
+        render();
+      }));
+    });
+  }
+
+  function renderSignChips() {
+    signsChips.innerHTML = '';
+    ALL_SIGNS.forEach(ch => {
+      signsChips.appendChild(makeChip(ch, state.signs.has(ch), (checked) => {
+        if (checked) state.signs.add(ch);
+        else state.signs.delete(ch);
+        render();
+      }));
+    });
+  }
+
+  function renderClusterChips() {
+    clustersChips.innerHTML = '';
+    CC_CLUSTERS.forEach(cl => {
+      clustersChips.appendChild(makeChip(cl, state.clusters.has(cl), (checked, input) => {
+        if (checked) state.clusters.add(cl);
+        else {
+          if (state.clusters.size <= 1) { input.checked = true; return; }
+          state.clusters.delete(cl);
+        }
+        render();
+      }));
+    });
+  }
+
+  function renderPairButtons(box, pairs, dimension) {
+    box.innerHTML = '';
+    pairs.forEach(pair => {
+      const btn = document.createElement('button');
+      btn.className = 'small pair-btn';
+      btn.textContent = pair.join('-');
+      btn.dataset.key = pair.join('-');
+      btn.addEventListener('click', () => togglePair(pair, dimension));
+      box.appendChild(btn);
+    });
+  }
+
+  function togglePair(pair, dimension) {
+    const types = state.types;
+    if (!types.includes('CV') && !types.includes('VC')) return;
+
+    const pairsSet = dimension === 'cons' ? state.activeConsPairs : state.activeVowPairs;
+    const lettersSet = dimension === 'cons' ? state.consonants : state.vowels;
+    const defaults = dimension === 'cons' ? DEFAULT_CONSONANTS : DEFAULT_VOWELS;
+    const key = pair.join('-');
+    const wasEmpty = pairsSet.size === 0;
+
+    if (pairsSet.has(key)) {
+      pairsSet.delete(key);
+    } else {
+      if (wasEmpty) {
+        if (dimension === 'cons') consBackup = new Set(lettersSet);
+        else vowBackup = new Set(lettersSet);
+      }
+      pairsSet.add(key);
+    }
+
+    lettersSet.clear();
+
+    if (pairsSet.size === 0) {
+      const restore = dimension === 'cons' ? consBackup : vowBackup;
+      (restore || defaults).forEach(ch => lettersSet.add(ch));
+    } else {
+      pairsSet.forEach(k => k.split('-').forEach(ch => lettersSet.add(ch)));
+    }
+
+    if (dimension === 'cons') renderConsonantChips();
+    else renderVowelChips();
+
+    syncPairButtons();
+    render();
+  }
+
+  function syncPairButtons() {
+    consPairsBox.querySelectorAll('.pair-btn').forEach(btn => {
+      btn.classList.toggle('active', state.activeConsPairs.has(btn.dataset.key));
+    });
+    vowPairsBox.querySelectorAll('.pair-btn').forEach(btn => {
+      btn.classList.toggle('active', state.activeVowPairs.has(btn.dataset.key));
+    });
+  }
+
+  function computeCellSize(colsCount, rowsCount, numTables = 1) {
+    const { w: SHEET_W, h: SHEET_H } = getSheetDimensions();
+    const usableW = SHEET_W - SHEET_PADDING_MM * 2;
+
+    const extraHeight = (numTables - 1) * 8 + (numTables > 1 ? numTables * 6 : 0);
+    const usableH = SHEET_H - SHEET_PADDING_MM * 2 - HEADER_HEIGHT_MM - extraHeight;
+
+    const maxW = (usableW - GAP_MM * (colsCount - 1)) / colsCount;
+    const maxH = (usableH - GAP_MM * (rowsCount - 1)) / rowsCount;
+
+    let W, H;
+
+    if (state.autoFit) {
+      W = Math.min(maxW, AUTO_MAX_MM);
+      H = W * RATIO;
+
+      if (H > maxH) {
+        H = maxH;
+        W = Math.min(maxW, H / RATIO);
+      } else {
+        H = Math.min(maxH, W);
+      }
+
+      W = Math.max(W, AUTO_MIN_MM);
+      H = Math.max(H, AUTO_MIN_MM * RATIO);
+    } else {
+      W = state.cellWidthMm;
+      H = W * RATIO;
+      if (W > maxW) { W = maxW; H = W * RATIO; }
+      if (H > maxH) { H = maxH; W = Math.min(maxW, H / RATIO); }
+    }
+
+    return { W, H };
+  }
+
+  function getMaxRowsPerPage(cellH, numTables = 1) {
+    const { h: SHEET_H } = getSheetDimensions();
+    const extraHeight = (numTables - 1) * 8 + (numTables > 1 ? numTables * 6 : 0);
+    const usableH = SHEET_H - SHEET_PADDING_MM * 2 - HEADER_HEIGHT_MM - extraHeight;
+    const rows = Math.floor((usableH + GAP_MM) / (cellH + GAP_MM));
+    return Math.max(1, rows);
+  }
+
+  function setSyllableCount(target) {
+    let bestCols = 5, bestRows = 5;
+    let bestDiff = Infinity;
+
+    for (let cols = 2; cols <= 22; cols++) {
+      for (let rows = 2; rows <= 11; rows++) {
+        const syllables = (cols - 1) * (rows - 1);
+        const diff = Math.abs(syllables - target);
+
+        const aspectRatio = (rows - 1) / (cols - 1);
+        const targetRatio = 2.29;
+        const ratioPenalty = Math.abs(aspectRatio - targetRatio) * 10;
+
+        const score = diff + ratioPenalty;
+
+        if (score < bestDiff) {
+          bestDiff = score;
+          bestCols = cols;
+          bestRows = rows;
+        }
+      }
+    }
+
+    const consCount = bestCols - 1;
+    const vowCount = bestRows - 1;
+
+    state.consonants = new Set(ALL_CONSONANTS.slice(0, consCount));
+    state.vowels = new Set(ALL_VOWELS.slice(0, vowCount));
+
+    renderConsonantChips();
+    renderVowelChips();
+    render();
+  }
+
+  function randomSyllables() {
+    const consCount = Math.floor(Math.random() * 8) + 5;
+    const vowCount = Math.floor(Math.random() * 5) + 3;
+
+    const shuffledCons = shuffle([...ALL_CONSONANTS]).slice(0, consCount);
+    const shuffledVows = shuffle([...ALL_VOWELS]).slice(0, vowCount);
+
+    state.consonants = new Set(shuffledCons);
+    state.vowels = new Set(shuffledVows);
+
+    renderConsonantChips();
+    renderVowelChips();
+    render();
+  }
+
+  function getTableDataForType(type) {
+    let rows = [], cols = [];
+
+    if (type === 'CV') {
+      rows = sortRu([...state.consonants]);
+      cols = ALL_VOWELS.filter(v => state.vowels.has(v));
+    } else if (type === 'VC') {
+      rows = ALL_VOWELS.filter(v => state.vowels.has(v));
+      cols = sortRu([...state.consonants]);
+    } else if (type === 'C_SIGN') {
+      rows = sortRu([...state.consonants]);
+      cols = ALL_SIGNS.filter(s => state.signs.has(s));
+    } else if (type === 'CCV') {
+      rows = CC_CLUSTERS.filter(c => state.clusters.has(c));
+      cols = ALL_VOWELS.filter(v => state.vowels.has(v));
+    } else if (type === 'CVC') {
+      const selectedC = sortRu([...state.consonants]);
+      const selectedV = ALL_VOWELS.filter(v => state.vowels.has(v));
+      rows = [];
+      selectedC.forEach(c => {
+        selectedV.forEach(v => {
+          rows.push(c + v);
+        });
+      });
+      cols = sortRu([...state.endConsonants]);
+    }
+
+    if (state.shuffle) {
+      rows = shuffle(rows);
+      cols = shuffle(cols);
+    }
+
+    return { rows, cols };
+  }
+
+  function render() {
+    sheetWrap.innerHTML = '';
+
+    if (state.types.length === 0) {
+      const sheet = createSheet();
+      const content = document.createElement('div');
+      content.className = 'sheet-content';
+      const msg = document.createElement('div');
+      msg.className = 'empty-msg';
+      msg.textContent = 'Выберите хотя бы один тип таблицы';
+      content.appendChild(msg);
+      sheet.appendChild(content);
+      sheetWrap.appendChild(sheet);
+      return;
+    }
+
+    const hasAnyLetters =
+      state.consonants.size > 0 ||
+      state.vowels.size > 0 ||
+      state.clusters.size > 0 ||
+      state.signs.size > 0 ||
+      state.endConsonants.size > 0;
+
+    if (!hasAnyLetters) {
+      const sheet = createSheet();
+      const content = document.createElement('div');
+      content.className = 'sheet-content';
+      const msg = document.createElement('div');
+      msg.className = 'empty-msg';
+      msg.textContent = 'Выберите хотя бы одну букву или сочетание';
+      content.appendChild(msg);
+      sheet.appendChild(content);
+      sheetWrap.appendChild(sheet);
+      return;
+    }
+
+    if (state.displayMode === 'cards') {
+      renderCardsMode();
+    } else {
+      renderTableMode();
+    }
+  }
+
+  function renderTableMode() {
+    const tablesData = state.types.map(type => ({
+      type,
+      name: TYPE_NAMES[type],
+      ...getTableDataForType(type)
+    }));
+
+    const maxCols = Math.max(1, ...tablesData.map(t => t.cols.length + 1));
+    const totalRowsAll = tablesData.reduce((s, t) => s + t.rows.length + 1, 0);
+    const maxRowsSingle = Math.max(1, ...tablesData.map(t => t.rows.length + 1));
+
+    const fitAll = computeCellSize(maxCols, totalRowsAll, tablesData.length);
+
+    let pages;
+
+    if (fitAll.W >= READABLE_MIN_MM) {
+      pages = [{ blocks: tablesData, W: fitAll.W, H: fitAll.H }];
+    } else {
+      const singleSize = computeCellSize(maxCols, maxRowsSingle, 1);
+      const maxRowsPerPage = getMaxRowsPerPage(singleSize.H, 1);
+
+      const groups = [];
+      let curr = [], currRows = 0;
+      tablesData.forEach(t => {
+        const r = t.rows.length + 1;
+        if (currRows > 0 && currRows + r > maxRowsPerPage) {
+          groups.push(curr); curr = []; currRows = 0;
+        }
+        curr.push(t);
+        currRows += r;
+      });
+      if (curr.length) groups.push(curr);
+
+      pages = groups.map(blocks => {
+        const tr = blocks.reduce((s, t) => s + t.rows.length + 1, 0);
+        const cs = computeCellSize(maxCols, tr, blocks.length);
+        return { blocks, W: cs.W, H: cs.H };
+      });
+    }
+
+    const totalPages = pages.length;
+    pages.forEach((page, i) => {
+      const sheet = createSheet();
+      const content = document.createElement('div');
+      content.className = 'sheet-content';
+
+      page.blocks.forEach(td => content.appendChild(buildTableBlock(td, page.W, page.H)));
+      sheet.appendChild(content);
+
+      if (totalPages > 1) {
+        const ts = sheet.querySelector('.sheet-header .title');
+        if (ts) ts.textContent = (state.title || '') + ` (стр. ${i + 1}/${totalPages})`;
+      }
+      sheetWrap.appendChild(sheet);
+    });
+
+    const firstW = pages[0].W;
+    const firstH = pages[0].H;
+
+    if (state.autoFit) {
+      autoInfo.textContent = `Авто-размер: ${firstW.toFixed(1)}×${firstH.toFixed(1)} мм (таблиц: ${state.types.length}${totalPages > 1 ? `, страниц: ${totalPages}` : ''})`;
+      autoInfo.classList.add('visible');
+    } else {
+      autoInfo.classList.remove('visible');
+    }
+
+    if (!state.autoFit && (firstW < 8 || firstH < 8)) {
+      sizeWarning.classList.add('visible');
+    } else {
+      sizeWarning.classList.remove('visible');
+    }
+  }
+
+  function buildTableBlock(tableData, W, H) {
+    const colsCount = tableData.cols.length + 1;
+    const rowsCount = tableData.rows.length + 1;
+
+    const block = document.createElement('div');
+    block.className = 'table-block';
+
+    if (state.types.length > 1) {
+      const title = document.createElement('div');
+      title.className = 'table-block-title';
+      title.textContent = tableData.name;
+      block.appendChild(title);
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    grid.style.gridTemplateColumns = `repeat(${colsCount}, ${W.toFixed(3)}mm)`;
+    grid.style.gridTemplateRows = `repeat(${rowsCount}, ${H.toFixed(3)}mm)`;
+    grid.style.gap = GAP_MM + 'mm';
+
+    const fontMm = Math.min(W, H) * 0.45;
+    grid.style.fontSize = fontMm.toFixed(3) + 'mm';
+
+    const corner = document.createElement('div');
+    corner.className = 'cell corner';
+    grid.appendChild(corner);
+
+    // Шапка столбцов
+    tableData.cols.forEach(c => {
+      const cell = document.createElement('div');
+      cell.className = 'cell header vowel';
+      cell.innerHTML = renderSyllableHTML(c);
+      grid.appendChild(cell);
+    });
+
+    // Строки
+    tableData.rows.forEach(r => {
+      const rowHead = document.createElement('div');
+      rowHead.className = 'cell header';
+      rowHead.innerHTML = renderSyllableHTML(r);
+      grid.appendChild(rowHead);
+
+      tableData.cols.forEach(c => {
+        const cell = document.createElement('div');
+        const combo = r + c;
+        const readable = isReadable(combo);
+
+        if (state.hideUnreadable && !readable) {
+          cell.className = 'cell unreadable';
+          cell.textContent = '';
+        } else {
+          cell.className = 'cell';
+          cell.innerHTML = renderSyllableHTML(combo);
+        }
+        grid.appendChild(cell);
+      });
+    });
+
+    block.appendChild(grid);
+    return block;
+  }
+
+  function renderCardsMode() {
+    let allSyllables = [];
+
+    state.types.forEach(type => {
+      const { rows, cols } = getTableDataForType(type);
+      rows.forEach(r => {
+        cols.forEach(c => {
+          const combo = r + c;
+          if (!state.hideUnreadable || isReadable(combo)) {
+            allSyllables.push(combo);
+          }
+        });
+      });
+    });
+
+    if (state.shuffle) {
+      allSyllables = shuffle(allSyllables);
+    }
+
+    const { w: SHEET_W, h: SHEET_H } = getSheetDimensions();
+    const usableW = SHEET_W - SHEET_PADDING_MM * 2;
+    const usableH = SHEET_H - SHEET_PADDING_MM * 2 - HEADER_HEIGHT_MM;
+
+    const cardW = Math.min(40, Math.max(20, usableW / 5));
+    const cardH = cardW * 1.2;
+
+    const maxCardsPerPage = Math.max(1,
+      Math.floor(usableW / (cardW + 3)) * Math.floor(usableH / (cardH + 3))
+    );
+
+    if (allSyllables.length === 0) {
+      const sheet = createSheet();
+      const content = document.createElement('div');
+      content.className = 'sheet-content';
+      const msg = document.createElement('div');
+      msg.className = 'empty-msg';
+      msg.textContent = 'Нет слогов для отображения';
+      content.appendChild(msg);
+      sheet.appendChild(content);
+      sheetWrap.appendChild(sheet);
+      return;
+    }
+
+    const cardChunks = [];
+    for (let i = 0; i < allSyllables.length; i += maxCardsPerPage) {
+      cardChunks.push(allSyllables.slice(i, i + maxCardsPerPage));
+    }
+
+    cardChunks.forEach((chunk, pageIndex) => {
+      const sheet = createSheet();
+      const cardsGrid = document.createElement('div');
+      cardsGrid.className = 'cards-grid';
+
+      chunk.forEach(syllable => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.width = cardW.toFixed(2) + 'mm';
+        card.style.height = cardH.toFixed(2) + 'mm';
+        card.style.fontSize = (cardW * 0.4).toFixed(2) + 'mm';
+        card.textContent = syllable;
+        cardsGrid.appendChild(card);
+      });
+
+      sheet.appendChild(cardsGrid);
+
+      if (cardChunks.length > 1) {
+        const titleSpan = sheet.querySelector('.sheet-header .title');
+        if (titleSpan) {
+          titleSpan.textContent = (state.title || '') + ` (стр. ${pageIndex + 1}/${cardChunks.length})`;
+        }
+      }
+
+      sheetWrap.appendChild(sheet);
+    });
+
+    if (state.autoFit) {
+      autoInfo.textContent = `Карточки: ${cardW.toFixed(1)}×${cardH.toFixed(1)} мм (всего: ${allSyllables.length}${cardChunks.length > 1 ? `, страниц: ${cardChunks.length}` : ''})`;
+      autoInfo.classList.add('visible');
+    } else {
+      autoInfo.classList.remove('visible');
+    }
+
+    sizeWarning.classList.remove('visible');
+  }
+
+  function createSheet() {
+    const sheet = document.createElement('div');
+    sheet.className = `sheet ${state.orientation}`;
+
+    if (state.showTitle) {
+      const header = document.createElement('div');
+      header.className = 'sheet-header';
+
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'title';
+      titleSpan.textContent = state.title || '';
+
+      const metaSpan = document.createElement('span');
+      metaSpan.textContent = state.orientation === 'landscape' ? 'A4 · 297×210 мм' : 'A4 · 210×297 мм';
+
+      header.appendChild(titleSpan);
+      header.appendChild(metaSpan);
+      sheet.appendChild(header);
+    }
+
+    return sheet;
+  }
+
+  function stateToUrl() {
+    const params = new URLSearchParams();
+    params.set('types', state.types.join(','));
+    if (state.consonants.size)    params.set('cons',    [...state.consonants].join(''));
+    if (state.vowels.size)        params.set('vow',     [...state.vowels].join(''));
+    if (state.endConsonants.size) params.set('endcons', [...state.endConsonants].join(''));
+    if (state.signs.size)         params.set('signs',   [...state.signs].join(','));
+    if (state.clusters.size)      params.set('clusters',[...state.clusters].join(','));
+    params.set('title', state.title);
+    params.set('showTitle', state.showTitle ? '1' : '0');
+    params.set('shuffle', state.shuffle ? '1' : '0');
+    params.set('autoFit', state.autoFit ? '1' : '0');
+    params.set('targetCount', state.targetCount);
+    params.set('hideUnreadable', state.hideUnreadable ? '1' : '0');
+    params.set('softColor', state.softColor ? '1' : '0');
+    params.set('colorLetters', state.colorLetters ? '1' : '0');
+    params.set('orientation', state.orientation);
+    params.set('displayMode', state.displayMode);
+    params.set('cellWidth', state.cellWidthMm);
+    return window.location.pathname + '?' + params.toString();
+  }
+
+  function loadStateFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.has('types')) {
+      const t = params.get('types').split(',').filter(Boolean);
+      if (t.length) state.types = t;
+    }
+    if (params.has('cons')) {
+      const c = params.get('cons').split('').filter(Boolean);
+      if (c.length) state.consonants = new Set(c);
+    }
+    if (params.has('vow')) {
+      const v = params.get('vow').split('').filter(Boolean);
+      if (v.length) state.vowels = new Set(v);
+    }
+    if (params.has('endcons')) {
+      const e = params.get('endcons').split('').filter(Boolean);
+      if (e.length) state.endConsonants = new Set(e);
+    }
+    if (params.has('signs')) {
+      const s = params.get('signs').split(',').filter(Boolean);
+      if (s.length) state.signs = new Set(s);
+    }
+    if (params.has('clusters')) {
+      const cl = params.get('clusters').split(',').filter(Boolean);
+      if (cl.length) state.clusters = new Set(cl);
+    }
+    if (params.has('title')) state.title = params.get('title');
+    if (params.has('showTitle')) state.showTitle = params.get('showTitle') === '1';
+    if (params.has('shuffle')) state.shuffle = params.get('shuffle') === '1';
+    if (params.has('autoFit')) state.autoFit = params.get('autoFit') === '1';
+    if (params.has('targetCount')) {
+      const tc = parseInt(params.get('targetCount'), 10);
+      if (!isNaN(tc)) state.targetCount = tc;
+    }
+    if (params.has('hideUnreadable')) state.hideUnreadable = params.get('hideUnreadable') === '1';
+    if (params.has('softColor')) state.softColor = params.get('softColor') === '1';
+    if (params.has('colorLetters')) state.colorLetters = params.get('colorLetters') === '1';
+    if (params.has('orientation')) state.orientation = params.get('orientation');
+    if (params.has('displayMode')) state.displayMode = params.get('displayMode');
+    if (params.has('cellWidth')) {
+      const cw = parseInt(params.get('cellWidth'), 10);
+      if (!isNaN(cw)) state.cellWidthMm = cw;
+    }
+  }
+
+  // Event Listeners
+  typeChips.addEventListener('change', (e) => {
+    if (e.target.name === 'tableType') {
+      const checkedBoxes = document.querySelectorAll('[name="tableType"]:checked');
+      state.types = Array.from(checkedBoxes).map(cb => cb.value);
+      updateUIForType();
+      renderConsonantChips();
+      renderVowelChips();
+      syncPairButtons();
+      render();
+    }
+  });
+
+  shuffleCheck.addEventListener('change', (e) => {
+    state.shuffle = e.target.checked;
+    render();
+  });
+
+  autoFitCheck.addEventListener('change', (e) => {
+    state.autoFit = e.target.checked;
+    sizeSliderBox.classList.toggle('disabled', state.autoFit);
+    render();
+  });
+
+  hideUnreadableCheck.addEventListener('change', (e) => {
+    state.hideUnreadable = e.target.checked;
+    render();
+  });
+
+  softColorCheck.addEventListener('change', (e) => {
+    state.softColor = e.target.checked;
+    render();
+  });
+
+  colorLettersCheck.addEventListener('change', (e) => {
+    state.colorLetters = e.target.checked;
+    render();
+  });
+
+  cardsCheck.addEventListener('change', (e) => {
+    state.displayMode = e.target.checked ? 'cards' : 'table';
+    render();
+  });
+
+  document.querySelectorAll('[name="orientation"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      state.orientation = e.target.value;
+      render();
+    });
+  });
+
+  countRange.addEventListener('input', e => {
+    state.targetCount = parseInt(e.target.value, 10);
+    countVal.textContent = state.targetCount + ' слогов';
+    setSyllableCount(state.targetCount);
+  });
+
+  randomBtn.addEventListener('click', () => {
+    randomSyllables();
+  });
+
+  copyLinkBtn.addEventListener('click', () => {
+    const url = stateToUrl();
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('Ссылка скопирована!');
+    }).catch(() => {
+      showToast('Не удалось скопировать');
+    });
+  });
+
+  document.querySelectorAll('[data-cons]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.cons;
+      state.activeConsPairs.clear();
+      consBackup = null;
+      state.consonants.clear();
+      if (mode === 'all') ALL_CONSONANTS.forEach(c => state.consonants.add(c));
+      renderConsonantChips();
+      syncPairButtons();
+      render();
+    });
+  });
+
+  document.querySelectorAll('[data-vow]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.vow;
+      state.activeVowPairs.clear();
+      vowBackup = null;
+      state.vowels.clear();
+      if (mode === 'hard') HARD_VOWELS.forEach(v => state.vowels.add(v));
+      else if (mode === 'soft') SOFT_VOWELS.forEach(v => state.vowels.add(v));
+      else if (mode === 'all') ALL_VOWELS.forEach(v => state.vowels.add(v));
+      renderVowelChips();
+      syncPairButtons();
+      render();
+    });
+  });
+
+  document.querySelectorAll('[data-endcons]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.endcons;
+      state.endConsonants.clear();
+      if (mode === 'sonorous') SONOROUS_CONSONANTS.forEach(c => state.endConsonants.add(c));
+      else if (mode === 'voiceless') VOICELESS_CONSONANTS.forEach(c => state.endConsonants.add(c));
+      else if (mode === 'all') ALL_CONSONANTS.forEach(c => state.endConsonants.add(c));
+      renderEndConsonantChips();
+      render();
+    });
+  });
+
+  document.querySelectorAll('[data-clusters]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.clusters;
+      state.clusters.clear();
+      if (mode === 'all') CC_CLUSTERS.forEach(c => state.clusters.add(c));
+      else if (mode === 'common') COMMON_CLUSTERS.forEach(c => state.clusters.add(c));
+      renderClusterChips();
+      render();
+    });
+  });
+
+  sizeRange.addEventListener('input', e => {
+    state.cellWidthMm = parseInt(e.target.value, 10);
+    sizeVal.textContent = state.cellWidthMm + ' мм';
+    render();
+  });
+
+  titleInput.addEventListener('input', e => {
+    state.title = e.target.value;
+    render();
+  });
+
+  showTitleBox.addEventListener('change', e => {
+    state.showTitle = e.target.checked;
+    render();
+  });
+
+  document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+  // Init
+  loadStateFromUrl();
+
+  document.querySelectorAll('[name="tableType"]').forEach(cb => {
+    cb.checked = state.types.includes(cb.value);
+  });
+
+  updateUIForType();
+  renderConsonantChips();
+  renderVowelChips();
+  renderEndConsonantChips();
+  renderSignChips();
+  renderClusterChips();
+  renderPairButtons(consPairsBox, CONSONANT_PAIRS, 'cons');
+  renderPairButtons(vowPairsBox, VOWEL_PAIRS, 'vow');
+  syncPairButtons();
+
+  titleInput.value = state.title;
+  showTitleBox.checked = state.showTitle;
+  sizeRange.value = state.cellWidthMm;
+  sizeVal.textContent = state.cellWidthMm + ' мм';
+  autoFitCheck.checked = state.autoFit;
+  sizeSliderBox.classList.toggle('disabled', state.autoFit);
+  countRange.value = state.targetCount;
+  countVal.textContent = state.targetCount + ' слогов';
+  shuffleCheck.checked = state.shuffle;
+  hideUnreadableCheck.checked = state.hideUnreadable;
+  softColorCheck.checked = state.softColor;
+  colorLettersCheck.checked = state.colorLetters;
+  cardsCheck.checked = state.displayMode === 'cards';
+  document.querySelector(`[name="orientation"][value="${state.orientation}"]`).checked = true;
+
+  render();
+})();
+</script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

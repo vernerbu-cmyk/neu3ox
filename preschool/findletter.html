@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Найди букву</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@200..900&family=Comfortaa:wght@300..700&family=Caveat:wght@400..700&family=Nunito:wght@200..900&family=Montserrat:wght@300..900&display=swap" rel="stylesheet">
+
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      font-family: Montserrat, sans-serif;
+      background: var(--bg, #0B1220);
+      color: var(--text, #fff);
+      transition: background .25s, color .25s;
+    }
+
+    body.theme-space {
+      --bg: #0B1220;
+      --panel-bg: #16233f;
+      --wrap-bg: #05070f;
+      --accent: #FF6A00;
+      --accent-2: #ffa34d;
+      --text: #ffffff;
+      --box-bg: rgba(255,255,255,0.08);
+      --box-active: rgba(255,255,255,0.16);
+      --slider-track: #2a3b5e;
+      --select-bg: #0B1220;
+      --letter-lightness: 70;
+      --letter-saturation: 80;
+    }
+    body.theme-paper {
+      --bg: #c9bea5;
+      --panel-bg: #d5cab3;
+      --wrap-bg: #ddd3bd;
+      --accent: #8b3a0f;
+      --accent-2: #b45309;
+      --text: #322c20;
+      --box-bg: rgba(60,40,10,0.08);
+      --box-active: rgba(60,40,10,0.16);
+      --slider-track: #b0a48b;
+      --select-bg: #e0d6c1;
+      --letter-lightness: 30;
+      --letter-saturation: 45;
+    }
+    body.theme-neon {
+      --bg: #05010d;
+      --panel-bg: #150a2e;
+      --wrap-bg: #06010f;
+      --accent: #ff00ea;
+      --accent-2: #00ffee;
+      --text: #e0fffa;
+      --box-bg: rgba(255,0,234,0.08);
+      --box-active: rgba(255,0,234,0.20);
+      --slider-track: #2a0d4a;
+      --select-bg: #0a0518;
+      --letter-lightness: 65;
+      --letter-saturation: 100;
+    }
+
+    #wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      transition: background .25s;
+    }
+    #wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    body.theme-space #wrap {
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 25%, rgba(60,20,120,0.55), transparent 65%),
+        radial-gradient(ellipse 70% 50% at 85% 80%, rgba(20,50,130,0.45), transparent 65%),
+        radial-gradient(ellipse 60% 40% at 60% 10%, rgba(120,40,80,0.25), transparent 70%),
+        var(--wrap-bg);
+    }
+    body.theme-space #wrap::before {
+      background-image:
+        radial-gradient(1.5px 1.5px at 20px 30px,   rgba(255,255,255,0.95), transparent),
+        radial-gradient(1px 1px   at 60px 80px,   rgba(255,255,255,0.75), transparent),
+        radial-gradient(1px 1px   at 130px 50px,  rgba(180,200,255,0.85), transparent),
+        radial-gradient(2px 2px   at 170px 140px, rgba(255,255,255,0.75), transparent),
+        radial-gradient(1px 1px   at 90px 170px,  rgba(255,220,180,0.75), transparent),
+        radial-gradient(1px 1px   at 40px 130px,  rgba(255,255,255,0.55), transparent),
+        radial-gradient(1px 1px   at 200px 90px,  rgba(200,220,255,0.65), transparent),
+        radial-gradient(1.5px 1.5px at 220px 20px, rgba(255,255,255,0.8), transparent);
+      background-size: 260px 200px;
+      animation: space-twinkle 4s ease-in-out infinite alternate;
+      opacity: 0.9;
+    }
+    @keyframes space-twinkle {
+      0%   { opacity: 0.55; }
+      100% { opacity: 1;    }
+    }
+
+    body.theme-neon #wrap {
+      background:
+        radial-gradient(ellipse 100% 60% at 50% 110%, rgba(255,0,234,0.25), transparent 65%),
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,255,238,0.15), transparent 65%),
+        var(--wrap-bg);
+    }
+    body.theme-neon #wrap::before {
+      background-image:
+        linear-gradient(rgba(255,0,234,0.10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,238,0.08) 1px, transparent 1px);
+      background-size: 44px 44px;
+      animation: neon-breathe 6s ease-in-out infinite;
+    }
+    @keyframes neon-breathe {
+      0%, 100% { opacity: 0.75; }
+      50%      { opacity: 1;    }
+    }
+    body.theme-neon #wrap::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.22) 0px,
+        rgba(0,0,0,0.22) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      opacity: 0.55;
+      mix-blend-mode: multiply;
+    }
+    body.theme-neon .num {
+      filter: drop-shadow(0 0 4px currentColor);
+    }
+
+    body.theme-paper #wrap {
+      background:
+        radial-gradient(ellipse 90% 70% at 50% 50%, rgba(255,245,220,0.35), transparent 70%),
+        radial-gradient(ellipse 140% 120% at 50% 50%, transparent 55%, rgba(60,40,10,0.30)),
+        var(--wrap-bg);
+    }
+    body.theme-paper #wrap::before {
+      background-image:
+        radial-gradient(1px 1px at 15px 25px, rgba(80,55,25,0.10), transparent),
+        radial-gradient(1px 1px at 55px 70px, rgba(80,55,25,0.06), transparent),
+        radial-gradient(1px 1px at 95px 15px, rgba(80,55,25,0.08), transparent),
+        radial-gradient(1px 1px at 35px 105px, rgba(80,55,25,0.05), transparent),
+        radial-gradient(1px 1px at 115px 85px, rgba(80,55,25,0.07), transparent);
+      background-size: 140px 140px;
+    }
+    body.theme-paper .num {
+      filter: none;
+    }
+
+    #panel {
+      width: 240px;
+      min-width: 240px;
+      background: var(--panel-bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px;
+      box-sizing: border-box;
+      transition: background .25s, width .25s;
+      overflow-y: auto;
+      z-index: 20;
+    }
+    #panel.closed {
+      width: 0;
+      min-width: 0;
+      padding: 0;
+    }
+    #toggleBtn {
+      position: fixed;
+      left: 240px;
+      top: 12px;
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 10px;
+      background: var(--accent);
+      color: white;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      z-index: 50;
+      transition: left .25s, background .25s;
+    }
+    #panel.closed + #toggleBtn { left: 10px; }
+
+    .box {
+      background: var(--box-bg);
+      border-radius: 10px;
+      padding: 10px;
+      font-weight: 700;
+      transition: background .15s;
+    }
+    #target { cursor: pointer; user-select: none; }
+    #target:active { background: var(--box-active); }
+    #record { display: none; }
+    body.show-records #record { display: block; }
+
+    button, select, input[type="range"] {
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      font-family: inherit;
+      font-weight: 800;
+      box-sizing: border-box;
+    }
+    button {
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    button:active { transform: translateY(2px); }
+    select {
+      width: 100%;
+      margin-top: 6px;
+      background: var(--select-bg);
+      color: var(--text);
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.85em;
+      font-weight: 700;
+      margin-bottom: 6px;
+      opacity: 0.9;
+    }
+
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 700;
+      font-size: 0.9em;
+    }
+    .toggle-switch input { display: none; }
+    .toggle-switch .switch {
+      width: 40px;
+      height: 22px;
+      background: var(--slider-track);
+      border-radius: 11px;
+      position: relative;
+      transition: background .2s;
+      flex: none;
+    }
+    .toggle-switch .switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform .2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .toggle-switch input:checked + .switch { background: var(--accent); }
+    .toggle-switch input:checked + .switch::after { transform: translateX(18px); }
+
+    .range-row { display: flex; flex-direction: column; gap: 5px; }
+    .range-row .row-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9em;
+      font-weight: 700;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+      padding: 0;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 8px;
+      background: var(--slider-track);
+      border-radius: 5px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: -5px;
+      cursor: pointer;
+    }
+    input[type="range"]::-moz-range-track {
+      height: 8px;
+      background: var(--slider-track);
+      border-radius: 5px;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: none;
+    }
+
+    .num {
+      touch-action: manipulation;
+      position: absolute;
+      transform: translate(-50%, -50%);
+      user-select: none;
+      cursor: pointer;
+      pointer-events: auto;
+      font-weight: 800;
+      will-change: transform, left, top;
+      z-index: 2;
+    }
+
+    #center {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 180px;
+      font-weight: 900;
+      color: var(--accent);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+      z-index: 100;
+      text-shadow: 0 0 40px var(--accent);
+    }
+
+    @media (max-width:768px) {
+      body { flex-direction: column; }
+      #toggleBtn { box-shadow: 0 3px 12px rgba(0,0,0,.28); }
+      .num { touch-action: manipulation; }
+      #panel {
+        width: 100%;
+        min-width: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        max-height: 45vh;
+      }
+      #panel.closed {
+        height: 0;
+        min-height: 0;
+        width: 100%;
+      }
+      #toggleBtn { left: auto; right: 10px; top: 10px; }
+      #panel.closed + #toggleBtn { left: auto; right: 10px; }
+      .box { flex: 1 1 45%; }
+      button { flex: 1 1 45%; }
+    }
+  </style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+
+<body class="theme-space">
+
+  <div id="panel">
+    <div class="box" id="target" title="Нажми, чтобы повторить">Найди: —</div>
+    <div class="box" id="timer">0.000</div>
+    <div class="box" id="record">🏆 —</div>
+
+    <div class="box">
+      <label class="field-label">Режим игры</label>
+      <select id="modeSelect">
+        <option value="find" selected>🔤 Найди букву</option>
+        <option value="word">📝 Собери слово</option>
+      </select>
+    </div>
+
+    <div class="box" id="letterBox">
+      <label class="field-label">Искать букву</label>
+      <select id="letterSelect">
+        <option value="random" selected>🎲 случайно</option>
+      </select>
+    </div>
+
+    <div class="box range-row" id="countBox">
+      <div class="row-top">
+        <span>Сколько найти</span>
+        <span id="countValue">5</span>
+      </div>
+      <input type="range" id="countSlider" min="1" max="20" step="1" value="5">
+    </div>
+
+    <div class="box" id="densityBox">
+      <label class="field-label" for="densitySelect">Букв на поле</label>
+      <select id="densitySelect">
+        <option value="99" selected>99 (как раньше)</option>
+        <option value="150">150 (много букв)</option>
+      </select>
+    </div>
+
+    <div class="box" id="distractorsBox">
+      <label class="field-label" for="distractorsSelect">Какие буквы вокруг</label>
+      <select id="distractorsSelect">
+        <option value="all" selected>Все буквы</option>
+        <option value="similar">Похожие на искомую</option>
+      </select>
+    </div>
+
+    <div class="box">
+      <label class="toggle-switch">
+        <input type="checkbox" id="movementToggle" checked>
+        <span class="switch"></span>
+        <span>Буквы движутся</span>
+      </label>
+    </div>
+
+    <div class="box range-row">
+      <div class="row-top">
+        <span>Скорость</span>
+        <span id="speedValue">1.0</span>
+      </div>
+      <input type="range" id="speedSlider" min="0.2" max="3.0" step="0.1" value="1.0">
+    </div>
+
+    <div class="box">
+      <label class="field-label">Тема</label>
+      <select id="themeSelect">
+        <option value="space" selected>🌌 Космос</option>
+        <option value="paper">📜 Бумага</option>
+        <option value="neon">💜 Неон</option>
+      </select>
+    </div>
+
+    <div class="box">
+      <label class="toggle-switch">
+        <input type="checkbox" id="recordsToggle">
+        <span class="switch"></span>
+        <span>Показывать рекорды</span>
+      </label>
+    </div>
+
+    <div class="box">
+      <label class="field-label" for="voiceSelect">Русский голос</label>
+      <select id="voiceSelect"></select>
+      <div id="voiceHint" role="status" aria-live="polite" style="font-size:12px;font-weight:600;line-height:1.4;margin-top:7px;opacity:.85;"></div>
+      <button type="button" id="testVoiceBtn" style="width:100%;margin-top:8px;">🔊 Проверить голос</button>
+    </div>
+
+    <button id="pauseBtn">Старт</button>
+    <button id="restartBtn">Заново</button>
+    <button id="phoneBtn">📱 Телефон</button>
+    <button id="soundBtn">🔊 Звук</button>
+  </div>
+
+  <button id="toggleBtn">◀</button>
+
+  <div id="wrap"></div>
+  <div id="center"></div>
+
+  <script>
+    const wrap = document.getElementById("wrap");
+    const targetEl = document.getElementById("target");
+    const timerEl = document.getElementById("timer");
+    const recordEl = document.getElementById("record");
+    const recordsToggle = document.getElementById("recordsToggle");
+    const centerEl = document.getElementById("center");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const modeSelect = document.getElementById("modeSelect");
+    const letterSelect = document.getElementById("letterSelect");
+    const letterBox = document.getElementById("letterBox");
+    const countBox = document.getElementById("countBox");
+    const countSlider = document.getElementById("countSlider");
+    const countValue = document.getElementById("countValue");
+    const speedSlider = document.getElementById("speedSlider");
+    const speedValue = document.getElementById("speedValue");
+    const themeSelect = document.getElementById("themeSelect");
+    const panel = document.getElementById("panel");
+    const toggleBtn = document.getElementById("toggleBtn");
+    const phoneBtn = document.getElementById("phoneBtn");
+    const soundBtn = document.getElementById("soundBtn");
+    const voiceSelect = document.getElementById("voiceSelect");
+    const voiceHint = document.getElementById("voiceHint");
+    const testVoiceBtn = document.getElementById("testVoiceBtn");
+    const densitySelect = document.getElementById("densitySelect");
+    const distractorsSelect = document.getElementById("distractorsSelect");
+    const distractorsBox = document.getElementById("distractorsBox");
+    const movementToggle = document.getElementById("movementToggle");
+
+    const LETTERS = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ".split("");
+    const FONTS = ["Unbounded", "Comfortaa", "Caveat", "Nunito", "Montserrat"];
+    // Исходное поле на 99 букв; дополнительный более насыщенный вариант — 150.
+    let totalLetters = 99;
+    let distractorsMode = "all";
+    let movementOn = true;
+    let roundResetTimer = null;
+    let roundToken = 0;
+    const SIMILAR = {
+      "А":"ЛД", "Б":"ВЬР", "В":"БРЬ", "Г":"ТП", "Д":"АЛ", "Е":"ЁЗЭ",
+      "Ё":"ЕЭ", "Ж":"ХКШ", "З":"ЭЕВ", "И":"ЙН", "Й":"ИН", "К":"ЖХР",
+      "Л":"ДПА", "М":"НШИ", "Н":"ИПМ", "О":"СЮФ", "П":"ТНГЛ", "Р":"ВЬБ",
+      "С":"ОЭ", "Т":"ПГШ", "У":"ЧХЦ", "Ф":"РЫО", "Х":"ЖКУ", "Ц":"ЧЩШ",
+      "Ч":"ЦУЩ", "Ш":"ЩЖМ", "Щ":"ШЦЧ", "Ъ":"ЬЫ", "Ы":"ЬЪИ",
+      "Ь":"ЪЫБ", "Э":"ЗЕС", "Ю":"ОЯФ", "Я":"РЮА"
+    };
+
+    const WORDS = [
+      "КОТ","ДОМ","СОК","ЛЕС","МИР","СОН","НОС","РОТ","ЛУК","МЯЧ",
+      "СЫР","ЖУК","ЧАС","ДУБ","ЛЕВ","МЁД","РАК","ТОК","МАК","ШАР",
+      "ПАР","СУП","ДЫМ","ЗУБ","ЛАК","БЫК","КИТ","ПОЛ","РОГ","БОР"
+    ];
+
+    for (const L of LETTERS) {
+      const opt = document.createElement("option");
+      opt.value = L;
+      opt.textContent = L;
+      letterSelect.appendChild(opt);
+    }
+
+    const isTouch = (window.matchMedia && matchMedia("(pointer: coarse)").matches) || ("ontouchstart" in window);
+
+    let state = "idle";
+    let currentMode = "find";
+    let speedMultiplier = 1.0;
+    let findCount = 5;
+    let remaining = 0;
+    let items = [];
+    let target = null;
+    let currentWord = "";
+    let currentWordIndex = 0;
+    let mouseX = -9999;
+    let mouseY = -9999;
+    let phoneMode = false;
+    let pressed = false;
+    let currentTheme = "space";
+    let start = performance.now();
+    let pausedAt = 0;
+    let totalPaused = 0;
+
+    function rand(a, b) { return Math.random() * (b - a) + a; }
+    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    const HARD_LETTERS = "ЖЩШФЫЮМЁЙ";
+    const MED_LETTERS  = "БВДКРУХЦЧЯ";
+
+    function tiltLimits(letter) {
+      if (HARD_LETTERS.includes(letter)) return { rot: 8,  skew: 0.05 };
+      if (MED_LETTERS.includes(letter))  return { rot: 18, skew: 0.12 };
+      return { rot: 32, skew: 0.22 };
+    }
+
+    function findFreeSpot(size, W, H, placed) {
+      const r = size * 0.53;
+      const minGap = Math.max(2, size * 0.08);
+      const pad = Math.min(size * 0.6, Math.max(6, Math.min(W,H) * 0.045));
+      const randX = () => rand(pad, Math.max(pad, W - pad));
+      const randY = () => rand(pad, Math.max(pad, H - pad));
+      let bestX = randX(), bestY = randY(), bestDist = -Infinity;
+      for (let attempt = 0; attempt < 80; attempt++) {
+        const x = randX(), y = randY();
+        let minDist = Infinity;
+        for (const p of placed) {
+          const d = Math.hypot(x - p.x, y - p.y) - (r + p.r + minGap);
+          if (d < minDist) minDist = d;
+        }
+        if (minDist > 0) return { x, y };
+        if (minDist > bestDist) { bestDist = minDist; bestX = x; bestY = y; }
+      }
+      return { x: bestX, y: bestY };
+    }
+
+    /* ==== ЗВУК ==== */
+    let audioCtx = null;
+    let soundOn = true;
+
+    function ensureAudio() {
+      if (!audioCtx) {
+        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        catch (e) { audioCtx = null; }
+      }
+      if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+    }
+
+    function playDing(progress) {
+      if (!soundOn || !audioCtx) return;
+      const t = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      const base = 660 + progress * 440;
+      osc.frequency.setValueAtTime(base, t);
+      osc.frequency.exponentialRampToValueAtTime(base * 1.8, t + 0.08);
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.22, t + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.32);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 0.4);
+    }
+
+    function playWin() {
+      if (!soundOn || !audioCtx) return;
+      const t = audioCtx.currentTime;
+      [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(f, t + i * 0.08);
+        gain.gain.setValueAtTime(0.0001, t + i * 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.2, t + i * 0.08 + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.08 + 0.28);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(t + i * 0.08);
+        osc.stop(t + i * 0.08 + 0.35);
+      });
+    }
+
+    /* ==== РЕЧЬ ==== */
+    const LETTER_NAMES = {
+      "А":"а",   "Б":"бэ",  "В":"вэ",  "Г":"гэ",  "Д":"дэ",
+      "Е":"е",   "Ё":"ё",   "Ж":"жэ",  "З":"зэ",  "И":"и",
+      "Й":"и краткое", "К":"ка", "Л":"эль", "М":"эм", "Н":"эн",
+      "О":"о",   "П":"пэ",  "Р":"эр",  "С":"эс",  "Т":"тэ",
+      "У":"у",   "Ф":"эф",  "Х":"ха",  "Ц":"цэ",  "Ч":"че",
+      "Ш":"ша",  "Щ":"ща",  "Ъ":"твёрдый знак", "Ы":"ы",
+      "Ь":"мягкий знак", "Э":"э", "Ю":"ю", "Я":"я"
+    };
+
+    let speechUnlocked = false;
+    let allRuVoices = [];
+    let selectedVoice = null;
+    let preferredVoiceName = null;
+    let speechTimer = null;
+
+    function scoreVoice(v) {
+      let s = 0;
+      if (v.localService) s += 30;
+      if (/natural|neural/i.test(v.name)) s += 100;
+      if (/premium|enhanced/i.test(v.name)) s += 40;
+      return s;
+    }
+
+    function refreshVoices() {
+      if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
+        selectedVoice = null;
+        voiceSelect.replaceChildren(new Option("Озвучка недоступна", ""));
+        voiceSelect.disabled = true;
+        voiceHint.textContent = "Этот браузер не поддерживает озвучивание.";
+        return;
+      }
+
+      allRuVoices = speechSynthesis.getVoices()
+        .filter(v => /^ru(?:[-_]|$)/i.test(v.lang || ""))
+        .sort((a, b) => scoreVoice(b) - scoreVoice(a));
+      const wantedName = preferredVoiceName || (selectedVoice && selectedVoice.name);
+      voiceSelect.replaceChildren();
+
+      if (!allRuVoices.length) {
+        voiceSelect.add(new Option("Русский голос не найден", ""));
+        voiceSelect.disabled = true;
+        selectedVoice = null;
+        voiceHint.textContent = "Установи русский голос в настройках устройства и перезапусти браузер. Английский голос использоваться не будет.";
+        return;
+      }
+
+      voiceSelect.disabled = false;
+      allRuVoices.forEach((v, i) => {
+        const opt = new Option(v.name + (v.localService ? "" : " ☁"), String(i));
+        voiceSelect.add(opt);
+      });
+      selectedVoice = allRuVoices.find(v => v.name === wantedName) || allRuVoices[0];
+      voiceSelect.value = String(allRuVoices.indexOf(selectedVoice));
+      voiceHint.textContent = `Язык: ${selectedVoice.lang}. Можно выбрать другой русский голос.`;
+    }
+
+    if ("speechSynthesis" in window) {
+      refreshVoices();
+      if (typeof speechSynthesis.addEventListener === "function") {
+        speechSynthesis.addEventListener("voiceschanged", refreshVoices);
+      } else {
+        speechSynthesis.onvoiceschanged = refreshVoices;
+      }
+      // На некоторых устройствах список голосов появляется позднее.
+      setTimeout(refreshVoices, 400);
+      setTimeout(refreshVoices, 1500);
+    } else {
+      refreshVoices();
+    }
+
+    voiceSelect.addEventListener("change", () => {
+      selectedVoice = allRuVoices[Number(voiceSelect.value)] || null;
+      preferredVoiceName = selectedVoice ? selectedVoice.name : null;
+      saveSettings();
+    });
+
+    function stopSpeech() {
+      if (speechTimer !== null) {
+        clearTimeout(speechTimer);
+        speechTimer = null;
+      }
+      if ("speechSynthesis" in window) speechSynthesis.cancel();
+    }
+
+    function pluralizeLetters(n) {
+      const m10 = n % 10, m100 = n % 100;
+      if (m10 === 1 && m100 !== 11) return "букву";
+      if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return "буквы";
+      return "букв";
+    }
+
+    /* ==== ФРАЗА ДЛЯ ОЗВУЧКИ ====
+       В режиме «слово» диктор называет само слово целиком, а не буквы по одной.
+       toLowerCase() — чтобы TTS не прочитал «КОТ» как аббревиатуру «ка-о-тэ». */
+    function buildPhrase() {
+      if (currentMode === "word") {
+        return `Собери слово: ${currentWord.toLowerCase()}`;
+      }
+      const letterName = LETTER_NAMES[target] || target;
+      if (findCount === 1) return `Найди букву ${letterName}`;
+      return `Найди ${findCount} ${pluralizeLetters(findCount)} ${letterName}`;
+    }
+
+    function speakTarget() {
+      if (!soundOn || !("speechSynthesis" in window)) return;
+      stopSpeech();
+      if (!selectedVoice) refreshVoices();
+      // Без русскоязычного голоса браузер может переключиться на английский.
+      // Не допускаем такой подмены.
+      if (!selectedVoice) return;
+      const u = new SpeechSynthesisUtterance(buildPhrase());
+      u.voice = selectedVoice;
+      u.lang = selectedVoice.lang;
+      u.rate = 0.95;
+      u.pitch = 0.95;
+      speechTimer = setTimeout(() => {
+        speechTimer = null;
+        if (soundOn) speechSynthesis.speak(u);
+      }, 40);
+    }
+    testVoiceBtn.addEventListener("click", () => {
+      refreshVoices();
+      speakTarget();
+    });
+
+    function unlockSpeech() {
+      if (speechUnlocked) return;
+      speechUnlocked = true;
+      ensureAudio();
+      if (!("speechSynthesis" in window)) return;
+      const warm = new SpeechSynthesisUtterance(" ");
+      warm.volume = 0;
+      speechSynthesis.speak(warm);
+      document.removeEventListener("pointerdown", unlockSpeech);
+      document.removeEventListener("keydown", unlockSpeech);
+    }
+    document.addEventListener("pointerdown", unlockSpeech);
+    document.addEventListener("keydown", unlockSpeech);
+
+    /* ==== STORAGE ==== */
+    const STORAGE_KEY = "findletter.settings.v2";
+    const RECORDS_KEY = "findletter.records.v1";
+
+    function saveSettings() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mode: modeSelect.value,
+          letter: letterSelect.value,
+          findCount,
+          totalLetters,
+          distractorsMode,
+          movementOn,
+          speed: speedMultiplier,
+          soundOn,
+          theme: currentTheme,
+          phoneMode,
+          showRecords: recordsToggle.checked,
+          voice: selectedVoice ? selectedVoice.name : null
+        }));
+      } catch (e) {}
+    }
+
+    function loadSettings() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) { return null; }
+    }
+
+    function loadRecords() {
+      try { return JSON.parse(localStorage.getItem(RECORDS_KEY)) || {}; }
+      catch (e) { return {}; }
+    }
+    function saveRecords(r) {
+      try { localStorage.setItem(RECORDS_KEY, JSON.stringify(r)); } catch (e) {}
+    }
+
+    function applyTheme(theme) {
+      currentTheme = theme;
+      document.body.className = "theme-" + theme
+        + (recordsToggle.checked ? " show-records" : "");
+    }
+
+    function applyRecordsVisibility(show) {
+      recordsToggle.checked = show;
+      document.body.classList.toggle("show-records", show);
+      if (show) updateRecordLabel();
+    }
+
+    recordsToggle.addEventListener("change", () => {
+      applyRecordsVisibility(recordsToggle.checked);
+      saveSettings();
+    });
+
+    function updateRecordLabel() {
+      if (!recordsToggle.checked) return;
+      const records = loadRecords();
+      const key = currentMode === "word" ? "word" : `find:${findCount}`;
+      const rec = records[key];
+      recordEl.textContent = rec ? `🏆 ${rec.toFixed(3)}` : "🏆 —";
+    }
+
+    setInterval(() => {
+      if (state !== "playing") return;
+      timerEl.textContent =
+        ((performance.now() - start - totalPaused) / 1000).toFixed(3);
+    }, 50);
+
+    wrap.addEventListener("pointermove", (e) => {
+      const rect = wrap.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    });
+    wrap.addEventListener("pointerdown", () => { pressed = true; });
+    window.addEventListener("pointerup", () => { pressed = false; });
+    window.addEventListener("pointercancel", () => { pressed = false; });
+    window.addEventListener("blur", () => { pressed = false; });
+
+    wrap.addEventListener("pointerdown", (e) => {
+      if (!isTouch) return;
+      if (state !== "playing" || !movementOn) return;
+      const rect = wrap.getBoundingClientRect();
+      applyImpulse(e.clientX - rect.left, e.clientY - rect.top);
+    });
+
+    function applyImpulse(x, y) {
+      const radius = 200;
+      for (const o of items) {
+        const dx = o.x - x;
+        const dy = o.y - y;
+        const d = Math.hypot(dx, dy);
+        if (d < radius && d > 0.01) {
+          const power = (1 - d / radius) * 18;
+          o.vx += (dx / d) * power;
+          o.vy += (dy / d) * power;
+        }
+      }
+    }
+
+    toggleBtn.addEventListener("click", () => {
+      panel.classList.toggle("closed");
+      toggleBtn.textContent = panel.classList.contains("closed") ? "▶" : "◀";
+    });
+
+    function showCenter(text) {
+      centerEl.textContent = text !== undefined ? text : target;
+      centerEl.style.opacity = 1;
+      setTimeout(() => { centerEl.style.opacity = 0; }, 400);
+    }
+
+    function updateTargetLabel() {
+      if (currentMode === "word") {
+        let html = "";
+        for (let i = 0; i < currentWord.length; i++) {
+          if (i < currentWordIndex) {
+            html += `<span style="opacity:.35;text-decoration:line-through">${currentWord[i]}</span>`;
+          } else if (i === currentWordIndex) {
+            html += `<span style="color:var(--accent);text-decoration:underline">${currentWord[i]}</span>`;
+          } else {
+            html += `<span>${currentWord[i]}</span>`;
+          }
+        }
+        targetEl.innerHTML = `Собери: ${html} &nbsp;${currentWordIndex}/${currentWord.length}`;
+      } else {
+        const found = findCount - remaining;
+        targetEl.textContent = `Найди: ${target}  ${found}/${findCount}`;
+      }
+    }
+
+    targetEl.addEventListener("click", speakTarget);
+
+    function makeValues(targetLetter) {
+      const vals = Array(findCount).fill(targetLetter);
+      const similar = (SIMILAR[targetLetter] || "")
+        .split("").filter(L => LETTERS.includes(L) && L !== targetLetter);
+      const noise = distractorsMode === "similar" && similar.length
+        ? similar : LETTERS.filter(L => L !== targetLetter);
+      while (vals.length < totalLetters) vals.push(pick(noise));
+      // Равномерная перемешка Фишера — Йейтса.
+      for (let i = vals.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [vals[i], vals[j]] = [vals[j], vals[i]];
+      }
+      return vals;
+    }
+
+    function makeWordValues(word) {
+      const vals = word.split("");
+      const set = new Set(vals);
+      const noise = LETTERS.filter(L => !set.has(L));
+      while (vals.length < totalLetters) vals.push(pick(noise));
+      for (let i = vals.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [vals[i], vals[j]] = [vals[j], vals[i]];
+      }
+      return vals;
+    }
+
+    function createParticles(x, y, color) {
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+          position: absolute;
+          left: ${x}px;
+          top: ${y}px;
+          width: 10px;
+          height: 10px;
+          background: ${color};
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: 200;
+        `;
+        wrap.appendChild(particle);
+        const angle = (Math.PI * 2 * i) / 20;
+        const velocity = rand(2, 6);
+        const dx = Math.cos(angle) * velocity;
+        const dy = Math.sin(angle) * velocity;
+        particle.animate(
+          [
+            { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+            { transform: `translate(${dx * 30}px, ${dy * 30}px) scale(0)`, opacity: 0 }
+          ],
+          { duration: 600, easing: 'ease-out' }
+        ).onfinish = () => particle.remove();
+      }
+    }
+
+    function updatePauseBtnLabel() {
+      if (state === "idle") pauseBtn.textContent = "Старт";
+      else if (state === "playing") pauseBtn.textContent = "Пауза";
+      else pauseBtn.textContent = "Продолжить";
+    }
+
+    function completeRound() {
+      // Рекорд сохраняется независимо от того, показывается ли блок рекордов.
+      const elapsed = (performance.now() - start - totalPaused) / 1000;
+      const key = currentMode === "word" ? "word" : `find:${findCount}`;
+      const records = loadRecords();
+      const isRecord = !records[key] || elapsed < records[key];
+      if (isRecord) {
+        records[key] = elapsed;
+        saveRecords(records);
+      }
+      updateRecordLabel();
+      if (isRecord) {
+        playWin();
+        showCenter("🏆");
+      }
+    }
+
+    function build({ announce = null, autoResume = false } = {}) {
+      if (roundResetTimer !== null) {
+        clearTimeout(roundResetTimer);
+        roundResetTimer = null;
+      }
+      roundToken++;
+      if (autoResume && state === "paused") {
+        state = "playing";
+        updatePauseBtnLabel();
+      }
+
+      if (announce === null) announce = (state !== "idle");
+
+      wrap.innerHTML = "";
+      items = [];
+
+      start = performance.now();
+      totalPaused = 0;
+      pausedAt = 0;
+
+      const W = wrap.clientWidth;
+      const H = wrap.clientHeight;
+      // Подбираем размер пропорционально площади, сохраняя разный кегль.
+      const baseScale = Math.max(16, Math.min(56, Math.sqrt(Math.max(1, W * H) / totalLetters) * 0.64));
+
+      const cs = getComputedStyle(document.body);
+      const lightness = parseFloat(cs.getPropertyValue("--letter-lightness")) || 65;
+      const saturation = parseFloat(cs.getPropertyValue("--letter-saturation")) || 85;
+
+      let vals;
+      if (currentMode === "word") {
+        currentWord = pick(WORDS);
+        currentWordIndex = 0;
+        remaining = currentWord.length;
+        vals = makeWordValues(currentWord);
+      } else {
+        target = (letterSelect.value === 'random') ? pick(LETTERS) : letterSelect.value;
+        remaining = findCount;
+        vals = makeValues(target);
+      }
+
+      const placed = [];
+
+      for (const v of vals) {
+        const el = document.createElement("div");
+        el.className = "num";
+        el.textContent = v;
+
+        const roll = Math.random();
+        const baseSize = baseScale * (roll < .13 ? 1.5 : roll < .40 ? 1.17 : roll < .78 ? .90 : .68);
+        const size = Math.max(14, baseSize * (phoneMode ? .82 : 1));
+        el.style.fontSize = size + "px";
+        el.style.fontFamily = pick(FONTS);
+        const color = `hsl(${Math.random()*360}, ${saturation}%, ${lightness}%)`;
+        el.style.color = color;
+        wrap.appendChild(el);
+
+        const r = size * 0.53;
+        const spot = findFreeSpot(size, W, H, placed);
+        placed.push({ x: spot.x, y: spot.y, r });
+
+        const tilt = tiltLimits(v);
+
+        const obj = {
+          el, val: v, r,
+          x: spot.x,
+          y: spot.y,
+          vx: rand(-2.8, 2.8) * speedMultiplier,
+          vy: rand(-2.8, 2.8) * speedMultiplier,
+          rot: rand(-tilt.rot, tilt.rot),
+          skew: rand(-tilt.skew, tilt.skew),
+          color, found: false
+        };
+
+        el.addEventListener("pointerdown", (e) => {
+          e.stopPropagation();
+          if (state !== "playing") return;
+          if (obj.found) return;
+
+          if (currentMode === "word") {
+            if (v !== currentWord[currentWordIndex]) return;
+          } else {
+            if (obj.val !== target) return;
+          }
+
+          obj.found = true;
+          createParticles(obj.x, obj.y, obj.color);
+          obj.el.remove();
+          const idx = items.indexOf(obj);
+          if (idx >= 0) items.splice(idx, 1);
+
+          if (currentMode === "word") currentWordIndex++;
+          remaining--;
+          updateTargetLabel();
+
+          const total = currentMode === "word" ? currentWord.length : findCount;
+          const progress = (total - remaining) / total;
+          if (remaining > 0) playDing(progress);
+
+          if (remaining <= 0) {
+            completeRound();
+            state = "paused";
+            pausedAt = performance.now();
+            updatePauseBtnLabel();
+            const token = roundToken;
+            roundResetTimer = setTimeout(() => {
+              roundResetTimer = null;
+              if (token === roundToken) build({ autoResume: true });
+            }, 650);
+          }
+        });
+
+        items.push(obj);
+      }
+
+      updateTargetLabel();
+      updateRecordLabel();
+
+      if (announce) {
+        showCenter(currentMode === "word" ? currentWord : target);
+        speakTarget();
+      }
+    }
+
+    function handlePauseButton() {
+      if (state === "idle") {
+        state = "playing";
+        start = performance.now();
+        totalPaused = 0;
+        pausedAt = 0;
+        updatePauseBtnLabel();
+        showCenter(currentMode === "word" ? currentWord : target);
+        speakTarget();
+      } else if (state === "playing") {
+        state = "paused";
+        pausedAt = performance.now();
+        updatePauseBtnLabel();
+      } else {
+        state = "playing";
+        totalPaused += performance.now() - pausedAt;
+        pausedAt = 0;
+        updatePauseBtnLabel();
+      }
+    }
+    pauseBtn.addEventListener("click", handlePauseButton);
+
+    document.addEventListener("keydown", (e) => {
+      const tag = (e.target && e.target.tagName) || "";
+      if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA" || tag === "BUTTON") return;
+
+      if (e.code === "Space" || e.code === "Enter") {
+        e.preventDefault(); handlePauseButton(); return;
+      }
+      if (e.code === "KeyR") { e.preventDefault(); restartGame(); return; }
+      if (e.code === "KeyM") { e.preventDefault(); toggleSound(); return; }
+      if (e.code === "ArrowLeft" || e.code === "ArrowRight") {
+        if (state !== "idle") return;
+        if (currentMode !== "find") return;
+        const delta = e.code === "ArrowRight" ? 1 : -1;
+        findCount = Math.max(1, Math.min(20, findCount + delta));
+        countSlider.value = findCount;
+        countValue.textContent = findCount;
+        build();
+        saveSettings();
+        e.preventDefault();
+      }
+    }, true);
+
+    phoneBtn.addEventListener("click", () => {
+      phoneMode = !phoneMode;
+      phoneBtn.textContent = phoneMode ? "🖥 ПК режим" : "📱 Телефон";
+      build();
+      saveSettings();
+    });
+
+    function toggleSound() {
+      soundOn = !soundOn;
+      soundBtn.textContent = soundOn ? "🔊 Звук" : "🔇 Без звука";
+      if (!soundOn) {
+        stopSpeech();
+      } else if (state !== "idle") {
+        speakTarget();
+      }
+      saveSettings();
+    }
+    soundBtn.addEventListener("click", toggleSound);
+
+    function restartGame() {
+      if (roundResetTimer !== null) clearTimeout(roundResetTimer);
+      roundResetTimer = null;
+      stopSpeech();
+      state = "idle";
+      updatePauseBtnLabel();
+      build();
+    }
+    restartBtn.addEventListener("click", restartGame);
+
+    function updateModeVisibility() {
+      const isWord = currentMode === "word";
+      letterBox.style.display = isWord ? "none" : "";
+      countBox.style.display = isWord ? "none" : "";
+      distractorsBox.style.display = isWord ? "none" : "";
+    }
+    densitySelect.addEventListener("change", () => {
+      totalLetters = parseInt(densitySelect.value, 10);
+      build(); saveSettings();
+    });
+    distractorsSelect.addEventListener("change", () => {
+      distractorsMode = distractorsSelect.value;
+      build(); saveSettings();
+    });
+    movementToggle.addEventListener("change", () => {
+      movementOn = movementToggle.checked;
+      saveSettings();
+    });
+    modeSelect.addEventListener("change", () => {
+      currentMode = modeSelect.value;
+      updateModeVisibility();
+      state = "idle";
+      updatePauseBtnLabel();
+      build();
+      saveSettings();
+    });
+
+    letterSelect.addEventListener("change", () => {
+      build();
+      saveSettings();
+    });
+
+    countSlider.addEventListener("input", function() {
+      countValue.textContent = this.value;
+    });
+    countSlider.addEventListener("change", function() {
+      findCount = parseInt(this.value, 10);
+      build();
+      saveSettings();
+    });
+
+    speedSlider.addEventListener('input', function() {
+      const m = parseFloat(this.value);
+      speedValue.textContent = m.toFixed(1);
+      const ratio = m / speedMultiplier;
+      speedMultiplier = m;
+      for (const o of items) { o.vx *= ratio; o.vy *= ratio; }
+      saveSettings();
+    });
+
+    themeSelect.addEventListener("change", () => {
+      applyTheme(themeSelect.value);
+      build();
+      saveSettings();
+    });
+
+    function animate() {
+      const W = wrap.clientWidth;
+      const H = wrap.clientHeight;
+      for (const o of items) {
+        if (state === "playing" && movementOn) {
+          o.x += o.vx;
+          o.y += o.vy;
+          o.vx *= 0.999;
+          o.vy *= 0.999;
+          const MAX = 8 * speedMultiplier;
+          o.vx = Math.max(-MAX, Math.min(MAX, o.vx));
+          o.vy = Math.max(-MAX, Math.min(MAX, o.vy));
+          if (o.x < o.r) { o.x = o.r; o.vx *= -1; }
+          if (o.x > W - o.r) { o.x = W - o.r; o.vx *= -1; }
+          if (o.y < o.r) { o.y = o.r; o.vy *= -1; }
+          if (o.y > H - o.r) { o.y = H - o.r; o.vy *= -1; }
+
+          if (pressed && !isTouch) {
+            const dx = o.x - mouseX;
+            const dy = o.y - mouseY;
+            const d = Math.hypot(dx, dy);
+            const radius = 240;
+            if (d < radius && d > 0.01) {
+              const power = (1 - d / radius) * 8 * 0.8;
+              o.vx += (dx / d) * power;
+              o.vy += (dy / d) * power;
+              o.x += (dx / d) * power * 4;
+              o.y += (dy / d) * power * 4;
+            }
+          }
+        }
+        o.el.style.left = o.x + "px";
+        o.el.style.top = o.y + "px";
+        o.el.style.transform = `translate(-50%,-50%) rotate(${o.rot}deg) skew(${o.skew}deg, ${o.skew}deg)`;
+      }
+      requestAnimationFrame(animate);
+    }
+
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        const W = wrap.clientWidth;
+        const H = wrap.clientHeight;
+        for (const o of items) {
+          o.x = Math.min(Math.max(o.x, Math.min(o.r,W/2)), Math.max(W/2,W-o.r));
+          o.y = Math.min(Math.max(o.y, Math.min(o.r,H/2)), Math.max(H/2,H-o.r));
+        }
+      }, 150);
+    });
+
+    (function restore() {
+      const s = loadSettings();
+      if (!s) return;
+      if (s.theme) { currentTheme = s.theme; themeSelect.value = s.theme; }
+      if (typeof s.soundOn === "boolean") {
+        soundOn = s.soundOn;
+        soundBtn.textContent = soundOn ? "🔊 Звук" : "🔇 Без звука";
+      }
+      if (typeof s.phoneMode === "boolean") {
+        phoneMode = s.phoneMode;
+        phoneBtn.textContent = phoneMode ? "🖥 ПК режим" : "📱 Телефон";
+      }
+      if (typeof s.findCount === "number") {
+        findCount = s.findCount;
+        countSlider.value = findCount;
+        countValue.textContent = findCount;
+      }
+      // Старые настройки с 30/60 символами автоматически возвращаются к 99.
+      totalLetters = [99,150].includes(s.totalLetters) ? s.totalLetters : 99;
+      densitySelect.value = String(totalLetters);
+      if (s.distractorsMode === 'all' || s.distractorsMode === 'similar') {
+        distractorsMode = s.distractorsMode;
+        distractorsSelect.value = distractorsMode;
+      }
+      if (typeof s.movementOn === 'boolean') {
+        movementOn = s.movementOn;
+        movementToggle.checked = movementOn;
+      }
+      if (typeof s.speed === "number") {
+        speedMultiplier = s.speed;
+        speedSlider.value = speedMultiplier;
+        speedValue.textContent = speedMultiplier.toFixed(1);
+      }
+      if (s.mode === "word" || s.mode === "find") {
+        currentMode = s.mode;
+        modeSelect.value = currentMode;
+      }
+      if (s.letter) letterSelect.value = s.letter;
+      if (typeof s.showRecords === "boolean") {
+        recordsToggle.checked = s.showRecords;
+      }
+      if (s.voice) {
+        preferredVoiceName = s.voice;
+        refreshVoices();
+      }
+    })();
+
+    applyTheme(currentTheme);
+    updateModeVisibility();
+    updatePauseBtnLabel();
+    build();
+    animate();
+  </script>
+
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+
+</html>

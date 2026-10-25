@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Отражение - Мнемо-Арена</title>
+<style>
+  :root {
+    --blue: #2D6CDF;
+    --blue-dark: #1E4FA8;
+    --blue-light: #EBF2FF;
+    --orange: #FF8C42;
+    --orange-dark: #E86E1F;
+    --orange-light: #FFF2E5;
+    --bg: #F7F9FC;
+    --text: #1F2937;
+    --text-muted: #6B7280;
+    --border: #E5EAF2;
+    --green: #22C55E;
+    --red: #EF4444;
+    --yellow: #F59E0B;
+    --purple: #A855F7;
+    --purple-light: #F5EDFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--text);
+    padding: 16px;
+    overflow-x: hidden;
+  }
+
+  .container { max-width: 800px; margin: 0 auto; }
+
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding: 16px 22px;
+    background: #fff; border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(45,108,223,.06);
+    flex-wrap: wrap; gap: 10px;
+  }
+
+  .back-btn {
+    width: 46px; height: 46px;
+    border: none; border-radius: 14px;
+    background: var(--blue-light);
+    color: var(--blue);
+    font-size: 22px; font-weight: 700;
+    cursor: pointer; transition: .18s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .back-btn:hover { background: var(--blue); color: #fff; transform: translateY(-1px); }
+
+  h1 { font-size: 20px; letter-spacing: .5px; color: var(--blue-dark); font-weight: 800; }
+
+  .score-bar {
+    background: var(--orange); color: #fff;
+    padding: 8px 18px; border-radius: 30px; font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(255,140,66,.3);
+  }
+  .score-bar span { color: #fff; font-weight: 800; font-size: 17px; }
+
+  main { min-height: 520px; }
+
+  .game-header { text-align: center; margin-bottom: 20px; }
+  .game-header h2 { font-size: 22px; margin-bottom: 6px; color: var(--blue-dark); font-weight: 800; }
+  .subtitle { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+
+  .status {
+    text-align: center; font-size: 16px; margin: 16px 0;
+    min-height: 26px; font-weight: 700; color: var(--text); transition: .3s;
+  }
+  .status.good { color: #16A34A; }
+  .status.bad { color: #DC2626; }
+  .status.warn { color: var(--orange-dark); }
+
+  .panel {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 22px; padding: 26px;
+    box-shadow: 0 8px 24px rgba(45,108,223,.06);
+  }
+
+  /* ---------- Пресеты ---------- */
+  .presets {
+    display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap;
+  }
+  .preset-btn {
+    flex: 1 1 auto; min-width: 90px;
+    padding: 10px 8px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: #fff;
+    color: var(--blue-dark);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: .18s;
+    font-family: inherit;
+  }
+  .preset-btn:hover { border-color: var(--orange); color: var(--orange-dark); transform: translateY(-1px); }
+  .preset-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  /* ---------- Размер поля ---------- */
+  .size-row {
+    display: flex; gap: 8px; margin-top: 8px;
+  }
+  .size-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: #fff;
+    color: var(--blue-dark);
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    transition: .18s;
+    font-family: inherit;
+  }
+  .size-btn:hover { border-color: var(--orange); }
+  .size-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  /* ---------- Игровое поле ---------- */
+  .board {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin: 24px 0;
+    flex-wrap: wrap;
+  }
+
+  .board-side {
+    text-align: center;
+  }
+
+  .board-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .mirror-grid {
+    display: grid;
+    gap: 4px;
+    padding: 10px;
+    background: var(--bg);
+    border-radius: 14px;
+    border: 2px solid var(--border);
+    transition: .3s;
+  }
+
+  .mirror-cell {
+    border-radius: 6px;
+    background: #fff;
+    border: 1px solid var(--border);
+    transition: .15s;
+  }
+
+  /* Левая — образец (оранжевые) */
+  .mirror-cell.on {
+    background: var(--orange);
+    border-color: var(--orange-dark);
+    box-shadow: 0 0 12px rgba(255,140,66,.5);
+    animation: cellPop .3s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  @keyframes cellPop {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+  }
+
+  /* Правая — пользователь (синие) */
+  .mirror-cell.user {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .mirror-cell.user:hover {
+    background: var(--blue-light);
+    border-color: var(--blue);
+  }
+  .mirror-cell.user.on {
+    background: var(--blue);
+    border-color: var(--blue-dark);
+    box-shadow: 0 0 12px rgba(45,108,223,.5);
+  }
+  .mirror-cell.user.on:hover {
+    background: var(--blue-dark);
+  }
+
+  /* Результаты */
+  .mirror-cell.result-correct {
+    background: #DCFCE7 !important;
+    border-color: var(--green) !important;
+    box-shadow: 0 0 12px rgba(34,197,94,.5) !important;
+  }
+  .mirror-cell.result-wrong {
+    background: #FEE2E2 !important;
+    border-color: var(--red) !important;
+    box-shadow: 0 0 12px rgba(239,68,68,.5) !important;
+  }
+
+  .mirror-grid.hidden-sample .mirror-cell {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+  .mirror-grid.hidden-sample {
+    background: transparent;
+    border-color: transparent;
+    opacity: .35;
+  }
+
+  /* ---------- Настройки ---------- */
+  .settings-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; font-size: 15px; color: var(--text); font-weight: 700;
+  }
+  .settings-row b { color: var(--blue-dark); font-size: 16px; font-weight: 800; }
+  input[type="range"] { width: 100%; accent-color: #FF8C42; height: 26px; }
+
+  .time-hint {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 700;
+    padding: 10px;
+    background: var(--blue-light);
+    border-radius: 10px;
+    margin-top: 6px;
+  }
+  .time-hint b { color: var(--blue-dark); }
+
+  .btn-main {
+    display: block; margin: 24px auto 0; padding: 16px 40px;
+    border-radius: 14px; border: none;
+    background: var(--orange); color: #fff;
+    font-size: 17px; font-weight: 800; cursor: pointer;
+    transition: .2s; letter-spacing: .5px;
+    box-shadow: 0 8px 20px rgba(255,140,66,.3);
+    font-family: inherit;
+  }
+  .btn-main:hover {
+    background: var(--orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(255,140,66,.4);
+  }
+  .btn-main:active { transform: translateY(0); }
+
+  .btn-secondary {
+    display: block; margin: 8px auto 0; padding: 12px 30px;
+    border-radius: 14px; border: none;
+    background: transparent; color: var(--blue-dark);
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: .2s;
+    font-family: inherit;
+  }
+  .btn-secondary:hover { background: var(--blue-light); }
+
+  /* ---------- Таймер ---------- */
+  .timer-bar {
+    height: 10px; border-radius: 10px; background: var(--border);
+    overflow: hidden; margin-bottom: 20px;
+  }
+  .timer-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--yellow), var(--red));
+    transition: width 0.5s linear;
+    width: 100%;
+  }
+
+  /* ---------- Результат ---------- */
+  .result-screen { text-align: center; padding: 30px 20px; }
+  .result-screen .big {
+    font-size: 72px; margin-bottom: 12px;
+    animation: popIn .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .result-screen h2 { font-size: 26px; margin-bottom: 10px; color: var(--blue-dark); font-weight: 800; }
+  .result-screen p { color: var(--text-muted); font-size: 16px; margin: 6px 0; font-weight: 600; }
+  .stars { font-size: 40px; margin: 20px 0; letter-spacing: 6px; }
+
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  @media (max-width: 500px) {
+    .board { gap: 16px; }
+    .mirror-grid { padding: 6px; gap: 3px; }
+    .preset-btn { font-size: 12px; }
+  }
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <button class="back-btn" onclick="location.href='index.html'">←</button>
+    <h1>🪞 ОТРАЖЕНИЕ</h1>
+    <div class="score-bar">Очки: <span id="globalScore">0</span></div>
+  </header>
+  <main id="game"></main>
+</div>
+
+<script>
+/* ============ УТИЛИТЫ ============ */
+const $ = id => document.getElementById(id);
+const gameEl = $('game');
+let globalScore = 0;
+$('globalScore').textContent = globalScore;
+function addScore(n) { globalScore += n; $('globalScore').textContent = globalScore; }
+
+function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+const rand = n => Math.floor(Math.random() * n);
+
+let timeouts = [];
+function wait(ms, fn) {
+  const id = setTimeout(fn, ms);
+  timeouts.push(id);
+  return id;
+}
+function clearTimeouts() {
+  timeouts.forEach(clearTimeout);
+  timeouts = [];
+}
+
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+}
+function beep(freq, dur = 0.15, type = 'sine', vol = 0.08) {
+  if (!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = type;
+    osc.frequency.value = freq;
+    const t = audioCtx.currentTime;
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.start(t); osc.stop(t + dur + 0.02);
+  } catch(e) {}
+}
+function sfxCorrect() { beep(660, 0.1); setTimeout(() => beep(880, 0.15), 90); }
+function sfxWrong() { beep(180, 0.3, 'sawtooth', 0.12); }
+function sfxClick() { beep(440, 0.05, 'triangle', 0.06); }
+function sfxWin() {
+  [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.2), i * 120));
+}
+
+/* ============ НАСТРОЙКИ ============ */
+let reflectionCfg = {
+  cols: 3,
+  rows: 4,
+  filled: 5,
+  showTime: 3,
+  showFrame: true     // показывать сетку образца после исчезновения
+};
+try {
+  const s = localStorage.getItem('reflectionCfg');
+  if (s) reflectionCfg = { ...reflectionCfg, ...JSON.parse(s) };
+} catch(e) {}
+
+/* ============ ЭКРАН НАСТРОЕК ============ */
+function startReflection() {
+  clearTimeouts();
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🪞 Отражение</h2>
+      <div class="subtitle">Повтори образец зеркально — по памяти</div>
+    </div>
+    <div class="panel">
+      <div style="max-width: 500px; margin: 0 auto;">
+
+        <div class="presets" id="presets">
+          <button class="preset-btn" data-cols="3" data-rows="3" data-filled="3" data-time="5">🌱 Разминка</button>
+          <button class="preset-btn" data-cols="4" data-rows="4" data-filled="5" data-time="4">⚡ Стандарт</button>
+          <button class="preset-btn" data-cols="4" data-rows="5" data-filled="8" data-time="3">🔥 Сложнее</button>
+          <button class="preset-btn" data-cols="5" data-rows="5" data-filled="12" data-time="2">💀 Хардкор</button>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <div class="settings-row"><span>Размер поля</span><b id="sizeVal">${reflectionCfg.cols}×${reflectionCfg.rows}</b></div>
+          <div class="size-row" id="sizeRow">
+            ${[[3,3],[3,4],[4,4],[4,5],[5,5],[5,6]].map(([c,r]) => `
+              <button class="size-btn" data-cols="${c}" data-rows="${r}">${c}×${r}</button>
+            `).join('')}
+          </div>
+        </div>
+
+        <label style="display:block; margin-bottom: 20px;">
+          <div class="settings-row">
+            <span>Заполненных клеток</span>
+            <b id="filledVal">${reflectionCfg.filled}</b>
+          </div>
+          <input type="range" id="filledRange" min="1" max="30" value="${reflectionCfg.filled}">
+          <div class="time-hint" id="filledHint">
+            Всего клеток: <b id="totalCells">12</b> · заполнено <b id="filledPct">42%</b>
+          </div>
+        </label>
+
+        <label style="display:block; margin-bottom: 20px;">
+          <div class="settings-row"><span>Время показа образца</span><b id="timeVal">${reflectionCfg.showTime} сек</b></div>
+          <input type="range" id="timeRange" min="1" max="15" value="${reflectionCfg.showTime}">
+        </label>
+
+        <label style="display:flex; align-items:center; gap:12px; margin-bottom: 8px; cursor:pointer; font-weight:700;">
+          <input type="checkbox" id="showFrame" ${reflectionCfg.showFrame ? 'checked' : ''}
+            style="width:20px; height:20px; accent-color:#FF8C42;">
+          <span>Показывать пустую сетку-подсказку после исчезновения</span>
+        </label>
+        <div class="subtitle" style="margin-left: 32px; font-size: 13px; margin-bottom: 8px;">
+          Если выключить — образец полностью исчезнет, будет только пустая область справа
+        </div>
+
+        <div class="subtitle" style="text-align:left; padding: 12px; background: var(--blue-light); border-radius: 12px; line-height: 1.5; margin-top: 14px;">
+          💡 <b>Как играть:</b> слева появится образец из оранжевых клеток. Запомни его и подожди, пока он исчезнет. Потом <b>кликни по клеткам справа</b>, чтобы повторить его <b>зеркально</b> по горизонтали (левая часть образца становится правой).
+        </div>
+
+        <button class="btn-main" id="startBtn">Начать 🪞</button>
+      </div>
+    </div>
+  `;
+
+  const filledRange = $('filledRange');
+  const timeRange = $('timeRange');
+
+  function totalCells() { return reflectionCfg.cols * reflectionCfg.rows; }
+
+  function updateFilledMax() {
+    const total = totalCells();
+    filledRange.max = Math.max(1, total);
+    if (+filledRange.value > total) {
+      filledRange.value = total;
+      reflectionCfg.filled = total;
+    }
+    updateFilledHint();
+  }
+
+  function updateFilledHint() {
+    const total = totalCells();
+    const f = +filledRange.value;
+    $('totalCells').textContent = total;
+    $('filledPct').textContent = Math.round(f / total * 100) + '%';
+  }
+
+  function markSizeActive() {
+    gameEl.querySelectorAll('.size-btn').forEach(b => {
+      const on = +b.dataset.cols === reflectionCfg.cols && +b.dataset.rows === reflectionCfg.rows;
+      b.classList.toggle('active', on);
+    });
+  }
+
+  function markPresetActive() {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.preset-btn').forEach(b => {
+      if (+b.dataset.cols === reflectionCfg.cols &&
+          +b.dataset.rows === reflectionCfg.rows &&
+          +b.dataset.filled === +filledRange.value &&
+          +b.dataset.time === +timeRange.value) {
+        b.classList.add('active');
+      }
+    });
+  }
+
+  // Размеры
+  gameEl.querySelectorAll('.size-btn').forEach(b => {
+    b.onclick = () => {
+      reflectionCfg.cols = +b.dataset.cols;
+      reflectionCfg.rows = +b.dataset.rows;
+      $('sizeVal').textContent = `${reflectionCfg.cols}×${reflectionCfg.rows}`;
+      markSizeActive();
+      updateFilledMax();
+      markPresetActive();
+      sfxClick();
+    };
+  });
+
+  // Пресеты
+  document.querySelectorAll('.preset-btn').forEach(b => {
+    b.onclick = () => {
+      reflectionCfg.cols = +b.dataset.cols;
+      reflectionCfg.rows = +b.dataset.rows;
+      $('sizeVal').textContent = `${reflectionCfg.cols}×${reflectionCfg.rows}`;
+      filledRange.value = b.dataset.filled;
+      timeRange.value = b.dataset.time;
+      $('filledVal').textContent = b.dataset.filled;
+      $('timeVal').textContent = b.dataset.time + ' сек';
+      markSizeActive();
+      updateFilledMax();
+      markPresetActive();
+      sfxClick();
+    };
+  });
+
+  filledRange.oninput = () => {
+    $('filledVal').textContent = filledRange.value;
+    updateFilledHint();
+    markPresetActive();
+    sfxClick();
+  };
+  timeRange.oninput = () => {
+    $('timeVal').textContent = timeRange.value + ' сек';
+    markPresetActive();
+    sfxClick();
+  };
+
+  markSizeActive();
+  updateFilledMax();
+  markPresetActive();
+
+  $('startBtn').onclick = () => {
+    reflectionCfg.filled = +filledRange.value;
+    reflectionCfg.showTime = +timeRange.value;
+    reflectionCfg.showFrame = $('showFrame').checked;
+    try { localStorage.setItem('reflectionCfg', JSON.stringify(reflectionCfg)); } catch(e) {}
+    reflectionShow();
+  };
+}
+
+/* ============ ФАЗА 1: ПОКАЗ ОБРАЗЦА ============ */
+function reflectionShow() {
+  clearTimeouts();
+  const cols = reflectionCfg.cols;
+  const rows = reflectionCfg.rows;
+  const total = cols * rows;
+  const filledCount = Math.min(reflectionCfg.filled, total - 1);
+  const showTime = reflectionCfg.showTime;
+
+  // Генерируем образец
+  const pattern = Array(rows).fill(0).map(() => Array(cols).fill(false));
+  let placed = 0;
+  let guard = 0;
+  while (placed < filledCount && guard < 1000) {
+    const r = rand(rows), c = rand(cols);
+    if (!pattern[r][c]) { pattern[r][c] = true; placed++; }
+    guard++;
+  }
+
+  const cellSize = cols <= 3 ? 54 : cols <= 4 ? 46 : cols <= 5 ? 38 : 32;
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🪞 Отражение</h2>
+      <div class="subtitle">Запомни образец... <span id="time">${showTime}</span> сек</div>
+    </div>
+    <div class="panel">
+      <div class="timer-bar"><div class="timer-fill" id="tfill" style="width:100%"></div></div>
+      <div class="status warn">Смотри внимательно на левую сетку</div>
+      <div class="board">
+        <div class="board-side">
+          <div class="board-label" style="color: var(--orange-dark);">Образец</div>
+          <div class="mirror-grid" id="leftGrid" style="grid-template-columns: repeat(${cols}, ${cellSize}px);"></div>
+        </div>
+        <div class="board-side">
+          <div class="board-label">Твоя копия</div>
+          <div class="mirror-grid" id="rightGrid" style="grid-template-columns: repeat(${cols}, ${cellSize}px);"></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const leftGrid = $('leftGrid');
+  const rightGrid = $('rightGrid');
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'mirror-cell' + (pattern[r][c] ? ' on' : '');
+      cell.style.width = cellSize + 'px';
+      cell.style.height = cellSize + 'px';
+      if (pattern[r][c]) {
+        cell.style.animationDelay = (0.1 + (r * cols + c) * 0.04) + 's';
+      }
+      leftGrid.appendChild(cell);
+      if (pattern[r][c]) {
+        wait(100 + (r * cols + c) * 40, () => beep(500 + r * 40, 0.05));
+      }
+    }
+    for (let c = 0; c < cols; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'mirror-cell';
+      cell.style.width = cellSize + 'px';
+      cell.style.height = cellSize + 'px';
+      rightGrid.appendChild(cell);
+    }
+  }
+
+  let left = showTime;
+  const intervalId = setInterval(() => {
+    left--;
+    const t = $('time'); if (t) t.textContent = Math.max(0, left);
+    const f = $('tfill'); if (f) f.style.width = (Math.max(0, left) / showTime * 100) + '%';
+    if (left <= 0) clearInterval(intervalId);
+  }, 1000);
+  timeouts.push(intervalId);
+
+  wait(showTime * 1000, () => reflectionPlay(pattern));
+}
+
+/* ============ ФАЗА 2: ВОСПРОИЗВЕДЕНИЕ ============ */
+function reflectionPlay(pattern) {
+  clearTimeouts();
+  const cols = reflectionCfg.cols;
+  const rows = reflectionCfg.rows;
+  const cellSize = cols <= 3 ? 54 : cols <= 4 ? 46 : cols <= 5 ? 38 : 32;
+
+  // Пользовательская сетка
+  const userGrid = Array(rows).fill(0).map(() => Array(cols).fill(false));
+
+  // Скрываем образец
+  const leftGrid = $('leftGrid');
+  const rightGrid = $('rightGrid');
+
+  if (reflectionCfg.showFrame) {
+    leftGrid.classList.add('hidden-sample');
+  } else {
+    leftGrid.style.visibility = 'hidden';
+  }
+
+  // Обновляем заголовок
+  document.querySelector('.game-header .subtitle').textContent = 'Повтори образец зеркально';
+  const statusEl = document.querySelector('.status');
+  statusEl.textContent = 'Кликай по клеткам справа →';
+  statusEl.className = 'status';
+
+  beep(300, 0.2, 'triangle');
+
+  // Привязка кликов
+  const rightCells = rightGrid.querySelectorAll('.mirror-cell');
+  rightCells.forEach((cell, idx) => {
+    const r = Math.floor(idx / cols);
+    const c = idx % cols;
+    cell.classList.add('user');
+    cell.onclick = () => {
+      userGrid[r][c] = !userGrid[r][c];
+      cell.classList.toggle('on', userGrid[r][c]);
+      beep(userGrid[r][c] ? 620 : 400, 0.04, 'triangle', 0.06);
+    };
+  });
+
+  // Кнопка проверки
+  const checkBtn = document.createElement('button');
+  checkBtn.className = 'btn-main';
+  checkBtn.textContent = 'Проверить ✓';
+  checkBtn.id = 'checkBtn';
+  gameEl.querySelector('.panel').appendChild(checkBtn);
+
+  checkBtn.onclick = () => reflectionCheck(pattern, userGrid, cellSize);
+}
+
+/* ============ ФАЗА 3: ПРОВЕРКА ============ */
+function reflectionCheck(pattern, userGrid, cellSize) {
+  const cols = reflectionCfg.cols;
+  const rows = reflectionCfg.rows;
+  const total = cols * rows;
+
+  // Зеркальная проверка: pattern[r][c] === userGrid[r][cols-1-c]
+  let correct = 0;
+  let mirroredCorrect = 0; // сколько совпало бы в НЕзеркальном виде (для подсказки)
+
+  const leftGrid = $('leftGrid');
+  const rightGrid = $('rightGrid');
+
+  // Снимаем скрытие образца — показываем правильный ответ
+  leftGrid.classList.remove('hidden-sample');
+  leftGrid.style.visibility = 'visible';
+  leftGrid.style.opacity = '1';
+
+  // Открываем образец (перерисовываем с анимацией)
+  const leftCells = leftGrid.querySelectorAll('.mirror-cell');
+  leftCells.forEach((cell, idx) => {
+    const r = Math.floor(idx / cols), c = idx % cols;
+    cell.classList.toggle('on', pattern[r][c]);
+  });
+
+  // Проверяем правые клетки
+  const rightCells = rightGrid.querySelectorAll('.mirror-cell');
+  rightCells.forEach((cell, idx) => {
+    const r = Math.floor(idx / cols), c = idx % cols;
+    const userVal = userGrid[r][c];
+    const expectedMirror = pattern[r][cols - 1 - c]; // зеркальное ожидание
+    const expectedDirect = pattern[r][c];            // прямое ожидание (для проверки «не зеркалил»)
+
+    cell.classList.remove('user');
+    cell.onclick = null;
+    cell.style.cursor = 'default';
+
+    if (userVal === expectedMirror) {
+      correct++;
+      if (userVal) cell.classList.add('result-correct');
+    } else {
+      if (userVal) cell.classList.add('result-wrong');
+    }
+
+    // Считаем «прямые» совпадения — если много, значит ребёнок не зеркалил
+    if (userVal === expectedDirect) mirroredCorrect++;
+  });
+
+  // Определяем результат
+  let emoji, title, text, stars, points;
+  const mirrorRatio = correct / total;
+  const directRatio = mirroredCorrect / total;
+
+  if (correct === total) {
+    emoji = '🏆'; title = 'Идеальное отражение!';
+    text = `Все ${total} клеток зеркальны как надо`;
+    stars = 3; points = 50;
+    sfxWin();
+  } else if (mirrorRatio >= 0.8) {
+    emoji = '✨'; title = 'Почти идеально';
+    text = `Правильно: ${correct} из ${total}`;
+    stars = 2; points = 30;
+    sfxCorrect();
+  } else if (directRatio > mirrorRatio + 0.2) {
+    emoji = '🪞'; title = 'Забыл про зеркало';
+    text = `Ты скопировал прямо, а не зеркально`;
+    stars = 0; points = 5;
+    sfxWrong();
+  } else if (mirrorRatio >= 0.5) {
+    emoji = '🎯'; title = 'Неплохо!';
+    text = `Правильно: ${correct} из ${total}`;
+    stars = 1; points = 15;
+    sfxCorrect();
+  } else {
+    emoji = '🌀'; title = 'Не рассчитал';
+    text = `Правильно: ${correct} из ${total}`;
+    stars = 0; points = 5;
+    sfxWrong();
+  }
+
+  addScore(points);
+  const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+
+  const btn = $('checkBtn');
+  if (btn) btn.remove();
+
+  // Добавляем экран результата
+  const panel = gameEl.querySelector('.panel');
+  const resultDiv = document.createElement('div');
+  resultDiv.innerHTML = `
+    <div class="result-screen">
+      <div class="big">${emoji}</div>
+      <h2>${title}</h2>
+      <p>${text}</p>
+      <div class="stars">${starStr}</div>
+      <p style="opacity:.6; font-size: 14px;">+${points} очков</p>
+      <button class="btn-main" id="retry">Ещё раз 🔄</button>
+      <button class="btn-secondary" id="menuBtn">← Настройки</button>
+    </div>
+  `;
+  panel.appendChild(resultDiv);
+
+  $('retry').onclick = () => reflectionShow();
+  $('menuBtn').onclick = () => startReflection();
+}
+
+/* ============ СТАРТ ============ */
+document.addEventListener('click', initAudio, { once: true });
+startReflection();
+</script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

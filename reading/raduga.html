@@ -1,109 +1,290 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<link rel="stylesheet" href="../menu/menu.css">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>Радуга</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Радуга - NeuroX</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
 
 <style>
 :root{
   --blue:#1E3F8A;
-  --accent:#FF6A00;
+  --blue-soft:#3A5FA8;
+  --blue-light:#2A56C6;
+  --blue-pale:#E8EEF9;
+  --orange:#FF6A00;
+  --orange-soft:#FF8B3D;
+  --orange-dark:#C85100;
+  --orange-pale:#FFEADB;
+  --bg:#F4F6FB;
+  --text:#24324B;
+  --text-dim:#6B7280;
+  --border:rgba(30,63,138,.10);
+  --panel:#FFFFFF;
+  --dot-color:rgba(30,63,138,.07);
+  --header-shadow:rgba(30,63,138,.25);
+  --overlay:rgba(30,63,138,.45);
+  --modal-grad-1:#1E3F8A;
+  --modal-grad-2:#3A5FA8;
+  --modal-grad-3:#4A6DB8;
 }
 
-html,body{
+[data-theme="dark"]{
+  --blue:#7B9BE5;
+  --blue-soft:#5F80D0;
+  --blue-light:#7B9BE5;
+  --blue-pale:#2A3A5C;
+  --orange:#FF8B3D;
+  --orange-soft:#FFA057;
+  --orange-dark:#8A3F00;
+  --orange-pale:#4A2E1A;
+  --bg:#121721;
+  --text:#E8EEF9;
+  --text-dim:#8A96B0;
+  --border:rgba(140,170,240,.15);
+  --panel:#1C2331;
+  --dot-color:rgba(140,170,240,.09);
+  --header-shadow:rgba(0,0,0,.55);
+  --overlay:rgba(0,0,0,.6);
+  --modal-grad-1:#1A2440;
+  --modal-grad-2:#2A3A5C;
+  --modal-grad-3:#3A4F7C;
+}
+
+*{ box-sizing:border-box; }
+
+html, body{
   margin:0;
   height:100%;
-  background:#f7f7f7;
-  font-family:'Times New Roman', Times, serif;
+  background-color:var(--bg);
+  background-image:radial-gradient(circle, var(--dot-color) 1.5px, transparent 1.6px);
+  background-size:26px 26px;
+  font-family:"Nunito Sans",sans-serif;
+  color:var(--text);
   user-select:none;
   overflow:hidden;
+  transition:background-color .3s, color .3s;
 }
 
-/* ===== TOP BAR ===== */
-.topbar{
+/* ===== HEADER ===== */
+
+header{
   position:fixed;
-  top:0; left:0; right:0;
-  background:var(--blue);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding:8px 10px;
-  box-sizing:border-box;
+  top:0;
+  left:0;
+  right:0;
+  z-index:10;
+  background:linear-gradient(135deg,#152E68 0%,#1E3F8A 60%,#2A4A99 100%);
+  color:#fff;
+  padding:14px 22px 14px;
+  box-shadow:0 6px 20px var(--header-shadow);
+  transition:background .3s, box-shadow .3s;
 }
 
-/* TITLE */
+[data-theme="dark"] header{
+  background:linear-gradient(135deg,#12193A 0%,#1A2440 60%,#243057 100%);
+}
+
+.header-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:10px;
+}
+
 .brand{
-  color:#fff;
-  font-style:italic;
-  font-weight:700;
-  font-size:clamp(20px,5vw,34px);
-  text-align:center;
-}
-
-/* CONTROLS UNDER TITLE */
-.controls{
-  margin-top:6px;
   display:flex;
-  flex-direction:column;
-  gap:6px;
   align-items:center;
-  width:100%;
+  gap:12px;
+  min-width:0;
 }
 
-.controls-row{
+.logo{
+  position:relative;
+  width:48px;
+  height:48px;
   display:flex;
-  flex-wrap:wrap;
-  gap:8px;
+  align-items:center;
   justify-content:center;
+  background:transparent;
+  border:none;
+  padding:0;
+  color:#FF8B3D;
+  flex-shrink:0;
+  cursor:pointer;
+  transition:transform .2s;
+}
+
+.logo svg{ width:40px; height:40px; display:block; }
+
+.logo::after{
+  content:'←';
+  position:absolute;
+  top:-3px;
+  left:-5px;
+  width:20px;
+  height:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#FF6A00;
+  color:#fff;
+  font-size:12px;
+  font-weight:800;
+  border-radius:50%;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+  line-height:1;
+  pointer-events:none;
+}
+
+.logo:hover{ transform:scale(1.08); }
+.logo:active{ transform:scale(.94); }
+
+h1{
+  margin:0;
+  font-family:"Fredoka",sans-serif;
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:.3px;
+  line-height:1.1;
+  text-shadow:0 2px 4px rgba(0,0,0,.12);
+  color:#fff;
+}
+
+.subtitle{
+  margin-top:1px;
+  font-size:11.5px;
+  opacity:.85;
+  font-weight:600;
+  color:#fff;
+}
+
+.header-buttons{
+  display:flex;
+  gap:8px;
+  flex-shrink:0;
+}
+
+.icon-btn{
+  position:relative;
+  width:44px;
+  height:44px;
+  border:none;
+  border-radius:14px;
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  cursor:pointer;
+  transition:background .22s;
+  font-family:inherit;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+}
+
+.icon-btn svg{ width:20px; height:20px; display:block; }
+
+.icon-btn:hover{ background:var(--orange); }
+.icon-btn:active{ transform:scale(.95); }
+
+/* Вторая строка шапки */
+
+.header-controls{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
   align-items:center;
 }
 
-label{
-  font-size:13px;
-  color:#fff;
+.speed-box{
   display:flex;
   align-items:center;
-  gap:4px;
+  gap:8px;
+  background:rgba(255,255,255,.14);
+  padding:6px 12px;
+  border-radius:12px;
+}
+
+.speed-box label{
+  color:#fff;
+  font-size:12.5px;
+  font-weight:800;
+  white-space:nowrap;
+  margin:0;
+}
+
+.speed-box input[type=range]{
+  width:100px;
+  accent-color:#FF6A00;
+  height:20px;
+  margin:0;
+  cursor:pointer;
+}
+
+.speed-box .val{
+  color:#FFD9B8;
+  font-size:12px;
+  font-weight:800;
+  min-width:44px;
+  text-align:right;
+}
+
+.chk{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#fff;
+  font-size:12.5px;
+  font-weight:700;
+  cursor:pointer;
+  user-select:none;
   white-space:nowrap;
 }
 
-/* SLIDERS */
-input[type=range]{
-  width:120px;
-  accent-color:var(--accent);
-}
-
-output{
-  color:var(--accent);
-  font-size:12px;
-  min-width:45px;
-}
-
-/* ===== BUTTONS (ORANGE) ===== */
-.btn{
-  background:var(--accent);
-  color:#fff;
-  border:none;
-  border-radius:6px;
-  padding:6px 10px;
-  font-weight:700;
-  font-size:13px;
+.chk input[type=checkbox]{
+  accent-color:var(--orange);
+  width:16px;
+  height:16px;
+  margin:0;
   cursor:pointer;
-  box-shadow:0 4px 0 #c44f00;
-  transition:0.05s;
 }
 
-.btn:active{
-  transform:translateY(3px);
-  box-shadow:0 1px 0 #c44f00;
+.btn-small{
+  padding:9px 16px;
+  font-size:13px;
+  font-weight:800;
+  border-radius:10px;
+  cursor:pointer;
+  border:none;
+  transition:.18s;
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  font-family:"Nunito Sans",sans-serif;
+  letter-spacing:.2px;
+}
+
+.btn-small:hover{ background:var(--orange-soft); }
+.btn-small.primary{
+  background:var(--orange);
+  box-shadow:0 3px 0 var(--orange-dark);
+}
+.btn-small.primary:hover{ background:var(--orange-soft); }
+.btn-small.primary:active{
+  transform:translateY(2px);
+  box-shadow:0 1px 0 var(--orange-dark);
 }
 
 /* ===== STAGE ===== */
+
 #stage{
-  position:absolute;
-  top:150px;
+  position:fixed;
+  top:180px;
   left:0;
   right:0;
   bottom:0;
@@ -111,60 +292,308 @@ output{
 }
 
 /* WORD */
+
 .word{
   position:absolute;
-  font-weight:900;
+  font-family:"Fredoka",sans-serif;
+  font-weight:700;
   font-size:clamp(48px,10vw,100px);
   text-transform:uppercase;
   line-height:1;
   opacity:0;
   text-align:center;
+  letter-spacing:.5px;
+  transition:opacity .15s ease;
 }
 
 /* HAND */
+
 .hand{
   position:absolute;
+  font-family:"Fredoka",sans-serif;
   font-weight:700;
   font-size:clamp(48px,10vw,100px);
   line-height:1;
-  color:#000;
+  color:var(--blue);
 }
 
-/* FOOTER */
+/* ===== FOOTER ===== */
+
 .footer{
   position:fixed;
-  right:10px;
-  bottom:6px;
-  font-size:11px;
-  color:#888;
+  right:14px;
+  bottom:8px;
+  font-size:12px;
+  font-weight:600;
+  color:var(--text-dim);
+  opacity:.8;
+  pointer-events:none;
+  user-select:none;
+  z-index:5;
+}
+
+/* ===== MODAL ===== */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:var(--overlay);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .25s, visibility .25s, background .3s;
+  z-index:1500;
+}
+
+.modal.open{ opacity:1; visibility:visible; }
+
+.modal-card{
+  background:var(--panel);
+  border-radius:28px;
+  max-width:460px;
+  width:100%;
+  max-height:90vh;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 24px 70px rgba(0,0,0,.35);
+  transform:translateY(24px) scale(.95);
+  transition:transform .42s cubic-bezier(.34, 1.56, .64, 1), background .3s;
+  overflow:hidden;
+}
+
+.modal.open .modal-card{ transform:translateY(0) scale(1); }
+
+.modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:22px 24px 20px;
+  background:linear-gradient(135deg, var(--modal-grad-1) 0%, var(--modal-grad-2) 60%, var(--modal-grad-3) 100%);
+  color:#fff;
+  transition:background .3s;
+}
+
+.modal-header h2{
+  font-family:"Fredoka",sans-serif;
+  font-size:22px;
+  font-weight:600;
+  margin:0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.modal-header h2 svg{ width:22px; height:22px; flex-shrink:0; }
+
+.modal-close{
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:12px;
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  font-size:24px;
+  line-height:1;
+  cursor:pointer;
+  transition:.2s;
+  font-family:inherit;
+  padding:0;
+}
+
+.modal-close:hover{ background:var(--orange); transform:rotate(90deg); }
+
+.modal-body{
+  padding:22px 24px 26px;
+  overflow-y:auto;
+}
+
+.modal-body p{
+  font-size:14.5px;
+  font-weight:700;
+  color:var(--text-dim);
+  line-height:1.6;
+  margin:0 0 10px;
+}
+
+.modal-body p:last-child{ margin-bottom:0; }
+.modal-body b{ color:var(--blue); }
+
+.settings-section{ margin-bottom:22px; }
+.settings-section:last-child{ margin-bottom:0; }
+
+.settings-section h4{
+  font-family:"Fredoka",sans-serif;
+  font-size:16px;
+  color:var(--blue);
+  margin-bottom:10px;
+  font-weight:600;
+}
+
+.settings-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:13px 16px;
+  background:var(--bg);
+  border:2px solid var(--blue-pale);
+  border-radius:16px;
+  cursor:pointer;
+  user-select:none;
+  transition:.2s;
+}
+
+.settings-row:hover{
+  border-color:var(--blue-soft);
+  background:var(--panel);
+}
+
+.settings-row__label{
+  font-size:15px;
+  font-weight:800;
+  color:var(--blue);
+}
+
+.settings-row__label small{
+  display:block;
+  font-size:12px;
+  font-weight:700;
+  color:var(--text-dim);
+  margin-top:2px;
+}
+
+.switch{
+  width:46px;
+  height:26px;
+  border-radius:999px;
+  background:#CBD3E5;
+  position:relative;
+  flex-shrink:0;
+  transition:background .2s;
+}
+
+[data-theme="dark"] .switch{ background:#3A4560; }
+
+.switch::after{
+  content:'';
+  position:absolute;
+  top:3px;
+  left:3px;
+  width:20px;
+  height:20px;
+  background:#fff;
+  border-radius:50%;
+  box-shadow:0 2px 4px rgba(0,0,0,.18);
+  transition:transform .28s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.settings-row.theme-switch-on .switch{ background:var(--orange); }
+.settings-row.theme-switch-on .switch::after{ transform:translateX(20px); }
+
+/* ===== MOBILE ===== */
+
+@media (max-width:700px){
+  header{ padding:12px 14px 12px; }
+
+  h1{ font-size:18px; }
+  .subtitle{ font-size:11px; }
+
+  .logo{ width:40px; height:40px; }
+  .logo svg{ width:34px; height:34px; }
+  .logo::after{ width:18px; height:18px; font-size:11px; top:-2px; left:-4px; }
+
+  .icon-btn{ width:38px; height:38px; border-radius:12px; }
+  .icon-btn svg{ width:18px; height:18px; }
+
+  .header-top{ margin-bottom:8px; }
+
+  .speed-box{ padding:5px 10px; gap:6px; }
+  .speed-box label{ font-size:11.5px; }
+  .speed-box input[type=range]{ width:80px; }
+  .speed-box .val{ min-width:38px; font-size:11px; }
+
+  .chk{ font-size:11.5px; }
+  .btn-small{ padding:8px 12px; font-size:12px; }
+
+  #stage{ top:160px; }
+  .word{ font-size:clamp(36px,10vw,72px); }
+  .hand{ font-size:clamp(36px,10vw,72px); }
+
+  .modal-card{ border-radius:24px; }
+  .modal-header{ padding:18px 20px 16px; }
+  .modal-header h2{ font-size:20px; }
+  .modal-body{ padding:18px 18px 22px; }
+  .modal-body p{ font-size:13.5px; }
 }
 </style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
 </head>
 
 <body>
 
-<header class="topbar">
-  <div class="brand">Радуга</div>
+<header>
+  <div class="header-top">
+    <div class="brand">
+      <button class="logo" onclick="goBack()" title="Назад" aria-label="Назад">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8"/>
+          <path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8"/>
+          <path d="M17.5 16a3.5 3.5 0 0 0 0 -7h-.5"/>
+          <path d="M19 9.3v-2.8a3.5 3.5 0 0 0 -7 0"/>
+          <path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5"/>
+          <path d="M5 9.3v-2.8a3.5 3.5 0 0 1 7 0v10"/>
+        </svg>
+      </button>
+      <div>
+        <h1>Радуга</h1>
+        <div class="subtitle">NeuroX · скорочтение</div>
+      </div>
+    </div>
 
-  <div class="controls">
+    <div class="header-buttons">
+      <button class="icon-btn" id="themeBtn" title="Сменить тему" onclick="toggleTheme()" aria-label="Сменить тему">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+        </svg>
+      </button>
+      <button class="icon-btn" title="Справка" onclick="showHelp()" aria-label="Справка">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 1.5-2.5 2-2.5 3.5"/>
+          <circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+      </button>
+      <button class="icon-btn" title="Настройки" onclick="showSettings()" aria-label="Настройки">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
 
-    <div class="controls-row">
-      <label>Скорость</label>
+  <div class="header-controls">
+    <div class="speed-box">
+      <label for="speed">Скорость</label>
       <input id="speed" type="range" min="0" max="14" value="4">
-      <output id="speedOut">2.00s</output>
-
-      <label><input id="handsMode" type="checkbox" checked> Руки</label>
+      <span class="val" id="speedOut">2.00s</span>
     </div>
 
-    <div class="controls-row">
-      <label>Хлопки</label>
+    <div class="speed-box">
+      <label for="clapChance">Хлопки</label>
       <input id="clapChance" type="range" min="0" max="100" step="5" value="20">
-      <output id="clapOut">20%</output>
-
-      <button id="startButton" class="btn">Старт</button>
-      <button id="stopButton" class="btn">Стоп</button>
+      <span class="val" id="clapOut">20%</span>
     </div>
 
+    <label class="chk"><input id="handsMode" type="checkbox" checked> Руки</label>
+
+    <button id="startButton" class="btn-small primary">Старт</button>
+    <button id="stopButton" class="btn-small">Стоп</button>
   </div>
 </header>
 
@@ -172,7 +601,131 @@ output{
 
 <div class="footer">© verner</div>
 
+<!-- МОДАЛКА «СПРАВКА» -->
+<div class="modal" id="helpModal" onclick="if(event.target===this) closeHelp()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 1.5-2.5 2-2.5 3.5"/>
+          <circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+        Справка
+      </h2>
+      <button class="modal-close" onclick="closeHelp()" aria-label="Закрыть">×</button>
+    </div>
+    <div class="modal-body">
+      <p><b>Радуга</b> — тренажёр на внимание и скорость реакции. На экране в случайных местах вспыхивают цветные слова, задача — успевать их называть.</p>
+      <p><b>Цвета</b> — семь названий: красный, оранжевый, жёлтый, зелёный, голубой, синий, фиолетовый.</p>
+      <p><b>Хлопок</b> — иногда вместо слова появляется «ХЛОПОК». Тогда нужно хлопнуть в ладоши, а не называть цвет.</p>
+      <p><b>Руки</b> — под словом появляется буква <b>Л</b>, <b>П</b> или <b>О</b>, показывающая, какую руку поднять: левую, правую или обе.</p>
+      <p><b>Скорость</b> — как часто меняется слово. <b>Старт</b> и <b>Стоп</b> — управление.</p>
+    </div>
+  </div>
+</div>
+
+<!-- МОДАЛКА «НАСТРОЙКИ» -->
+<div class="modal" id="settingsModal" onclick="if(event.target===this) closeSettings()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+        </svg>
+        Настройки
+      </h2>
+      <button class="modal-close" onclick="closeSettings()" aria-label="Закрыть">×</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="settings-section">
+        <h4>Оформление</h4>
+        <div class="settings-row" id="themeRow" onclick="toggleTheme()">
+          <div class="settings-row__label">
+            Тёмная тема
+            <small>Меньше света вечером</small>
+          </div>
+          <div class="switch"></div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h4>Профиль</h4>
+        <p style="font-size: 13px; color: var(--text-dim); font-weight: 700; line-height: 1.5;">
+          Имя, возраст и настройки меняются в главном меню — нажми на мозг в шапке.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <script>
+/* ===== ТЕМА ===== */
+const LS_THEME_KEY = 'neurox_theme';
+
+const SVG_SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const SVG_MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.innerHTML = theme === 'dark' ? SVG_SUN : SVG_MOON;
+
+  const row = document.getElementById('themeRow');
+  if (row) row.classList.toggle('theme-switch-on', theme === 'dark');
+}
+
+function getStoredTheme(){ return localStorage.getItem(LS_THEME_KEY) || ''; }
+function saveTheme(theme){ localStorage.setItem(LS_THEME_KEY, theme); }
+
+function initTheme(){
+  let theme = getStoredTheme();
+  if (!theme){
+    const prefersDark = window.matchMedia &&
+                        window.matchMedia('(prefers-color-scheme: dark)').matches;
+    theme = prefersDark ? 'dark' : 'light';
+  }
+  applyTheme(theme);
+}
+
+function toggleTheme(){
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  saveTheme(next);
+}
+
+function showHelp(){ document.getElementById('helpModal').classList.add('open'); }
+function closeHelp(){ document.getElementById('helpModal').classList.remove('open'); }
+
+function showSettings(){ document.getElementById('settingsModal').classList.add('open'); }
+function closeSettings(){ document.getElementById('settingsModal').classList.remove('open'); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape'){
+    closeHelp();
+    closeSettings();
+  }
+});
+
+initTheme();
+
+if (window.matchMedia){
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  mq.addEventListener('change', e => {
+    if (!getStoredTheme()) applyTheme(e.matches ? 'dark' : 'light');
+  });
+}
+</script>
+
+<script>
+function goBack(){
+  location.href = "index.html";
+}
+
 const COLORS=[
   {name:'КРАСНЫЙ',color:'red'},
   {name:'ОРАНЖЕВЫЙ',color:'#FF6A00'},
@@ -276,8 +829,25 @@ speed.oninput=()=>{
 clap.oninput=()=>clapOut.textContent=clap.value+'%';
 
 window.onresize=draw;
-</script>
-<script src="../menu/menu.js"></script>
 
+/* Обновление отступа под высоту шапки */
+function adjustStage(){
+  const header = document.querySelector('header');
+  if (header){
+    stage.style.top = header.getBoundingClientRect().height + 'px';
+  }
+}
+adjustStage();
+setTimeout(adjustStage, 100);
+window.addEventListener('resize', adjustStage);
+</script>
+
+<!-- ==== БОКОВОЕ МЕНЮ NEUROX ==== -->
+
+
+
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
 </body>
 </html>

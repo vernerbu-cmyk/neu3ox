@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>История по датам - Мнемо-Арена</title>
+<script>
+  /* Инициализация темы до отрисовки — чтобы не было вспышки */
+  (function() {
+    try {
+      var t = localStorage.getItem('theme');
+      if (!t && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) t = 'dark';
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    } catch(e) {}
+  })();
+</script>
+<style>
+  :root {
+    --blue: #2D6CDF; --blue-dark: #1E4FA8; --blue-light: #EBF2FF;
+    --orange: #FF8C42; --orange-dark: #E86E1F; --orange-light: #FFF2E5;
+    --bg: #F7F9FC; --text: #1F2937; --text-muted: #6B7280;
+    --border: #E5EAF2; --green: #22C55E; --red: #EF4444;
+    --yellow: #F59E0B; --purple-light: #F5EDFF;
+    --card: #FFFFFF;
+    --result-correct-bg: #DCFCE7;
+    --result-misplaced-bg: #FEF3C7;
+    --result-wrong-bg: #FEE2E2;
+    --status-good: #16A34A;
+    --status-bad: #DC2626;
+    --review-bg: rgba(45,108,223,.05);
+    --shadow-sm: rgba(45,108,223,.06);
+    --shadow-md: rgba(45,108,223,.06);
+    --shadow-btn: rgba(45,108,223,.12);
+    --shadow-orange: rgba(255,140,66,.3);
+    --shadow-orange-lg: rgba(255,140,66,.4);
+    --shadow-orange-sm: rgba(255,140,66,.18);
+  }
+  [data-theme="dark"] {
+    --blue: #6C9EFF; --blue-dark: #9BBAFF; --blue-light: #1A2540;
+    --orange: #FF8C42; --orange-dark: #FFB47A; --orange-light: #2E2115;
+    --bg: #0F1420; --text: #E4EAF2; --text-muted: #8A94A6;
+    --border: #232B3D; --green: #4ADE80; --red: #F87171;
+    --yellow: #FBBF24; --purple-light: #2A1F3D;
+    --card: #161C2B;
+    --result-correct-bg: #143321;
+    --result-misplaced-bg: #332911;
+    --result-wrong-bg: #3B1616;
+    --status-good: #4ADE80;
+    --status-bad: #F87171;
+    --review-bg: rgba(108,158,255,.08);
+    --shadow-sm: rgba(0,0,0,.3);
+    --shadow-md: rgba(0,0,0,.35);
+    --shadow-btn: rgba(0,0,0,.5);
+    --shadow-orange: rgba(255,140,66,.2);
+    --shadow-orange-lg: rgba(255,140,66,.3);
+    --shadow-orange-sm: rgba(255,140,66,.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body, header, .panel, .preset-btn, .segment-btn, .cat-btn, .pool-item,
+  .option-text, .slot, .pool, .question-card, .review-block, .subtitle,
+  h1, .game-header h2, .timeline-item, .timeline-year, .timeline-event,
+  .score-bar, .back-btn, .theme-toggle, .status, .settings-row b,
+  .btn-secondary, .slot-placeholder, .review-answers .ans {
+    transition: background-color .3s ease, color .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, 'Nunito Sans', sans-serif;
+    background: var(--bg); min-height: 100vh; color: var(--text);
+    padding: 16px; overflow-x: hidden;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding: 16px 22px; background: var(--card);
+    border-radius: 20px; border: 1px solid var(--border);
+    box-shadow: 0 4px 16px var(--shadow-sm); flex-wrap: wrap; gap: 10px;
+  }
+  .header-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+  .back-btn {
+    width: 46px; height: 46px; border: none; border-radius: 14px;
+    background: var(--blue-light); color: var(--blue);
+    font-size: 22px; font-weight: 700; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .back-btn:hover { background: var(--blue); color: #fff; transform: translateY(-1px); }
+  h1 { font-size: 20px; letter-spacing: .5px; color: var(--blue-dark); font-weight: 800; }
+  .score-bar {
+    background: var(--orange); color: #fff; padding: 8px 18px;
+    border-radius: 30px; font-size: 14px; font-weight: 700;
+    box-shadow: 0 4px 12px var(--shadow-orange);
+  }
+  .score-bar span { color: #fff; font-weight: 800; font-size: 17px; }
+
+  /* SVG-кнопка переключения темы */
+  .theme-toggle {
+    width: 46px; height: 46px;
+    border: none; border-radius: 14px;
+    background: var(--blue-light);
+    color: var(--blue);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    padding: 0;
+  }
+  .theme-toggle:hover { background: var(--blue); color: #fff; transform: translateY(-1px); }
+  .theme-toggle svg {
+    width: 22px; height: 22px;
+    position: absolute;
+    transition: transform .4s cubic-bezier(.34,1.56,.64,1), opacity .25s;
+  }
+  .theme-toggle .icon-sun { opacity: 0; transform: rotate(-90deg) scale(.4); }
+  .theme-toggle .icon-moon { opacity: 1; transform: rotate(0) scale(1); }
+  [data-theme="dark"] .theme-toggle .icon-sun { opacity: 1; transform: rotate(0) scale(1); }
+  [data-theme="dark"] .theme-toggle .icon-moon { opacity: 0; transform: rotate(90deg) scale(.4); }
+
+  main { min-height: 520px; }
+  .game-header { text-align: center; margin-bottom: 20px; }
+  .game-header h2 { font-size: 22px; margin-bottom: 6px; color: var(--blue-dark); font-weight: 800; }
+  .subtitle { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+  .status {
+    text-align: center; font-size: 16px; margin: 16px 0;
+    min-height: 26px; font-weight: 700; color: var(--text);
+  }
+  .status.good { color: var(--status-good); }
+  .status.bad { color: var(--status-bad); }
+  .status.warn { color: var(--orange-dark); }
+  .panel {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 22px; padding: 26px;
+    box-shadow: 0 8px 24px var(--shadow-md);
+  }
+  .presets { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
+  .preset-btn {
+    flex: 1 1 auto; min-width: 90px; padding: 10px 8px; border-radius: 12px;
+    border: 2px solid var(--border); background: var(--card); color: var(--blue-dark);
+    font-weight: 700; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+  .preset-btn:hover { border-color: var(--orange); color: var(--orange-dark); transform: translateY(-1px); }
+  .preset-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .segment { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .segment-btn {
+    flex: 1 1 auto; padding: 10px 8px; border-radius: 12px;
+    border: 2px solid var(--border); background: var(--card); color: var(--blue-dark);
+    font-weight: 700; font-size: 13px; cursor: pointer;
+    font-family: inherit; line-height: 1.2; min-width: 100px;
+  }
+  .segment-btn:hover { border-color: var(--orange); }
+  .segment-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .segment-btn small { display: block; font-size: 10px; opacity: .7; font-weight: 600; margin-top: 2px; }
+  .segment-btn.active small { opacity: .9; }
+  .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+  .cat-btn {
+    padding: 12px 6px; border-radius: 12px; border: 2px solid var(--border);
+    background: var(--card); color: var(--blue-dark); font-weight: 700; font-size: 12px;
+    cursor: pointer; font-family: inherit; line-height: 1.2;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+  }
+  .cat-btn:hover { border-color: var(--orange); transform: translateY(-1px); }
+  .cat-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .cat-btn .cat-emoji { font-size: 20px; line-height: 1; }
+  .cat-btn .cat-name { font-size: 11px; text-align: center; }
+  .cat-btn .cat-count { font-size: 10px; opacity: .6; }
+  .cat-btn.active .cat-count { opacity: .85; }
+
+  .timeline { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+  .timeline-item {
+    display: flex; align-items: center; gap: 14px; padding: 14px 18px;
+    background: linear-gradient(145deg, var(--orange-light), var(--purple-light));
+    border: 2px solid var(--border); border-radius: 14px;
+    animation: slideIn .4s ease backwards;
+  }
+  @keyframes slideIn {
+    from { transform: translateX(-30px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  .timeline-year {
+    font-size: 22px; font-weight: 900; color: var(--orange-dark);
+    min-width: 70px; text-align: center; letter-spacing: -1px;
+    font-family: 'Courier New', monospace;
+  }
+  .timeline-sep { color: var(--text-muted); font-size: 18px; font-weight: 800; }
+  .timeline-event { font-size: 16px; font-weight: 700; color: var(--blue-dark); flex: 1; }
+  .timeline-emoji { font-size: 26px; }
+
+  .progress-dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 18px; flex-wrap: wrap; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: .3s; }
+  .dot.active { background: var(--orange); transform: scale(1.4); }
+  .dot.correct { background: var(--green); }
+  .dot.wrong { background: var(--red); }
+
+  .slots { display: grid; gap: 10px; margin-bottom: 20px; }
+  .slot {
+    display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+    background: var(--bg); border: 2px dashed var(--border); border-radius: 14px;
+    cursor: pointer; min-height: 60px; user-select: none;
+  }
+  .slot.filled { background: var(--blue-light); border-style: solid; border-color: var(--blue); }
+  .slot:hover { border-color: var(--orange); }
+  .slot.filled:hover { background: var(--orange-light); border-color: var(--orange); }
+  .slot-num { font-size: 16px; font-weight: 900; color: var(--text-muted); min-width: 24px; text-align: center; }
+  .slot.filled .slot-num { color: var(--blue); }
+  .slot-emoji { font-size: 24px; }
+  .slot-event { font-size: 16px; font-weight: 700; color: var(--blue-dark); flex: 1; }
+  .slot-placeholder { color: var(--text-muted); font-size: 14px; font-weight: 600; font-style: italic; }
+  .slot.result-correct { background: var(--result-correct-bg); border-color: var(--green); border-style: solid; }
+  .slot.result-misplaced { background: var(--result-misplaced-bg); border-color: var(--yellow); border-style: solid; }
+  .slot.result-wrong { background: var(--result-wrong-bg); border-color: var(--red); border-style: solid; }
+
+  .pool {
+    display: flex; flex-direction: column; gap: 10px; padding: 12px;
+    background: var(--bg); border-radius: 16px; border: 2px solid var(--border);
+    margin-bottom: 20px; min-height: 80px;
+  }
+  .pool-item {
+    display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+    background: var(--card); border: 2px solid var(--border); border-radius: 12px;
+    cursor: pointer; user-select: none;
+    animation: popIn .25s cubic-bezier(.34,1.56,.64,1);
+  }
+  .pool-item:hover {
+    border-color: var(--orange); transform: translateX(4px);
+    box-shadow: 0 6px 14px var(--shadow-orange-sm);
+  }
+  @keyframes popIn {
+    from { transform: scale(.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .pool-empty-hint { text-align: center; color: var(--text-muted); font-weight: 700; font-size: 14px; padding: 20px; }
+
+  .question-card {
+    text-align: center; padding: 30px 20px;
+    background: linear-gradient(145deg, var(--orange-light), var(--purple-light));
+    border-radius: 20px; border: 2px solid var(--border); margin-bottom: 22px;
+    animation: popIn .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  .question-card .big-emoji { font-size: 56px; margin-bottom: 12px; }
+  .question-card .event-text { font-size: 22px; font-weight: 800; color: var(--blue-dark); line-height: 1.35; margin-bottom: 8px; }
+  .question-card .question-hint { font-size: 14px; color: var(--text-muted); font-weight: 700; margin-top: 12px; }
+
+  .options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .option-text {
+    padding: 22px 16px; font-size: 20px; font-weight: 800; border-radius: 16px;
+    background: var(--card); border: 2px solid var(--border); color: var(--text);
+    cursor: pointer; text-align: center; user-select: none;
+    word-break: break-word; font-family: inherit; line-height: 1.3;
+  }
+  .option-text.year { font-family: 'Courier New', monospace; letter-spacing: 2px; }
+  .option-text:hover:not(:disabled) {
+    background: var(--blue-light); border-color: var(--blue);
+    transform: translateY(-2px); box-shadow: 0 8px 18px var(--shadow-btn);
+  }
+  .option-text:disabled { cursor: default; }
+  .option-text.correct {
+    background: var(--result-correct-bg); border-color: var(--green);
+    transform: scale(1.02); box-shadow: 0 0 0 4px rgba(34,197,94,.15);
+  }
+  .option-text.wrong { background: var(--result-wrong-bg); border-color: var(--red); animation: shake .35s ease; }
+  .option-text.dimmed { opacity: .35; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    50% { transform: translateX(6px); }
+    75% { transform: translateX(-4px); }
+  }
+  .settings-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; font-size: 15px; color: var(--text); font-weight: 700;
+  }
+  .settings-row b { color: var(--blue-dark); font-size: 16px; font-weight: 800; }
+  input[type="range"] { width: 100%; accent-color: #FF8C42; height: 26px; }
+  .btn-main {
+    display: block; margin: 24px auto 0; padding: 16px 40px; border-radius: 14px;
+    border: none; background: var(--orange); color: #fff; font-size: 17px;
+    font-weight: 800; cursor: pointer; letter-spacing: .5px;
+    box-shadow: 0 8px 20px var(--shadow-orange); font-family: inherit;
+  }
+  .btn-main:hover { background: var(--orange-dark); transform: translateY(-2px); box-shadow: 0 12px 28px var(--shadow-orange-lg); }
+  .btn-main:active { transform: translateY(0); }
+  .btn-secondary {
+    display: block; margin: 8px auto 0; padding: 12px 30px; border-radius: 14px;
+    border: none; background: transparent; color: var(--blue-dark);
+    font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .btn-secondary:hover { background: var(--blue-light); }
+  .timer-bar { height: 10px; border-radius: 10px; background: var(--border); overflow: hidden; margin-bottom: 20px; }
+  .timer-fill {
+    height: 100%; background: linear-gradient(90deg, var(--green), var(--yellow), var(--red));
+    transition: width 0.5s linear; width: 100%;
+  }
+  .result-screen { text-align: center; padding: 20px 0; }
+  .result-screen .big { font-size: 72px; margin-bottom: 12px; animation: popIn .5s cubic-bezier(.34,1.56,.64,1); }
+  .result-screen h2 { font-size: 26px; margin-bottom: 10px; color: var(--blue-dark); font-weight: 800; }
+  .result-screen p { color: var(--text-muted); font-size: 16px; margin: 6px 0; font-weight: 600; }
+  .stars { font-size: 40px; margin: 20px 0; letter-spacing: 6px; }
+  .review-block { margin-top: 20px; padding: 16px; background: var(--review-bg); border-radius: 14px; text-align: left; }
+  .review-block .label {
+    font-size: 12px; color: var(--text-muted); font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+  }
+  .review-block .item {
+    display: flex; align-items: center; gap: 12px; padding: 8px 0;
+    font-size: 15px; font-weight: 700; color: var(--blue-dark);
+  }
+  .review-block .item-year {
+    font-family: 'Courier New', monospace; font-weight: 900;
+    color: var(--orange-dark); min-width: 60px;
+  }
+  .review-answers { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 14px; }
+  .review-answers .ans {
+    display: flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 10px; font-size: 18px;
+    font-weight: 800; border: 2px solid;
+  }
+  .review-answers .ans.ok { background: var(--result-correct-bg); border-color: var(--green); }
+  .review-answers .ans.wrong { background: var(--result-wrong-bg); border-color: var(--red); }
+
+  /* ===== РЕЖИМ БЕЗ ЭМОДЗИ ===== */
+  .no-emoji .timeline-emoji,
+  .no-emoji .slot-emoji,
+  .no-emoji .big-emoji,
+  .no-emoji .cat-emoji,
+  .no-emoji .option-emoji { display: none !important; }
+  .no-emoji .timeline-item { padding-left: 22px; }
+  .no-emoji .slot { padding-left: 22px; }
+  .no-emoji .pool-item { padding-left: 22px; }
+  .no-emoji .question-card { padding: 26px 20px; }
+  .no-emoji .review-block .item { gap: 18px; }
+
+  @media (max-width: 500px) {
+    .timeline-year { font-size: 18px; min-width: 58px; }
+    .timeline-event { font-size: 14px; }
+    .timeline-emoji { font-size: 22px; }
+    .option-text { font-size: 16px; padding: 16px 10px; }
+    .preset-btn { font-size: 12px; }
+    .segment-btn { font-size: 12px; padding: 10px 6px; }
+    .slot-event, .pool-item { font-size: 14px; }
+    .question-card .event-text { font-size: 18px; }
+    .question-card .big-emoji { font-size: 44px; }
+    .cat-grid { grid-template-columns: repeat(2, 1fr); }
+    .cat-btn .cat-emoji { font-size: 18px; }
+    .cat-btn .cat-name { font-size: 10px; }
+    h1 { font-size: 16px; }
+  }
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <button class="back-btn" onclick="location.href='index.html'">←</button>
+    <h1>🕰 ИСТОРИЯ ПО ДАТАМ</h1>
+    <div class="header-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему" title="Сменить тему">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+      <div class="score-bar">Очки: <span id="globalScore">0</span></div>
+    </div>
+  </header>
+  <main id="game"></main>
+</div>
+
+<script>
+/* ============ УТИЛИТЫ ============ */
+const $ = id => document.getElementById(id);
+const gameEl = $('game');
+let globalScore = 0;
+$('globalScore').textContent = globalScore;
+function addScore(n) { globalScore += n; $('globalScore').textContent = globalScore; }
+
+function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+const rand = n => Math.floor(Math.random() * n);
+
+let timeouts = [];
+function wait(ms, fn) { const id = setTimeout(fn, ms); timeouts.push(id); return id; }
+function clearTimeouts() { timeouts.forEach(clearTimeout); timeouts = []; }
+
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+}
+function beep(freq, dur = 0.15, type = 'sine', vol = 0.08) {
+  if (!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = type; osc.frequency.value = freq;
+    const t = audioCtx.currentTime;
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.start(t); osc.stop(t + dur + 0.02);
+  } catch(e) {}
+}
+function sfxCorrect() { beep(660, 0.1); setTimeout(() => beep(880, 0.15), 90); }
+function sfxWrong() { beep(180, 0.3, 'sawtooth', 0.12); }
+function sfxClick() { beep(440, 0.05, 'triangle', 0.06); }
+function sfxWin() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.2), i * 120)); }
+
+/* ============ ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ ============ */
+function setupThemeToggle() {
+  const btn = $('themeToggle');
+  if (!btn) return;
+  btn.onclick = () => {
+    const cur = document.documentElement.getAttribute('data-theme') || 'light';
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch(e) {}
+    sfxClick();
+  };
+}
+
+/* ============ БАЗА СОБЫТИЙ ============ */
+
+/* 🌍 Мировая история */
+const EVENTS_WORLD = [
+  { year: 3000, event: 'Основание Египетского царства', emoji: '🏛️' },
+  { year: 776, event: 'Первые Олимпийские игры (Др. Греция)', emoji: '🏅' },
+  { year: 753, event: 'Основание Рима', emoji: '🏛️' },
+  { year: 586, event: 'Разрушение Первого Иерусалимского храма', emoji: '🕯️' },
+  { year: 490, event: 'Марафонская битва', emoji: '⚔️' },
+  { year: 480, event: 'Фермопильское сражение', emoji: '🛡️' },
+  { year: 431, event: 'Начало Пелопоннесской войны', emoji: '⚔️' },
+  { year: 336, event: 'Александр Македонский стал царём', emoji: '👑' },
+  { year: 323, event: 'Смерть Александра Македонского', emoji: '⚰️' },
+  { year: 146, event: 'Разрушение Карфагена', emoji: '🔥' },
+  { year: 44, event: 'Убийство Юлия Цезаря', emoji: '🗡️' },
+  { year: 27, event: 'Октавиан Август — первый император Рима', emoji: '👑' },
+  { year: 313, event: 'Миланский эдикт (христианство)', emoji: '✝️' },
+  { year: 395, event: 'Разделение Римской империи', emoji: '🗺️' },
+  { year: 476, event: 'Падение Западной Римской империи', emoji: '🏛️' },
+  { year: 622, event: 'Возникновение ислама', emoji: '🕌' },
+  { year: 800, event: 'Карл Великий — император', emoji: '👑' },
+  { year: 962, event: 'Образование Священной Римской империи', emoji: '👑' },
+  { year: 1054, event: 'Раскол христианской церкви', emoji: '⛪' },
+  { year: 1066, event: 'Нормандское завоевание Англии', emoji: '🏰' },
+  { year: 1096, event: 'Первый крестовый поход', emoji: '🛡️' },
+  { year: 1206, event: 'Образование Монгольской империи', emoji: '🐎' },
+  { year: 1215, event: 'Великая хартия вольностей', emoji: '📜' },
+  { year: 1265, event: 'Первый английский парламент', emoji: '🏛️' },
+  { year: 1291, event: 'Образование Швейцарского союза', emoji: '🇨🇭' },
+  { year: 1337, event: 'Начало Столетней войны', emoji: '⚔️' },
+  { year: 1347, event: 'Эпидемия чумы в Европе', emoji: '💀' },
+  { year: 1378, event: 'Начало Великой схизмы', emoji: '⛪' },
+  { year: 1431, event: 'Казнь Жанны д’Арк', emoji: '🔥' },
+  { year: 1453, event: 'Падение Константинополя', emoji: '🏰' },
+  { year: 1492, event: 'Изгнание евреев из Испании', emoji: '🚪' },
+  { year: 1517, event: 'Реформация Лютера', emoji: '📖' },
+  { year: 1521, event: 'Вормсский эдикт', emoji: '📜' },
+  { year: 1534, event: 'Англиканская церковь', emoji: '⛪' },
+  { year: 1572, event: 'Варфоломеевская ночь', emoji: '🩸' },
+  { year: 1588, event: 'Разгром испанской армады', emoji: '⛵' },
+  { year: 1600, event: 'Основание Ост-Индской компании', emoji: '🚢' },
+  { year: 1618, event: 'Начало Тридцатилетней войны', emoji: '⚔️' },
+  { year: 1640, event: 'Английская революция', emoji: '🚩' },
+  { year: 1648, event: 'Вестфальский мир', emoji: '📜' },
+  { year: 1649, event: 'Казнь Карла I', emoji: '🪓' },
+  { year: 1688, event: 'Славная революция в Англии', emoji: '👑' },
+  { year: 1707, event: 'Акт об унии (Великобритания)', emoji: '🇬🇧' },
+  { year: 1775, event: 'Война за независимость США', emoji: '🔫' },
+  { year: 1776, event: 'Независимость США', emoji: '🗽' },
+  { year: 1789, event: 'Великая французская революция', emoji: '🔥' },
+  { year: 1804, event: 'Кодекс Наполеона', emoji: '📜' },
+  { year: 1815, event: 'Битва при Ватерлоо', emoji: '⚔️' },
+  { year: 1848, event: '«Весна народов» в Европе', emoji: '🌷' },
+  { year: 1861, event: 'Объединение Италии', emoji: '🇮🇹' },
+  { year: 1865, event: 'Конец Гражданской войны в США', emoji: '🎖️' },
+  { year: 1868, event: 'Революция Мэйдзи', emoji: '🇯🇵' },
+  { year: 1871, event: 'Объединение Германии', emoji: '🇩🇪' },
+  { year: 1884, event: 'Берлинская конференция', emoji: '🌍' },
+  { year: 1904, event: 'Русско-японская война', emoji: '⚓' },
+  { year: 1912, event: 'Гибель «Титаника»', emoji: '🚢' },
+  { year: 1914, event: 'Начало Первой мировой', emoji: '💥' },
+  { year: 1918, event: 'Конец Первой мировой', emoji: '🕊️' },
+  { year: 1929, event: 'Великая депрессия', emoji: '📉' },
+  { year: 1933, event: 'Гитлер пришёл к власти', emoji: '⚠️' },
+  { year: 1939, event: 'Начало Второй мировой', emoji: '💥' },
+  { year: 1945, event: 'Конец Второй мировой', emoji: '🕊️' },
+  { year: 1947, event: 'Независимость Индии', emoji: '🇮🇳' },
+  { year: 1948, event: 'Образование Израиля', emoji: '🇮🇱' },
+  { year: 1949, event: 'Образование НАТО', emoji: '🛡️' },
+  { year: 1955, event: 'Варшавский договор', emoji: '🛡️' },
+  { year: 1962, event: 'Карибский кризис', emoji: '☢️' },
+  { year: 1968, event: 'Пражская весна', emoji: '🌸' },
+  { year: 1969, event: 'Высадка на Луну', emoji: '🌕' },
+  { year: 1989, event: 'Падение Берлинской стены', emoji: '🧱' },
+  { year: 1991, event: 'Распад СССР', emoji: '🗺️' },
+  { year: 2001, event: 'Атака на башни-близнецы', emoji: '🏙️' },
+  { year: 2020, event: 'Всемирная пандемия', emoji: '😷' }
+];
+
+/* ⚔️ Россия */
+const EVENTS_RUS = [
+  { year: 862, event: 'Призвание Рюрика', emoji: '⚔️' },
+  { year: 882, event: 'Олег объединил Новгород и Киев', emoji: '🛡️' },
+  { year: 907, event: 'Поход Олега на Царьград', emoji: '⛵' },
+  { year: 941, event: 'Поход Игоря на Византию', emoji: '🔥' },
+  { year: 945, event: 'Убийство князя Игоря древлянами', emoji: '🗡️' },
+  { year: 957, event: 'Крещение княгини Ольги', emoji: '✝️' },
+  { year: 972, event: 'Гибель князя Святослава', emoji: '⚔️' },
+  { year: 980, event: 'Владимир Святославич — князь киевский', emoji: '👑' },
+  { year: 988, event: 'Крещение Руси', emoji: '✝️' },
+  { year: 1015, event: 'Смерть Владимира Святославича', emoji: '🕯️' },
+  { year: 1019, event: 'Ярослав Мудрый — великий князь', emoji: '👑' },
+  { year: 1037, event: 'Софийский собор в Киеве', emoji: '⛪' },
+  { year: 1054, event: 'Смерть Ярослава Мудрого', emoji: '📜' },
+  { year: 1097, event: 'Любечский съезд князей', emoji: '🤝' },
+  { year: 1113, event: 'Владимир Мономах — князь киевский', emoji: '👑' },
+  { year: 1132, event: 'Смерть Мстислава Великого', emoji: '🕯️' },
+  { year: 1147, event: 'Основание Москвы', emoji: '🏰' },
+  { year: 1169, event: 'Разорение Киева Андреем Боголюбским', emoji: '🔥' },
+  { year: 1185, event: 'Поход Игоря на половцев', emoji: '🏹' },
+  { year: 1223, event: 'Битва на Калке', emoji: '⚔️' },
+  { year: 1237, event: 'Нашествие Батыя на Русь', emoji: '💥' },
+  { year: 1240, event: 'Невская битва', emoji: '🛡️' },
+  { year: 1242, event: 'Ледовое побоище', emoji: '❄️' },
+  { year: 1252, event: 'Александр Невский — великий князь', emoji: '👑' },
+  { year: 1263, event: 'Смерть Александра Невского', emoji: '🕯️' },
+  { year: 1325, event: 'Иван Калита — князь московский', emoji: '👑' },
+  { year: 1327, event: 'Восстание в Твери против Чолхана', emoji: '🔥' },
+  { year: 1367, event: 'Белокаменный Кремль в Москве', emoji: '🏰' },
+  { year: 1380, event: 'Куликовская битва', emoji: '⚔️' },
+  { year: 1382, event: 'Разорение Москвы Тохтамышем', emoji: '💥' },
+  { year: 1408, event: 'Нашествие Едигея на Русь', emoji: '⚔️' },
+  { year: 1425, event: 'Начало правления Василия II', emoji: '👑' },
+  { year: 1439, event: 'Флорентийская уния', emoji: '⛪' },
+  { year: 1448, event: 'Русская церковь — автокефальная', emoji: '⛪' },
+  { year: 1462, event: 'Иван III — великий князь', emoji: '👑' },
+  { year: 1471, event: 'Битва на реке Шелони', emoji: '⚔️' },
+  { year: 1478, event: 'Присоединение Новгорода к Москве', emoji: '🏰' },
+  { year: 1480, event: 'Стояние на Угре', emoji: '🏹' },
+  { year: 1497, event: 'Судебник Ивана III', emoji: '📜' },
+  { year: 1502, event: 'Конец Большой Орды', emoji: '💥' },
+  { year: 1505, event: 'Василий III — великий князь', emoji: '👑' },
+  { year: 1521, event: 'Присоединение Рязани', emoji: '🏰' },
+  { year: 1533, event: 'Иван IV — великий князь (в 3 года)', emoji: '👑' },
+  { year: 1547, event: 'Иван Грозный — первый царь', emoji: '👑' },
+  { year: 1550, event: 'Судебник Ивана IV', emoji: '📜' },
+  { year: 1552, event: 'Взятие Казани', emoji: '🏰' },
+  { year: 1556, event: 'Присоединение Астрахани', emoji: '🏰' },
+  { year: 1558, event: 'Начало Ливонской войны', emoji: '⚔️' },
+  { year: 1565, event: 'Опричнина', emoji: '🖤' },
+  { year: 1571, event: 'Сожжение Москвы Девлет-Гиреем', emoji: '🔥' },
+  { year: 1572, event: 'Битва при Молодях', emoji: '⚔️' },
+  { year: 1581, event: 'Поход Ермака в Сибирь', emoji: '🐻' },
+  { year: 1582, event: 'Ям-Запольское перемирие', emoji: '📜' },
+  { year: 1589, event: 'Учреждение патриаршества', emoji: '⛪' },
+  { year: 1598, event: 'Смерть Фёдора Иоанновича, начало Смуты', emoji: '💔' },
+  { year: 1605, event: 'Лжедмитрий I на престоле', emoji: '👑' },
+  { year: 1606, event: 'Убийство Лжедмитрия I, Василий Шуйский', emoji: '🗡️' },
+  { year: 1610, event: 'Семибоярщина', emoji: '🏛️' },
+  { year: 1612, event: 'Ополчение Минина и Пожарского', emoji: '🗡️' },
+  { year: 1613, event: 'Начало династии Романовых', emoji: '👑' },
+  { year: 1617, event: 'Столбовский мир со Швецией', emoji: '📜' },
+  { year: 1618, event: 'Деулинское перемирие с Польшей', emoji: '📜' },
+  { year: 1632, event: 'Основание Якутска', emoji: '🏕️' },
+  { year: 1648, event: 'Соляной бунт в Москве', emoji: '🔥' },
+  { year: 1649, event: 'Соборное уложение', emoji: '📜' },
+  { year: 1653, event: 'Последний Земский собор', emoji: '🏛️' },
+  { year: 1654, event: 'Переяславская рада', emoji: '🤝' },
+  { year: 1662, event: 'Медный бунт', emoji: '🔥' },
+  { year: 1667, event: 'Андрусовское перемирие', emoji: '📜' },
+  { year: 1670, event: 'Восстание Степана Разина', emoji: '⚔️' },
+  { year: 1682, event: 'Стрелецкий бунт, начало правления Петра I', emoji: '👑' },
+  { year: 1686, event: 'Вечный мир с Польшей', emoji: '🤝' },
+  { year: 1689, event: 'Нерчинский договор с Китаем', emoji: '📜' },
+  { year: 1696, event: 'Взятие Азова', emoji: '⚓' },
+  { year: 1697, event: 'Великое посольство Петра I', emoji: '🚢' },
+  { year: 1700, event: 'Начало Северной войны', emoji: '⚔️' },
+  { year: 1703, event: 'Основание Санкт-Петербурга', emoji: '🌉' },
+  { year: 1709, event: 'Полтавская битва', emoji: '🏆' },
+  { year: 1712, event: 'Столица перенесена в Петербург', emoji: '🏛️' },
+  { year: 1714, event: 'Гангутское сражение', emoji: '⚓' },
+  { year: 1721, event: 'Пётр I — первый император', emoji: '👑' },
+  { year: 1722, event: 'Табель о рангах', emoji: '📜' },
+  { year: 1725, event: 'Смерть Петра I', emoji: '🕯️' },
+  { year: 1730, event: 'Анна Иоанновна — императрица', emoji: '👑' },
+  { year: 1741, event: 'Елизавета Петровна — императрица', emoji: '👑' },
+  { year: 1755, event: 'Основание Московского университета', emoji: '🎓' },
+  { year: 1756, event: 'Начало Семилетней войны', emoji: '⚔️' },
+  { year: 1760, event: 'Взятие Берлина русскими войсками', emoji: '🏛️' },
+  { year: 1762, event: 'Екатерина II — императрица', emoji: '👑' },
+  { year: 1768, event: 'Начало русско-турецкой войны', emoji: '⚓' },
+  { year: 1772, event: 'Первый раздел Польши', emoji: '🗺️' },
+  { year: 1773, event: 'Восстание Пугачёва', emoji: '🔥' },
+  { year: 1774, event: 'Кючук-Кайнарджийский мир', emoji: '📜' },
+  { year: 1783, event: 'Георгиевский трактат с Грузией', emoji: '🤝' },
+  { year: 1790, event: 'Взятие Измаила Суворовым', emoji: '⚔️' },
+  { year: 1793, event: 'Второй раздел Польши', emoji: '🗺️' },
+  { year: 1794, event: 'Восстание Костюшко', emoji: '🔥' },
+  { year: 1795, event: 'Третий раздел Польши', emoji: '🗺️' },
+  { year: 1796, event: 'Павел I — император', emoji: '👑' },
+  { year: 1799, event: 'Переход Суворова через Альпы', emoji: '🏔️' },
+  { year: 1801, event: 'Убийство Павла I', emoji: '💣' },
+  { year: 1805, event: 'Аустерлицкое сражение', emoji: '⚔️' },
+  { year: 1807, event: 'Тильзитский мир', emoji: '📜' },
+  { year: 1809, event: 'Присоединение Финляндии', emoji: '🌲' },
+  { year: 1812, event: 'Бородинская битва', emoji: '🎖️' },
+  { year: 1814, event: 'Взятие Парижа', emoji: '🏛️' },
+  { year: 1815, event: 'Венский конгресс, Священный союз', emoji: '🤝' },
+  { year: 1825, event: 'Восстание декабристов', emoji: '🔥' },
+  { year: 1837, event: 'Пушкин погиб на дуэли', emoji: '🖋️' },
+  { year: 1853, event: 'Начало Крымской войны', emoji: '⚓' },
+  { year: 1856, event: 'Парижский мир', emoji: '📜' },
+  { year: 1861, event: 'Отмена крепостного права', emoji: '📜' },
+  { year: 1863, event: 'Польское восстание', emoji: '🔥' },
+  { year: 1867, event: 'Продажа Аляски', emoji: '🗺️' },
+  { year: 1874, event: 'Военная реформа Милютина', emoji: '🎖️' },
+  { year: 1877, event: 'Русско-турецкая война', emoji: '⚔️' },
+  { year: 1878, event: 'Сан-Стефанский мир', emoji: '📜' },
+  { year: 1881, event: 'Убийство Александра II', emoji: '💣' },
+  { year: 1894, event: 'Николай II — император', emoji: '👑' },
+  { year: 1897, event: 'Первая перепись населения', emoji: '📊' },
+  { year: 1904, event: 'Начало Русско-японской войны', emoji: '⚓' },
+  { year: 1905, event: 'Первая русская революция', emoji: '🚩' },
+  { year: 1906, event: 'Первая Государственная дума', emoji: '🏛️' },
+  { year: 1907, event: 'Третьеиюньский переворот', emoji: '⚖️' },
+  { year: 1914, event: 'Вступление России в Первую мировую', emoji: '💥' },
+  { year: 1917, event: 'Революция в России', emoji: '🚩' },
+  { year: 1918, event: 'Брестский мир', emoji: '📜' },
+  { year: 1918, event: 'Расстрел царской семьи', emoji: '💔' },
+  { year: 1921, event: 'Кронштадтский мятеж и НЭП', emoji: '⚓' },
+  { year: 1922, event: 'Образование СССР', emoji: '🚩' },
+  { year: 1924, event: 'Смерть В.И. Ленина', emoji: '🕯️' },
+  { year: 1929, event: 'Начало коллективизации', emoji: '🌾' },
+  { year: 1932, event: 'Голод в СССР', emoji: '🌾' },
+  { year: 1934, event: 'Убийство Кирова', emoji: '💣' },
+  { year: 1936, event: 'Сталинская Конституция', emoji: '📜' },
+  { year: 1937, event: 'Пик репрессий', emoji: '⛓️' },
+  { year: 1939, event: 'Пакт Молотова — Риббентропа', emoji: '📜' },
+  { year: 1941, event: 'Начало Великой Отечественной', emoji: '💥' },
+  { year: 1941, event: 'Начало блокады Ленинграда', emoji: '🥶' },
+  { year: 1943, event: 'Сталинградская битва', emoji: '🏆' },
+  { year: 1943, event: 'Курская битва', emoji: '🎖️' },
+  { year: 1945, event: 'Победа в Великой Отечественной', emoji: '🎖️' },
+  { year: 1945, event: 'Ялтинская и Потсдамская конференции', emoji: '🤝' },
+  { year: 1949, event: 'Испытание первой атомной бомбы', emoji: '☢️' },
+  { year: 1953, event: 'Смерть И.В. Сталина', emoji: '🕯️' },
+  { year: 1954, event: 'Освоение целины', emoji: '🌾' },
+  { year: 1956, event: 'XX съезд КПСС', emoji: '📢' },
+  { year: 1957, event: 'Запуск первого спутника', emoji: '🛰️' },
+  { year: 1961, event: 'Полёт Гагарина', emoji: '🚀' },
+  { year: 1961, event: 'Берлинский кризис', emoji: '🧱' },
+  { year: 1962, event: 'Карибский кризис', emoji: '☢️' },
+  { year: 1964, event: 'Отставка Н.С. Хрущёва', emoji: '🏛️' },
+  { year: 1965, event: 'Первый выход в космос (Леонов)', emoji: '👨‍🚀' },
+  { year: 1968, event: 'Пражская весна и ввод войск', emoji: '🌸' },
+  { year: 1972, event: 'Договор ОСВ-1', emoji: '📜' },
+  { year: 1975, event: 'Хельсинкский акт', emoji: '🤝' },
+  { year: 1979, event: 'Ввод войск в Афганистан', emoji: '⚔️' },
+  { year: 1980, event: 'Олимпиада в Москве', emoji: '🐻' },
+  { year: 1985, event: 'М.С. Горбачёв — генсек', emoji: '🏛️' },
+  { year: 1986, event: 'Авария на Чернобыльской АЭС', emoji: '☢️' },
+  { year: 1987, event: 'Договор по РСМД', emoji: '📜' },
+  { year: 1989, event: 'Вывод войск из Афганистана', emoji: '🕊️' },
+  { year: 1991, event: 'Августовский путч', emoji: '🚩' },
+  { year: 1991, event: 'Распад СССР', emoji: '🗺️' },
+  { year: 1992, event: 'Начало рыночных реформ Гайдара', emoji: '📉' },
+  { year: 1993, event: 'Конституционный кризис', emoji: '🏛️' },
+  { year: 1994, event: 'Первая чеченская кампания', emoji: '⚔️' },
+  { year: 1998, event: 'Дефолт', emoji: '📉' },
+  { year: 1999, event: 'Вторая чеченская кампания', emoji: '⚔️' },
+  { year: 2000, event: 'Путин — президент России', emoji: '🏛️' },
+  { year: 2008, event: 'Война в Грузии', emoji: '⚔️' },
+  { year: 2014, event: 'Олимпиада в Сочи', emoji: '⛷️' },
+  { year: 2018, event: 'Чемпионат мира по футболу в России', emoji: '⚽' }
+];
+
+/* 📖 Русская литература */
+const EVENTS_RUS_LIT = [
+  { year: 1799, event: 'Родился А.С. Пушкин', emoji: '🖋️' },
+  { year: 1809, event: 'Родился Н.В. Гоголь', emoji: '📖' },
+  { year: 1814, event: 'Родился М.Ю. Лермонтов', emoji: '⚔️' },
+  { year: 1818, event: 'Родился И.С. Тургенев', emoji: '🖋️' },
+  { year: 1821, event: 'Родился Ф.М. Достоевский', emoji: '🖋️' },
+  { year: 1821, event: 'Родился Н.А. Некрасов', emoji: '📜' },
+  { year: 1823, event: '«Бахчисарайский фонтан» Пушкина', emoji: '⛲' },
+  { year: 1825, event: '«Борис Годунов» Пушкина', emoji: '👑' },
+  { year: 1828, event: 'Родился Л.Н. Толстой', emoji: '📚' },
+  { year: 1830, event: '«Маленькие трагедии» Пушкина', emoji: '🎭' },
+  { year: 1831, event: '«Сказка о царе Салтане» Пушкина', emoji: '👑' },
+  { year: 1833, event: '«Евгений Онегин» — полное издание', emoji: '📖' },
+  { year: 1833, event: '«Медный всадник» Пушкина', emoji: '🐎' },
+  { year: 1836, event: '«Капитанская дочка» Пушкина', emoji: '❄️' },
+  { year: 1836, event: '«Ревизор» Гоголя', emoji: '🎭' },
+  { year: 1837, event: 'Пушкин погиб на дуэли', emoji: '🖋️' },
+  { year: 1840, event: '«Герой нашего времени» Лермонтова', emoji: '🏔️' },
+  { year: 1841, event: 'Лермонтов погиб на дуэли', emoji: '⚔️' },
+  { year: 1842, event: '«Мёртвые души» Гоголя (1-й том)', emoji: '🛒' },
+  { year: 1847, event: '«Обыкновенная история» Гончарова', emoji: '📖' },
+  { year: 1852, event: '«Записки охотника» Тургенева', emoji: '🌲' },
+  { year: 1852, event: 'Смерть Н.В. Гоголя', emoji: '🕯️' },
+  { year: 1856, event: '«Рудин» Тургенева', emoji: '📖' },
+  { year: 1859, event: '«Обломов» Гончарова', emoji: '🛋️' },
+  { year: 1859, event: '«Дворянское гнездо» Тургенева', emoji: '🏡' },
+  { year: 1860, event: '«Гроза» Островского', emoji: '⛈️' },
+  { year: 1862, event: '«Отцы и дети» Тургенева', emoji: '📖' },
+  { year: 1863, event: '«Что делать?» Чернышевского', emoji: '📕' },
+  { year: 1866, event: '«Преступление и наказание»', emoji: '🪓' },
+  { year: 1868, event: '«Идиот» Достоевского', emoji: '👁️' },
+  { year: 1869, event: '«Война и мир» Толстого (окончено)', emoji: '⚔️' },
+  { year: 1872, event: '«Бесы» Достоевского', emoji: '👹' },
+  { year: 1873, event: '«Анна Каренина» — начало публикации', emoji: '🚂' },
+  { year: 1877, event: '«Анна Каренина» — окончание', emoji: '🚂' },
+  { year: 1880, event: '«Братья Карамазовы» Достоевского', emoji: '⛪' },
+  { year: 1881, event: 'Смерть Ф.М. Достоевского', emoji: '🕯️' },
+  { year: 1881, event: 'Смерть Н.А. Некрасова', emoji: '🕯️' },
+  { year: 1883, event: '«Смерть Ивана Ильича» Толстого', emoji: '⚰️' },
+  { year: 1886, event: '«Хамелеон» Чехова', emoji: '🦎' },
+  { year: 1888, event: '«Медведь» Чехова', emoji: '🐻' },
+  { year: 1892, event: '«Палата № 6» Чехова', emoji: '🏥' },
+  { year: 1895, event: '«Анна на шее» Чехова', emoji: '💍' },
+  { year: 1896, event: '«Чайка» Чехова', emoji: '🕊️' },
+  { year: 1897, event: '«Дядя Ваня» Чехова', emoji: '🌳' },
+  { year: 1898, event: '«Человек в футляре» Чехова', emoji: '☂️' },
+  { year: 1899, event: '«Дама с собачкой» Чехова', emoji: '🐕' },
+  { year: 1901, event: '«Три сестры» Чехова', emoji: '👭' },
+  { year: 1902, event: '«На дне» Горького', emoji: '🏚️' },
+  { year: 1903, event: '«Вишнёвый сад» Чехова', emoji: '🌸' },
+  { year: 1904, event: 'Смерть А.П. Чехова', emoji: '🕯️' },
+  { year: 1906, event: '«Мать» Горького', emoji: '✊' },
+  { year: 1910, event: 'Смерть Л.Н. Толстого', emoji: '🕯️' },
+  { year: 1913, event: '«Детство» Горького', emoji: '📖' },
+  { year: 1914, event: '«Облако в штанах» Маяковского', emoji: '☁️' },
+  { year: 1915, event: '«Флейта-позвоночник» Маяковского', emoji: '🎺' },
+  { year: 1918, event: '«Скифы» Блока', emoji: '🐎' },
+  { year: 1921, event: 'Смерть А.А. Блока', emoji: '🕯️' },
+  { year: 1921, event: 'Расстрелян Н.С. Гумилёв', emoji: '💔' },
+  { year: 1922, event: '«Мойдодыр» Чуковского', emoji: '🧼' },
+  { year: 1925, event: '«Собачье сердце» Булгакова', emoji: '🐕' },
+  { year: 1925, event: 'Смерть С.А. Есенина', emoji: '🕯️' },
+  { year: 1926, event: '«Дни Турбиных» Булгакова', emoji: '🎭' },
+  { year: 1928, event: '«Двенадцать стульев» Ильфа и Петрова', emoji: '🪑' },
+  { year: 1930, event: 'Смерть В.В. Маяковского', emoji: '🕯️' },
+  { year: 1931, event: '«Золотой телёнок» Ильфа и Петрова', emoji: '🐄' },
+  { year: 1934, event: '«Как закалялась сталь» Островского', emoji: '⚙️' },
+  { year: 1940, event: 'Закончен «Мастер и Маргарита»', emoji: '🐈' },
+  { year: 1940, event: 'Смерть М.А. Булгакова', emoji: '🕯️' },
+  { year: 1941, event: '«Василий Тёркин» — начало', emoji: '🎖️' },
+  { year: 1945, event: '«Молодая гвардия» Фадеева', emoji: '🎖️' },
+  { year: 1956, event: '«Судьба человека» Шолохова', emoji: '📖' },
+  { year: 1958, event: 'Нобелевская премия Пастернака', emoji: '🏅' },
+  { year: 1960, event: 'Смерть Б.Л. Пастернака', emoji: '🕯️' },
+  { year: 1962, event: '«Один день Ивана Денисовича»', emoji: '⛓️' },
+  { year: 1966, event: 'Смерть А.А. Ахматовой', emoji: '🕯️' },
+  { year: 1967, event: 'Публикация «Мастера и Маргариты»', emoji: '🐈' },
+  { year: 1970, event: 'Нобелевская премия Солженицына', emoji: '🏅' },
+  { year: 1971, event: 'Смерть А.Т. Твардовского', emoji: '🕯️' },
+  { year: 2008, event: 'Смерть А.И. Солженицына', emoji: '🕯️' }
+];
+
+/* 🎵 Русская музыка */
+const EVENTS_RUS_MUSIC = [
+  { year: 1804, event: 'Родился М.И. Глинка', emoji: '🎼' },
+  { year: 1813, event: 'Родился А.С. Даргомыжский', emoji: '🎼' },
+  { year: 1833, event: 'Родился А.П. Бородин', emoji: '🧪' },
+  { year: 1836, event: 'Премьера «Жизни за царя» Глинки', emoji: '👑' },
+  { year: 1839, event: 'Родился М.П. Мусоргский', emoji: '🎼' },
+  { year: 1840, event: 'Родился П.И. Чайковский', emoji: '🎼' },
+  { year: 1842, event: 'Премьера «Руслана и Людмилы» Глинки', emoji: '⚔️' },
+  { year: 1844, event: 'Родился Н.А. Римский-Корсаков', emoji: '🎼' },
+  { year: 1856, event: 'Премьера «Русалки» Даргомыжского', emoji: '🧜' },
+  { year: 1861, event: 'Основание «Могучей кучки»', emoji: '🎵' },
+  { year: 1862, event: 'Открыта Петербургская консерватория', emoji: '🎓' },
+  { year: 1866, event: 'Открыта Московская консерватория', emoji: '🎓' },
+  { year: 1869, event: 'Премьера «Бориса Годунова» Мусоргского', emoji: '👑' },
+  { year: 1872, event: 'Родился А.Н. Скрябин', emoji: '🎹' },
+  { year: 1873, event: 'Родился С.В. Рахманинов', emoji: '🎹' },
+  { year: 1874, event: '2-я редакция «Бориса Годунова»', emoji: '👑' },
+  { year: 1876, event: '«Лебединое озеро» Чайковского', emoji: '🦢' },
+  { year: 1879, event: '«Евгений Онегин» Чайковского', emoji: '💌' },
+  { year: 1881, event: 'Смерть М.П. Мусоргского', emoji: '🕯️' },
+  { year: 1887, event: 'Смерть А.П. Бородина', emoji: '🕯️' },
+  { year: 1890, event: '«Пиковая дама» Чайковского', emoji: '🃏' },
+  { year: 1892, event: '«Щелкунчик» Чайковского', emoji: '🎄' },
+  { year: 1893, event: 'Смерть П.И. Чайковского', emoji: '🕯️' },
+  { year: 1895, event: 'Провал 1-й симфонии Рахманинова', emoji: '🎼' },
+  { year: 1896, event: '«Садко» Римского-Корсакова', emoji: '🌊' },
+  { year: 1901, event: '2-я симфония Рахманинова', emoji: '🎼' },
+  { year: 1904, event: 'Смерть Н.А. Римского-Корсакова', emoji: '🕯️' },
+  { year: 1907, event: '«Поэма экстаза» Скрябина', emoji: '🔥' },
+  { year: 1913, event: '«Весна священная» Стравинского', emoji: '🌋' },
+  { year: 1915, event: '«Всенощное бдение» Рахманинова', emoji: '⛪' },
+  { year: 1915, event: 'Смерть А.Н. Скрябина', emoji: '🕯️' },
+  { year: 1915, event: 'Родился Г.В. Свиридов', emoji: '🎼' },
+  { year: 1926, event: '«Любовь к трём апельсинам» Прокофьева', emoji: '🍊' },
+  { year: 1934, event: '«Леди Макбет Мценского уезда» Шостаковича', emoji: '🎭' },
+  { year: 1936, event: '5-я симфония Шостаковича', emoji: '🎼' },
+  { year: 1938, event: '«Александр Невский» Прокофьева', emoji: '⚔️' },
+  { year: 1941, event: '7-я (Ленинградская) симфония Шостаковича', emoji: '🎖️' },
+  { year: 1943, event: 'Смерть С.В. Рахманинова', emoji: '🕯️' },
+  { year: 1945, event: '5-я симфония Прокофьева', emoji: '🎼' },
+  { year: 1953, event: 'Смерть С.С. Прокофьева', emoji: '🕯️' },
+  { year: 1956, event: 'Первый конкурс Чайковского', emoji: '🎹' },
+  { year: 1957, event: '11-я симфония Шостаковича', emoji: '🎼' },
+  { year: 1958, event: 'Ван Клиберн — лауреат конкурса Чайковского', emoji: '🏅' },
+  { year: 1962, event: '«Симфония № 13» Шостаковича', emoji: '🎼' },
+  { year: 1969, event: '14-я симфония Шостаковича', emoji: '🎼' },
+  { year: 1975, event: 'Смерть Д.Д. Шостаковича', emoji: '🕯️' },
+  { year: 1979, event: '«Симфония № 15» Шостаковича', emoji: '🎼' },
+  { year: 1998, event: 'Смерть Г.В. Свиридова', emoji: '🕯️' }
+];
+
+/* 🎨 Русское искусство */
+const EVENTS_RUS_ART = [
+  { year: 1560, event: 'Построен Храм Василия Блаженного', emoji: '⛪' },
+  { year: 1585, event: 'Царь-пушка Андрея Чохова', emoji: '💣' },
+  { year: 1712, event: 'Перенос столицы в Петербург', emoji: '🏛️' },
+  { year: 1714, event: 'Открыта Кунсткамера', emoji: '🏛️' },
+  { year: 1754, event: 'Основание Эрмитажа', emoji: '🖼️' },
+  { year: 1757, event: 'Основана Академия художеств', emoji: '🎨' },
+  { year: 1764, event: 'Начало строительства Эрмитажа', emoji: '🏛️' },
+  { year: 1830, event: 'Картина Брюллова «Последний день Помпеи»', emoji: '🌋' },
+  { year: 1848, event: '«Сватовство майора» Федотова', emoji: '🎨' },
+  { year: 1856, event: 'Основана Третьяковская галерея', emoji: '🖼️' },
+  { year: 1863, event: '«Бунт четырнадцати» в Академии', emoji: '🎨' },
+  { year: 1870, event: 'Основание Товарищества передвижников', emoji: '🖼️' },
+  { year: 1871, event: '«Грачи прилетели» Саврасова', emoji: '🐦' },
+  { year: 1873, event: '«Бурлаки на Волге» Репина', emoji: '🚣' },
+  { year: 1878, event: '«Утро стрелецкой казни» Сурикова', emoji: '⚔️' },
+  { year: 1880, event: '«Лунная ночь на Днепре» Куинджи', emoji: '🌙' },
+  { year: 1881, event: '«Алёнушка» Васнецова', emoji: '🌲' },
+  { year: 1885, event: '«Иван Грозный и сын его Иван» Репина', emoji: '👑' },
+  { year: 1887, event: '«Боярыня Морозова» Сурикова', emoji: '🕯️' },
+  { year: 1889, event: '«Демон сидящий» Врубеля', emoji: '😈' },
+  { year: 1890, event: '«Утро в сосновом лесу» Шишкина', emoji: '🐻' },
+  { year: 1892, event: 'Открыт Третьяковский музей', emoji: '🖼️' },
+  { year: 1898, event: 'Основание объединения «Мир искусства»', emoji: '🎨' },
+  { year: 1898, event: 'Открыт Русский музей', emoji: '🏛️' },
+  { year: 1905, event: '«Купание красного коня» Петрова-Водкина', emoji: '🐎' },
+  { year: 1911, event: 'Поставлен памятник Гоголю', emoji: '📜' },
+  { year: 1913, event: '«Чёрный квадрат» Малевича', emoji: '⬛' },
+  { year: 1915, event: 'Основание супрематизма', emoji: '◼️' },
+  { year: 1922, event: '«Над городом» Шагала', emoji: '🌆' },
+  { year: 1924, event: 'Мавзолей Ленина (первый)', emoji: '🏛️' },
+  { year: 1930, event: 'Дом Мельникова в Москве', emoji: '🏠' },
+  { year: 1935, event: 'Открыта станция метро «Кропоткинская»', emoji: '🚇' },
+  { year: 1937, event: 'Памятник «Рабочий и колхозница»', emoji: '⚒️' },
+  { year: 1949, event: 'Памятник Юрию Долгорукому', emoji: '🐎' },
+  { year: 1962, event: 'Разгром выставки «30 лет МОСХ»', emoji: '🎨' },
+  { year: 1967, event: 'Мемориал на Мамаевом кургане', emoji: '🏔️' },
+  { year: 1974, event: '«Бульдозерная выставка» в Москве', emoji: '🚜' }
+];
+
+/* 🔬 Наука */
+const EVENTS_SCIENCE = [
+  { year: 400, event: 'Гиппократ — основатель медицины', emoji: '⚕️' },
+  { year: 300, event: '«Начала» Эвклида', emoji: '📐' },
+  { year: 240, event: 'Эратосфен измерил Землю', emoji: '🌍' },
+  { year: 1543, event: 'Коперник: Земля вокруг Солнца', emoji: '☀️' },
+  { year: 1600, event: 'Джордано Бруно сожжён', emoji: '🔥' },
+  { year: 1610, event: 'Галилей открыл спутники Юпитера', emoji: '🔭' },
+  { year: 1628, event: 'Открыто кровообращение', emoji: '❤️' },
+  { year: 1687, event: 'Ньютон — закон тяготения', emoji: '🍎' },
+  { year: 1752, event: 'Франклин объяснил природу молнии', emoji: '⚡' },
+  { year: 1774, event: 'Открыт кислород', emoji: '💨' },
+  { year: 1796, event: 'Первая прививка от оспы', emoji: '💉' },
+  { year: 1803, event: 'Открыт атом (Дальтон)', emoji: '⚛️' },
+  { year: 1828, event: 'Синтез мочевины (Велер)', emoji: '🧪' },
+  { year: 1831, event: 'Открытие электромагнитной индукции', emoji: '🧲' },
+  { year: 1839, event: 'Клеточная теория (Шлейден, Шванн)', emoji: '🔬' },
+  { year: 1859, event: 'Дарвин — теория эволюции', emoji: '🐒' },
+  { year: 1865, event: 'Мендель — законы генетики', emoji: '🌱' },
+  { year: 1869, event: 'Менделеев — периодическая таблица', emoji: '🧪' },
+  { year: 1882, event: 'Открыт возбудитель туберкулёза (Кох)', emoji: '🦠' },
+  { year: 1895, event: 'Открыты рентгеновские лучи', emoji: '🩻' },
+  { year: 1896, event: 'Открыта радиоактивность', emoji: '☢️' },
+  { year: 1897, event: 'Открыт электрон (Томсон)', emoji: '⚡' },
+  { year: 1900, event: 'Планк — квантовая теория', emoji: '⚛️' },
+  { year: 1903, event: 'Открытие радия (Кюри)', emoji: '☢️' },
+  { year: 1905, event: 'Эйнштейн — теория относительности', emoji: '🌀' },
+  { year: 1911, event: 'Модель атома Резерфорда', emoji: '⚛️' },
+  { year: 1919, event: 'Подтверждена теория Эйнштейна', emoji: '🌌' },
+  { year: 1928, event: 'Открыт пенициллин', emoji: '💊' },
+  { year: 1932, event: 'Открыт нейтрон', emoji: '⚛️' },
+  { year: 1938, event: 'Расщепление атомного ядра', emoji: '💥' },
+  { year: 1944, event: 'Открыта ДНК как носитель наследственности', emoji: '🧬' },
+  { year: 1953, event: 'Открыта структура ДНК', emoji: '🧬' },
+  { year: 1957, event: 'Спутник-1 (начало космической эры)', emoji: '🛰️' },
+  { year: 1960, event: 'Создан первый лазер', emoji: '🔦' },
+  { year: 1967, event: 'Первая пересадка сердца', emoji: '❤️' },
+  { year: 1969, event: 'Интернет (ARPANET)', emoji: '🌐' },
+  { year: 1978, event: 'Первый ребёнок из пробирки', emoji: '👶' },
+  { year: 1983, event: 'Открыт ВИЧ', emoji: '🦠' },
+  { year: 1996, event: 'Клонирована овца Долли', emoji: '🐑' },
+  { year: 2003, event: 'Расшифрован геном человека', emoji: '🧬' },
+  { year: 2012, event: 'Открыт бозон Хиггса', emoji: '⚛️' },
+  { year: 2015, event: 'Открыты гравитационные волны', emoji: '🌊' },
+  { year: 2019, event: 'Первое фото чёрной дыры', emoji: '🕳️' },
+  { year: 2020, event: 'МРНК-вакцины от COVID-19', emoji: '💉' }
+];
+
+/* 💡 Техника */
+const EVENTS_TECH = [
+  { year: 105, event: 'Бумага в Китае (Цай Лунь)', emoji: '📜' },
+  { year: 1440, event: 'Книгопечатание Гутенберга', emoji: '📖' },
+  { year: 1592, event: 'Изобретён термометр', emoji: '🌡️' },
+  { year: 1608, event: 'Изобретён телескоп', emoji: '🔭' },
+  { year: 1642, event: 'Первый механический калькулятор', emoji: '🧮' },
+  { year: 1712, event: 'Паровой двигатель', emoji: '⚙️' },
+  { year: 1783, event: 'Первый полёт на воздушном шаре', emoji: '🎈' },
+  { year: 1804, event: 'Первый паровоз на рельсах', emoji: '🚂' },
+  { year: 1825, event: 'Первая железная дорога', emoji: '🛤️' },
+  { year: 1831, event: 'Электродвигатель', emoji: '⚡' },
+  { year: 1837, event: 'Изобретён телеграф', emoji: '📡' },
+  { year: 1852, event: 'Первый дирижабль', emoji: '🎈' },
+  { year: 1867, event: 'Изобретён динамит', emoji: '💥' },
+  { year: 1876, event: 'Изобретён телефон', emoji: '📞' },
+  { year: 1877, event: 'Фонограф — запись звука', emoji: '🎙️' },
+  { year: 1879, event: 'Лампочка Эдисона', emoji: '💡' },
+  { year: 1885, event: 'Первый автомобиль', emoji: '🚗' },
+  { year: 1895, event: 'Изобретено радио', emoji: '📻' },
+  { year: 1895, event: 'Кинематограф братьев Люмьер', emoji: '🎬' },
+  { year: 1901, event: 'Радиосигнал через океан', emoji: '📡' },
+  { year: 1903, event: 'Первый полёт самолёта', emoji: '✈️' },
+  { year: 1908, event: 'Конвейер Форда', emoji: '🚗' },
+  { year: 1926, event: 'Первый телевизор', emoji: '📺' },
+  { year: 1938, event: 'Шариковая ручка', emoji: '🖊️' },
+  { year: 1946, event: 'Первый компьютер ЭНИАК', emoji: '💻' },
+  { year: 1947, event: 'Изобретён транзистор', emoji: '🔌' },
+  { year: 1954, event: 'Первая атомная электростанция', emoji: '⚛️' },
+  { year: 1969, event: 'Создана сеть ARPANET', emoji: '🌐' },
+  { year: 1971, event: 'Изобретён микропроцессор', emoji: '💾' },
+  { year: 1973, event: 'Первый мобильный телефон', emoji: '📱' },
+  { year: 1976, event: 'Первый компьютер Apple', emoji: '🖥️' },
+  { year: 1989, event: 'Всемирная паутина (WWW)', emoji: '🌐' },
+  { year: 2001, event: 'Основана Wikipedia', emoji: '📚' },
+  { year: 2007, event: 'Первый iPhone', emoji: '📱' },
+  { year: 2010, event: 'Первый iPad', emoji: '📱' },
+  { year: 2012, event: 'Массовые электромобили Tesla', emoji: '🔋' }
+];
+
+/* 🎨 Мировое искусство */
+const EVENTS_ART = [
+  { year: 447, event: 'Построен Парфенон в Афинах', emoji: '🏛️' },
+  { year: 1302, event: 'Фрески Джотто в Падуе', emoji: '🎨' },
+  { year: 1420, event: 'Купол Брунеллески во Флоренции', emoji: '⛪' },
+  { year: 1503, event: '«Мона Лиза» Леонардо да Винчи', emoji: '🖼️' },
+  { year: 1508, event: 'Микеланджело — Сикстинская капелла', emoji: '🎨' },
+  { year: 1512, event: '«Сикстинская Мадонна» Рафаэля', emoji: '👼' },
+  { year: 1632, event: '«Ночной дозор» Рембрандта', emoji: '🌙' },
+  { year: 1660, event: 'Построен Версальский дворец', emoji: '🏰' },
+  { year: 1793, event: 'Открыт Лувр', emoji: '🏛️' },
+  { year: 1839, event: 'Изобретена фотография', emoji: '📷' },
+  { year: 1874, event: 'Первая выставка импрессионистов', emoji: '🌸' },
+  { year: 1889, event: 'Построена Эйфелева башня', emoji: '🗼' },
+  { year: 1907, event: 'Кубизм Пикассо («Авиньонские девицы»)', emoji: '🔷' },
+  { year: 1929, event: 'Открыт Музей современного искусства (Нью-Йорк)', emoji: '🖼️' },
+  { year: 1937, event: '«Герника» Пикассо', emoji: '🐂' },
+  { year: 1959, event: 'Открыт музей Гуггенхайма', emoji: '🌀' },
+  { year: 1973, event: 'Открыт Сиднейский оперный театр', emoji: '🎭' },
+  { year: 2019, event: 'Пожар в Соборе Парижской Богоматери', emoji: '🔥' }
+];
+
+/* 📚 Мировая литература */
+const EVENTS_LIT = [
+  { year: 850, event: 'Поэмы Гомера «Илиада» и «Одиссея»', emoji: '📜' },
+  { year: 1321, event: '«Божественная комедия» Данте', emoji: '🔥' },
+  { year: 1595, event: '«Ромео и Джульетта» Шекспира', emoji: '🌹' },
+  { year: 1605, event: '«Дон Кихот» Сервантеса', emoji: '🐴' },
+  { year: 1616, event: 'Смерть Шекспира и Сервантеса', emoji: '🕯️' },
+  { year: 1719, event: '«Робинзон Крузо» Дефо', emoji: '🏝️' },
+  { year: 1726, event: '«Путешествия Гулливера» Свифта', emoji: '🚢' },
+  { year: 1813, event: '«Гордость и предубеждение» Остин', emoji: '💍' },
+  { year: 1818, event: '«Франкенштейн» Мэри Шелли', emoji: '⚡' },
+  { year: 1830, event: '«Красное и чёрное» Стендаля', emoji: '❤️' },
+  { year: 1835, event: '«Сказки» Андерсена (первый выпуск)', emoji: '🦆' },
+  { year: 1844, event: '«Три мушкетёра» Дюма', emoji: '🗡️' },
+  { year: 1851, event: '«Моби Дик» Мелвилла', emoji: '🐋' },
+  { year: 1857, event: '«Госпожа Бовари» Флобера', emoji: '🌹' },
+  { year: 1862, event: '«Отверженные» Гюго', emoji: '⛓️' },
+  { year: 1865, event: '«Алиса в Стране чудес» Кэрролла', emoji: '🐰' },
+  { year: 1884, event: '«Гекльберри Финн» Твена', emoji: '🛶' },
+  { year: 1886, event: '«Странная история доктора Джекила»', emoji: '🧪' },
+  { year: 1890, event: '«Портрет Дориана Грея» Уайльда', emoji: '🖼️' },
+  { year: 1892, event: '«Приключения Шерлока Холмса»', emoji: '🔍' },
+  { year: 1899, event: '«Сердце тьмы» Конрада', emoji: '🌑' },
+  { year: 1900, event: '«Волшебник страны Оз» Баума', emoji: '🌪️' },
+  { year: 1915, event: '«Метаморфоза» Кафки', emoji: '🪲' },
+  { year: 1922, event: '«Улисс» Джойса', emoji: '📖' },
+  { year: 1925, event: '«Великий Гэтсби» Фицджеральда', emoji: '🎩' },
+  { year: 1932, event: '«О дивный новый мир» Хаксли', emoji: '🧪' },
+  { year: 1945, event: '«Скотный двор» Оруэлла', emoji: '🐷' },
+  { year: 1949, event: '«1984» Оруэлла', emoji: '👁️' },
+  { year: 1951, event: '«Над пропастью во ржи» Сэлинджера', emoji: '🌾' },
+  { year: 1967, event: '«Сто лет одиночества» Маркеса', emoji: '🌳' },
+  { year: 1997, event: '«Гарри Поттер и философский камень»', emoji: '⚡' },
+  { year: 2003, event: '«Код да Винчи» Дэна Брауна', emoji: '🎨' }
+];
+
+/* 🎵 Мировая музыка */
+const EVENTS_MUSIC = [
+  { year: 1600, event: 'Первая опера в истории', emoji: '🎭' },
+  { year: 1725, event: '«Времена года» Вивальди', emoji: '🌸' },
+  { year: 1750, event: 'Смерть И.С. Баха', emoji: '🎼' },
+  { year: 1791, event: 'Смерть Моцарта', emoji: '🎼' },
+  { year: 1808, event: '5-я симфония Бетховена', emoji: '🎵' },
+  { year: 1824, event: '9-я симфония Бетховена', emoji: '🎼' },
+  { year: 1830, event: '«Симфония фантастическая» Берлиоза', emoji: '💭' },
+  { year: 1889, event: '«Симфония № 8» Малера', emoji: '🎼' },
+  { year: 1900, event: '«Тоска» Пуччини', emoji: '🎭' },
+  { year: 1928, event: '«Болеро» Равеля', emoji: '🥁' },
+  { year: 1962, event: 'Первое выступление The Beatles', emoji: '🎸' },
+  { year: 1965, event: 'Песня «Yesterday» The Beatles', emoji: '🎶' },
+  { year: 1969, event: 'Фестиваль Вудсток', emoji: '🎸' },
+  { year: 1975, event: '«Богемская рапсодия» Queen', emoji: '👑' }
+];
+
+/* 🎬 Кино */
+const EVENTS_CINEMA = [
+  { year: 1895, event: 'Первый киносеанс братьев Люмьер', emoji: '🎬' },
+  { year: 1927, event: 'Первый звуковой фильм «Певец джаза»', emoji: '🎤' },
+  { year: 1928, event: 'Микки Маус в «Пароходике Вилли»', emoji: '🐭' },
+  { year: 1937, event: '«Белоснежка» — первый полнометражный мультфильм', emoji: '🍎' },
+  { year: 1939, event: '«Унесённые ветром»', emoji: '🌾' },
+  { year: 1950, event: '«Золушка» Диснея', emoji: '👠' },
+  { year: 1964, event: '«Мэри Поппинс»', emoji: '☂️' },
+  { year: 1967, event: '«Книга джунглей»', emoji: '🐘' },
+  { year: 1968, event: '«Космическая одиссея 2001»', emoji: '🚀' },
+  { year: 1977, event: 'Первые «Звёздные войны»', emoji: '⚔️' },
+  { year: 1982, event: '«Инопланетянин» Спилберга', emoji: '👽' },
+  { year: 1989, event: '«Русалочка» Диснея', emoji: '🧜' },
+  { year: 1994, event: '«Король Лев» и «Форрест Гамп»', emoji: '🦁' },
+  { year: 1995, event: '«История игрушек» — первый 3D-мультфильм', emoji: '🤠' },
+  { year: 1997, event: '«Титаник» Кэмерона', emoji: '🚢' },
+  { year: 2001, event: '«Гарри Поттер и философский камень»', emoji: '⚡' },
+  { year: 2009, event: '«Аватар» Кэмерона', emoji: '🌌' },
+  { year: 2019, event: '«Мстители: Финал»', emoji: '🦸' }
+];
+
+/* 🚀 Космос */
+const EVENTS_SPACE = [
+  { year: 1610, event: 'Галилей открыл спутники Юпитера', emoji: '🔭' },
+  { year: 1781, event: 'Открыт Уран', emoji: '🪐' },
+  { year: 1846, event: 'Открыт Нептун', emoji: '🔵' },
+  { year: 1903, event: 'Циолковский о космических полётах', emoji: '🚀' },
+  { year: 1930, event: 'Открыт Плутон', emoji: '🪐' },
+  { year: 1957, event: 'Запущен первый спутник', emoji: '🛰️' },
+  { year: 1957, event: 'Лайка — первая собака в космосе', emoji: '🐕' },
+  { year: 1959, event: 'Станция «Луна-2» достигла Луны', emoji: '🌕' },
+  { year: 1961, event: 'Полёт Гагарина', emoji: '🚀' },
+  { year: 1963, event: 'Терешкова — первая женщина в космосе', emoji: '👩‍🚀' },
+  { year: 1965, event: 'Леонов вышел в открытый космос', emoji: '👨‍🚀' },
+  { year: 1969, event: 'Армстронг на Луне', emoji: '🌕' },
+  { year: 1971, event: 'Первая станция «Салют»', emoji: '🛰️' },
+  { year: 1975, event: 'Стыковка «Союз-Аполлон»', emoji: '🤝' },
+  { year: 1977, event: 'Запущены «Вояджеры»', emoji: '🛰️' },
+  { year: 1981, event: 'Первый космический шаттл', emoji: '🚀' },
+  { year: 1986, event: 'Станция «Мир»', emoji: '🛰️' },
+  { year: 1990, event: 'Запущен телескоп «Хаббл»', emoji: '🔭' },
+  { year: 1998, event: 'Начало строительства МКС', emoji: '🛰️' },
+  { year: 2012, event: 'Марсоход Curiosity', emoji: '🤖' },
+  { year: 2015, event: 'Зонд New Horizons у Плутона', emoji: '🪐' },
+  { year: 2021, event: 'Запущен телескоп «Джеймс Уэбб»', emoji: '🔭' }
+];
+
+/* 🏅 Спорт */
+const EVENTS_SPORT = [
+  { year: 1896, event: 'Возрождение Олимпийских игр', emoji: '🏅' },
+  { year: 1924, event: 'Первые зимние Олимпийские игры', emoji: '⛷️' },
+  { year: 1930, event: 'Первый чемпионат мира по футболу', emoji: '⚽' },
+  { year: 1952, event: 'Первое участие СССР в Олимпиаде', emoji: '🏅' },
+  { year: 1956, event: 'Золото СССР по футболу на Олимпиаде', emoji: '🥇' },
+  { year: 1960, event: 'Первый чемпионат Европы по футболу', emoji: '⚽' },
+  { year: 1980, event: 'Олимпиада в Москве', emoji: '🐻' },
+  { year: 1984, event: 'Олимпиада в Лос-Анджелесе', emoji: '🌴' },
+  { year: 1988, event: 'Олимпиада в Сеуле', emoji: '🇰🇷' },
+  { year: 1992, event: 'Олимпиада в Барселоне', emoji: '🇪🇸' },
+  { year: 2000, event: 'Олимпиада в Сиднее', emoji: '🇦🇺' },
+  { year: 2004, event: 'Олимпиада в Афинах', emoji: '🏛️' },
+  { year: 2008, event: 'Олимпиада в Пекине', emoji: '🇨🇳' },
+  { year: 2012, event: 'Олимпиада в Лондоне', emoji: '🇬🇧' },
+  { year: 2014, event: 'Олимпиада в Сочи', emoji: '⛷️' },
+  { year: 2016, event: 'Олимпиада в Рио', emoji: '🇧🇷' },
+  { year: 2018, event: 'Чемпионат мира по футболу в России', emoji: '⚽' },
+  { year: 2021, event: 'Олимпиада в Токио', emoji: '🇯🇵' },
+  { year: 2022, event: 'Зимняя Олимпиада в Пекине', emoji: '❄️' },
+  { year: 2024, event: 'Олимпиада в Париже', emoji: '🗼' }
+];
+
+/* 🧭 Географические открытия */
+const EVENTS_GEO = [
+  { year: 1000, event: 'Викинги достигли Америки', emoji: '⛵' },
+  { year: 1271, event: 'Марко Поло отправился в Китай', emoji: '🐎' },
+  { year: 1487, event: 'Диаш обогнул Африку', emoji: '🌊' },
+  { year: 1492, event: 'Колумб открыл Америку', emoji: '⛵' },
+  { year: 1498, event: 'Васко да Гама доплыл до Индии', emoji: '🇮🇳' },
+  { year: 1519, event: 'Магеллан начал кругосветное плавание', emoji: '🌍' },
+  { year: 1522, event: 'Первое кругосветное завершено', emoji: '🌍' },
+  { year: 1642, event: 'Тасман открыл Новую Зеландию', emoji: '🇳🇿' },
+  { year: 1648, event: 'Дежнёв прошёл Берингов пролив', emoji: '🌊' },
+  { year: 1728, event: 'Беринг открыл пролив', emoji: '🌊' },
+  { year: 1770, event: 'Джеймс Кук в Австралии', emoji: '🇦🇺' },
+  { year: 1820, event: 'Открыта Антарктида', emoji: '🐧' },
+  { year: 1831, event: 'Дарвин в плавании на «Бигле»', emoji: '⛵' },
+  { year: 1869, event: 'Открыт Суэцкий канал', emoji: '🚢' },
+  { year: 1909, event: 'Покорён Северный полюс', emoji: '❄️' },
+  { year: 1911, event: 'Покорён Южный полюс (Амундсен)', emoji: '🐧' },
+  { year: 1953, event: 'Покорён Эверест', emoji: '🏔️' },
+  { year: 1960, event: 'Погружение в Марианский жёлоб', emoji: '🌊' }
+];
+
+/* ============ КАТЕГОРИИ ============ */
+const CATEGORIES = {
+  world:     { name: 'Мировая',       emoji: '🌍', events: EVENTS_WORLD },
+  rus:       { name: 'Россия',        emoji: '🇷🇺', events: EVENTS_RUS },
+  rus_lit:   { name: 'Рус.лит',       emoji: '📖', events: EVENTS_RUS_LIT },
+  rus_music: { name: 'Рус.музыка',    emoji: '🎼', events: EVENTS_RUS_MUSIC },
+  rus_art:   { name: 'Рус.искусство', emoji: '🖼️', events: EVENTS_RUS_ART },
+  science:   { name: 'Наука',         emoji: '🔬', events: EVENTS_SCIENCE },
+  tech:      { name: 'Техника',       emoji: '💡', events: EVENTS_TECH },
+  art:       { name: 'Мировое иск.',  emoji: '🎨', events: EVENTS_ART },
+  lit:       { name: 'Мир.лит',       emoji: '📚', events: EVENTS_LIT },
+  music:     { name: 'Мир.музыка',    emoji: '🎵', events: EVENTS_MUSIC },
+  cinema:    { name: 'Кино',          emoji: '🎬', events: EVENTS_CINEMA },
+  space:     { name: 'Космос',        emoji: '🚀', events: EVENTS_SPACE },
+  sport:     { name: 'Спорт',         emoji: '🏅', events: EVENTS_SPORT },
+  geo:       { name: 'Открытия',      emoji: '🧭', events: EVENTS_GEO }
+};
+
+const ALL_EVENTS = Object.values(CATEGORIES).flatMap(c => c.events);
+
+/* ============ НАСТРОЙКИ ============ */
+let historyCfg = {
+  count: 5,
+  showTime: 15,
+  category: 'mix',
+  mode: 'order',
+  noEmoji: false
+};
+try {
+  const s = localStorage.getItem('historyCfg');
+  if (s) historyCfg = { ...historyCfg, ...JSON.parse(s) };
+} catch(e) {}
+
+/* ============ ЭКРАН НАСТРОЕК ============ */
+function startHistory() {
+  clearTimeouts();
+
+  const catBtns = Object.keys(CATEGORIES).map(key => {
+    const c = CATEGORIES[key];
+    return `<button class="cat-btn" data-cat="${key}">
+      <div class="cat-emoji">${c.emoji}</div>
+      <div class="cat-name">${c.name}</div>
+      <div class="cat-count">${c.events.length}</div>
+    </button>`;
+  }).join('');
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🕰 История по датам</h2>
+      <div class="subtitle">Запомни хронологию — потом расставь по порядку</div>
+    </div>
+    <div class="panel">
+      <div style="max-width: 560px; margin: 0 auto;">
+
+        <div class="presets" id="presets">
+          <button class="preset-btn" data-count="4" data-time="20" data-cat="rus" data-mode="order">🌱 Разминка</button>
+          <button class="preset-btn" data-count="5" data-time="15" data-cat="mix" data-mode="order">⚡ Стандарт</button>
+          <button class="preset-btn" data-count="7" data-time="10" data-cat="mix" data-mode="years">🔥 Сложнее</button>
+          <button class="preset-btn" data-count="15" data-time="20" data-cat="mix" data-mode="order">💀 Хардкор</button>
+        </div>
+
+        <label style="display:block; margin-bottom: 20px;">
+          <div class="settings-row"><span>Сколько событий</span><b id="countVal">${historyCfg.count}</b></div>
+          <input type="range" id="countRange" min="3" max="20" value="${historyCfg.count}">
+        </label>
+
+        <label style="display:block; margin-bottom: 20px;">
+          <div class="settings-row"><span>Время показа</span><b id="timeVal">${historyCfg.showTime} сек</b></div>
+          <input type="range" id="timeRange" min="3" max="90" value="${historyCfg.showTime}">
+        </label>
+
+        <div style="margin-bottom: 20px;">
+          <div class="settings-row"><span>Категория</span><b id="catVal">все вместе</b></div>
+          <div class="cat-grid" id="catGrid">
+            <button class="cat-btn" data-cat="mix" style="grid-column: span 3;">
+              <div class="cat-emoji">🎲</div>
+              <div class="cat-name">Микс — все категории</div>
+              <div class="cat-count">${ALL_EVENTS.length} событий</div>
+            </button>
+            ${catBtns}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <div class="settings-row"><span>Режим проверки</span><b id="modeVal">по порядку</b></div>
+          <div class="segment" id="modeRow">
+            <button class="segment-btn" data-mode="order">По порядку<small>расставить</small></button>
+            <button class="segment-btn" data-mode="years">Годы<small>какой год</small></button>
+            <button class="segment-btn" data-mode="before">Раньше/позже<small>что было первым</small></button>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <div class="settings-row"><span>Эмодзи</span><b id="emojiVal">с эмодзи</b></div>
+          <div class="segment" id="emojiRow">
+            <button class="segment-btn" data-emoji="false">😀 С эмодзи<small>нагляднее</small></button>
+            <button class="segment-btn" data-emoji="true">📝 Без эмодзи<small>только текст и даты</small></button>
+          </div>
+        </div>
+
+        <div class="subtitle" style="text-align:left; padding: 14px; background: var(--blue-light); border-radius: 12px; line-height: 1.5;">
+          💡 <b>Как играть:</b> увидишь список реальных событий с годами. Запомни порядок и даты. Потом исчезнет — и надо будет восстановить по памяти.<br>
+          🧠 <b>Без эмодзи</b> — хардкорный режим для тренировки памяти: остаются только текст и даты.
+        </div>
+
+        <button class="btn-main" id="startBtn">Начать 🕰</button>
+      </div>
+    </div>
+  `;
+
+  const countRange = $('countRange');
+  const timeRange = $('timeRange');
+
+  function catName(c) {
+    if (c === 'mix') return 'все вместе';
+    return CATEGORIES[c] ? CATEGORIES[c].name : c;
+  }
+  function modeName(m) {
+    return m === 'order' ? 'по порядку' : m === 'years' ? 'годы' : 'раньше/позже';
+  }
+  function emojiName(e) { return e ? 'без эмодзи' : 'с эмодзи'; }
+
+  function updateCatUI() {
+    $('catVal').textContent = catName(historyCfg.category);
+    gameEl.querySelectorAll('.cat-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.cat === historyCfg.category);
+    });
+  }
+  function updateModeUI() {
+    $('modeVal').textContent = modeName(historyCfg.mode);
+    gameEl.querySelectorAll('#modeRow .segment-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === historyCfg.mode);
+    });
+  }
+  function updateEmojiUI() {
+    $('emojiVal').textContent = emojiName(historyCfg.noEmoji);
+    gameEl.querySelectorAll('#emojiRow .segment-btn').forEach(b => {
+      b.classList.toggle('active', (b.dataset.emoji === 'true') === !!historyCfg.noEmoji);
+    });
+  }
+  function markPresetActive() {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.preset-btn').forEach(b => {
+      if (+b.dataset.count === +countRange.value &&
+          +b.dataset.time === +timeRange.value &&
+          b.dataset.cat === historyCfg.category &&
+          b.dataset.mode === historyCfg.mode) {
+        b.classList.add('active');
+      }
+    });
+  }
+
+  gameEl.querySelectorAll('.cat-btn').forEach(b => {
+    b.onclick = () => {
+      historyCfg.category = b.dataset.cat;
+      updateCatUI(); markPresetActive(); sfxClick();
+    };
+  });
+
+  gameEl.querySelectorAll('#modeRow .segment-btn').forEach(b => {
+    b.onclick = () => {
+      historyCfg.mode = b.dataset.mode;
+      updateModeUI(); markPresetActive(); sfxClick();
+    };
+  });
+
+  gameEl.querySelectorAll('#emojiRow .segment-btn').forEach(b => {
+    b.onclick = () => {
+      historyCfg.noEmoji = (b.dataset.emoji === 'true');
+      updateEmojiUI(); sfxClick();
+    };
+  });
+
+  document.querySelectorAll('.preset-btn').forEach(b => {
+    b.onclick = () => {
+      countRange.value = b.dataset.count;
+      timeRange.value = b.dataset.time;
+      historyCfg.category = b.dataset.cat;
+      historyCfg.mode = b.dataset.mode;
+      $('countVal').textContent = b.dataset.count;
+      $('timeVal').textContent = b.dataset.time + ' сек';
+      updateCatUI(); updateModeUI(); markPresetActive(); sfxClick();
+    };
+  });
+
+  countRange.oninput = () => { $('countVal').textContent = countRange.value; markPresetActive(); sfxClick(); };
+  timeRange.oninput = () => { $('timeVal').textContent = timeRange.value + ' сек'; markPresetActive(); sfxClick(); };
+
+  updateCatUI(); updateModeUI(); updateEmojiUI(); markPresetActive();
+
+  $('startBtn').onclick = () => {
+    historyCfg.count = +countRange.value;
+    historyCfg.showTime = +timeRange.value;
+    try { localStorage.setItem('historyCfg', JSON.stringify(historyCfg)); } catch(e) {}
+    historyShow();
+  };
+}
+
+/* ============ ГЕНЕРАЦИЯ ============ */
+function getEventPool() {
+  if (historyCfg.category === 'mix') return [...ALL_EVENTS];
+  return CATEGORIES[historyCfg.category] ? [...CATEGORIES[historyCfg.category].events] : [...ALL_EVENTS];
+}
+
+function generateTimeline() {
+  const count = historyCfg.count;
+  if (historyCfg.category === 'mix') {
+    const keys = Object.keys(CATEGORIES);
+    const picked = [];
+    const used = new Set();
+    let guard = 0;
+    while (picked.length < count && guard < 600) {
+      guard++;
+      const k = keys[rand(keys.length)];
+      const pool = CATEGORIES[k].events;
+      const ev = pool[rand(pool.length)];
+      const uid = `${ev.year}-${ev.event}`;
+      if (used.has(uid)) continue;
+      used.add(uid);
+      picked.push(ev);
+    }
+    return picked.sort((a, b) => a.year - b.year);
+  }
+  const pool = getEventPool();
+  return shuffle(pool).slice(0, count).sort((a, b) => a.year - b.year);
+}
+
+function applyEmojiMode() {
+  if (historyCfg.noEmoji) gameEl.classList.add('no-emoji');
+  else gameEl.classList.remove('no-emoji');
+}
+
+/* ============ ФАЗА 1: ПОКАЗ ============ */
+function historyShow() {
+  clearTimeouts();
+  applyEmojiMode();
+  const showTime = historyCfg.showTime;
+  const timeline = generateTimeline();
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🕰 История по датам</h2>
+      <div class="subtitle">Запоминай хронологию... <span id="time">${showTime}</span> сек</div>
+    </div>
+    <div class="panel">
+      <div class="timer-bar"><div class="timer-fill" id="tfill" style="width:100%"></div></div>
+      <div class="status warn">Запоминай годы и события</div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+  `;
+
+  const timelineEl = $('timeline');
+  timeline.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'timeline-item';
+    el.style.animationDelay = (i * 0.1) + 's';
+    el.innerHTML = `
+      <div class="timeline-year">${item.year}</div>
+      <div class="timeline-sep">—</div>
+      <div class="timeline-event">${item.event}</div>
+      <div class="timeline-emoji">${item.emoji}</div>
+    `;
+    timelineEl.appendChild(el);
+    wait(i * 120 + 100, () => beep(400 + i * 60, 0.08));
+  });
+
+  let left = showTime;
+  const intervalId = setInterval(() => {
+    left--;
+    const t = $('time'); if (t) t.textContent = Math.max(0, left);
+    const f = $('tfill'); if (f) f.style.width = (Math.max(0, left) / showTime * 100) + '%';
+    if (left <= 0) clearInterval(intervalId);
+  }, 1000);
+  timeouts.push(intervalId);
+
+  wait(showTime * 1000, () => {
+    if (historyCfg.mode === 'order') historyOrder(timeline);
+    else if (historyCfg.mode === 'years') historyYears(timeline);
+    else historyBefore(timeline);
+  });
+}
+
+/* ============ РЕЖИМ «ПОРЯДОК» ============ */
+function historyOrder(timeline) {
+  clearTimeouts();
+  applyEmojiMode();
+  const count = timeline.length;
+  const slots = Array(count).fill(null);
+  const pool = shuffle([...timeline]);
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🕰 История по датам</h2>
+      <div class="subtitle">Расставь события от раннего к позднему</div>
+    </div>
+    <div class="panel">
+      <div class="status">Клик по событию → в следующий свободный слот. Клик по слоту → вернуть.</div>
+      <div class="slots" id="slots"></div>
+      <div class="pool" id="pool"></div>
+      <button class="btn-main" id="checkBtn">Проверить ✓</button>
+    </div>
+  `;
+
+  const slotsEl = $('slots');
+  const poolEl = $('pool');
+
+  function renderAll() {
+    slotsEl.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const s = document.createElement('div');
+      s.className = 'slot' + (slots[i] ? ' filled' : '');
+      s.dataset.idx = i;
+      if (slots[i]) {
+        s.innerHTML = `
+          <div class="slot-num">${i + 1}</div>
+          <div class="slot-emoji">${slots[i].emoji}</div>
+          <div class="slot-event">${slots[i].event}</div>
+        `;
+        s.onclick = () => {
+          pool.push(slots[i]);
+          slots[i] = null;
+          beep(360, 0.06, 'triangle', 0.06);
+          renderAll();
+        };
+      } else {
+        s.innerHTML = `
+          <div class="slot-num">${i + 1}</div>
+          <div class="slot-placeholder">пусто</div>
+        `;
+      }
+      slotsEl.appendChild(s);
+    }
+
+    poolEl.innerHTML = '';
+    if (pool.length === 0) {
+      poolEl.innerHTML = '<div class="pool-empty-hint">Все события разложены ✓</div>';
+    } else {
+      pool.forEach((item, idx) => {
+        const p = document.createElement('div');
+        p.className = 'pool-item';
+        p.innerHTML = `
+          <div class="slot-emoji">${item.emoji}</div>
+          <div class="slot-event">${item.event}</div>
+        `;
+        p.onclick = () => {
+          const emptyIdx = slots.indexOf(null);
+          if (emptyIdx === -1) return;
+          slots[emptyIdx] = item;
+          pool.splice(idx, 1);
+          beep(620, 0.06, 'triangle', 0.07);
+          renderAll();
+        };
+        poolEl.appendChild(p);
+      });
+    }
+  }
+  renderAll();
+
+  $('checkBtn').onclick = () => {
+    let correctPos = 0;
+    let correctItems = 0;
+    for (let i = 0; i < count; i++) {
+      if (slots[i] === timeline[i]) correctPos++;
+    }
+    const remaining = [...timeline];
+    for (let i = 0; i < count; i++) {
+      const s = slots[i];
+      if (s) {
+        const idx = remaining.indexOf(s);
+        if (idx !== -1) { correctItems++; remaining.splice(idx, 1); }
+      }
+    }
+
+    slotsEl.querySelectorAll('.slot').forEach((el, i) => {
+      el.onclick = null;
+      el.style.cursor = 'default';
+      if (slots[i] === timeline[i]) el.classList.add('result-correct');
+      else if (slots[i] && timeline.includes(slots[i])) el.classList.add('result-misplaced');
+      else el.classList.add('result-wrong');
+    });
+
+    let emoji, title, text, stars, points;
+    if (correctPos === count) {
+      emoji = '🏆'; title = 'Идеальный порядок!';
+      text = `Все ${count} событий на своих местах`;
+      stars = 3; points = 50;
+      sfxWin();
+    } else if (correctItems === count) {
+      emoji = '🎖️'; title = 'Порядок перепутан';
+      text = `Все события угаданы, но ${count - correctPos} стоят не там`;
+      stars = 2; points = 30;
+      sfxCorrect();
+    } else if (correctItems >= Math.ceil(count / 2)) {
+      emoji = '🔍'; title = 'Что-то забыл';
+      text = `Вспомнил ${correctItems} из ${count}`;
+      stars = 1; points = 15;
+      sfxCorrect();
+    } else {
+      emoji = '🌀'; title = 'Всё перемешалось';
+      text = `Только ${correctItems} из ${count}`;
+      stars = 0; points = 5;
+      sfxWrong();
+    }
+    addScore(points);
+
+    wait(1400, () => {
+      historyResult({
+        emoji, title, text, stars, points,
+        timeline,
+        history: slots.map((s, i) => s === timeline[i])
+      });
+    });
+  };
+}
+
+/* ============ РЕЖИМ «ГОДЫ» ============ */
+function historyYears(timeline) {
+  clearTimeouts();
+  applyEmojiMode();
+  const questionPool = shuffle([...timeline]);
+  const history = [];
+
+  function askNext(idx) {
+    if (idx >= questionPool.length) {
+      const score = history.filter(Boolean).length;
+      return historyResult({
+        emoji: score === questionPool.length ? '🏆' : score >= questionPool.length * 0.7 ? '📜' : score >= questionPool.length / 2 ? '🔍' : '🌀',
+        title: score === questionPool.length ? 'Историк года!' : score >= questionPool.length * 0.7 ? 'Хорошо помнишь' : score >= questionPool.length / 2 ? 'Неплохо' : 'Даты расплылись',
+        text: `Правильно: ${score} из ${questionPool.length}`,
+        stars: score === questionPool.length ? 3 : score >= questionPool.length * 0.7 ? 2 : score >= questionPool.length / 2 ? 1 : 0,
+        points: Math.round(score / questionPool.length * 40),
+        timeline, history
+      });
+    }
+
+    const cur = questionPool[idx];
+    let pool;
+    if (historyCfg.category !== 'mix' && CATEGORIES[historyCfg.category]) {
+      pool = CATEGORIES[historyCfg.category].events;
+    } else {
+      pool = ALL_EVENTS;
+    }
+    const close = pool.filter(e => e.year !== cur.year && Math.abs(e.year - cur.year) <= 150).map(e => e.year);
+    const far = pool.filter(e => e.year !== cur.year && Math.abs(e.year - cur.year) > 150).map(e => e.year);
+    let wrongs = shuffle(close).slice(0, 3);
+    if (wrongs.length < 3) {
+      const extra = shuffle(far).slice(0, 3 - wrongs.length);
+      wrongs = [...wrongs, ...extra];
+    }
+    const options = shuffle([cur.year, ...wrongs]);
+
+    const dotsHtml = questionPool.map((_, i) => {
+      let cls = 'dot';
+      if (i < idx) cls += history[i] ? ' correct' : ' wrong';
+      else if (i === idx) cls += ' active';
+      return `<div class="${cls}"></div>`;
+    }).join('');
+
+    gameEl.innerHTML = `
+      <div class="game-header">
+        <h2>🕰 История по датам</h2>
+        <div class="subtitle">Вопрос ${idx + 1} / ${questionPool.length}</div>
+      </div>
+      <div class="panel">
+        <div class="progress-dots">${dotsHtml}</div>
+        <div class="question-card">
+          <div class="big-emoji">${cur.emoji}</div>
+          <div class="event-text">${cur.event}</div>
+          <div class="question-hint">В каком году это было?</div>
+        </div>
+        <div class="options" id="opts"></div>
+      </div>
+    `;
+
+    const opts = $('opts');
+    let answered = false;
+
+    options.forEach(y => {
+      const b = document.createElement('div');
+      b.className = 'option-text year';
+      b.textContent = y;
+      b.onclick = () => {
+        if (answered) return;
+        answered = true;
+        const good = y === cur.year;
+        opts.querySelectorAll('.option-text').forEach(x => {
+          x.style.pointerEvents = 'none';
+          if (+x.textContent !== cur.year && x !== b) x.classList.add('dimmed');
+        });
+        if (good) {
+          b.classList.add('correct');
+          sfxCorrect(); addScore(10);
+        } else {
+          b.classList.add('wrong');
+          sfxWrong();
+          opts.querySelectorAll('.option-text').forEach(x => {
+            if (+x.textContent === cur.year) {
+              x.classList.add('correct');
+              x.classList.remove('dimmed');
+            }
+          });
+        }
+        history.push(good);
+        wait(1100, () => askNext(idx + 1));
+      };
+      opts.appendChild(b);
+    });
+  }
+  askNext(0);
+}
+
+/* ============ РЕЖИМ «РАНЬШЕ/ПОЗЖЕ» ============ */
+function historyBefore(timeline) {
+  clearTimeouts();
+  applyEmojiMode();
+  const pairCount = Math.min(6, Math.max(3, timeline.length));
+  const pairs = [];
+  const usedPairs = new Set();
+  let guard = 0;
+  while (pairs.length < pairCount && guard < 100) {
+    guard++;
+    const a = timeline[rand(timeline.length)];
+    const b = timeline[rand(timeline.length)];
+    if (a === b) continue;
+    const key = [a.year, b.year].sort().join('-');
+    if (usedPairs.has(key)) continue;
+    usedPairs.add(key);
+    pairs.push([a, b]);
+  }
+  const history = [];
+
+  function askNext(idx) {
+    if (idx >= pairs.length) {
+      const score = history.filter(Boolean).length;
+      const max = pairs.length;
+      return historyResult({
+        emoji: score === max ? '🏆' : score >= max * 0.7 ? '📜' : score >= max / 2 ? '🔍' : '🌀',
+        title: score === max ? 'Хронология в кармане!' : score >= max * 0.7 ? 'Хорошо' : score >= max / 2 ? 'Неплохо' : 'Путаница',
+        text: `Правильно: ${score} из ${max}`,
+        stars: score === max ? 3 : score >= max * 0.7 ? 2 : score >= max / 2 ? 1 : 0,
+        points: Math.round(score / max * 40),
+        timeline, history
+      });
+    }
+
+    const [a, b] = pairs[idx];
+    const earlier = a.year < b.year ? a : b;
+
+    const dotsHtml = pairs.map((_, i) => {
+      let cls = 'dot';
+      if (i < idx) cls += history[i] ? ' correct' : ' wrong';
+      else if (i === idx) cls += ' active';
+      return `<div class="${cls}"></div>`;
+    }).join('');
+
+    const options = shuffle([a, b]);
+
+    gameEl.innerHTML = `
+      <div class="game-header">
+        <h2>🕰 История по датам</h2>
+        <div class="subtitle">Вопрос ${idx + 1} / ${pairs.length}</div>
+      </div>
+      <div class="panel">
+        <div class="progress-dots">${dotsHtml}</div>
+        <div class="question-card">
+          <div class="big-emoji">⏳</div>
+          <div class="event-text">Что было РАНЬШЕ?</div>
+        </div>
+        <div class="options" id="opts"></div>
+      </div>
+    `;
+
+    const opts = $('opts');
+    let answered = false;
+
+    options.forEach(opt => {
+      const b = document.createElement('div');
+      b.className = 'option-text';
+      b.innerHTML = `<span class="option-emoji">${opt.emoji}</span><br><span>${opt.event}</span>`;
+      b.onclick = () => {
+        if (answered) return;
+        answered = true;
+        const good = opt === earlier;
+        opts.querySelectorAll('.option-text').forEach(x => {
+          x.style.pointerEvents = 'none';
+          if (x !== b) x.classList.add('dimmed');
+        });
+        if (good) {
+          b.classList.add('correct');
+          sfxCorrect(); addScore(10);
+        } else {
+          b.classList.add('wrong');
+          sfxWrong();
+          opts.querySelectorAll('.option-text').forEach(x => {
+            if (x !== b) {
+              x.classList.add('correct');
+              x.classList.remove('dimmed');
+            }
+          });
+        }
+        history.push(good);
+        wait(1200, () => askNext(idx + 1));
+      };
+      opts.appendChild(b);
+    });
+  }
+  askNext(0);
+}
+
+/* ============ РЕЗУЛЬТАТ ============ */
+function historyResult(data) {
+  applyEmojiMode();
+  const { emoji, title, text, stars, points, timeline, history } = data;
+  addScore(points);
+  const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+
+  const historyRow = history.map(ok => `
+    <div class="ans ${ok ? 'ok' : 'wrong'}">${ok ? '✓' : '✗'}</div>
+  `).join('');
+
+  const timelineHtml = timeline.map(item => `
+    <div class="item">
+      <div class="item-year">${item.year}</div>
+      <div>${historyCfg.noEmoji ? '' : item.emoji + ' '}${item.event}</div>
+    </div>
+  `).join('');
+
+  gameEl.innerHTML = `
+    <div class="panel">
+      <div class="result-screen">
+        <div class="big">${emoji}</div>
+        <h2>${title}</h2>
+        <p>${text}</p>
+        <div class="stars">${starStr}</div>
+        <p style="opacity:.6; font-size: 14px;">+${points} очков</p>
+
+        <div class="review-block">
+          <div class="label">🕰 Правильная хронология:</div>
+          ${timelineHtml}
+        </div>
+
+        <div class="review-answers">${historyRow}</div>
+
+        <button class="btn-main" id="retry">Ещё раз 🔄</button>
+        <button class="btn-secondary" id="menuBtn">← Настройки</button>
+      </div>
+    </div>
+  `;
+  $('retry').onclick = () => historyShow();
+  $('menuBtn').onclick = () => startHistory();
+}
+
+/* ============ СТАРТ ============ */
+setupThemeToggle();
+document.addEventListener('click', initAudio, { once: true });
+startHistory();
+</script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

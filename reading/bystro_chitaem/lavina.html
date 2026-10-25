@@ -1,172 +1,662 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<link rel="stylesheet" href="../../menu/menu.css">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ЛАВИНА</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Лавина - NeuroX</title>
 
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#fffaf2;
-}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-/* ===== HEADER ===== */
-header{
-  position:sticky;
-  top:0;
-  z-index:10;
-  background:#1E3F8A;
-  color:#fff;
-  padding:10px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  gap:10px;
-}
 
-.title{
-  font-style:italic;
-  font-size:24px;
-  font-weight:700;
-}
+  <style>
+    :root {
+      --blue: #1E3F8A;
+      --blue-soft: #3A5FA8;
+      --blue-light: #2A56C6;
+      --blue-pale: #E8EEF9;
+      --orange: #FF6A00;
+      --orange-soft: #FF8B3D;
+      --orange-dark: #C85100;
+      --orange-pale: #FFEADB;
+      --bg: #F4F6FB;
+      --text: #24324B;
+      --text-dim: #6B7280;
+      --border: rgba(30,63,138,.10);
+      --panel: #FFFFFF;
+      --dot-color: rgba(30, 63, 138, .07);
+      --header-shadow: rgba(30, 63, 138, .25);
+      --overlay: rgba(30, 63, 138, .45);
+      --modal-grad-1: #1E3F8A;
+      --modal-grad-2: #3A5FA8;
+      --modal-grad-3: #4A6DB8;
+    }
 
-/* LEVEL BUTTONS */
-.levels{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-}
+    [data-theme="dark"] {
+      --blue: #7B9BE5;
+      --blue-soft: #5F80D0;
+      --blue-light: #7B9BE5;
+      --blue-pale: #2A3A5C;
+      --orange: #FF8B3D;
+      --orange-soft: #FFA057;
+      --orange-dark: #8A3F00;
+      --orange-pale: #4A2E1A;
+      --bg: #121721;
+      --text: #E8EEF9;
+      --text-dim: #8A96B0;
+      --border: rgba(140,170,240,.15);
+      --panel: #1C2331;
+      --dot-color: rgba(140, 170, 240, .09);
+      --header-shadow: rgba(0, 0, 0, .55);
+      --overlay: rgba(0, 0, 0, .6);
+      --modal-grad-1: #1A2440;
+      --modal-grad-2: #2A3A5C;
+      --modal-grad-3: #3A4F7C;
+    }
 
-.levels button{
-  background:#FF6A00;
-  border:none;
-  color:#fff;
-  padding:6px 10px;
-  border-radius:6px;
-  cursor:pointer;
-}
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-/* TEXT SELECT */
-#textSelect{
-  background:#FF6A00;
-  color:#fff;
-  border:none;
-  padding:6px 8px;
-  border-radius:6px;
-}
+    html, body { transition: background-color .3s, color .3s; }
 
-/* SETTINGS BUTTON */
-#toggleSettings{
-  background:#FF6A00;
-  border:none;
-  color:#fff;
-  padding:6px 10px;
-  border-radius:6px;
-  cursor:pointer;
-}
+    body {
+      margin: 0;
+      font-family: "Nunito Sans", sans-serif;
+      background-color: var(--bg);
+      background-image: radial-gradient(circle, var(--dot-color) 1.5px, transparent 1.6px);
+      background-size: 26px 26px;
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
 
-/* ===== CONTROLS ===== */
-.controls{
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  margin:10px;
-  flex-wrap:wrap;
-}
+    /* HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: linear-gradient(135deg, #152E68 0%, #1E3F8A 60%, #2A4A99 100%);
+      color: #fff;
+      padding: 20px 24px 22px;
+      box-shadow: 0 6px 20px var(--header-shadow);
+      transition: background .3s, box-shadow .3s;
+    }
 
-.controls button{
-  background:#FF6A00;
-  border:none;
-  color:#fff;
-  padding:8px 14px;
-  border-radius:6px;
-  cursor:pointer;
-  box-shadow:0 3px 0 #c24f00;
-}
+    [data-theme="dark"] header {
+      background: linear-gradient(135deg, #12193A 0%, #1A2440 60%, #243057 100%);
+    }
 
-.controls button:active{
-  transform:translateY(2px);
-  box-shadow:0 1px 0 #c24f00;
-}
+    .header-top {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
 
-/* ===== SETTINGS ===== */
-#settings{
-  display:none;
-  background:#fff;
-  margin:10px;
-  padding:10px;
-  border-radius:10px;
-  box-shadow:0 2px 10px rgba(0,0,0,0.15);
-}
+    .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
 
-label{
-  font-size:13px;
-  display:block;
-  margin-top:8px;
-}
+    .logo {
+      position: relative;
+      width: 56px; height: 56px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      color: #FF8B3D;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: transform .2s;
+    }
+    .logo svg { width: 46px; height: 46px; display: block; }
+    .logo::after {
+      content: '←';
+      position: absolute;
+      top: -4px; left: -6px;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      background: #FF6A00;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,.3);
+      font-family: "Nunito Sans", sans-serif;
+      line-height: 1;
+      pointer-events: none;
+    }
+    .logo:hover { transform: scale(1.08); }
+    .logo:active { transform: scale(.94); }
 
-/* ===== INPUT ACCENT ===== */
-input[type="range"]{
-  width:100%;
-  accent-color:#FF6A00;
-}
+    h1 {
+      margin: 0;
+      font-family: "Fredoka", sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: .4px;
+      line-height: 1.1;
+      text-shadow: 0 2px 4px rgba(0,0,0,.12);
+    }
 
-input[type="checkbox"]{
-  accent-color:#FF6A00;
-  transform:scale(1.1);
-}
+    .subtitle {
+      margin-top: 2px;
+      font-size: 12px;
+      opacity: .85;
+      font-weight: 600;
+    }
 
-/* ===== TEXT ===== */
-#text{
-  max-width:900px;
-  margin:20px auto;
-  padding:20px;
-  background:white;
-  border-radius:10px;
-  box-shadow:0 2px 10px rgba(0,0,0,0.1);
-  font-size:28px;
-  line-height:1.6;
-}
+    .header-buttons { display: flex; gap: 10px; flex-shrink: 0; }
 
-/* ===== INFO ===== */
-#words,#time{
-  position:fixed;
-  right:10px;
-  font-size:14px;
-  padding:6px 10px;
-  border-radius:6px;
-}
+    .icon-btn {
+      position: relative;
+      width: 48px; height: 48px;
+      border: none;
+      border-radius: 16px;
+      background: rgba(255,255,255,.18);
+      color: white;
+      font-size: 22px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .22s;
+      font-family: inherit;
+      line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0;
+    }
+    .icon-btn svg { width: 24px; height: 24px; display: block; }
+    .icon-btn:hover {
+      background: var(--orange);
+      transform: translateY(-2px) rotate(6deg) scale(1.06);
+    }
+    .icon-btn:active { transform: scale(.95); }
 
-#words{bottom:10px;background:#ffe0b2;}
-#time{bottom:45px;background:#c8e6c9;}
+    /* Controls row inside header */
+    .header-controls {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
 
-@media(max-width:600px){
-  #text{font-size:22px;}
-  .title{font-size:18px;}
-}
-</style>
+    .levels { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .levels button {
+      background: rgba(255,255,255,.18);
+      border: none;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: "Nunito Sans", sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      transition: .18s;
+    }
+    .levels button:hover { background: var(--orange); }
+    .levels button.active {
+      background: var(--orange);
+      box-shadow: 0 3px 0 var(--orange-dark);
+    }
+
+    #textSelect {
+      background: rgba(255,255,255,.18);
+      color: #fff;
+      border: none;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-family: "Nunito Sans", sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      outline: none;
+      transition: .18s;
+    }
+    #textSelect:hover { background: var(--orange); }
+    #textSelect option { color: #222; background: #fff; }
+
+    .sliders {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    .slider-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .slider-item input[type="range"] { width: 100px; }
+
+    #speedValue {
+      min-width: 48px;
+      display: inline-block;
+      text-align: center;
+      background: rgba(255,255,255,.18);
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    /* CONTROLS */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 22px auto 0;
+      flex-wrap: wrap;
+      padding: 14px 20px;
+      background: var(--panel);
+      border: 2px solid var(--border);
+      border-radius: 22px;
+      max-width: min(92vw, 720px);
+      box-shadow: 0 6px 0 rgba(30,63,138,.10), 0 14px 26px rgba(30,63,138,.08);
+      transition: background .3s, border-color .3s;
+    }
+
+    [data-theme="dark"] .controls {
+      box-shadow: 0 6px 0 rgba(0,0,0,.25), 0 14px 26px rgba(0,0,0,.3);
+    }
+
+    .controls button {
+      background: var(--orange);
+      border: none;
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: "Nunito Sans", sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: .3px;
+      box-shadow: 0 4px 0 var(--orange-dark);
+      transition: background .15s, transform .12s, box-shadow .12s;
+    }
+    .controls button:hover { background: var(--orange-soft); }
+    .controls button:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 var(--orange-dark);
+    }
+
+    /* SETTINGS PANEL */
+    #settings {
+      display: none;
+      background: var(--panel);
+      margin: 18px auto;
+      padding: 22px 24px;
+      border-radius: 22px;
+      border: 2px solid var(--border);
+      max-width: min(92vw, 720px);
+      box-shadow: 0 6px 0 rgba(30,63,138,.10), 0 14px 26px rgba(30,63,138,.08);
+      transition: background .3s, border-color .3s;
+    }
+
+    [data-theme="dark"] #settings {
+      box-shadow: 0 6px 0 rgba(0,0,0,.25), 0 14px 26px rgba(0,0,0,.3);
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 700;
+      display: block;
+      margin-top: 12px;
+      color: var(--blue);
+      transition: color .3s;
+    }
+
+    .label-with-icon {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .label-with-icon svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      color: var(--orange);
+    }
+
+    #settings select {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 2px solid transparent;
+      background: var(--blue-pale);
+      color: var(--blue);
+      font-family: "Nunito Sans", sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      outline: none;
+      transition: .18s;
+      margin-top: 6px;
+    }
+    #settings select:hover, #settings select:focus {
+      border-color: var(--orange);
+    }
+
+    input[type="range"] { accent-color: #FF6A00; }
+    input[type="checkbox"] {
+      accent-color: #FF6A00;
+      transform: scale(1.15);
+      margin-right: 6px;
+      cursor: pointer;
+    }
+
+    #customTextArea {
+      width: 100%;
+      height: 150px;
+      margin-top: 10px;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      font-family: "Nunito Sans", sans-serif;
+      font-size: 14px;
+      resize: vertical;
+      outline: none;
+      transition: .18s;
+      background: var(--blue-pale);
+      color: var(--text);
+    }
+    #customTextArea:focus {
+      border-color: var(--orange);
+      background: var(--panel);
+    }
+
+    #addCustomText {
+      margin-top: 12px;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      padding: 11px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: "Nunito Sans", sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 4px 0 var(--orange-dark);
+      transition: background .15s, transform .12s, box-shadow .12s;
+    }
+    #addCustomText:hover { background: var(--orange-soft); }
+    #addCustomText:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 var(--orange-dark);
+    }
+
+    /* TEXT */
+    #text {
+      max-width: 900px;
+      margin: 22px auto;
+      padding: 28px 32px;
+      background: var(--panel);
+      border: 2px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 6px 0 rgba(30,63,138,.10), 0 14px 26px rgba(30,63,138,.08);
+      font-size: 28px;
+      line-height: 1.7;
+      min-height: 200px;
+      color: var(--text);
+      transition: background .3s, border-color .3s, color .3s;
+    }
+
+    [data-theme="dark"] #text {
+      box-shadow: 0 6px 0 rgba(0,0,0,.25), 0 14px 26px rgba(0,0,0,.3);
+    }
+
+    .highlight {
+      background-color: var(--orange-pale);
+      border-radius: 4px;
+      transition: background-color .15s;
+    }
+
+    .hidden-word {
+      color: var(--panel) !important;
+    }
+
+    /* INFO — СЛЕВА */
+    #words, #time {
+      position: fixed;
+      left: 14px;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-family: "Nunito Sans", sans-serif;
+      letter-spacing: .3px;
+      box-shadow: 0 3px 0 rgba(0,0,0,.08);
+      z-index: 5;
+    }
+
+    #words {
+      bottom: 14px;
+      background: var(--orange-pale);
+      color: var(--orange-dark);
+      border: 2px solid var(--orange);
+    }
+
+    #time {
+      bottom: 58px;
+      background: var(--blue-pale);
+      color: var(--blue);
+      border: 2px solid var(--blue);
+    }
+
+    /* MODAL */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: var(--overlay);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .25s, visibility .25s, background .3s;
+      z-index: 100;
+    }
+    .modal.open { opacity: 1; visibility: visible; }
+
+    .modal-card {
+      background: var(--panel);
+      border-radius: 28px;
+      max-width: 460px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 70px rgba(0,0,0,.35);
+      transform: translateY(24px) scale(.95);
+      transition: transform .42s cubic-bezier(.34, 1.56, .64, 1), background .3s;
+      overflow: hidden;
+    }
+    .modal.open .modal-card { transform: translateY(0) scale(1); }
+
+    .modal-header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 24px 20px;
+      background: linear-gradient(135deg, var(--modal-grad-1) 0%, var(--modal-grad-2) 60%, var(--modal-grad-3) 100%);
+      color: #fff;
+      transition: background .3s;
+    }
+
+    .modal-header h2 {
+      position: relative;
+      z-index: 1;
+      font-family: "Fredoka", sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .modal-header h2 svg {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .modal-close {
+      position: relative;
+      z-index: 1;
+      width: 40px; height: 40px;
+      border: none;
+      border-radius: 12px;
+      background: rgba(255,255,255,.18);
+      color: #fff;
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+      transition: .2s;
+      font-family: inherit;
+    }
+    .modal-close:hover { background: var(--orange); transform: rotate(90deg); }
+
+    .modal-body {
+      padding: 22px 24px 26px;
+      overflow-y: auto;
+    }
+
+    .modal-body p {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text-dim);
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    .modal-body p:last-child { margin-bottom: 0; }
+    .modal-body b { color: var(--blue); }
+
+    /* MOBILE */
+    @media(max-width:700px) {
+      header { padding: 16px 16px 18px; }
+      h1 { font-size: 22px; }
+      .logo { width: 48px; height: 48px; }
+      .logo svg { width: 40px; height: 40px; }
+      .logo::after { width: 20px; height: 20px; font-size: 12px; top: -3px; left: -5px; }
+      .subtitle { font-size: 11px; }
+      .icon-btn { width: 42px; height: 42px; font-size: 20px; border-radius: 14px; }
+      .icon-btn svg { width: 20px; height: 20px; }
+
+      .levels button { padding: 7px 10px; font-size: 12px; }
+      #textSelect { padding: 8px 10px; font-size: 12px; }
+
+      .sliders { width: 100%; gap: 10px; margin-left: 0; }
+      .slider-item { flex: 1; min-width: 140px; font-size: 12px; }
+      .slider-item input[type="range"] { width: 100%; }
+
+      .controls {
+        margin-top: 16px;
+        padding: 12px 14px;
+        gap: 8px;
+        border-radius: 18px;
+      }
+      .controls button {
+        font-size: 13px;
+        padding: 10px 16px;
+        border-radius: 10px;
+      }
+
+      #settings { padding: 18px; border-radius: 18px; }
+
+      #text {
+        font-size: 22px;
+        padding: 20px 18px;
+        border-radius: 18px;
+        margin: 16px 12px;
+      }
+
+      #words, #time { font-size: 12px; padding: 6px 10px; left: 10px; }
+      #words { bottom: 10px; }
+      #time { bottom: 48px; }
+    }
+  </style>
+<link rel="stylesheet" href="../../assets/menu-drawer.css">
 </head>
 
 <body>
 
 <header>
-  <div class="title">ЛАВИНА</div>
+  <div class="header-top">
+    <div class="brand">
+      <button class="logo" onclick="goBack()" title="Назад" aria-label="Назад">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8"/>
+          <path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8"/>
+          <path d="M17.5 16a3.5 3.5 0 0 0 0 -7h-.5"/>
+          <path d="M19 9.3v-2.8a3.5 3.5 0 0 0 -7 0"/>
+          <path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5"/>
+          <path d="M5 9.3v-2.8a3.5 3.5 0 0 1 7 0v10"/>
+        </svg>
+      </button>
+      <div>
+        <h1>Лавина</h1>
+        <div class="subtitle">NeuroX · скорочтение</div>
+      </div>
+    </div>
 
-  <div class="levels">
-    <button onclick="setLevel('level_05')">0.5</button>
-    <button onclick="setLevel('level_1')">1</button>
-    <button onclick="setLevel('level_2')">2</button>
-    <button onclick="setLevel('level_3')">3</button>
-    <button onclick="setLevel('level_4')">4</button>
+    <div class="header-buttons">
+      <button class="icon-btn" id="themeBtn" title="Сменить тему" onclick="toggleTheme()" aria-label="Сменить тему">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+        </svg>
+      </button>
+      <button class="icon-btn" title="Справка" onclick="showHelp()" aria-label="Справка">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 1.5-2.5 2-2.5 3.5"/>
+          <circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="toggleSettings" title="Настройки" aria-label="Настройки">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+        </svg>
+      </button>
+    </div>
   </div>
 
-  <select id="textSelect"></select>
+  <div class="header-controls">
+    <div class="levels" id="levelButtons">
+      <button data-level="level_05">0.5</button>
+      <button data-level="level_1">1</button>
+      <button data-level="level_2">2</button>
+      <button data-level="level_3">3</button>
+      <button data-level="level_4">4</button>
+      <button data-level="custom">Свои</button>
+    </div>
 
-  <button id="toggleSettings">⚙</button>
+    <select id="textSelect"></select>
+
+    <div class="sliders">
+      <div class="slider-item">
+        <span>Скорость</span>
+        <input id="speed" type="range" min="0" max="9" value="4">
+        <span id="speedValue">1 сек</span>
+      </div>
+      <div class="slider-item">
+        <span>Размер</span>
+        <input id="fontSize" type="range" min="18" max="48" value="28">
+      </div>
+    </div>
+  </div>
 </header>
 
 <div class="controls">
@@ -176,13 +666,6 @@ input[type="checkbox"]{
 </div>
 
 <div id="settings">
-
-  <label>Скорость</label>
-  <input id="speed" type="range" min="0" max="9" value="4">
-
-  <label>Размер текста</label>
-  <input id="fontSize" type="range" min="18" max="48" value="28">
-
   <label>Шрифт</label>
   <select id="fontFamily">
     <option>Arial</option>
@@ -191,9 +674,22 @@ input[type="checkbox"]{
     <option>Verdana</option>
   </select>
 
-  <label><input type="checkbox" id="reverseMode"> реверс</label>
-  <label><input type="checkbox" id="paint"> белый режим</label>
+  <label style="margin-top:14px;"><input type="checkbox" id="reverseMode"> реверс</label>
 
+  <hr style="margin:18px 0;border:none;border-top:2px dashed var(--border);">
+
+  <label class="label-with-icon" style="font-size:15px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 4l4 16 3-7 7-3z"/>
+      <path d="M20 4l-9 9"/>
+    </svg>
+    Добавить свой текст:
+  </label>
+  <textarea id="customTextArea" placeholder="Вставьте сюда свой текст для тренировки..."></textarea>
+  <button id="addCustomText">Добавить текст</button>
+  <small style="display:block;margin-top:8px;color:var(--text-dim);font-size:12px;">
+    Текст будет доступен в разделе "Свои" до перезагрузки страницы
+  </small>
 </div>
 
 <div id="text"></div>
@@ -201,168 +697,333 @@ input[type="checkbox"]{
 <div id="words"></div>
 <div id="time">0 сек</div>
 
+<!-- МОДАЛКА "СПРАВКА" -->
+<div class="modal" id="helpModal" onclick="if(event.target===this) closeHelp()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 1.5-2.5 2-2.5 3.5"/>
+          <circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+        Справка
+      </h2>
+      <button class="modal-close" onclick="closeHelp()" aria-label="Закрыть">×</button>
+    </div>
+    <div class="modal-body">
+      <p><b>Лавина</b> — тренажёр для расширения поля зрения и увеличения скорости чтения.</p>
+      <p>Слова по одному подсвечиваются и исчезают. Задача — успеть прочитать их до исчезновения. Уровни 0.5–4 задают скорость, «Свои» — ваш собственный текст.</p>
+      <p>Горячие клавиши: <b>Space</b> — старт/стоп, <b>R</b> — повтор.</p>
+    </div>
+  </div>
+</div>
+
 <script>
+const LS_THEME_KEY = 'neurox_theme';
 
-let data, texts=[];
-let spans=[], originalWords=[];
-let i=0, running=false, timer=null;
-let clock=null, startTime=0;
-
-const speeds=[2,1.75,1.5,1.25,1,0.75,0.5,0.4,0.25,0.1];
-
-const textBox=document.getElementById("text");
-const wordsBox=document.getElementById("words");
-const timeBox=document.getElementById("time");
-
-const speed=document.getElementById("speed");
-const fontSize=document.getElementById("fontSize");
-const fontFamily=document.getElementById("fontFamily");
-
-const reverseMode=document.getElementById("reverseMode");
-const paint=document.getElementById("paint");
-
-const textSelect=document.getElementById("textSelect");
-
-let currentLevel="level_1";
-
-/* SETTINGS */
-document.getElementById("toggleSettings").onclick=()=>{
-  const s=document.getElementById("settings");
-  s.style.display = s.style.display==="block" ? "none" : "block";
-};
-
-/* LOAD JSON */
-fetch("texts2.json")
-  .then(r=>r.json())
-  .then(j=>{
-    data=j;
-    setLevel("level_05");
-  });
-
-function setLevel(lv){
-  currentLevel=lv;
-  texts=data[lv].texts;
-
-  textSelect.innerHTML="";
-
-  texts.forEach((t,i)=>{
-    const o=document.createElement("option");
-    o.value=i;
-    o.textContent="Текст "+(i+1);
-    textSelect.appendChild(o);
-  });
-
-  textSelect.value=0;
-
-  stop();
-  showText();
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeBtn');
+  if (btn) {
+    const dark = theme === 'dark';
+    btn.innerHTML = dark
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+  }
 }
 
-/* FORMAT */
-function formatWord(w){
-  if(reverseMode.checked){
-    let p="";
-    if(/[\.,!?:;]$/.test(w)){
-      p=w.slice(-1);
-      w=w.slice(0,-1);
+function getStoredTheme() { return localStorage.getItem(LS_THEME_KEY) || ''; }
+function saveTheme(theme) { localStorage.setItem(LS_THEME_KEY, theme); }
+
+function initTheme() {
+  let theme = getStoredTheme();
+  if (!theme) {
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    theme = prefersDark ? 'dark' : 'light';
+  }
+  applyTheme(theme);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  saveTheme(next);
+}
+
+function showHelp() { document.getElementById('helpModal').classList.add('open'); }
+function closeHelp() { document.getElementById('helpModal').classList.remove('open'); }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeHelp();
+});
+
+initTheme();
+
+// ==================
+// Логика тренажёра
+// ==================
+
+function goBack() {
+  location.href = "../index.html";
+}
+
+let data = null;
+let texts = [];
+let spans = [];
+let originalWords = [];
+let i = 0;
+let running = false;
+let timer = null;
+let clock = null;
+let startTime = 0;
+let customTexts = [];
+let activeLevel = "level_05";
+
+const speeds = [2, 1.75, 1.5, 1.25, 1, 0.75, 0.5, 0.4, 0.25, 0.1];
+
+const textBox = document.getElementById("text");
+const wordsBox = document.getElementById("words");
+const timeBox = document.getElementById("time");
+
+const speed = document.getElementById("speed");
+const speedValue = document.getElementById("speedValue");
+const fontSize = document.getElementById("fontSize");
+const fontFamily = document.getElementById("fontFamily");
+
+const reverseMode = document.getElementById("reverseMode");
+
+const textSelect = document.getElementById("textSelect");
+const customTextArea = document.getElementById("customTextArea");
+
+document.getElementById("toggleSettings").onclick = () => {
+  const s = document.getElementById("settings");
+  s.style.display = s.style.display === "block" ? "none" : "block";
+};
+
+speed.oninput = () => {
+  speedValue.textContent = speeds[speed.value] + " сек";
+};
+speed.oninput();
+
+fetch("texts2.json")
+  .then(r => r.json())
+  .then(j => {
+    data = j;
+    setLevel("level_05");
+    updateLevelButtons();
+  })
+  .catch(err => {
+    console.error("Ошибка загрузки JSON:", err);
+    data = {
+      level_05: { texts: [] },
+      level_1: { texts: [] },
+      level_2: { texts: [] },
+      level_3: { texts: [] },
+      level_4: { texts: [] }
+    };
+    setLevel("level_05");
+    updateLevelButtons();
+  });
+
+function updateLevelButtons() {
+  document.querySelectorAll("#levelButtons button").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.level === activeLevel);
+  });
+}
+
+document.querySelectorAll("#levelButtons button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    setLevel(btn.dataset.level);
+  });
+});
+
+function setLevel(lv) {
+  if (!data) return;
+
+  stop();
+  i = 0;
+  activeLevel = lv;
+
+  if (lv === "custom") {
+    texts = customTexts;
+  } else {
+    texts = data[lv] ? data[lv].texts : [];
+  }
+
+  textSelect.innerHTML = "";
+
+  if (texts.length === 0) {
+    const opt = document.createElement("option");
+    opt.value = -1;
+    opt.textContent = "Нет текстов";
+    textSelect.appendChild(opt);
+    textBox.innerHTML = "<em>Добавьте тексты в этот раздел</em>";
+    updateLevelButtons();
+    return;
+  }
+
+  texts.forEach((t, idx) => {
+    const opt = document.createElement("option");
+    opt.value = idx;
+    opt.textContent = "Текст " + (idx + 1);
+    textSelect.appendChild(opt);
+  });
+
+  textSelect.value = 0;
+  showText();
+  updateLevelButtons();
+}
+
+function formatWord(w) {
+  if (reverseMode.checked) {
+    let punct = "";
+    if (/[\.,!?:;]$/.test(w)) {
+      punct = w.slice(-1);
+      w = w.slice(0, -1);
     }
-    return w.split("").reverse().join("")+p;
+    return w.split("").reverse().join("") + punct;
   }
   return w;
 }
 
-/* SHOW */
-function showText(){
-  let t=texts[textSelect.value].text;
+function showText() {
+  if (!texts || texts.length === 0 || textSelect.value === -1) return;
 
-  originalWords=t.split(" ");
+  const t = texts[textSelect.value].text;
+  originalWords = t.split(/\s+/).filter(w => w.length > 0);
 
-  textBox.innerHTML=originalWords
-    .map(w=>`<span>${formatWord(w)}</span>`)
+  textBox.innerHTML = originalWords
+    .map(w => `<span>${formatWord(w)}</span>`)
     .join(" ");
 
-  spans=[...textBox.querySelectorAll("span")];
+  spans = [...textBox.querySelectorAll("span")];
+
+  spans.forEach(s => s.style.color = "");
+  spans.forEach(s => s.style.backgroundColor = "");
+  spans.forEach(s => s.classList.remove("hidden-word"));
 
   applyStyle();
-
-  wordsBox.textContent="Слов: "+spans.length;
+  wordsBox.textContent = "Слов: " + spans.length;
 }
 
-/* STYLE */
-function applyStyle(){
-  textBox.style.fontSize=fontSize.value+"px";
-  textBox.style.fontFamily=fontFamily.value;
+function applyStyle() {
+  textBox.style.fontSize = fontSize.value + "px";
+  textBox.style.fontFamily = fontFamily.value;
 }
 
-fontSize.oninput=applyStyle;
-fontFamily.onchange=applyStyle;
+fontSize.oninput = applyStyle;
+fontFamily.onchange = applyStyle;
 
-textSelect.onchange=()=>{
+reverseMode.onchange = () => {
+  if (!running && spans.length > 0) {
+    showText();
+  }
+};
+
+textSelect.onchange = () => {
   stop();
+  i = 0;
   showText();
 };
 
-/* TIMER */
-function startClock(){
+function startClock() {
   clearInterval(clock);
-  startTime=Date.now();
-
-  clock=setInterval(()=>{
-    timeBox.textContent=Math.floor((Date.now()-startTime)/1000)+" сек";
-  },300);
+  startTime = Date.now();
+  clock = setInterval(() => {
+    timeBox.textContent = Math.floor((Date.now() - startTime) / 1000) + " сек";
+  }, 300);
 }
 
-/* DISAPPEAR */
-function disappear(){
-  if(!running||i>=spans.length) return;
+function disappear() {
+  if (!running || i >= spans.length) return;
 
-  if(paint.checked){
-    spans[i].style.color="#fff";
-  } else {
-    spans[i].style.display="none";
-  }
+  spans[i].classList.add("highlight");
 
-  i++;
-  wordsBox.textContent="Слов: "+(spans.length-i);
+  const halfTime = speeds[speed.value] * 500;
 
-  if(i<spans.length){
-    timer=setTimeout(disappear,speeds[speed.value]*1000);
-  } else {
-    running=false;
-    clearInterval(clock);
-  }
+  timer = setTimeout(() => {
+    if (!running) return;
+
+    spans[i].classList.add("hidden-word");
+    spans[i].classList.remove("highlight");
+
+    i++;
+    wordsBox.textContent = "Слов: " + (spans.length - i);
+
+    if (i < spans.length) {
+      timer = setTimeout(disappear, halfTime);
+    } else {
+      running = false;
+      clearInterval(clock);
+    }
+  }, halfTime);
 }
 
-/* START */
-document.getElementById("start").onclick=()=>{
+document.getElementById("start").onclick = () => {
   stop();
-  i=0;
-  running=true;
+  i = 0;
+  running = true;
   showText();
   startClock();
   disappear();
 };
 
-/* STOP */
-function stop(){
-  running=false;
+function stop() {
+  running = false;
   clearTimeout(timer);
   clearInterval(clock);
 }
 
-document.getElementById("stop").onclick=stop;
+document.getElementById("stop").onclick = stop;
 
-/* REPEAT */
-document.getElementById("repeat").onclick=()=>{
+document.getElementById("repeat").onclick = () => {
   stop();
-  i=0;
-  running=true;
+  i = 0;
+  running = true;
   showText();
   startClock();
   disappear();
 };
 
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space" && e.target === document.body) {
+    e.preventDefault();
+    if (running) stop();
+    else document.getElementById("start").click();
+  }
+  if (e.code === "KeyR" && e.target === document.body) {
+    document.getElementById("repeat").click();
+  }
+});
+
+document.getElementById("addCustomText").onclick = () => {
+  const text = customTextArea.value.trim();
+
+  if (!text) {
+    alert("Введите текст!");
+    return;
+  }
+
+  customTexts.push({ text: text, custom: true });
+  customTextArea.value = "";
+
+  setLevel("custom");
+  textSelect.value = customTexts.length - 1;
+  showText();
+
+  document.getElementById("settings").style.display = "none";
+};
+
+speedValue.textContent = speeds[speed.value] + " сек";
 </script>
-<script src="../../menu/menu.js"></script>
+
+<!-- ==== БОКОВОЕ МЕНЮ NEUROX ==== -->
+
+
+
+<script src="../../assets/menu-data.js"></script>
+<script src="../../assets/menu-drawer.js"></script>
 </body>
 </html>

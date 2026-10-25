@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Доска</title>
+<style>
+  :root {
+    --blue-1: #3b82f6;
+    --blue-2: #2563eb;
+    --blue-3: #1d4ed8;
+    --blue-glow: rgba(59, 130, 246, 0.5);
+
+    --orange-1: #f97316;
+    --orange-2: #fb923c;
+    --orange-glow: rgba(249, 115, 22, 0.5);
+
+    --bg-1: #060b18;
+    --bg-2: #0f172a;
+
+    --panel: rgba(15, 23, 42, 0.72);
+    --panel-border: rgba(148, 163, 184, 0.12);
+    --btn: rgba(148, 163, 184, 0.06);
+    --btn-hover: rgba(148, 163, 184, 0.14);
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-mute: #64748b;
+
+    --radius: 14px;
+    --radius-sm: 9px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+
+  body {
+    background:
+      radial-gradient(1200px 800px at 10% 0%, rgba(59, 130, 246, 0.18), transparent 55%),
+      radial-gradient(1000px 700px at 100% 100%, rgba(249, 115, 22, 0.12), transparent 55%),
+      linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
+    color: var(--text);
+    padding: 14px;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .app {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    min-height: 0;
+  }
+
+  /* ==================== SIDEBAR ==================== */
+  .sidebar {
+    width: 248px;
+    flex-shrink: 0;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-radius: var(--radius);
+    box-shadow:
+      0 12px 45px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: sidebarIn 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.05) both;
+  }
+
+  @keyframes sidebarIn {
+    from { opacity: 0; transform: translateX(-24px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .sidebar-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--panel-border);
+    flex-shrink: 0;
+  }
+
+  .logo-mark {
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, var(--blue-1), var(--blue-3));
+    display: grid; place-items: center;
+    color: #fff;
+    box-shadow: 0 4px 14px var(--blue-glow);
+    flex-shrink: 0;
+  }
+  .logo-mark svg { width: 16px; height: 16px; }
+
+  .logo-text {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    background: linear-gradient(90deg, #fff, #cbd5e1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .collapse-all {
+    margin-left: auto;
+    width: 26px; height: 26px;
+    background: transparent;
+    border: 1px solid var(--panel-border);
+    border-radius: 7px;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: grid; place-items: center;
+    transition: all 0.2s;
+  }
+  .collapse-all:hover { color: var(--orange-1); border-color: var(--orange-1); transform: scale(1.06); }
+  .collapse-all svg { width: 14px; height: 14px; }
+
+  .groups {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px 8px 12px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
+  }
+  .groups::-webkit-scrollbar { width: 6px; }
+  .groups::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.25);
+    border-radius: 3px;
+  }
+
+  /* -------- GROUP -------- */
+  .group {
+    margin-bottom: 4px;
+    border-radius: 11px;
+    overflow: hidden;
+    transition: background 0.2s;
+  }
+  .group:hover { background: rgba(148, 163, 184, 0.04); }
+
+  .group-header {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%;
+    padding: 9px 10px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+  }
+  .group-header:hover { color: var(--text); }
+
+  .group-icon { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.9; }
+  .group-icon svg { width: 100%; height: 100%; }
+
+  .group-title { flex: 1; text-align: left; }
+
+  .chevron {
+    width: 12px; height: 12px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+  .group.collapsed .chevron { transform: rotate(-90deg); }
+
+  .group-body {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .group-body > * { overflow: hidden; min-height: 0; }
+  .group.collapsed .group-body { grid-template-rows: 0fr; }
+
+  .group-body-inner {
+    padding: 2px 8px 10px;
+  }
+
+  /* ==================== TOOL GRID ==================== */
+  .btn-grid {
+    display: grid;
+    gap: 4px;
+  }
+  .btn-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .btn-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .btn-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+
+  .tool-btn {
+    aspect-ratio: 1 / 1;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--btn);
+    border: none;
+    color: var(--text-dim);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .tool-btn svg { width: 17px; height: 17px; display: block; z-index: 1; }
+  .tool-btn:hover {
+    background: var(--btn-hover);
+    color: var(--text);
+    transform: translateY(-1px);
+  }
+  .tool-btn:active { transform: translateY(0) scale(0.96); }
+
+  .tool-btn.active {
+    background: linear-gradient(135deg, var(--blue-1), var(--blue-3));
+    color: #fff;
+    box-shadow:
+      0 4px 14px var(--blue-glow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  /* Оранжевые тумблеры (mode) */
+  .tool-btn.mode.active {
+    background: linear-gradient(135deg, var(--orange-1), var(--orange-2));
+    box-shadow:
+      0 4px 14px var(--orange-glow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  /* Ripple */
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(0);
+    animation: rippleAnim 0.6s ease-out;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes rippleAnim {
+    to { transform: scale(4); opacity: 0; }
+  }
+
+  /* Rainbow button */
+  #rainbowBtn.active {
+    background: linear-gradient(135deg, #ff5f6d, #ffc371, #47cf73, #00c6ff, #8b5cf6);
+    background-size: 300% 300%;
+    animation: rainbowFlow 3s linear infinite;
+    box-shadow:
+      0 4px 14px var(--orange-glow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  @keyframes rainbowFlow {
+    0%   { background-position:   0% 50%; }
+    100% { background-position: 300% 50%; }
+  }
+
+  /* Tooltip */
+  .tool-btn[data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(10, 15, 30, 0.96);
+    color: var(--text);
+    font-size: 11px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    white-space: nowrap;
+    pointer-events: none;
+    border: 1px solid var(--panel-border);
+    z-index: 100;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    animation: tipIn 0.15s ease-out;
+  }
+  @keyframes tipIn {
+    from { opacity: 0; transform: translateY(-50%) translateX(-4px); }
+    to   { opacity: 1; transform: translateY(-50%) translateX(0); }
+  }
+  .tool-btn[data-tip]:hover::before {
+    content: '';
+    position: absolute;
+    left: calc(100% + 4px);
+    top: 50%;
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-right-color: rgba(10, 15, 30, 0.96);
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  /* ==================== PALETTE ==================== */
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
+    padding: 2px 4px 8px;
+  }
+  .swatch {
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    position: relative;
+  }
+  .swatch:hover {
+    transform: scale(1.18);
+    border-color: rgba(255, 255, 255, 0.45);
+  }
+  .swatch.active {
+    border-color: #fff;
+    box-shadow:
+      0 0 0 2px var(--blue-1),
+      0 0 12px var(--blue-glow);
+    transform: scale(1.12);
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 4px;
+  }
+
+  .color-picker {
+    width: 32px; height: 32px;
+    padding: 0;
+    border: 2px solid rgba(148, 163, 184, 0.3);
+    border-radius: 50%;
+    cursor: pointer;
+    background: none;
+    overflow: hidden;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .color-picker:hover { border-color: var(--orange-1); transform: scale(1.06); }
+  .color-picker::-webkit-color-swatch-wrapper { padding: 0; }
+  .color-picker::-webkit-color-swatch { border: none; border-radius: 50%; }
+
+  .color-label {
+    font-size: 11px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  .color-hex {
+    font-family: ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--text);
+    background: var(--btn);
+    padding: 4px 8px;
+    border-radius: 6px;
+    margin-left: auto;
+  }
+
+  /* Range */
+  .size-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 4px;
+  }
+  .size-row svg { width: 14px; height: 14px; color: var(--text-mute); flex-shrink: 0; }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 4px;
+    background: rgba(148, 163, 184, 0.15);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px; height: 15px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue-1), var(--blue-3));
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--blue-glow);
+    transition: transform 0.15s ease;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.25); }
+  input[type=range]::-moz-range-thumb {
+    width: 15px; height: 15px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue-1), var(--blue-3));
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--blue-glow);
+  }
+
+  .size-value {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    min-width: 22px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Checkbox */
+  .checkbox-label {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--text-dim); font-size: 12px;
+    padding: 6px 8px; border-radius: 8px;
+    cursor: pointer;
+    transition: 0.15s;
+    width: 100%;
+  }
+  .checkbox-label:hover { background: var(--btn); color: var(--text); }
+  .checkbox-label input { accent-color: var(--orange-1); cursor: pointer; }
+
+  /* ==================== CANVAS ==================== */
+  .canvas-wrap {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: #ffffff;
+    border-radius: var(--radius);
+    box-shadow:
+      0 24px 70px rgba(0, 0, 0, 0.55),
+      0 0 0 1px rgba(148, 163, 184, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    animation: canvasIn 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.05) 0.1s both;
+    min-width: 0;
+  }
+  @keyframes canvasIn {
+    from { opacity: 0; transform: translateY(10px) scale(0.99); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .canvas-wrap.grid {
+    background-color: #fff;
+    background-image:
+      linear-gradient(#e8e8ef 1px, transparent 1px),
+      linear-gradient(90deg, #e8e8ef 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  .canvas-wrap.dark { background: #0d1220; }
+
+  #board {
+    position: absolute; inset: 0; cursor: crosshair;
+    touch-action: none; display: block;
+    border-radius: var(--radius);
+  }
+  #board.picker { cursor: cell; }
+  #board.fill   { cursor: copy; }
+  #board.text   { cursor: text; }
+
+  /* Axes */
+  .axes { position: absolute; inset: 0; pointer-events: none; display: none; z-index: 5; }
+  .axes.on { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .axes .v-line, .axes .h-line {
+    position: absolute; border: 0;
+    border-left: 2px dashed rgba(249, 115, 22, 0.6);
+    border-top:  2px dashed rgba(249, 115, 22, 0.6);
+    filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.5));
+  }
+  .axes .v-line { top: 0; bottom: 0; left: 50%; border-left-width: 2px; border-top: 0; }
+  .axes .h-line { left: 0; right: 0; top: 50%; border-top-width: 2px; border-left: 0; }
+
+  /* Text input */
+  .text-input {
+    position: fixed; z-index: 20; display: none;
+    background: rgba(10, 15, 30, 0.98);
+    border: 2px solid var(--blue-1);
+    color: #fff;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 15px;
+    font-family: inherit;
+    min-width: 200px;
+    box-shadow:
+      0 12px 36px rgba(0, 0, 0, 0.6),
+      0 0 0 4px rgba(59, 130, 246, 0.22);
+    outline: none;
+  }
+  .text-input.on { display: block; animation: tipIn 0.15s ease-out; }
+  .text-input::placeholder { color: var(--text-mute); }
+
+  /* Cursor preview */
+  .cursor-preview {
+    position: fixed;
+    border: 1.5px solid rgba(59, 130, 246, 0.9);
+    background: rgba(59, 130, 246, 0.12);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    display: none;
+    z-index: 15;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+    transition: width 0.08s, height 0.08s;
+  }
+  .cursor-preview.on { display: block; }
+
+  /* Toasts */
+  .toast-container {
+    position: fixed;
+    bottom: 22px;
+    right: 22px;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+  }
+  .toast {
+    background: rgba(15, 23, 42, 0.96);
+    border: 1px solid var(--panel-border);
+    border-left: 3px solid var(--blue-1);
+    color: var(--text);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
+    animation: toastIn 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.05);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    pointer-events: auto;
+  }
+  .toast.accent { border-left-color: var(--orange-1); }
+  .toast svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--blue-1); }
+  .toast.accent svg { color: var(--orange-1); }
+  .toast.out { animation: toastOut 0.3s ease forwards; }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(40px) scale(0.95); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
+  }
+  @keyframes toastOut {
+    to { opacity: 0; transform: translateX(40px) scale(0.95); }
+  }
+
+  /* Save indicator — маленькая точка в углу canvas */
+  .save-dot {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--blue-1);
+    box-shadow: 0 0 10px var(--blue-glow);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 6;
+  }
+  .save-dot.show { opacity: 1; animation: savePulse 1.2s ease-out; }
+  @keyframes savePulse {
+    0% { transform: scale(0.5); }
+    40% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+  }
+
+  /* ==================== АДАПТИВ ==================== */
+  @media (max-width: 780px) {
+    body { padding: 8px; }
+    .app { flex-direction: column; gap: 8px; }
+    .sidebar { width: 100%; max-height: 46vh; }
+    .groups { padding: 6px; }
+    .btn-grid.cols-4 { grid-template-columns: repeat(8, 1fr); }
+    .swatches { grid-template-columns: repeat(12, 1fr); }
+  }
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+        </svg>
+      </div>
+      <div class="logo-text">Доска</div>
+      <button class="collapse-all" id="collapseAll" title="Свернуть/развернуть всё">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="4 9 12 3 20 9"/>
+          <polyline points="4 15 12 21 20 15"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="groups" id="groups">
+
+      <!-- ====== Инструменты ====== -->
+      <section class="group" data-group="tools">
+        <button class="group-header">
+          <span class="group-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+              <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+              <path d="M2 2l7.586 7.586"/>
+              <circle cx="11" cy="11" r="2"/>
+            </svg>
+          </span>
+          <span class="group-title">Инструменты</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="group-body">
+          <div class="group-body-inner">
+            <div class="btn-grid cols-4">
+              <button class="tool-btn active" data-tool="pen" data-tip="Кисть · B">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                </svg>
+              </button>
+              <button class="tool-btn" data-tool="marker" data-tip="Маркер · M">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 11l-6 6v4h4l6-6"/>
+                  <path d="M20.5 7.5l-8-8-4 4 8 8 4-4z"/>
+                </svg>
+              </button>
+              <button class="tool-btn" data-tool="sparkle" data-tip="Блёстки · S">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3l1.9 5.8L20 10.7l-6.1 1.9L12 18.5l-1.9-5.9L4 10.7l6.1-1.9L12 3z"/>
+                  <path d="M19 3v3M20.5 4.5h-3"/>
+                </svg>
+              </button>
+              <button class="tool-btn" data-tool="eraser" data-tip="Ластик · E">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 20H8.5L3.5 15a2 2 0 010-2.8l9.2-9.2a2 2 0 012.8 0l5.2 5.2a2 2 0 010 2.8L12 20"/>
+                  <path d="M6.5 11.5l7 7"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== Фигуры ====== -->
+      <section class="group" data-group="shapes">
+        <button class="group-header">
+          <span class="group-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="8" height="8" rx="1"/>
+              <circle cx="17.5" cy="17.5" r="4.5"/>
+            </svg>
+          </span>
+          <span class="group-title">Фигуры</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="group-body">
+          <div class="group-body-inner">
+            <div class="btn-grid cols-3">
+              <button class="tool-btn" data-tool="line" data-tip="Линия · L">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19L19 5"/></svg>
+              </button>
+              <button class="tool-btn" data-tool="rect" data-tip="Прямоугольник · R">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
+              </button>
+              <button class="tool-btn" data-tool="circle" data-tip="Эллипс · C">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+              </button>
+            </div>
+            <label class="checkbox-label">
+              <input type="checkbox" id="fillShape"> Заливка фигур
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== Ещё ====== -->
+      <section class="group" data-group="extra">
+        <button class="group-header">
+          <span class="group-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="1"/>
+              <circle cx="12" cy="5" r="1"/>
+              <circle cx="12" cy="19" r="1"/>
+            </svg>
+          </span>
+          <span class="group-title">Ещё</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="group-body">
+          <div class="group-body-inner">
+            <div class="btn-grid cols-3">
+              <button class="tool-btn" data-tool="fill" data-tip="Заливка · F">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 11l-8-8-8.5 8.5a2 2 0 000 2.83L7.17 19a2 2 0 002.83 0L19 11z"/>
+                  <path d="M5 12.5h14"/>
+                  <path d="M20 15s2 2.5 2 4a2 2 0 11-4 0c0-1.5 2-4 2-4z"/>
+                </svg>
+              </button>
+              <button class="tool-btn" data-tool="picker" data-tip="Пипетка · I">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 22l1-4 10-10 3 3-10 10-4 1z"/>
+                  <path d="M14.5 6.5l3 3"/>
+                  <path d="M17 4l3 3-3 3-3-3 3-3z"/>
+                </svg>
+              </button>
+              <button class="tool-btn" data-tool="text" data-tip="Текст · T">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="4 7 4 4 20 4 20 7"/>
+                  <line x1="9" y1="20" x2="15" y2="20"/>
+                  <line x1="12" y1="4" x2="12" y2="20"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== Цвет и размер ====== -->
+      <section class="group" data-group="color">
+        <button class="group-header">
+          <span class="group-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/>
+              <circle cx="8.5" cy="9" r="1.3"/>
+              <circle cx="15.5" cy="9" r="1.3"/>
+              <circle cx="12" cy="15" r="1.3"/>
+            </svg>
+          </span>
+          <span class="group-title">Цвет и размер</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="group-body">
+          <div class="group-body-inner">
+            <div class="row">
+              <input type="color" id="color" class="color-picker" value="#3b82f6">
+              <span class="color-hex" id="colorHex">#3B82F6</span>
+            </div>
+            <div class="swatches" id="swatches"></div>
+            <div class="size-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/></svg>
+              <input type="range" id="size" min="1" max="80" value="5">
+              <span class="size-value" id="sizeValue">5</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== Режимы ====== -->
+      <section class="group" data-group="modes">
+        <button class="group-header">
+          <span class="group-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v18M3 12h18"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </span>
+          <span class="group-title">Режимы</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="group-body">
+          <div class="group-body-inner">
+            <div class="btn-grid cols-3">
+              <button class="tool-btn mode" id="rainbowBtn" data-tip="Радужная кисть">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M3 18a9 9 0 0118 0"/>
+                  <path d="M7 18a5 5 0 0110 0"/>
+                  <path d="M11 18a1 1 0 012 0"/>
+                </svg>
+              </button>
+              <button class="tool-btn mode" id="symVBtn" data-tip="Симметрия ↔">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="3" x2="12" y2="21" stroke-dasharray="3 3"/>
+                  <path d="M8 8l-4 4 4 4"/>
+                  <path d="M16 8l4 4-4 4"/>
+                </svg>
+              </button>
+              <button class="tool-btn mode" id="symHBtn" data-tip="Симметрия ↕">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="3" y1="12" x2="21" y2="12" stroke-dasharray="3 3"/>
+                  <path d="M8 8l4-4 4 4"/>
+                  <path d="M8 16l4 4 4-4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== История ====== -->
+      <section class="group" data-group="history">
+        <button class="group-header">
+          <span class="group-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 109-9 9 9 0 00-6.4 2.6L3 8"/>
+              <path d="M3 3v5h5"/>
+              <path d="M12 7v5l3 2"/>
+            </svg>
+          </span>
+          <span class="group-title">История</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="group-body">
+          <div class="group-body-inner">
+            <div class="btn-grid cols-3">
+              <button class="tool-btn" id="undoBtn" data-tip="Отменить · Ctrl+Z">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 7v6h6"/>
+                  <path d="M21 17a9 9 0 00-15-6.7L3 13"/>
+                </svg>
+              </button>
+              <button class="tool-btn" id="redoBtn" data-tip="Повторить · Ctrl+Y">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 7v6h-6"/>
+                  <path d="M3 17a9 9 0 0115-6.7L21 13"/>
+                </svg>
+              </button>
+              <button class="tool-btn" id="clearBtn" data-tip="Очистить">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                  <path d="M10 11v6M14 11v6"/>
+                  <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== Фон ====== -->
+      <section class="group" data-group="bg">
+        <button class="group-header">
+          <span class="group-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M3 15l5-5 4 4 3-3 6 6"/>
+            </svg>
+          </span>
+          <span class="group-title">Фон</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="group-body">
+          <div class="group-body-inner">
+            <div class="btn-grid cols-3">
+              <button class="tool-btn" data-bg="canvas-wrap" data-tip="Белый">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+              </button>
+              <button class="tool-btn" data-bg="canvas-wrap grid" data-tip="Клетка">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>
+                </svg>
+              </button>
+              <button class="tool-btn" data-bg="canvas-wrap dark" data-tip="Тёмный">
+                <svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== Файл ====== -->
+      <section class="group" data-group="file">
+        <button class="group-header">
+          <span class="group-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+          </span>
+          <span class="group-title">Файл</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="group-body">
+          <div class="group-body-inner">
+            <div class="btn-grid cols-2">
+              <button class="tool-btn" id="uploadBtn" data-tip="Загрузить картинку">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+              </button>
+              <button class="tool-btn" id="saveBtn" data-tip="Скачать PNG">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </aside>
+
+  <!-- ==================== CANVAS ==================== -->
+  <main class="canvas-wrap" id="wrap">
+    <canvas id="board"></canvas>
+    <div class="axes" id="axes">
+      <div class="v-line"></div>
+      <div class="h-line"></div>
+    </div>
+    <div class="save-dot" id="saveDot"></div>
+  </main>
+
+</div>
+
+<input class="text-input" id="textInput" type="text" placeholder="Введи текст…">
+<div class="cursor-preview" id="cursorPreview"></div>
+<div class="toast-container" id="toasts"></div>
+<input type="file" id="upload" accept="image/*" hidden>
+
+<script>
+  const canvas = document.getElementById('board');
+  const ctx = canvas.getContext('2d');
+  const wrap = document.getElementById('wrap');
+  const axes = document.getElementById('axes');
+  const textInput = document.getElementById('textInput');
+  const cursorPreview = document.getElementById('cursorPreview');
+  const toasts = document.getElementById('toasts');
+  const saveDot = document.getElementById('saveDot');
+
+  let drawing = false;
+  let tool = 'pen';
+  let lastX = 0, lastY = 0;
+  let shapeStart = null;
+  let shapeSnapshot = null;
+  let rainbowMode = false;
+  let symV = false, symH = false;
+  let hue = Math.random() * 360;
+
+  const history = [];
+  const redoStack = [];
+  const MAX_HISTORY = 20;
+
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  const getColor = () => document.getElementById('color').value;
+  const getSize  = () => +document.getElementById('size').value;
+  const getFill  = () => document.getElementById('fillShape').checked;
+
+  const sizeInput = document.getElementById('size');
+  const sizeValue = document.getElementById('sizeValue');
+  const colorInput = document.getElementById('color');
+  const colorHex = document.getElementById('colorHex');
+
+  sizeInput.addEventListener('input', () => {
+    sizeValue.textContent = sizeInput.value;
+    updateCursorPreview();
+  });
+  colorInput.addEventListener('input', () => {
+    colorHex.textContent = colorInput.value.toUpperCase();
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+  });
+
+  // ---------- TOASTS ----------
+  function toast(text, accent = false) {
+    const el = document.createElement('div');
+    el.className = 'toast' + (accent ? ' accent' : '');
+    el.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      <span>${text}</span>`;
+    toasts.appendChild(el);
+    setTimeout(() => {
+      el.classList.add('out');
+      setTimeout(() => el.remove(), 300);
+    }, 1800);
+  }
+
+  // ---------- RESIZE ----------
+  function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = wrap.getBoundingClientRect();
+
+    const old = document.createElement('canvas');
+    old.width = canvas.width; old.height = canvas.height;
+    if (canvas.width && canvas.height) old.getContext('2d').drawImage(canvas, 0, 0);
+
+    canvas.width  = Math.max(1, Math.floor(rect.width  * dpr));
+    canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+    canvas.style.width  = rect.width  + 'px';
+    canvas.style.height = rect.height + 'px';
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    if (old.width && old.height) {
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.drawImage(old, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
+    }
+    history.length = 0;
+    redoStack.length = 0;
+  }
+  window.addEventListener('resize', resizeCanvas);
+
+  // ---------- АВТОСОХРАНЕНИЕ ----------
+  const STORAGE_KEY = 'board-autosave';
+  let saveTimer = null;
+
+  function scheduleSave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      saveToStorage();
+      showSaveIndicator();
+    }, 400);
+  }
+
+  function saveToStorage() {
+    try {
+      const maxDim = 1600;
+      const scale = Math.min(1, maxDim / Math.max(canvas.width, canvas.height));
+      const w = Math.max(1, Math.floor(canvas.width * scale));
+      const h = Math.max(1, Math.floor(canvas.height * scale));
+      const tmp = document.createElement('canvas');
+      tmp.width = w; tmp.height = h;
+      tmp.getContext('2d').drawImage(canvas, 0, 0, w, h);
+      localStorage.setItem(STORAGE_KEY, tmp.toDataURL('image/png'));
+    } catch (e) { console.warn('Autosave failed:', e); }
+  }
+
+  function showSaveIndicator() {
+    saveDot.classList.remove('show');
+    void saveDot.offsetWidth;
+    saveDot.classList.add('show');
+  }
+
+  function loadFromStorage() {
+    let data;
+    try { data = localStorage.getItem(STORAGE_KEY); } catch (e) { return; }
+    if (!data) return;
+    const img = new Image();
+    img.onload = () => {
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
+    };
+    img.src = data;
+  }
+
+  resizeCanvas();
+  loadFromStorage();
+
+  // ---------- ПОЗИЦИЯ ----------
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const p = e.touches ? e.touches[0] : e;
+    return { x: p.clientX - rect.left, y: p.clientY - rect.top };
+  }
+
+  // ---------- UNDO / REDO ----------
+  function saveState() {
+    try {
+      history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      if (history.length > MAX_HISTORY) history.shift();
+      redoStack.length = 0;
+    } catch (e) {}
+  }
+  function undo() {
+    if (!history.length) return;
+    redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    ctx.putImageData(history.pop(), 0, 0);
+    scheduleSave();
+  }
+  function redo() {
+    if (!redoStack.length) return;
+    history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    ctx.putImageData(redoStack.pop(), 0, 0);
+    scheduleSave();
+  }
+
+  // ---------- ЦВЕТ ШТРИХА ----------
+  function currentStrokeColor(step = 4) {
+    if (rainbowMode) {
+      hue = (hue + step) % 360;
+      return `hsl(${hue}, 90%, 55%)`;
+    }
+    return getColor();
+  }
+
+  // ---------- СИММЕТРИЯ ----------
+  function mirrorPoints(x, y) {
+    const W = wrap.clientWidth, H = wrap.clientHeight;
+    const pts = [[x, y]];
+    if (symV) pts.push([W - x, y]);
+    if (symH) pts.push([x, H - y]);
+    if (symV && symH) pts.push([W - x, H - y]);
+    return pts;
+  }
+
+  // ---------- ПРИМИТИВЫ ----------
+  function drawLineSeg(x0, y0, x1, y1, { alpha = 1, eraser = false, color = null, width = null } = {}) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    if (eraser) {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = width ?? getSize() * 3;
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = color ?? getColor();
+      ctx.lineWidth = width ?? getSize();
+    }
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawDotAt(x, y, { alpha = 1, eraser = false, color = null, width = null } = {}) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    if (eraser) {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      ctx.arc(x, y, (width ?? getSize() * 3) / 2, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = color ?? getColor();
+      ctx.beginPath();
+      ctx.arc(x, y, (width ?? getSize()) / 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // ---------- БЛЁСТКИ ----------
+  function drawSparkleAt(x, y) {
+    const count = 3 + Math.floor(Math.random() * 3);
+    const size = getSize();
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = Math.random() * size * 1.6;
+      const sx = x + Math.cos(angle) * dist;
+      const sy = y + Math.sin(angle) * dist;
+      const r = Math.random() * size * 0.55 + 0.8;
+      const localHue = rainbowMode ? (hue + i * 20) % 360 : Math.random() * 360;
+      const col = `hsl(${localHue}, 100%, ${60 + Math.random() * 30}%)`;
+      ctx.fillStyle = col;
+      ctx.shadowColor = col;
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(sx, sy, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.fillStyle = '#fff';
+    ctx.shadowColor = rainbowMode ? `hsl(${hue},100%,60%)` : getColor();
+    ctx.shadowBlur = 14;
+    ctx.beginPath();
+    ctx.arc(x, y, Math.max(1, size * 0.25), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    if (rainbowMode) hue = (hue + 6) % 360;
+  }
+
+  // ---------- ФИГУРЫ ----------
+  function drawShapeFrom(x0, y0, x1, y1, color) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = getSize();
+    ctx.beginPath();
+    if (tool === 'line') {
+      ctx.moveTo(x0, y0);
+      ctx.lineTo(x1, y1);
+      ctx.stroke();
+    } else if (tool === 'rect') {
+      const w = x1 - x0, h = y1 - y0;
+      if (getFill()) ctx.fillRect(x0, y0, w, h);
+      else ctx.strokeRect(x0, y0, w, h);
+    } else if (tool === 'circle') {
+      const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+      const rx = Math.abs(x1 - x0) / 2, ry = Math.abs(y1 - y0) / 2;
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      if (getFill()) ctx.fill(); else ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawShapeSymmetric(x0, y0, x1, y1, color) {
+    const W = wrap.clientWidth, H = wrap.clientHeight;
+    drawShapeFrom(x0, y0, x1, y1, color);
+    if (symV) drawShapeFrom(W - x0, y0, W - x1, y1, color);
+    if (symH) drawShapeFrom(x0, H - y0, x1, H - y1, color);
+    if (symV && symH) drawShapeFrom(W - x0, H - y0, W - x1, H - y1, color);
+  }
+
+  function drawShapePreview(x, y) {
+    if (!shapeSnapshot) return;
+    ctx.putImageData(shapeSnapshot, 0, 0);
+    const color = currentStrokeColor(0);
+    drawShapeSymmetric(shapeStart.x, shapeStart.y, x, y, color);
+  }
+
+  // ---------- РИСОВАНИЕ ----------
+  function strokeSegmentCorrect(x0, y0, x1, y1) {
+    const W = wrap.clientWidth, H = wrap.clientHeight;
+    const segs = [[x0, y0, x1, y1]];
+    if (symV) segs.push([W - x0, y0, W - x1, y1]);
+    if (symH) segs.push([x0, H - y0, x1, H - y1]);
+    if (symV && symH) segs.push([W - x0, H - y0, W - x1, H - y1]);
+
+    let opts;
+    if (tool === 'eraser') {
+      opts = { eraser: true };
+    } else if (tool === 'marker') {
+      opts = { alpha: 0.35, color: currentStrokeColor(2) };
+    } else {
+      opts = { color: currentStrokeColor(4) };
+    }
+    for (const [a, b, c, d] of segs) drawLineSeg(a, b, c, d, opts);
+  }
+
+  function dotSymmetric(x, y) {
+    const W = wrap.clientWidth, H = wrap.clientHeight;
+    const pts = [[x, y]];
+    if (symV) pts.push([W - x, y]);
+    if (symH) pts.push([x, H - y]);
+    if (symV && symH) pts.push([W - x, H - y]);
+
+    let opts;
+    if (tool === 'eraser') {
+      opts = { eraser: true };
+    } else if (tool === 'marker') {
+      opts = { alpha: 0.35, color: currentStrokeColor(2) };
+    } else {
+      opts = { color: currentStrokeColor(4) };
+    }
+    pts.forEach(([px, py]) => drawDotAt(px, py, opts));
+  }
+
+  function sparkleSymmetric(x, y) {
+    const W = wrap.clientWidth, H = wrap.clientHeight;
+    const pts = [[x, y]];
+    if (symV) pts.push([W - x, y]);
+    if (symH) pts.push([x, H - y]);
+    if (symV && symH) pts.push([W - x, H - y]);
+    pts.forEach(([px, py]) => drawSparkleAt(px, py));
+  }
+
+  // ---------- ЗАЛИВКА ----------
+  function floodFill(cssX, cssY, fillColorHex) {
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.width, h = canvas.height;
+    const px = Math.floor(cssX * dpr), py = Math.floor(cssY * dpr);
+    if (px < 0 || py < 0 || px >= w || py >= h) return;
+
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+    const idx = (x, y) => (y * w + x) * 4;
+
+    const s = idx(px, py);
+    const sR = data[s], sG = data[s+1], sB = data[s+2], sA = data[s+3];
+
+    const tmp = document.createElement('canvas').getContext('2d');
+    tmp.fillStyle = fillColorHex;
+    const hex = tmp.fillStyle;
+    const fR = parseInt(hex.slice(1,3), 16);
+    const fG = parseInt(hex.slice(3,5), 16);
+    const fB = parseInt(hex.slice(5,7), 16);
+
+    if (Math.abs(sR-fR) < 6 && Math.abs(sG-fG) < 6 && Math.abs(sB-fB) < 6 && sA > 240) return;
+
+    const tol = 32;
+    const match = i =>
+      Math.abs(data[i]   - sR) < tol &&
+      Math.abs(data[i+1] - sG) < tol &&
+      Math.abs(data[i+2] - sB) < tol &&
+      Math.abs(data[i+3] - sA) < tol;
+
+    const visited = new Uint8Array(w * h);
+    const stack = [px, py];
+    while (stack.length) {
+      const y = stack.pop();
+      const x = stack.pop();
+      if (x < 0 || y < 0 || x >= w || y >= h) continue;
+      const vi = y * w + x;
+      if (visited[vi]) continue;
+      visited[vi] = 1;
+      const i = idx(x, y);
+      if (!match(i)) continue;
+      data[i] = fR; data[i+1] = fG; data[i+2] = fB; data[i+3] = 255;
+      stack.push(x+1, y, x-1, y, x, y+1, x, y-1);
+    }
+    ctx.putImageData(imgData, 0, 0);
+  }
+
+  // ---------- ПИПЕТКА ----------
+  function pickColor(cssX, cssY) {
+    const dpr = window.devicePixelRatio || 1;
+    const px = Math.floor(cssX * dpr), py = Math.floor(cssY * dpr);
+    if (px < 0 || py < 0 || px >= canvas.width || py >= canvas.height) return;
+    const d = ctx.getImageData(px, py, 1, 1).data;
+    if (d[3] === 0) return;
+    const hex = '#' + [d[0],d[1],d[2]].map(v => v.toString(16).padStart(2,'0')).join('');
+    colorInput.value = hex;
+    colorHex.textContent = hex.toUpperCase();
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+    toast('Цвет: ' + hex.toUpperCase(), true);
+  }
+
+  // ---------- ТЕКСТ ----------
+  let textPos = null;
+  function openTextInput(x, y) {
+    textPos = { x, y };
+    const rect = canvas.getBoundingClientRect();
+    textInput.style.left = (rect.left + x) + 'px';
+    textInput.style.top  = (rect.top  + y - 22) + 'px';
+    textInput.value = '';
+    textInput.classList.add('on');
+    setTimeout(() => textInput.focus(), 0);
+  }
+  function commitText() {
+    if (!textPos) return;
+    const text = textInput.value.trim();
+    if (text) {
+      saveState();
+      const size = getSize() * 4;
+      ctx.save();
+      ctx.font = `600 ${size}px system-ui, sans-serif`;
+      ctx.textBaseline = 'top';
+      const lines = text.split('\n');
+      const lineHeight = size * 1.2;
+
+      const drawAt = (px, py) => {
+        lines.forEach((line, i) => {
+          if (rainbowMode) ctx.fillStyle = `hsl(${(hue + i * 30) % 360}, 90%, 55%)`;
+          else ctx.fillStyle = getColor();
+          ctx.fillText(line, px, py + i * lineHeight);
+        });
+      };
+
+      const W = wrap.clientWidth, H = wrap.clientHeight;
+      drawAt(textPos.x, textPos.y);
+      if (symV) drawAt(W - textPos.x - measureText(lines, ctx), textPos.y);
+      if (symH) drawAt(textPos.x, H - textPos.y - lines.length * lineHeight);
+      if (symV && symH) drawAt(W - textPos.x - measureText(lines, ctx), H - textPos.y - lines.length * lineHeight);
+
+      ctx.restore();
+      scheduleSave();
+    }
+    textInput.classList.remove('on');
+    textInput.value = '';
+    textPos = null;
+  }
+  function measureText(lines, context) {
+    return Math.max(...lines.map(l => context.measureText(l).width), 0);
+  }
+  textInput.addEventListener('blur', commitText);
+  textInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); commitText(); }
+    if (e.key === 'Escape') { textInput.value = ''; commitText(); }
+  });
+
+  // ---------- CURSOR PREVIEW ----------
+  function updateCursorPreview() {
+    const size = getSize();
+    cursorPreview.style.width = size + 'px';
+    cursorPreview.style.height = size + 'px';
+  }
+  updateCursorPreview();
+
+  // ---------- СОБЫТИЯ ----------
+  function onDown(e) {
+    if (textInput.classList.contains('on')) return;
+    e.preventDefault();
+    const p = getPos(e);
+
+    if (tool === 'picker') { pickColor(p.x, p.y); return; }
+    if (tool === 'fill')   { saveState(); floodFill(p.x, p.y, rainbowMode ? `hsl(${hue},90%,55%)` : getColor()); scheduleSave(); return; }
+    if (tool === 'text')   { openTextInput(p.x, p.y); return; }
+
+    saveState();
+    drawing = true;
+    lastX = p.x; lastY = p.y;
+
+    if (tool === 'pen' || tool === 'eraser' || tool === 'marker') {
+      dotSymmetric(p.x, p.y);
+    } else if (tool === 'sparkle') {
+      sparkleSymmetric(p.x, p.y);
+    } else {
+      shapeStart = p;
+      shapeSnapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  function onMove(e) {
+    // Обновляем превью курсора всегда
+    if (!e.touches) {
+      const p = getPos(e);
+      cursorPreview.style.left = (e.clientX) + 'px';
+      cursorPreview.style.top  = (e.clientY) + 'px';
+    }
+
+    if (!drawing) return;
+    e.preventDefault();
+    const p = getPos(e);
+    if (tool === 'pen' || tool === 'eraser' || tool === 'marker') {
+      strokeSegmentCorrect(lastX, lastY, p.x, p.y);
+      lastX = p.x; lastY = p.y;
+    } else if (tool === 'sparkle') {
+      const dx = p.x - lastX, dy = p.y - lastY;
+      const dist = Math.hypot(dx, dy);
+      const steps = Math.max(1, Math.floor(dist / 4));
+      for (let i = 1; i <= steps; i++) {
+        sparkleSymmetric(lastX + dx * i / steps, lastY + dy * i / steps);
+      }
+      lastX = p.x; lastY = p.y;
+    } else {
+      drawShapePreview(p.x, p.y);
+    }
+  }
+
+  function onUp() {
+    if (!drawing) return;
+    drawing = false;
+    shapeStart = null;
+    shapeSnapshot = null;
+    scheduleSave();
+  }
+
+  canvas.addEventListener('mouseenter', () => cursorPreview.classList.add('on'));
+  canvas.addEventListener('mouseleave', () => cursorPreview.classList.remove('on'));
+  canvas.addEventListener('mousedown', onDown);
+  canvas.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+
+  canvas.addEventListener('touchstart', onDown, { passive: false });
+  canvas.addEventListener('touchmove',  onMove, { passive: false });
+  canvas.addEventListener('touchend',   onUp);
+
+  // ---------- ИНСТРУМЕНТЫ ----------
+  function setTool(name) {
+    tool = name;
+    document.querySelectorAll('.tool-btn[data-tool]').forEach(b => {
+      b.classList.toggle('active', b.dataset.tool === name);
+    });
+    canvas.classList.toggle('picker', name === 'picker');
+    canvas.classList.toggle('fill',   name === 'fill');
+    canvas.classList.toggle('text',   name === 'text');
+    cursorPreview.classList.toggle('on', name !== 'picker' && name !== 'fill' && name !== 'text');
+  }
+  document.querySelectorAll('.tool-btn[data-tool]').forEach(b => {
+    b.onclick = (e) => { ripple(e, b); setTool(b.dataset.tool); };
+  });
+
+  // ---------- RIPPLE ----------
+  function ripple(e, btn) {
+    const r = btn.getBoundingClientRect();
+    const size = Math.max(r.width, r.height);
+    const span = document.createElement('span');
+    span.className = 'ripple';
+    span.style.width = span.style.height = size + 'px';
+    span.style.left = (e.clientX - r.left - size / 2) + 'px';
+    span.style.top  = (e.clientY - r.top  - size / 2) + 'px';
+    btn.appendChild(span);
+    setTimeout(() => span.remove(), 600);
+  }
+
+  // ---------- СВОРАЧИВАНИЕ ГРУПП ----------
+  document.querySelectorAll('.group-header').forEach(h => {
+    h.addEventListener('click', () => {
+      h.parentElement.classList.toggle('collapsed');
+    });
+  });
+  document.getElementById('collapseAll').onclick = () => {
+    const groups = document.querySelectorAll('.group');
+    const anyExpanded = [...groups].some(g => !g.classList.contains('collapsed'));
+    groups.forEach(g => g.classList.toggle('collapsed', anyExpanded));
+  };
+
+  // ---------- ПАЛИТРА ----------
+  const palette = ['#000000','#ffffff','#e74c3c','#f97316','#f1c40f','#2ecc71',
+                   '#1abc9c','#3b82f6','#6366f1','#9b59b6','#e84393','#7f8c8d'];
+  const swWrap = document.getElementById('swatches');
+
+  palette.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'swatch';
+    b.style.background = c;
+    b.title = c.toUpperCase();
+    if (c.toLowerCase() === colorInput.value.toLowerCase()) b.classList.add('active');
+    b.onclick = () => {
+      colorInput.value = c;
+      colorHex.textContent = c.toUpperCase();
+      document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+      b.classList.add('active');
+    };
+    swWrap.appendChild(b);
+  });
+
+  // ---------- КНОПКИ ----------
+  document.getElementById('undoBtn').onclick = (e) => { ripple(e, e.currentTarget); undo(); };
+  document.getElementById('redoBtn').onclick = (e) => { ripple(e, e.currentTarget); redo(); };
+  document.getElementById('clearBtn').onclick = (e) => {
+    ripple(e, e.currentTarget);
+    if (!confirm('Очистить доску?')) return;
+    saveState();
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+    scheduleSave();
+    toast('Доска очищена');
+  };
+
+  // ---------- РАДУГА ----------
+  const rainbowBtn = document.getElementById('rainbowBtn');
+  rainbowBtn.onclick = (e) => {
+    ripple(e, rainbowBtn);
+    rainbowMode = !rainbowMode;
+    rainbowBtn.classList.toggle('active', rainbowMode);
+    toast(rainbowMode ? 'Радужная кисть включена' : 'Радужная кисть выключена', true);
+  };
+
+  // ---------- СИММЕТРИЯ ----------
+  const symVBtn = document.getElementById('symVBtn');
+  const symHBtn = document.getElementById('symHBtn');
+  function updateAxes() {
+    axes.classList.toggle('on', symV || symH);
+    axes.querySelector('.v-line').style.display = symV ? 'block' : 'none';
+    axes.querySelector('.h-line').style.display = symH ? 'block' : 'none';
+  }
+  symVBtn.onclick = (e) => {
+    ripple(e, symVBtn);
+    symV = !symV;
+    symVBtn.classList.toggle('active', symV);
+    updateAxes();
+    toast('Симметрия ↔ ' + (symV ? 'вкл' : 'выкл'), true);
+  };
+  symHBtn.onclick = (e) => {
+    ripple(e, symHBtn);
+    symH = !symH;
+    symHBtn.classList.toggle('active', symH);
+    updateAxes();
+    toast('Симметрия ↕ ' + (symH ? 'вкл' : 'выкл'), true);
+  };
+
+  // ---------- ФОН ----------
+  document.querySelectorAll('[data-bg]').forEach(btn => {
+    btn.onclick = (e) => {
+      ripple(e, btn);
+      wrap.className = btn.dataset.bg;
+      document.querySelectorAll('[data-bg]').forEach(b =>
+        b.classList.toggle('active', b === btn));
+    };
+  });
+  document.querySelector('[data-bg="canvas-wrap"]').classList.add('active');
+
+  // ---------- ЗАГРУЗКА ----------
+  document.getElementById('uploadBtn').onclick = (e) => {
+    ripple(e, e.currentTarget);
+    document.getElementById('upload').click();
+  };
+  document.getElementById('upload').onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const img = new Image();
+    img.onload = () => {
+      saveState();
+      const w = wrap.clientWidth, h = wrap.clientHeight;
+      const scale = Math.min(w / img.width, h / img.height, 1);
+      const dw = img.width * scale, dh = img.height * scale;
+      ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+      scheduleSave();
+      toast('Картинка добавлена');
+    };
+    img.src = URL.createObjectURL(file);
+    e.target.value = '';
+  };
+
+  // ---------- СОХРАНЕНИЕ ----------
+  document.getElementById('saveBtn').onclick = (e) => {
+    ripple(e, e.currentTarget);
+    const out = document.createElement('canvas');
+    out.width = canvas.width;
+    out.height = canvas.height;
+    const octx = out.getContext('2d');
+    let bg = getComputedStyle(wrap).backgroundColor;
+    if (!bg || bg === 'rgba(0, 0, 0, 0)') bg = '#ffffff';
+    octx.fillStyle = bg;
+    octx.fillRect(0, 0, out.width, out.height);
+    octx.drawImage(canvas, 0, 0);
+    const link = document.createElement('a');
+    link.download = 'drawing.png';
+    link.href = out.toDataURL('image/png');
+    link.click();
+    toast('Файл сохранён', true);
+  };
+
+  // ---------- ГОРЯЧИЕ КЛАВИШИ ----------
+  document.addEventListener('keydown', (e) => {
+    if (document.activeElement === textInput) return;
+
+    const k = e.key.toLowerCase();
+    if ((e.ctrlKey || e.metaKey) && k === 'z') {
+      e.preventDefault();
+      e.shiftKey ? redo() : undo();
+      return;
+    }
+    if ((e.ctrlKey || e.metaKey) && k === 'y') { e.preventDefault(); redo(); return; }
+
+    const map = {
+      b:'pen', m:'marker', s:'sparkle', e:'eraser',
+      l:'line', r:'rect', c:'circle', f:'fill', i:'picker', t:'text'
+    };
+    if (map[k] && !e.ctrlKey && !e.metaKey) {
+      e.preventDefault();
+      setTool(map[k]);
+    }
+  });
+
+  // Приветственный тост
+  setTimeout(() => toast('Готово к рисованию ✨'), 400);
+</script>
+
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Абсурд — Мнемо-Арена</title>
+<style>
+  :root {
+    --blue: #2D6CDF; --blue-dark: #1E4FA8; --blue-light: #EBF2FF;
+    --orange: #FF8C42; --orange-dark: #E86E1F; --orange-light: #FFF2E5;
+    --bg: #F7F9FC; --text: #1F2937; --text-muted: #6B7280;
+    --border: #E5EAF2; --green: #22C55E; --red: #EF4444;
+    --yellow: #F59E0B; --purple: #A855F7; --purple-light: #F5EDFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, 'Nunito Sans', sans-serif;
+    background: var(--bg); min-height: 100vh; color: var(--text); padding: 16px;
+    overflow-x: hidden;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding: 16px 22px; background: #fff;
+    border-radius: 20px; border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(45,108,223,.06); flex-wrap: wrap; gap: 10px;
+  }
+  .back-btn {
+    width: 46px; height: 46px; border: none; border-radius: 14px;
+    background: var(--blue-light); color: var(--blue);
+    font-size: 22px; font-weight: 700; cursor: pointer; transition: .18s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .back-btn:hover { background: var(--blue); color: #fff; transform: translateY(-1px); }
+  h1 { font-size: 20px; letter-spacing: .5px; color: var(--blue-dark); font-weight: 800; }
+  .score-bar {
+    background: var(--orange); color: #fff; padding: 8px 18px;
+    border-radius: 30px; font-size: 14px; font-weight: 700;
+    box-shadow: 0 4px 12px rgba(255,140,66,.3);
+  }
+  .score-bar span { color: #fff; font-weight: 800; font-size: 17px; }
+  main { min-height: 520px; }
+  .game-header { text-align: center; margin-bottom: 20px; }
+  .game-header h2 { font-size: 22px; margin-bottom: 6px; color: var(--blue-dark); font-weight: 800; }
+  .subtitle { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+  .status {
+    text-align: center; font-size: 16px; margin: 16px 0;
+    min-height: 26px; font-weight: 700; transition: .3s;
+  }
+  .status.good { color: #16A34A; }
+  .status.bad { color: #DC2626; }
+  .status.warn { color: var(--orange-dark); }
+  .panel {
+    background: #fff; border: 1px solid var(--border); border-radius: 22px;
+    padding: 26px; box-shadow: 0 8px 24px rgba(45,108,223,.06);
+  }
+  .presets { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
+  .preset-btn {
+    flex: 1 1 auto; min-width: 90px; padding: 10px 8px; border-radius: 12px;
+    border: 2px solid var(--border); background: #fff; color: var(--blue-dark);
+    font-weight: 700; font-size: 13px; cursor: pointer; transition: .18s;
+    font-family: inherit;
+  }
+  .preset-btn:hover { border-color: var(--orange); color: var(--orange-dark); transform: translateY(-1px); }
+  .preset-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .segment { display: flex; gap: 8px; margin-top: 8px; }
+  .segment-btn {
+    flex: 1; padding: 12px 10px; border-radius: 12px; border: 2px solid var(--border);
+    background: #fff; color: var(--blue-dark); font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: .18s; font-family: inherit; line-height: 1.3;
+  }
+  .segment-btn:hover { border-color: var(--orange); }
+  .segment-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .segment-btn small { display: block; font-size: 11px; opacity: .7; font-weight: 600; margin-top: 2px; }
+  .segment-btn.active small { opacity: .9; }
+  .settings-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; font-size: 15px; font-weight: 700;
+  }
+  .settings-row b { color: var(--blue-dark); font-size: 16px; font-weight: 800; }
+  input[type="range"] { width: 100%; accent-color: #FF8C42; height: 26px; }
+  .btn-main {
+    display: block; margin: 24px auto 0; padding: 16px 40px; border-radius: 14px;
+    border: none; background: var(--orange); color: #fff; font-size: 17px;
+    font-weight: 800; cursor: pointer; transition: .2s; letter-spacing: .5px;
+    box-shadow: 0 8px 20px rgba(255,140,66,.3); font-family: inherit;
+  }
+  .btn-main:hover { background: var(--orange-dark); transform: translateY(-2px); box-shadow: 0 12px 28px rgba(255,140,66,.4); }
+  .btn-main:active { transform: translateY(0); }
+  .timer-bar {
+    height: 10px; border-radius: 10px; background: var(--border);
+    overflow: hidden; margin-bottom: 16px;
+  }
+  .timer-fill {
+    height: 100%; background: linear-gradient(90deg, var(--green), var(--yellow), var(--red));
+    transition: width 0.5s linear; width: 100%;
+  }
+  .pair-stage {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 320px;
+    background: linear-gradient(145deg, var(--orange-light), var(--purple-light));
+    border-radius: 24px; border: 2px solid var(--border);
+    padding: 30px 24px; position: relative;
+    animation: popIn .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  .pair-counter {
+    position: absolute; top: 14px; left: 18px;
+    background: #fff; color: var(--blue-dark); font-weight: 800;
+    font-size: 13px; padding: 6px 14px; border-radius: 20px;
+    border: 2px solid var(--border);
+  }
+  .pair-word {
+    font-size: 30px; font-weight: 800; color: var(--blue-dark);
+    text-align: center; word-break: break-word; line-height: 1.2;
+  }
+  .pair-word.second { color: var(--orange-dark); }
+  .pair-arrow {
+    font-size: 34px; color: var(--purple); margin: 8px 0;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: .8; }
+    50% { transform: scale(1.15); opacity: 1; }
+  }
+  @keyframes popIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .hint {
+    text-align: center; font-size: 13px; color: var(--text-muted);
+    font-weight: 700; padding: 12px; background: var(--blue-light);
+    border-radius: 12px; margin-top: 14px; line-height: 1.5;
+  }
+  .hint b { color: var(--blue-dark); }
+  .progress-dots {
+    display: flex; gap: 6px; justify-content: center;
+    margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border); transition: .3s;
+  }
+  .dot.active { background: var(--orange); transform: scale(1.4); }
+  .dot.correct { background: var(--green); }
+  .dot.wrong { background: var(--red); }
+  .question-label {
+    text-align: center; font-size: 18px; font-weight: 800;
+    color: var(--blue-dark); margin-bottom: 4px;
+  }
+  .question-context {
+    text-align: center; font-size: 12px; color: var(--text-muted);
+    font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .prompt-word {
+    text-align: center; font-size: 34px; font-weight: 800;
+    color: var(--orange-dark); margin-bottom: 22px;
+    padding: 14px; background: var(--orange-light); border-radius: 16px;
+    border: 2px solid #FFD9BC;
+  }
+  .options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .option-text {
+    padding: 20px 16px; font-size: 17px; font-weight: 700; border-radius: 16px;
+    background: #fff; border: 2px solid var(--border); color: var(--text);
+    cursor: pointer; transition: .15s; text-align: center;
+    user-select: none; word-break: break-word; font-family: inherit; line-height: 1.3;
+  }
+  .option-text:hover:not(:disabled) {
+    background: var(--blue-light); border-color: var(--blue);
+    transform: translateY(-2px); box-shadow: 0 8px 18px rgba(45,108,223,.12);
+  }
+  .option-text:disabled { cursor: default; }
+  .option-text.correct {
+    background: #DCFCE7; border-color: var(--green);
+    transform: scale(1.02); box-shadow: 0 0 0 4px rgba(34,197,94,.15);
+  }
+  .option-text.wrong {
+    background: #FEE2E2; border-color: var(--red); animation: shake .35s ease;
+  }
+  .option-text.dimmed { opacity: .35; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    50% { transform: translateX(6px); }
+    75% { transform: translateX(-4px); }
+  }
+  .result-screen { text-align: center; padding: 20px 0; }
+  .result-screen .big {
+    font-size: 72px; margin-bottom: 12px;
+    animation: popIn .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .result-screen h2 { font-size: 26px; margin-bottom: 10px; color: var(--blue-dark); font-weight: 800; }
+  .result-screen p { color: var(--text-muted); font-size: 16px; margin: 6px 0; font-weight: 600; }
+  .stars { font-size: 40px; margin: 20px 0; letter-spacing: 6px; }
+  @media (max-width: 500px) {
+    .pair-word { font-size: 24px; }
+    .prompt-word { font-size: 26px; }
+    .option-text { font-size: 14px; padding: 12px 8px; }
+    .preset-btn { font-size: 12px; }
+    .segment-btn { font-size: 12px; padding: 10px 6px; }
+    .pair-stage { min-height: 260px; padding: 24px 16px; }
+  }
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <button class="back-btn" onclick="location.href='index.html'">←</button>
+    <h1>🎲 АБСУРД</h1>
+    <div class="score-bar">Очки: <span id="globalScore">0</span></div>
+  </header>
+  <main id="game"></main>
+</div>
+
+<script>
+/* ============ УТИЛИТЫ ============ */
+const $ = id => document.getElementById(id);
+const gameEl = $('game');
+let globalScore = 0;
+function addScore(n) { globalScore += n; $('globalScore').textContent = globalScore; }
+
+function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+let timeouts = [];
+function wait(ms, fn) { const id = setTimeout(fn, ms); timeouts.push(id); return id; }
+function clearTimeouts() { timeouts.forEach(clearTimeout); timeouts = []; }
+
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} }
+}
+function beep(freq, dur = 0.15, type = 'sine', vol = 0.08) {
+  if (!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = type; osc.frequency.value = freq;
+    const t = audioCtx.currentTime;
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.start(t); osc.stop(t + dur + 0.02);
+  } catch(e) {}
+}
+const sfxCorrect = () => { beep(660, 0.1); setTimeout(() => beep(880, 0.15), 90); };
+const sfxWrong = () => beep(180, 0.3, 'sawtooth', 0.12);
+const sfxClick = () => beep(440, 0.05, 'triangle', 0.06);
+const sfxWin = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.2), i * 120));
+
+/* ============ БАЗА СЛОВ (~350 слов, 22 буквы) ============ */
+const ALL_WORDS = [
+  // А
+  'арбуз','автобус','акула','антенна','апельсин','ананас','альбом','аквариум','ангел','арфа','астронавт','абрикос','авокадо','аист','аспирин',
+  // Б
+  'бабочка','барабан','банан','бинокль','ботинок','бегемот','бутерброд','бутылка','батарея','браслет','букет','бублик','батон','балерина','белка',
+  // В
+  'велосипед','ворона','волк','ведро','вилка','вишня','веник','валенки','вертолёт','вулкан','ветер','виноград','вафли','ворон','ванна',
+  // Г
+  'гитара','гриб','глобус','гном','газета','галстук','гвоздь','груша','горох','губка','гусеница','гепард','гиря','грабли','гармонь',
+  // Д
+  'дом','дождь','дракон','дверь','диван','дельфин','дерево','дыня','доска','дудочка','дятел','доктор','дорога','динозавр','джем',
+  // Ж
+  'жаба','жираф','жук','желе','журнал','жвачка','жемчуг','жилет','жёлудь','жаворонок','жгут','жара',
+  // З
+  'заяц','зебра','зеркало','зонт','звезда','замок','змея','зефир','зубр','забор','золото','зима',
+  // И
+  'игла','индюк','ирис','икра','игрушка','избушка','иволга','ишак','изюм','иней','иллюзия','искусство',
+  // К
+  'кот','кит','книга','кактус','колокол','крокодил','кровать','кукла','карандаш','картошка','кенгуру','кирпич','ключ','корона','кофе',
+  // Л
+  'лиса','лампа','лодка','лук','лев','луна','лопата','лошадь','лимон','лягушка','ластик','лента','ласточка','лестница','леопард',
+  // М
+  'медведь','мяч','мост','машина','мышь','молоко','мороженое','море','муравей','маска','матрёшка','метла','монета','морковь','медуза',
+  // Н
+  'носорог','ножницы','нота','нож','нора','насос','нитка','нарцисс','носки','небо','нос','нимфа',
+  // О
+  'осел','окно','огурец','орел','обезьяна','очки','облако','ожерелье','оркестр','овес','орех','осьминог',
+  // П
+  'петух','пингвин','пушка','пеликан','пылесос','павлин','палатка','поросёнок','пирамида','печенье','письмо','помидор','парашют','парус','полотенце',
+  // Р
+  'рыба','робот','роза','ручка','ракета','ромашка','рубашка','ремень','радуга','редис','рюкзак','ракушка','рукавица','руль','рояль',
+  // С
+  'слон','сова','солнце','стакан','самолёт','свисток','сосиска','сундук','снеговик','сумка','свеча','сапог','сурок','скрипка','стрела',
+  // Т
+  'тигр','торт','туча','телевизор','трактор','тюльпан','тарелка','топор','тыква','труба','туфли','таракан','телефон','термос','табурет',
+  // У
+  'улитка','утка','утюг','ухо','удав','укроп','усы','улей','удочка','уголь','урожай','учебник',
+  // Ф
+  'фонарь','флейта','футбол','филин','фартук','фотоаппарат','фломастер','фламинго','фокусник','фонарик','футболка','форель',
+  // Х
+  'хомяк','хлеб','холодильник','хобот','халат','хоккей','хвост','хурма','хризантема','храм','хвоя','хоровод',
+  // Ц
+  'цыплёнок','цирк','цветок','цапля','циркуль','цитрус','церковь','цемент','цукаты','цыган','царь','циферблат',
+  // Ч
+  'черепаха','чашка','часы','чемодан','черешня','чеснок','чучело','чулок','чебурек','череп','чипсы','чудовище',
+  // Ш
+  'шляпа','шарф','шапка','шоколад','шкаф','шишка','шар','швабра','шпион','шахматы','шкатулка','шорты',
+  // Э
+  'экскаватор','эскимо','электричка','энциклопедия','эльф','этажерка','эскиз','эхо','эклер','эму','эспандер','эстрада',
+  // Ю
+  'юла','юбка','юрист','юнга','юмор','юбилей','юрта','юноша','юпитер','юг','южанин','юшка',
+  // Я
+  'яблоко','якорь','ящерица','яхта','яма','ягода','яйцо','ярмарка','ясень','ястреб','ядро','язычок'
+];
+
+const WORDS_BY_LETTER = {};
+ALL_WORDS.forEach(w => {
+  const L = w[0].toUpperCase();
+  if (!WORDS_BY_LETTER[L]) WORDS_BY_LETTER[L] = [];
+  WORDS_BY_LETTER[L].push(w);
+});
+
+/* ============ ГЕНЕРАЦИЯ АБСУРДНЫХ ПАР ============ */
+function generateAbsurdPairs(count) {
+  const used = new Set();
+  const pairs = [];
+  let guard = 0;
+  while (pairs.length < count && guard < 3000) {
+    guard++;
+    const a = pick(ALL_WORDS);
+    if (used.has(a)) continue;
+    const L = a[0].toUpperCase();
+    const candidates = ALL_WORDS.filter(w => w[0].toUpperCase() !== L && !used.has(w));
+    if (!candidates.length) continue;
+    const b = pick(candidates);
+    used.add(a); used.add(b);
+    pairs.push(Math.random() < 0.5 ? [a, b] : [b, a]);
+  }
+  return pairs;
+}
+
+/* ============ НАСТРОЙКИ ============ */
+let cfg = { pairs: 5, timerMode: true, showTime: 40 };
+try {
+  const s = localStorage.getItem('absurdCfgV1');
+  if (s) cfg = { ...cfg, ...JSON.parse(s) };
+} catch(e) {}
+function saveCfg() { try { localStorage.setItem('absurdCfgV1', JSON.stringify(cfg)); } catch(e) {} }
+
+/* ============ ЭКРАН НАСТРОЕК ============ */
+function showSettings() {
+  clearTimeouts();
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🎲 Абсурд</h2>
+      <div class="subtitle">Придумай нелепую связь между словами — так запомнишь их крепче</div>
+    </div>
+    <div class="panel">
+      <div style="max-width: 480px; margin: 0 auto;">
+        <div class="presets" id="presets">
+          <button class="preset-btn" data-pairs="3" data-timer="0" data-time="30">🌱 Разминка</button>
+          <button class="preset-btn" data-pairs="5" data-timer="1" data-time="40">⚡ Стандарт</button>
+          <button class="preset-btn" data-pairs="7" data-timer="1" data-time="30">🔥 Сложнее</button>
+          <button class="preset-btn" data-pairs="10" data-timer="1" data-time="25">💀 Хардкор</button>
+        </div>
+
+        <label style="display:block; margin-bottom: 22px;">
+          <div class="settings-row"><span>Количество пар</span><b id="pairsVal">${cfg.pairs}</b></div>
+          <input type="range" id="pairsRange" min="3" max="10" value="${cfg.pairs}">
+        </label>
+
+        <div style="margin-bottom: 22px;">
+          <div class="settings-row"><span>Режим запоминания</span><b id="timerModeVal">${cfg.timerMode ? 'с таймером' : 'без времени'}</b></div>
+          <div class="segment" id="timerRow">
+            <button class="segment-btn ${cfg.timerMode ? 'active' : ''}" data-timer="1">С таймером<small>на время</small></button>
+            <button class="segment-btn ${!cfg.timerMode ? 'active' : ''}" data-timer="0">Без времени<small>сам решаю</small></button>
+          </div>
+        </div>
+
+        <label style="display:block; margin-bottom: 22px; ${!cfg.timerMode ? 'opacity:.35; pointer-events:none;' : ''}" id="timeBlock">
+          <div class="settings-row"><span>Общее время на все пары</span><b id="timeVal">${cfg.showTime} сек</b></div>
+          <input type="range" id="timeRange" min="6" max="90" step="1" value="${cfg.showTime}">
+          <div id="perPairHint" style="font-size:12px; color: var(--text-muted); margin-top:6px; font-weight:700; text-align:center;"></div>
+        </label>
+
+        <div class="hint" style="text-align:left;">
+          💡 <b>Как играть:</b> пары показываются по одной. Придумай к ним нелепую сценку — <i>арбуз на жирафе</i>, <i>ведро в цилиндре</i>, <i>хомяк играет на рояле</i>. Потом тренажёр покажет одно слово и предложит 4 варианта на ту же букву — нужно вспомнить точное слово из пары.
+        </div>
+
+        <button class="btn-main" id="startBtn">Начать 🎲</button>
+      </div>
+    </div>
+  `;
+
+  const pairsRange = $('pairsRange');
+  const timeRange = $('timeRange');
+  const timerRow = $('timerRow');
+  const timeBlock = $('timeBlock');
+  const pairsVal = $('pairsVal');
+  const timeVal = $('timeVal');
+  const timerModeVal = $('timerModeVal');
+  const presets = $('presets');
+  const perPairHint = $('perPairHint');
+
+  function updatePerPairHint() {
+    const perPair = Math.max(1, Math.round(cfg.showTime / cfg.pairs));
+    perPairHint.textContent = `≈ ${perPair} сек на каждую пару`;
+  }
+  function updatePairsUI() {
+    cfg.pairs = +pairsRange.value;
+    pairsVal.textContent = cfg.pairs;
+    updatePerPairHint(); saveCfg();
+  }
+  function updateTimeUI() {
+    cfg.showTime = +timeRange.value;
+    timeVal.textContent = cfg.showTime + ' сек';
+    updatePerPairHint(); saveCfg();
+  }
+  function updateTimerModeUI(isTimer) {
+    cfg.timerMode = isTimer;
+    timerModeVal.textContent = isTimer ? 'с таймером' : 'без времени';
+    timeBlock.style.opacity = isTimer ? '1' : '.35';
+    timeBlock.style.pointerEvents = isTimer ? 'auto' : 'none';
+    saveCfg();
+  }
+
+  pairsRange.addEventListener('input', updatePairsUI);
+  timeRange.addEventListener('input', updateTimeUI);
+  timerRow.querySelectorAll('.segment-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      timerRow.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateTimerModeUI(btn.dataset.timer === '1');
+    });
+  });
+  presets.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      presets.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      pairsRange.value = btn.dataset.pairs;
+      timeRange.value = btn.dataset.time;
+      updatePairsUI(); updateTimeUI();
+      const isTimer = btn.dataset.timer === '1';
+      timerRow.querySelectorAll('.segment-btn').forEach(b => {
+        b.classList.toggle('active', (b.dataset.timer === '1') === isTimer);
+      });
+      updateTimerModeUI(isTimer);
+    });
+  });
+
+  updatePerPairHint();
+
+  $('startBtn').addEventListener('click', () => {
+    initAudio(); sfxClick();
+    startEncoding();
+  });
+}
+
+/* ============ ФАЗА 1: ЗАПОМИНАНИЕ ПО ОДНОЙ ПАРЕ ============ */
+function startEncoding() {
+  clearTimeouts();
+  const pairs = generateAbsurdPairs(cfg.pairs);
+  let idx = 0;
+  let perPairMs = cfg.timerMode ? Math.round((cfg.showTime * 1000) / cfg.pairs) : 0;
+  let interval = null;
+
+  function render() {
+    if (interval) { clearInterval(interval); interval = null; }
+    const [a, b] = pairs[idx];
+    const isLast = idx === pairs.length - 1;
+
+    gameEl.innerHTML = `
+      <div class="game-header">
+        <h2>🎲 Запоминай пары</h2>
+        <div class="subtitle">Придумай к ним нелепую сценку в голове</div>
+      </div>
+
+      ${cfg.timerMode ? `
+        <div class="timer-bar"><div class="timer-fill" id="timerFill" style="width:100%;"></div></div>
+      ` : ''}
+
+      <div class="pair-stage" id="pairStage">
+        <div class="pair-counter">Пара ${idx + 1} из ${pairs.length}</div>
+        <div class="pair-word">${a}</div>
+        <div class="pair-arrow">↕</div>
+        <div class="pair-word second">${b}</div>
+      </div>
+
+      <div class="hint">Чем <b>абсурднее</b> сценка — тем лучше запомнится.</div>
+
+      <div class="status" id="statusMsg"></div>
+
+      <button class="btn-main" id="nextBtn">${isLast ? 'Готово ✅' : 'Дальше →'}</button>
+    `;
+
+    const nextBtn = $('nextBtn');
+    const timerFill = $('timerFill');
+
+    function advance() {
+      if (interval) { clearInterval(interval); interval = null; }
+      if (idx < pairs.length - 1) {
+        idx++;
+        render();
+      } else {
+        startRecall(pairs);
+      }
+    }
+
+    if (cfg.timerMode) {
+      let msLeft = perPairMs;
+      const tickMs = 100;
+      interval = setInterval(() => {
+        msLeft -= tickMs;
+        const pct = Math.max(0, (msLeft / perPairMs) * 100);
+        if (timerFill) timerFill.style.width = pct + '%';
+        if (msLeft <= 0) {
+          if (interval) { clearInterval(interval); interval = null; }
+          advance();
+        }
+      }, tickMs);
+    }
+
+    nextBtn.addEventListener('click', () => { sfxClick(); advance(); });
+  }
+
+  render();
+}
+
+/* ============ ФАЗА 2: ВОПРОСЫ ВРАЗБРОС, ОПЦИИ НА ОДНУ БУКВУ ============ */
+function startRecall(pairs) {
+  clearTimeouts();
+
+  const questions = pairs.map(([a, b]) => {
+    const swap = Math.random() < 0.5;
+    return { prompt: swap ? a : b, correct: swap ? b : a };
+  });
+
+  const shuffled = shuffle(questions);
+
+  const memorized = new Set();
+  pairs.forEach(([a, b]) => { memorized.add(a); memorized.add(b); });
+
+  let currentIndex = 0;
+  let correctCount = 0;
+
+  function buildOptions(q) {
+    const L = q.correct[0].toUpperCase();
+    const pool = (WORDS_BY_LETTER[L] || []).filter(w => w !== q.correct && !memorized.has(w));
+    let distractors = shuffle(pool).slice(0, 3);
+    if (distractors.length < 3) {
+      const extra = shuffle((WORDS_BY_LETTER[L] || []).filter(w => w !== q.correct && !distractors.includes(w)));
+      distractors = distractors.concat(extra).slice(0, 3);
+    }
+    return shuffle([q.correct, ...distractors]);
+  }
+
+  function render() {
+    const q = shuffled[currentIndex];
+    const options = buildOptions(q);
+
+    gameEl.innerHTML = `
+      <div class="game-header">
+        <h2>🎲 Вспоминай пары</h2>
+        <div class="subtitle">Выбери слово, которое было в паре</div>
+      </div>
+
+      <div class="progress-dots" id="progressDots">
+        ${shuffled.map((_, i) => {
+          let cls = '';
+          if (i === currentIndex) cls = 'active';
+          return `<div class="dot ${cls}" data-i="${i}"></div>`;
+        }).join('')}
+      </div>
+
+      <div class="question-label">С каким словом было в паре?</div>
+      <div class="question-context">Вопрос ${currentIndex + 1} из ${shuffled.length}</div>
+
+      <div class="prompt-word">${q.prompt}</div>
+
+      <div class="options" id="options">
+        ${options.map(opt => `<button class="option-text" data-word="${opt}">${opt}</button>`).join('')}
+      </div>
+
+      <div class="status" id="statusMsg"></div>
+    `;
+
+    const optionsDiv = $('options');
+    const statusMsg = $('statusMsg');
+
+    optionsDiv.querySelectorAll('.option-text').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (optionsDiv.dataset.answered) return;
+        optionsDiv.dataset.answered = '1';
+
+        const chosen = btn.dataset.word;
+        const isCorrect = chosen === q.correct;
+
+        optionsDiv.querySelectorAll('.option-text').forEach(b => {
+          b.disabled = true;
+          if (b.dataset.word === q.correct) b.classList.add('correct');
+          else if (b.dataset.word === chosen && !isCorrect) b.classList.add('wrong');
+          else b.classList.add('dimmed');
+        });
+
+        const dots = $('progressDots').querySelectorAll('.dot');
+        if (dots[currentIndex]) {
+          dots[currentIndex].classList.remove('active');
+          dots[currentIndex].classList.add(isCorrect ? 'correct' : 'wrong');
+        }
+
+        if (isCorrect) {
+          correctCount++;
+          addScore(10);
+          sfxCorrect();
+          statusMsg.textContent = 'Верно! 🎉';
+          statusMsg.className = 'status good';
+        } else {
+          sfxWrong();
+          statusMsg.textContent = `Правильный ответ: «${q.correct}»`;
+          statusMsg.className = 'status bad';
+        }
+
+        wait(1100, () => {
+          currentIndex++;
+          if (currentIndex < shuffled.length) render();
+          else showResults(correctCount, shuffled.length);
+        });
+      });
+    });
+  }
+
+  render();
+}
+
+/* ============ РЕЗУЛЬТАТЫ ============ */
+function showResults(correct, total) {
+  clearTimeouts();
+  sfxWin();
+  const percent = Math.round((correct / total) * 100);
+  let big, title;
+  if (percent === 100) { big = '🏆'; title = 'Полный абсурд!'; }
+  else if (percent >= 80) { big = '🌟'; title = 'Отлично!'; }
+  else if (percent >= 50) { big = '👍'; title = 'Хорошо!'; }
+  else { big = '💪'; title = 'Попробуй ещё!'; }
+
+  gameEl.innerHTML = `
+    <div class="result-screen">
+      <div class="big">${big}</div>
+      <h2>${title}</h2>
+      <p>Правильно: <b>${correct}</b> из <b>${total}</b> (${percent}%)</p>
+      <div class="stars">${'⭐'.repeat(Math.max(1, Math.round(percent / 25)))}</div>
+      <button class="btn-main" id="restartBtn">Ещё раз 🎲</button>
+    </div>
+  `;
+
+  $('restartBtn').addEventListener('click', () => { sfxClick(); showSettings(); });
+}
+
+/* ============ СТАРТ ============ */
+showSettings();
+</script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Детектив - Мнемо-Арена</title>
+<style>
+  :root {
+    --blue: #2D6CDF;
+    --blue-dark: #1E4FA8;
+    --blue-light: #EBF2FF;
+    --orange: #FF8C42;
+    --orange-dark: #E86E1F;
+    --orange-light: #FFF2E5;
+    --bg: #F7F9FC;
+    --text: #1F2937;
+    --text-muted: #6B7280;
+    --border: #E5EAF2;
+    --green: #22C55E;
+    --red: #EF4444;
+    --yellow: #F59E0B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--text);
+    padding: 16px;
+    overflow-x: hidden;
+  }
+
+  .container { max-width: 800px; margin: 0 auto; }
+
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding: 16px 22px;
+    background: #fff; border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(45,108,223,.06);
+    flex-wrap: wrap; gap: 10px;
+  }
+
+  .back-btn {
+    width: 46px; height: 46px;
+    border: none; border-radius: 14px;
+    background: var(--blue-light);
+    color: var(--blue);
+    font-size: 22px; font-weight: 700;
+    cursor: pointer; transition: .18s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .back-btn:hover { background: var(--blue); color: #fff; transform: translateY(-1px); }
+
+  h1 { font-size: 20px; letter-spacing: .5px; color: var(--blue-dark); font-weight: 800; }
+
+  .score-bar {
+    background: var(--orange); color: #fff;
+    padding: 8px 18px; border-radius: 30px; font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(255,140,66,.3);
+  }
+  .score-bar span { color: #fff; font-weight: 800; font-size: 17px; }
+
+  main { min-height: 520px; }
+
+  .game-header { text-align: center; margin-bottom: 20px; }
+  .game-header h2 { font-size: 22px; margin-bottom: 6px; color: var(--blue-dark); font-weight: 800; }
+  .subtitle { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+
+  .status {
+    text-align: center; font-size: 16px; margin: 16px 0;
+    min-height: 26px; font-weight: 700; color: var(--text); transition: .3s;
+  }
+  .status.good { color: #16A34A; }
+  .status.bad { color: #DC2626; }
+  .status.warn { color: var(--orange-dark); }
+
+  .panel {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 22px; padding: 26px;
+    box-shadow: 0 8px 24px rgba(45,108,223,.06);
+  }
+
+  .scene {
+    display: grid; gap: 10px;
+    max-width: 500px; margin: 0 auto;
+  }
+  .scene-item {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    font-size: 40px;
+    background: var(--blue-light);
+    border: 2px solid var(--border); border-radius: 16px;
+    animation: popIn .35s cubic-bezier(.34,1.56,.64,1) backwards;
+  }
+  .scene-item.big { font-size: 52px; border-radius: 18px; }
+  .scene-item.small { font-size: 32px; border-radius: 14px; }
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .slots {
+    display: grid; gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(52px, 1fr));
+    max-width: 560px; margin: 0 auto 22px;
+  }
+  .slot {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px;
+    background: var(--bg);
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    transition: .15s;
+    user-select: none;
+  }
+  .slot.filled {
+    background: var(--blue-light);
+    border-style: solid;
+    border-color: var(--blue);
+    cursor: grab;
+    touch-action: none;
+  }
+  .slot.filled:active { cursor: grabbing; }
+  .slot.drop-hover {
+    border-color: var(--orange);
+    background: var(--orange-light);
+    transform: scale(1.05);
+  }
+  .slot.result-correct { background: #DCFCE7; border-color: var(--green); border-style: solid; }
+  .slot.result-misplaced { background: #FEF3C7; border-color: var(--yellow); border-style: solid; }
+  .slot.result-wrong { background: #FEE2E2; border-color: var(--red); border-style: solid; }
+
+  .pool {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    margin: 0 auto; max-width: 560px;
+    min-height: 76px;
+    padding: 12px;
+    background: var(--bg);
+    border-radius: 16px;
+    border: 2px solid var(--border);
+    transition: .15s;
+  }
+  .pool.drop-hover {
+    border-color: var(--orange);
+    background: var(--orange-light);
+  }
+  .pool-item {
+    width: 54px; height: 54px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px;
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    cursor: grab;
+    transition: .15s;
+    user-select: none;
+    touch-action: none;
+    animation: popIn .25s cubic-bezier(.34,1.56,.64,1);
+  }
+  .pool-item:hover {
+    border-color: var(--orange);
+    box-shadow: 0 6px 14px rgba(255,140,66,.2);
+  }
+  .pool-item:active { cursor: grabbing; }
+
+  .pool-empty-hint {
+    width: 100%; text-align: center; color: var(--text-muted);
+    font-weight: 700; font-size: 14px; padding: 8px;
+  }
+
+  .drag-ghost {
+    position: fixed;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px;
+    background: var(--blue-light);
+    border: 2px solid var(--blue);
+    border-radius: 12px;
+    box-shadow: 0 14px 32px rgba(45,108,223,.35);
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .dragging { opacity: 0.25; }
+
+  .settings-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; font-size: 15px; color: var(--text); font-weight: 700;
+  }
+  .settings-row b { color: var(--blue-dark); font-size: 16px; font-weight: 800; }
+  input[type="range"] { width: 100%; accent-color: #FF8C42; height: 26px; }
+
+  .btn-main {
+    display: block; margin: 24px auto 0; padding: 16px 40px;
+    border-radius: 14px; border: none;
+    background: var(--orange); color: #fff;
+    font-size: 17px; font-weight: 800; cursor: pointer;
+    transition: .2s; letter-spacing: .5px;
+    box-shadow: 0 8px 20px rgba(255,140,66,.3);
+  }
+  .btn-main:hover {
+    background: var(--orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(255,140,66,.4);
+  }
+  .btn-main:active { transform: translateY(0); }
+
+  .btn-secondary {
+    display: block; margin: 8px auto 0; padding: 12px 30px;
+    border-radius: 14px; border: none;
+    background: transparent; color: var(--blue-dark);
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: .2s;
+  }
+  .btn-secondary:hover { background: var(--blue-light); }
+
+  .result-screen { text-align: center; padding: 30px 20px; }
+  .result-screen .big {
+    font-size: 72px; margin-bottom: 12px;
+    animation: popIn .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .result-screen h2 { font-size: 26px; margin-bottom: 10px; color: var(--blue-dark); font-weight: 800; }
+  .result-screen p { color: var(--text-muted); font-size: 16px; margin: 6px 0; font-weight: 600; }
+  .stars { font-size: 40px; margin: 20px 0; letter-spacing: 6px; }
+
+  .row-cell {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:38px; height:38px; font-size:26px;
+    border:2px solid var(--border); border-radius:9px; margin:2px;
+  }
+
+  @media (max-width: 500px) {
+    .scene-item { font-size: 30px; }
+    .scene-item.big { font-size: 40px; }
+    .scene-item.small { font-size: 24px; }
+    .slot { font-size: 26px; }
+    .pool-item { width: 46px; height: 46px; font-size: 26px; }
+    .drag-ghost { font-size: 26px; }
+    .row-cell { width:32px; height:32px; font-size:22px; }
+  }
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <button class="back-btn" onclick="location.href='index.html'">←</button>
+    <h1>🕵️ ДЕТЕКТИВ</h1>
+    <div class="score-bar">Очки: <span id="globalScore">0</span></div>
+  </header>
+  <main id="game"></main>
+</div>
+
+<script>
+/* ============ УТИЛИТЫ ============ */
+const $ = id => document.getElementById(id);
+const gameEl = $('game');
+let globalScore = 0;
+$('globalScore').textContent = globalScore;
+function addScore(n) { globalScore += n; $('globalScore').textContent = globalScore; }
+
+function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+let timeouts = [];
+function wait(ms, fn) {
+  const id = setTimeout(fn, ms);
+  timeouts.push(id);
+  return id;
+}
+function clearTimeouts() {
+  timeouts.forEach(clearTimeout);
+  timeouts = [];
+}
+
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+}
+function beep(freq, dur = 0.15, type = 'sine', vol = 0.08) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.type = type;
+  osc.frequency.value = freq;
+  const t = audioCtx.currentTime;
+  gain.gain.setValueAtTime(vol, t);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  osc.start(t); osc.stop(t + dur + 0.02);
+}
+function sfxCorrect() { beep(660, 0.1); setTimeout(() => beep(880, 0.15), 90); }
+function sfxWrong() { beep(180, 0.3, 'sawtooth', 0.12); }
+function sfxClick() { beep(440, 0.05, 'triangle', 0.06); }
+function sfxWin() {
+  [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.2), i * 120));
+}
+
+/* ============ DRAG & DROP ENGINE ============ */
+let drag = null;
+
+function attachDrag(el, item, sourceType, sourceIdx, onDrop) {
+  el.addEventListener('pointerdown', e => {
+    if (e.button !== undefined && e.button !== 0) return;
+    e.preventDefault();
+
+    const rect = el.getBoundingClientRect();
+    drag = {
+      item, sourceType, sourceIdx,
+      element: el,
+      startX: e.clientX,
+      startY: e.clientY,
+      offsetX: e.clientX - rect.left,
+      offsetY: e.clientY - rect.top,
+      width: rect.width,
+      height: rect.height,
+      ghost: null,
+      hasMoved: false,
+      onDrop
+    };
+    el.setPointerCapture(e.pointerId);
+    el.addEventListener('pointermove', onDragMove);
+    el.addEventListener('pointerup', onDragEnd);
+    el.addEventListener('pointercancel', onDragEnd);
+  });
+}
+
+function onDragMove(e) {
+  if (!drag) return;
+  const dx = e.clientX - drag.startX;
+  const dy = e.clientY - drag.startY;
+
+  if (!drag.hasMoved) {
+    if (Math.sqrt(dx * dx + dy * dy) < 6) return;
+    drag.hasMoved = true;
+
+    const ghost = document.createElement('div');
+    ghost.className = 'drag-ghost';
+    ghost.textContent = drag.item;
+    ghost.style.width = drag.width + 'px';
+    ghost.style.height = drag.height + 'px';
+    ghost.style.left = (e.clientX - drag.offsetX) + 'px';
+    ghost.style.top = (e.clientY - drag.offsetY) + 'px';
+    document.body.appendChild(ghost);
+    drag.ghost = ghost;
+
+    drag.element.classList.add('dragging');
+    beep(520, 0.04, 'triangle', 0.05);
+  }
+
+  if (drag.ghost) {
+    drag.ghost.style.left = (e.clientX - drag.offsetX) + 'px';
+    drag.ghost.style.top = (e.clientY - drag.offsetY) + 'px';
+  }
+
+  document.querySelectorAll('.drop-hover').forEach(x => x.classList.remove('drop-hover'));
+  if (drag.ghost) drag.ghost.style.display = 'none';
+  const under = document.elementFromPoint(e.clientX, e.clientY);
+  if (drag.ghost) drag.ghost.style.display = '';
+
+  if (under) {
+    const slot = under.closest('.slot');
+    const pool = under.closest('.pool');
+    if (slot) slot.classList.add('drop-hover');
+    else if (pool) pool.classList.add('drop-hover');
+  }
+}
+
+function onDragEnd(e) {
+  if (!drag) return;
+  const d = drag;
+  drag = null;
+
+  d.element.removeEventListener('pointermove', onDragMove);
+  d.element.removeEventListener('pointerup', onDragEnd);
+  d.element.removeEventListener('pointercancel', onDragEnd);
+  try { d.element.releasePointerCapture(e.pointerId); } catch(err) {}
+
+  if (d.ghost) d.ghost.remove();
+  document.querySelectorAll('.drop-hover').forEach(x => x.classList.remove('drop-hover'));
+  d.element.classList.remove('dragging');
+
+  if (!d.hasMoved) return;
+
+  const under = document.elementFromPoint(e.clientX, e.clientY);
+  const targetSlot = under ? under.closest('.slot') : null;
+  const targetPool = under ? under.closest('.pool') : null;
+
+  if (d.onDrop) d.onDrop(d, targetSlot, targetPool);
+}
+
+/* ============ ДАННЫЕ ============ */
+const DETECTIVE_ITEMS = [
+  '🍎','📕','🔑','☕','🐱','⚽','🎩','🕯️','🎸','🌂',
+  '🗿','🧸','🍕','🕰️','💎','🎲','🖼️','🧩','🎁','🔮',
+  '📷','🍩','🎯','🦉','🧪','🗡️','📻','🛎️','🥁','🍇',
+  '🎈','🎨','🚀','⚓','🌵','🍄','🦋','🐢','🍺','🎺',
+  '🏆','🧦','👑','💡','🐸','🍭','🎪','🥑','🦄','📚'
+];
+
+let detectiveCfg = { count: 6, showTime: 8 };
+try {
+  const s = localStorage.getItem('detectiveCfg');
+  if (s) detectiveCfg = { ...detectiveCfg, ...JSON.parse(s) };
+} catch(e) {}
+
+/* ============ ЭКРАН НАСТРОЕК ============ */
+function startDetective() {
+  clearTimeouts();
+  drag = null;
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🕵️ Детектив</h2>
+      <div class="subtitle">Осмотр места преступления</div>
+    </div>
+    <div class="panel">
+      <div style="max-width: 440px; margin: 0 auto;">
+        <label style="display:block; margin-bottom: 22px;">
+          <div class="settings-row"><span>Сколько улик</span><b id="dCountVal">${detectiveCfg.count}</b></div>
+          <input type="range" id="dCountRange" min="3" max="20" value="${detectiveCfg.count}">
+        </label>
+        <label style="display:block; margin-bottom: 22px;">
+          <div class="settings-row"><span>Время показа</span><b id="dTimeVal">${detectiveCfg.showTime} сек</b></div>
+          <input type="range" id="dTimeRange" min="0.5" max="15" step="0.5" value="${detectiveCfg.showTime}">
+        </label>
+        <div class="subtitle" style="text-align:left; padding: 12px; background: var(--blue-light); border-radius: 12px; line-height: 1.5; margin-bottom: 8px;">
+          💡 <b>Как играть:</b> тебе покажут улики в определённом порядке. Когда они исчезнут — <b>перетащи</b> их из пула в ячейки в том же порядке. Можно менять местами и возвращать в пул.
+        </div>
+        <button class="btn-main" id="startBtn">Начать расследование 🕵️</button>
+      </div>
+    </div>
+  `;
+  $('dCountRange').oninput = e => { $('dCountVal').textContent = e.target.value; sfxClick(); };
+  $('dTimeRange').oninput = e => {
+    const v = +e.target.value;
+    $('dTimeVal').textContent = (Number.isInteger(v) ? v : v.toFixed(1)) + ' сек';
+    sfxClick();
+  };
+  $('startBtn').onclick = () => {
+    detectiveCfg.count = +$('dCountRange').value;
+    detectiveCfg.showTime = +$('dTimeRange').value;
+    try { localStorage.setItem('detectiveCfg', JSON.stringify(detectiveCfg)); } catch(e) {}
+    detectiveShow();
+  };
+}
+
+/* ============ ФАЗА 1: ПОКАЗ ============ */
+function detectiveShow() {
+  clearTimeouts();
+  drag = null;
+  const count = detectiveCfg.count;
+  const showTime = detectiveCfg.showTime;
+  const items = shuffle(DETECTIVE_ITEMS).slice(0, count);
+  const showTimeLabel = Number.isInteger(showTime) ? showTime : showTime.toFixed(1);
+
+  // адаптивная сетка и размер иконок
+  let cols, maxW, sizeClass;
+  if (count <= 5)       { cols = count;     maxW = 420; sizeClass = 'big'; }
+  else if (count <= 10) { cols = 5;         maxW = 500; sizeClass = ''; }
+  else if (count <= 15) { cols = 5;         maxW = 520; sizeClass = 'small'; }
+  else                  { cols = 5;         maxW = 540; sizeClass = 'small'; }
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🕵️ Детектив</h2>
+      <div class="subtitle">Запомни улики и их порядок</div>
+    </div>
+    <div class="panel">
+      <div class="status warn" id="status">Смотри внимательно... <span id="timeLeft">${showTimeLabel}</span> сек</div>
+      <div class="scene" id="scene" style="grid-template-columns: repeat(${cols}, 1fr); max-width: ${maxW}px;"></div>
+    </div>
+  `;
+  const scene = $('scene');
+  items.forEach((it, i) => {
+    const el = document.createElement('div');
+    el.className = 'scene-item' + (sizeClass ? ' ' + sizeClass : '');
+    el.style.animationDelay = (i * 0.06) + 's';
+    el.textContent = it;
+    scene.appendChild(el);
+    wait(i * 70 + 50, () => beep(500 + i * 30, 0.06));
+  });
+
+  const startTs = Date.now();
+  const totalMs = showTime * 1000;
+  const intervalId = setInterval(() => {
+    const left = Math.max(0, totalMs - (Date.now() - startTs));
+    const el = $('timeLeft');
+    if (el) {
+      const sec = left / 1000;
+      el.textContent = Number.isInteger(sec) ? sec : sec.toFixed(1);
+    }
+    if (left <= 0) clearInterval(intervalId);
+  }, 100);
+  timeouts.push(intervalId);
+
+  wait(showTime * 1000, () => detectivePlace(items));
+}
+
+/* ============ ФАЗА 2: РАСКЛАДКА С ПЕРЕТАСКИВАНИЕМ ============ */
+function detectivePlace(items) {
+  clearTimeouts();
+  const count = items.length;
+  const userSlots = Array(count).fill(null);
+  const pool = shuffle([...items]);
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🕵️ Детектив</h2>
+      <div class="subtitle">Перетащи улики в том же порядке</div>
+    </div>
+    <div class="panel">
+      <div class="status" id="status">Перетаскивай предметы из пула в ячейки. Можно менять местами и возвращать обратно.</div>
+      <div class="slots" id="slots"></div>
+      <div class="pool" id="pool"></div>
+      <button class="btn-main" id="checkBtn">Проверить ✓</button>
+    </div>
+  `;
+
+  const slotsEl = $('slots');
+  const poolEl = $('pool');
+
+  function handleDrop(state, targetSlot, targetPool) {
+    if (!targetSlot && !targetPool) return;
+
+    if (state.sourceType === 'pool') {
+      pool.splice(state.sourceIdx, 1);
+    } else {
+      userSlots[state.sourceIdx] = null;
+    }
+
+    if (targetSlot) {
+      const targetIdx = +targetSlot.dataset.idx;
+      const existing = userSlots[targetIdx];
+      userSlots[targetIdx] = state.item;
+
+      if (existing) {
+        if (state.sourceType === 'pool') {
+          pool.push(existing);
+        } else {
+          userSlots[state.sourceIdx] = existing;
+        }
+      }
+    } else if (targetPool) {
+      if (state.sourceType === 'slot') {
+        pool.push(state.item);
+      } else {
+        pool.splice(state.sourceIdx, 0, state.item);
+      }
+    }
+
+    beep(620, 0.06, 'triangle', 0.07);
+    renderAll();
+  }
+
+  function renderAll() {
+    slotsEl.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const s = document.createElement('div');
+      s.className = 'slot' + (userSlots[i] ? ' filled' : '');
+      s.textContent = userSlots[i] || '';
+      s.dataset.idx = i;
+      if (userSlots[i]) {
+        attachDrag(s, userSlots[i], 'slot', i, handleDrop);
+      }
+      slotsEl.appendChild(s);
+    }
+
+    poolEl.innerHTML = '';
+    if (pool.length === 0) {
+      poolEl.innerHTML = '<div class="pool-empty-hint">Все улики разложены ✓</div>';
+    } else {
+      pool.forEach((item, idx) => {
+        const p = document.createElement('div');
+        p.className = 'pool-item';
+        p.textContent = item;
+        attachDrag(p, item, 'pool', idx, handleDrop);
+        poolEl.appendChild(p);
+      });
+    }
+  }
+
+  renderAll();
+
+  $('checkBtn').onclick = () => detectiveCheck(items, userSlots);
+}
+
+/* ============ ФАЗА 3: ПРОВЕРКА ============ */
+function detectiveCheck(items, userSlots) {
+  const count = items.length;
+  let correctPos = 0;
+  let correctItems = 0;
+
+  for (let i = 0; i < count; i++) {
+    if (userSlots[i] === items[i]) correctPos++;
+  }
+  const remaining = [...items];
+  for (let i = 0; i < count; i++) {
+    const u = userSlots[i];
+    if (u) {
+      const idx = remaining.indexOf(u);
+      if (idx !== -1) { correctItems++; remaining.splice(idx, 1); }
+    }
+  }
+
+  const slotsEl = $('slots');
+  if (slotsEl) {
+    slotsEl.querySelectorAll('.slot').forEach((s, i) => {
+      s.style.cursor = 'default';
+      s.style.touchAction = 'auto';
+      if (userSlots[i] === items[i]) s.classList.add('result-correct');
+      else if (userSlots[i] && items.includes(userSlots[i])) s.classList.add('result-misplaced');
+      else s.classList.add('result-wrong');
+    });
+  }
+
+  let emoji, title, text, stars, points;
+  if (correctPos === count) {
+    emoji = '🏆'; title = 'Дело раскрыто!';
+    text = `Все ${count} улик на своих местах`;
+    stars = 3; points = 50;
+    sfxWin();
+  } else if (correctItems === count) {
+    emoji = '🎖️'; title = 'Порядок перепутан';
+    text = `Все улики угаданы, но ${count - correctPos} стоят не там`;
+    stars = 2; points = 30;
+    sfxCorrect();
+  } else if (correctItems >= Math.ceil(count / 2)) {
+    emoji = '🔍'; title = 'Что-то забыл...';
+    text = `Вспомнил ${correctItems} из ${count}`;
+    stars = 1; points = 15;
+    sfxCorrect();
+  } else {
+    emoji = '🕳️'; title = 'Преступник ушёл';
+    text = `Только ${correctItems} из ${count} улик вспомнил`;
+    stars = 0; points = 5;
+    sfxWrong();
+  }
+
+  addScore(points);
+  const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+
+  function buildRow(arr, ref) {
+    return arr.map((it, i) => {
+      let bg = '#F3F4F6', br = 'var(--border)';
+      if (it === ref[i])                { bg = '#DCFCE7'; br = 'var(--green)'; }
+      else if (it && ref.includes(it))  { bg = '#FEF3C7'; br = 'var(--yellow)'; }
+      else if (it)                      { bg = '#FEE2E2'; br = 'var(--red)'; }
+      return `<span class="row-cell" style="background:${bg}; border-color:${br};">${it || '·'}</span>`;
+    }).join('');
+  }
+
+  const userRow = buildRow(userSlots, items);
+  const correctRow = buildRow(items, items);
+
+  gameEl.innerHTML = `
+    <div class="panel">
+      <div class="result-screen">
+        <div class="big">${emoji}</div>
+        <h2>${title}</h2>
+        <p>${text}</p>
+        <div class="stars">${starStr}</div>
+        <p style="opacity:.6; font-size: 14px;">+${points} очков</p>
+        <div style="margin-top: 20px; padding: 14px; background: rgba(45,108,223,.05); border-radius: 14px;">
+          <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight: 700;">Твой порядок:</div>
+          <div style="display:flex; flex-wrap:wrap; justify-content:center; gap: 4px; margin-bottom: 14px;">${userRow}</div>
+          <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight: 700;">Правильный порядок:</div>
+          <div style="display:flex; flex-wrap:wrap; justify-content:center; gap: 4px;">${correctRow}</div>
+        </div>
+        <button class="btn-main" id="retry">Ещё раз 🔄</button>
+        <button class="btn-secondary" id="menuBtn">← Настройки</button>
+      </div>
+    </div>
+  `;
+  $('retry').onclick = () => detectiveShow();
+  $('menuBtn').onclick = () => startDetective();
+}
+
+/* ============ СТАРТ ============ */
+document.addEventListener('click', initAudio, { once: true });
+startDetective();
+</script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

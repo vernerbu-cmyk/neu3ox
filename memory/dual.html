@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Двойная задача - Мнемо-Арена</title>
+<style>
+  :root {
+    --blue: #2D6CDF;
+    --blue-dark: #1E4FA8;
+    --blue-light: #EBF2FF;
+    --orange: #FF8C42;
+    --orange-dark: #E86E1F;
+    --orange-light: #FFF2E5;
+    --bg: #F7F9FC;
+    --text: #1F2937;
+    --text-muted: #6B7280;
+    --border: #E5EAF2;
+    --green: #22C55E;
+    --red: #EF4444;
+    --yellow: #F59E0B;
+    --purple: #A855F7;
+    --purple-light: #F5EDFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--text);
+    padding: 16px;
+    overflow-x: hidden;
+  }
+
+  .container { max-width: 800px; margin: 0 auto; }
+
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding: 16px 22px;
+    background: #fff; border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(45,108,223,.06);
+    flex-wrap: wrap; gap: 10px;
+  }
+
+  .back-btn {
+    width: 46px; height: 46px;
+    border: none; border-radius: 14px;
+    background: var(--blue-light);
+    color: var(--blue);
+    font-size: 22px; font-weight: 700;
+    cursor: pointer; transition: .18s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .back-btn:hover { background: var(--blue); color: #fff; transform: translateY(-1px); }
+
+  h1 { font-size: 20px; letter-spacing: .5px; color: var(--blue-dark); font-weight: 800; }
+
+  .score-bar {
+    background: var(--orange); color: #fff;
+    padding: 8px 18px; border-radius: 30px; font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(255,140,66,.3);
+  }
+  .score-bar span { color: #fff; font-weight: 800; font-size: 17px; }
+
+  main { min-height: 520px; }
+
+  .game-header { text-align: center; margin-bottom: 20px; }
+  .game-header h2 { font-size: 22px; margin-bottom: 6px; color: var(--blue-dark); font-weight: 800; }
+  .subtitle { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+
+  .status {
+    text-align: center; font-size: 16px; margin: 16px 0;
+    min-height: 26px; font-weight: 700; color: var(--text); transition: .3s;
+  }
+  .status.good { color: #16A34A; }
+  .status.bad { color: #DC2626; }
+  .status.warn { color: var(--orange-dark); }
+
+  .panel {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 22px; padding: 26px;
+    box-shadow: 0 8px 24px rgba(45,108,223,.06);
+  }
+
+  /* ---------- Пресеты ---------- */
+  .presets {
+    display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap;
+  }
+  .preset-btn {
+    flex: 1 1 auto; min-width: 90px;
+    padding: 10px 8px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: #fff;
+    color: var(--blue-dark);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: .18s;
+    font-family: inherit;
+  }
+  .preset-btn:hover { border-color: var(--orange); color: var(--orange-dark); transform: translateY(-1px); }
+  .preset-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  /* ---------- Карточки показа ---------- */
+  .card-zone {
+    height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, var(--orange-light), var(--purple-light));
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    margin: 20px 0;
+    overflow: hidden;
+  }
+
+  .card {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    animation: cardIn .3s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  @keyframes cardIn {
+    from { transform: scale(.6); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .card-digit {
+    font-size: 110px;
+    font-weight: 900;
+    color: var(--orange-dark);
+    line-height: 1;
+    letter-spacing: -4px;
+  }
+
+  .card-letter {
+    font-size: 110px;
+    font-weight: 900;
+    color: var(--purple);
+    line-height: 1;
+  }
+
+  /* Прогресс-точки */
+  .progress-dots {
+    display: flex; gap: 6px; justify-content: center;
+    margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border);
+    transition: .3s;
+  }
+  .dot.active { background: var(--orange); transform: scale(1.4); }
+  .dot.done { background: var(--blue); }
+
+  /* ---------- Ввод ---------- */
+  .input-block {
+    text-align: center;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .input-label {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .input-label.digit { color: var(--orange-dark); }
+  .input-label.letter { color: var(--purple); }
+
+  .code-input {
+    display: block; margin: 0 auto 22px;
+    padding: 18px;
+    font-size: 30px;
+    text-align: center;
+    letter-spacing: 12px;
+    border-radius: 16px;
+    border: 2px solid var(--border);
+    background: #fff;
+    color: var(--blue-dark);
+    width: 100%;
+    max-width: 360px;
+    font-family: 'Courier New', monospace;
+    font-weight: 800;
+    transition: .15s;
+    text-transform: uppercase;
+  }
+
+  .code-input:focus {
+    outline: none;
+    border-color: var(--orange);
+    box-shadow: 0 0 0 4px var(--orange-light);
+  }
+
+  .code-input.letter-input:focus {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 4px var(--purple-light);
+  }
+
+  .code-input:disabled { opacity: .6; }
+
+  /* Прогресс ввода */
+  .typed-progress {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: -14px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .typed-slot {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 2px dashed var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--blue-dark);
+    transition: .15s;
+  }
+  .typed-slot.filled {
+    background: var(--blue-light);
+    border-style: solid;
+    border-color: var(--blue);
+  }
+
+  /* ---------- Настройки ---------- */
+  .settings-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; font-size: 15px; color: var(--text); font-weight: 700;
+  }
+  .settings-row b { color: var(--blue-dark); font-size: 16px; font-weight: 800; }
+  input[type="range"] { width: 100%; accent-color: #FF8C42; height: 26px; }
+
+  .mode-row {
+    display: flex; gap: 8px; margin-top: 8px;
+  }
+  .mode-btn {
+    flex: 1;
+    padding: 12px 10px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: #fff;
+    color: var(--blue-dark);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: .18s;
+    font-family: inherit;
+  }
+  .mode-btn:hover { border-color: var(--orange); }
+  .mode-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  .time-hint {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 700;
+    padding: 10px;
+    background: var(--blue-light);
+    border-radius: 10px;
+    margin-top: 6px;
+  }
+  .time-hint b { color: var(--blue-dark); }
+
+  .btn-main {
+    display: block; margin: 24px auto 0; padding: 16px 40px;
+    border-radius: 14px; border: none;
+    background: var(--orange); color: #fff;
+    font-size: 17px; font-weight: 800; cursor: pointer;
+    transition: .2s; letter-spacing: .5px;
+    box-shadow: 0 8px 20px rgba(255,140,66,.3);
+    font-family: inherit;
+  }
+  .btn-main:hover {
+    background: var(--orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(255,140,66,.4);
+  }
+  .btn-main:active { transform: translateY(0); }
+
+  .btn-secondary {
+    display: block; margin: 8px auto 0; padding: 12px 30px;
+    border-radius: 14px; border: none;
+    background: transparent; color: var(--blue-dark);
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: .2s;
+    font-family: inherit;
+  }
+  .btn-secondary:hover { background: var(--blue-light); }
+
+  /* ---------- Таймер ---------- */
+  .timer-bar {
+    height: 10px; border-radius: 10px; background: var(--border);
+    overflow: hidden; margin-bottom: 20px;
+  }
+  .timer-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--yellow), var(--red));
+    transition: width 0.5s linear;
+    width: 100%;
+  }
+
+  /* ---------- Результат ---------- */
+  .result-screen { text-align: center; padding: 30px 20px; }
+  .result-screen .big {
+    font-size: 72px; margin-bottom: 12px;
+    animation: popIn .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .result-screen h2 { font-size: 26px; margin-bottom: 10px; color: var(--blue-dark); font-weight: 800; }
+  .result-screen p { color: var(--text-muted); font-size: 16px; margin: 6px 0; font-weight: 600; }
+  .stars { font-size: 40px; margin: 20px 0; letter-spacing: 6px; }
+
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* Разбор результата */
+  .review-pair {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .review-row {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .review-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 2px solid;
+    font-weight: 800;
+    font-size: 18px;
+  }
+
+  .review-cell.ok { background: #DCFCE7; border-color: var(--green); }
+  .review-cell.bad { background: #FEE2E2; border-color: var(--red); }
+
+  @media (max-width: 500px) {
+    .card-digit, .card-letter { font-size: 80px; }
+    .card-zone { height: 200px; }
+    .code-input { font-size: 24px; letter-spacing: 8px; padding: 14px; }
+    .typed-slot { width: 24px; height: 24px; font-size: 14px; }
+    .preset-btn { font-size: 12px; }
+  }
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <button class="back-btn" onclick="location.href='index.html'">←</button>
+    <h1>🔀 ДВОЙНАЯ ЗАДАЧА</h1>
+    <div class="score-bar">Очки: <span id="globalScore">0</span></div>
+  </header>
+  <main id="game"></main>
+</div>
+
+<script>
+/* ============ УТИЛИТЫ ============ */
+const $ = id => document.getElementById(id);
+const gameEl = $('game');
+let globalScore = 0;
+$('globalScore').textContent = globalScore;
+function addScore(n) { globalScore += n; $('globalScore').textContent = globalScore; }
+
+function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+const rand = n => Math.floor(Math.random() * n);
+
+let timeouts = [];
+function wait(ms, fn) {
+  const id = setTimeout(fn, ms);
+  timeouts.push(id);
+  return id;
+}
+function clearTimeouts() {
+  timeouts.forEach(clearTimeout);
+  timeouts = [];
+}
+
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+}
+function beep(freq, dur = 0.15, type = 'sine', vol = 0.08) {
+  if (!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = type;
+    osc.frequency.value = freq;
+    const t = audioCtx.currentTime;
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.start(t); osc.stop(t + dur + 0.02);
+  } catch(e) {}
+}
+function sfxCorrect() { beep(660, 0.1); setTimeout(() => beep(880, 0.15), 90); }
+function sfxWrong() { beep(180, 0.3, 'sawtooth', 0.12); }
+function sfxClick() { beep(440, 0.05, 'triangle', 0.06); }
+function sfxWin() {
+  [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.2), i * 120));
+}
+
+/* ============ ДАННЫЕ ============ */
+const LETTERS = ['А','Б','В','Г','Д','Е','Ж','З','И','К','Л','М','Н','О','П','Р','С','Т'];
+const LETTERS_LAT = ['A','B','C','D','E','F','G','H','J','K','L','M','N','P','R','S','T','V'];
+
+/* ============ НАСТРОЙКИ ============ */
+let dualCfg = {
+  count: 4,
+  showTime: 1100,
+  alphabet: 'cyr',   // 'cyr' или 'lat'
+  inputMode: 'both'  // 'both' — обе последовательности; 'digit' — только цифры; 'letter' — только буквы
+};
+try {
+  const s = localStorage.getItem('dualCfg');
+  if (s) dualCfg = { ...dualCfg, ...JSON.parse(s) };
+} catch(e) {}
+
+/* ============ ЭКРАН НАСТРОЕК ============ */
+function startDual() {
+  clearTimeouts();
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🔀 Двойная задача</h2>
+      <div class="subtitle">Запоминай цифру и букву одновременно</div>
+    </div>
+    <div class="panel">
+      <div style="max-width: 500px; margin: 0 auto;">
+
+        <div class="presets" id="presets">
+          <button class="preset-btn" data-count="3" data-time="1500" data-alpha="cyr" data-mode="both">🌱 Разминка</button>
+          <button class="preset-btn" data-count="4" data-time="1100" data-alpha="cyr" data-mode="both">⚡ Стандарт</button>
+          <button class="preset-btn" data-count="6" data-time="900" data-alpha="cyr" data-mode="both">🔥 Сложнее</button>
+          <button class="preset-btn" data-count="8" data-time="700" data-alpha="lat" data-mode="both">💀 Хардкор</button>
+        </div>
+
+        <label style="display:block; margin-bottom: 20px;">
+          <div class="settings-row"><span>Количество карточек</span><b id="countVal">${dualCfg.count}</b></div>
+          <input type="range" id="countRange" min="2" max="10" value="${dualCfg.count}">
+        </label>
+
+        <label style="display:block; margin-bottom: 20px;">
+          <div class="settings-row"><span>Время показа карточки</span><b id="timeVal">${dualCfg.showTime} мс</b></div>
+          <input type="range" id="timeRange" min="400" max="2500" step="100" value="${dualCfg.showTime}">
+          <div class="time-hint" id="timeHint">
+            Показ займёт <b id="totalTime">~4.4 сек</b>
+          </div>
+        </label>
+
+        <div style="margin-bottom: 20px;">
+          <div class="settings-row"><span>Алфавит</span><b id="alphaVal">${dualCfg.alphabet === 'cyr' ? 'русский' : 'латиница'}</b></div>
+          <div class="mode-row" id="alphaRow">
+            <button class="mode-btn" data-alpha="cyr">Русский</button>
+            <button class="mode-btn" data-alpha="lat">Латиница</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <div class="settings-row"><span>Что воспроизводить</span><b id="modeVal">${dualCfg.inputMode === 'both' ? 'обе' : dualCfg.inputMode === 'digit' ? 'только цифры' : 'только буквы'}</b></div>
+          <div class="mode-row" id="modeRow">
+            <button class="mode-btn" data-mode="both">Обе</button>
+            <button class="mode-btn" data-mode="digit">Цифры</button>
+            <button class="mode-btn" data-mode="letter">Буквы</button>
+          </div>
+        </div>
+
+        <div class="subtitle" style="text-align:left; padding: 12px; background: var(--blue-light); border-radius: 12px; line-height: 1.5; margin-top: 14px;">
+          💡 <b>Как играть:</b> на экране по одной появляются карточки, где рядом стоят <b>цифра</b> и <b>буква</b>. Запомни обе последовательности по порядку. Потом введи их.
+        </div>
+
+        <button class="btn-main" id="startBtn">Начать 🔀</button>
+      </div>
+    </div>
+  `;
+
+  const countRange = $('countRange');
+  const timeRange = $('timeRange');
+
+  function updateTimeHint() {
+    const total = (+countRange.value * +timeRange.value) / 1000;
+    $('totalTime').textContent = '~' + total.toFixed(1) + ' сек';
+  }
+
+  function markAlphaActive() {
+    gameEl.querySelectorAll('[data-alpha]').forEach(b => {
+      b.classList.toggle('active', b.dataset.alpha === dualCfg.alphabet);
+    });
+    $('alphaVal').textContent = dualCfg.alphabet === 'cyr' ? 'русский' : 'латиница';
+  }
+
+  function markModeActive() {
+    gameEl.querySelectorAll('[data-mode]').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === dualCfg.inputMode);
+    });
+    $('modeVal').textContent = dualCfg.inputMode === 'both' ? 'обе' :
+                                dualCfg.inputMode === 'digit' ? 'только цифры' : 'только буквы';
+  }
+
+  function markPresetActive() {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.preset-btn').forEach(b => {
+      if (+b.dataset.count === +countRange.value &&
+          +b.dataset.time === +timeRange.value &&
+          b.dataset.alpha === dualCfg.alphabet &&
+          b.dataset.mode === dualCfg.inputMode) {
+        b.classList.add('active');
+      }
+    });
+  }
+
+  gameEl.querySelectorAll('[data-alpha]').forEach(b => {
+    b.onclick = () => {
+      dualCfg.alphabet = b.dataset.alpha;
+      markAlphaActive();
+      markPresetActive();
+      sfxClick();
+    };
+  });
+
+  gameEl.querySelectorAll('[data-mode]').forEach(b => {
+    b.onclick = () => {
+      dualCfg.inputMode = b.dataset.mode;
+      markModeActive();
+      markPresetActive();
+      sfxClick();
+    };
+  });
+
+  document.querySelectorAll('.preset-btn').forEach(b => {
+    b.onclick = () => {
+      countRange.value = b.dataset.count;
+      timeRange.value = b.dataset.time;
+      dualCfg.alphabet = b.dataset.alpha;
+      dualCfg.inputMode = b.dataset.mode;
+      $('countVal').textContent = b.dataset.count;
+      $('timeVal').textContent = b.dataset.time + ' мс';
+      markAlphaActive();
+      markModeActive();
+      updateTimeHint();
+      markPresetActive();
+      sfxClick();
+    };
+  });
+
+  countRange.oninput = () => {
+    $('countVal').textContent = countRange.value;
+    updateTimeHint();
+    markPresetActive();
+    sfxClick();
+  };
+  timeRange.oninput = () => {
+    $('timeVal').textContent = timeRange.value + ' мс';
+    updateTimeHint();
+    markPresetActive();
+    sfxClick();
+  };
+
+  markAlphaActive();
+  markModeActive();
+  updateTimeHint();
+  markPresetActive();
+
+  $('startBtn').onclick = () => {
+    dualCfg.count = +countRange.value;
+    dualCfg.showTime = +timeRange.value;
+    try { localStorage.setItem('dualCfg', JSON.stringify(dualCfg)); } catch(e) {}
+    dualShow();
+  };
+}
+
+/* ============ ФАЗА 1: ПОКАЗ ============ */
+function dualShow() {
+  clearTimeouts();
+  const count = dualCfg.count;
+  const showTime = dualCfg.showTime;
+  const alphabet = dualCfg.alphabet === 'cyr' ? LETTERS : LETTERS_LAT;
+
+  // Генерируем карточки: каждая — {digit, letter}
+  const cards = [];
+  for (let i = 0; i < count; i++) {
+    cards.push({
+      digit: rand(10),
+      letter: alphabet[rand(alphabet.length)]
+    });
+  }
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🔀 Двойная задача</h2>
+      <div class="subtitle">Смотри внимательно · ${count} карточек</div>
+    </div>
+    <div class="panel">
+      <div class="progress-dots" id="dots"></div>
+      <div class="card-zone" id="zone">
+        <div class="status warn">Приготовься...</div>
+      </div>
+    </div>
+  `;
+
+  const zone = $('zone');
+  const dotsEl = $('dots');
+
+  function renderDots(activeIdx) {
+    dotsEl.innerHTML = cards.map((_, i) => {
+      let cls = 'dot';
+      if (i < activeIdx) cls += ' done';
+      else if (i === activeIdx) cls += ' active';
+      return `<div class="${cls}"></div>`;
+    }).join('');
+  }
+
+  let idx = 0;
+  function showNext() {
+    if (idx >= count) {
+      return wait(500, () => dualInput(cards));
+    }
+    renderDots(idx);
+    const card = cards[idx];
+    zone.innerHTML = `
+      <div class="card">
+        <div class="card-digit">${card.digit}</div>
+        <div class="card-letter">${card.letter}</div>
+      </div>
+    `;
+    beep(500 + idx * 60, 0.08);
+    idx++;
+    wait(showTime, showNext);
+  }
+
+  wait(400, showNext);
+}
+
+/* ============ ФАЗА 2: ВВОД ============ */
+function dualInput(cards) {
+  clearTimeouts();
+  const count = cards.length;
+
+  const digitAnswer = cards.map(c => c.digit).join('');
+  const letterAnswer = cards.map(c => c.letter).join('');
+
+  const needDigit = dualCfg.inputMode === 'both' || dualCfg.inputMode === 'digit';
+  const needLetter = dualCfg.inputMode === 'both' || dualCfg.inputMode === 'letter';
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🔀 Двойная задача</h2>
+      <div class="subtitle">Воспроизведи ${dualCfg.inputMode === 'both' ? 'обе последовательности' : dualCfg.inputMode === 'digit' ? 'цифры' : 'буквы'}</div>
+    </div>
+    <div class="panel">
+      <div class="input-block">
+        ${needDigit ? `
+          <div class="input-label digit">Цифры по порядку</div>
+          <input class="code-input" id="digitsIn" type="tel" inputmode="numeric" maxlength="${count}" autocomplete="off" placeholder="${'·'.repeat(count)}">
+          <div class="typed-progress" id="digitsProgress">
+            ${Array(count).fill(0).map(() => '<div class="typed-slot">·</div>').join('')}
+          </div>
+        ` : ''}
+
+        ${needLetter ? `
+          <div class="input-label letter">Буквы по порядку</div>
+          <input class="code-input letter-input" id="lettersIn" type="text" maxlength="${count}" autocomplete="off" placeholder="${'·'.repeat(count)}" style="text-transform: uppercase;">
+          <div class="typed-progress" id="lettersProgress">
+            ${Array(count).fill(0).map(() => '<div class="typed-slot">·</div>').join('')}
+          </div>
+        ` : ''}
+
+        <button class="btn-main" id="checkBtn">Проверить ✓</button>
+      </div>
+    </div>
+  `;
+
+  // Живой прогресс ввода
+  function attachProgress(inputId, progressId) {
+    const input = $(inputId);
+    if (!input) return;
+    const progress = $(progressId);
+    const slots = progress.querySelectorAll('.typed-slot');
+
+    input.addEventListener('input', () => {
+      const val = input.value;
+      slots.forEach((s, i) => {
+        if (i < val.length) {
+          s.classList.add('filled');
+          s.textContent = val[i];
+        } else {
+          s.classList.remove('filled');
+          s.textContent = '·';
+        }
+      });
+    });
+  }
+
+  attachProgress('digitsIn', 'digitsProgress');
+  attachProgress('lettersIn', 'lettersProgress');
+
+  // Фокус на первый инпут
+  wait(150, () => {
+    const first = $('digitsIn') || $('lettersIn');
+    if (first) try { first.focus(); } catch(e) {}
+  });
+
+  // Автопереход между полями
+  const digitsIn = $('digitsIn');
+  const lettersIn = $('lettersIn');
+  if (digitsIn && lettersIn) {
+    digitsIn.addEventListener('input', () => {
+      if (digitsIn.value.length === count) {
+        lettersIn.focus();
+      }
+    });
+  }
+
+  $('checkBtn').onclick = () => {
+    const dUser = digitsIn ? digitsIn.value.trim() : digitAnswer;
+    const lUser = lettersIn ? lettersIn.value.trim().toUpperCase() : letterAnswer;
+
+    // Меняем пустые на плейсхолдеры
+    const dFill = dUser.padEnd(count, '·');
+    const lFill = lUser.padEnd(count, '·');
+
+    let digitCorrect = 0, letterCorrect = 0, fullCorrect = 0;
+    for (let i = 0; i < count; i++) {
+      if (dFill[i] === digitAnswer[i]) digitCorrect++;
+      if (lFill[i] === letterAnswer[i]) letterCorrect++;
+      if (dFill[i] === digitAnswer[i] && lFill[i] === letterAnswer[i]) fullCorrect++;
+    }
+
+    dualResult(cards, dFill, lFill, digitCorrect, letterCorrect, fullCorrect);
+  };
+}
+
+/* ============ ФАЗА 3: РЕЗУЛЬТАТ ============ */
+function dualResult(cards, dUser, lUser, digitCorrect, letterCorrect, fullCorrect) {
+  const count = cards.length;
+  const needDigit = dualCfg.inputMode === 'both' || dualCfg.inputMode === 'digit';
+  const needLetter = dualCfg.inputMode === 'both' || dualCfg.inputMode === 'letter';
+
+  let stars = 0, emoji, title, text, points;
+
+  if (fullCorrect === count) {
+    emoji = '🏆'; title = 'Идеально!';
+    text = `Все ${count} карточек воспроизведены верно`;
+    stars = 3; points = 50;
+    sfxWin();
+  } else if (fullCorrect >= count * 0.7) {
+    emoji = '✨'; title = 'Отлично!';
+    text = `Верно ${fullCorrect} из ${count} полностью`;
+    stars = 2; points = 30;
+    sfxCorrect();
+  } else if (fullCorrect >= count / 2 || digitCorrect + letterCorrect >= count) {
+    emoji = '🎯'; title = 'Хорошо';
+    text = `Верно ${fullCorrect} из ${count} полностью`;
+    stars = 1; points = 15;
+    sfxCorrect();
+  } else {
+    emoji = '🌀'; title = 'Сложно даётся';
+    text = `Верно ${fullCorrect} из ${count} полностью`;
+    stars = 0; points = 5;
+    sfxWrong();
+  }
+
+  addScore(points);
+  const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+
+  // Разбор: строим две строки
+  function buildRow(user, answer) {
+    return user.split('').map((ch, i) => {
+      const ok = ch === answer[i];
+      return `<div class="review-cell ${ok ? 'ok' : 'bad'}">${ch}</div>`;
+    }).join('');
+  }
+
+  const digitsRow = needDigit ? `
+    <div style="margin-top: 14px;">
+      <div style="font-size: 13px; color: var(--orange-dark); font-weight: 800; margin-bottom: 6px;">ЦИФРЫ (${digitCorrect} из ${count})</div>
+      <div class="review-row">${buildRow(dUser, cards.map(c => c.digit).join(''))}</div>
+    </div>
+  ` : '';
+
+  const lettersRow = needLetter ? `
+    <div style="margin-top: 14px;">
+      <div style="font-size: 13px; color: var(--purple); font-weight: 800; margin-bottom: 6px;">БУКВЫ (${letterCorrect} из ${count})</div>
+      <div class="review-row">${buildRow(lUser, cards.map(c => c.letter).join(''))}</div>
+    </div>
+  ` : '';
+
+  const originalRow = cards.map(c => `
+    <div style="display:inline-flex; flex-direction:column; align-items:center; gap:2px; margin: 2px;">
+      <div style="display:flex; gap:4px;">
+        <span style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background:var(--orange-light); border-radius:8px; font-weight:800; color:var(--orange-dark); font-size:16px;">${c.digit}</span>
+        <span style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background:var(--purple-light); border-radius:8px; font-weight:800; color:var(--purple); font-size:16px;">${c.letter}</span>
+      </div>
+    </div>
+  `).join('');
+
+  gameEl.innerHTML = `
+    <div class="panel">
+      <div class="result-screen">
+        <div class="big">${emoji}</div>
+        <h2>${title}</h2>
+        <p>${text}</p>
+        <div class="stars">${starStr}</div>
+        <p style="opacity:.6; font-size: 14px;">+${points} очков</p>
+
+        <div style="margin-top: 22px; padding: 14px; background: rgba(45,108,223,.05); border-radius: 14px;">
+          <div style="font-size: 13px; color: var(--text-muted); font-weight: 800; margin-bottom: 10px;">ПРАВИЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ:</div>
+          <div style="display:flex; justify-content:center; flex-wrap:wrap;">${originalRow}</div>
+        </div>
+
+        ${digitsRow}
+        ${lettersRow}
+
+        <button class="btn-main" id="retry">Ещё раз 🔄</button>
+        <button class="btn-secondary" id="menuBtn">← Настройки</button>
+      </div>
+    </div>
+  `;
+  $('retry').onclick = () => dualShow();
+  $('menuBtn').onclick = () => startDual();
+}
+
+/* ============ СТАРТ ============ */
+document.addEventListener('click', initAudio, { once: true });
+startDual();
+</script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

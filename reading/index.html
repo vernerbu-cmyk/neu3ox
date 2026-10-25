@@ -1,480 +1,386 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-<link rel="stylesheet" href="../menu/menu.css">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Скорочтение - NeuroX</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-<style>
-
-:root{
-    --blue:#1E3F8A;
-    --orange:#FF6A00;
-    --bg:#F4F6FB;
-}
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    font-family:"Nunito Sans",sans-serif;
-    background:var(--bg);
-    color:#222;
-}
-
-
-header{
-    background:var(--blue);
-    color:white;
-    padding:20px 24px;
-    box-shadow:0 4px 12px rgba(0,0,0,.15);
-}
-
-
-.header-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-
-.left-menu{
-    display:flex;
-    align-items:center;
-    gap:15px;
-}
-
-
-.menu-btn,
-.icon-btn{
-
-    width:46px;
-    height:46px;
-
-    border:none;
-    border-radius:14px;
-
-    background:rgba(255,255,255,.15);
-
-    color:white;
-
-    font-size:22px;
-
-    cursor:pointer;
-
-}
-
-
-.menu-btn:hover,
-.icon-btn:hover{
-    background:var(--orange);
-}
-
-
-.brand{
-
-    display:flex;
-    align-items:center;
-    gap:12px;
-
-}
-
-
-.logo{
-    font-size:42px;
-}
-
-
-h1{
-    font-size:30px;
-    font-weight:800;
-}
-
-
-.subtitle{
-    font-size:14px;
-    opacity:.9;
-}
-
-
-.header-buttons{
-    display:flex;
-    gap:10px;
-}
-
-
-
-.container{
-
-    max-width:700px;
-    margin:auto;
-    padding:35px 20px;
-
-}
-
-
-.section-title{
-
-    color:var(--blue);
-
-    font-size:32px;
-
-    font-weight:800;
-
-    margin-bottom:25px;
-
-}
-
-
-
-.card{
-
-    background:white;
-
-    border-radius:20px;
-
-    margin-bottom:18px;
-
-    padding:22px 24px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    cursor:pointer;
-
-    border-left:6px solid transparent;
-
-    box-shadow:0 8px 20px rgba(0,0,0,.08);
-
-    transition:.18s;
-
-}
-
-
-.card:hover{
-
-    transform:translateY(-3px);
-
-    border-left-color:var(--orange);
-
-}
-
-
-.card:active{
-
-    transform:scale(.985);
-
-}
-
-
-
-.left{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:18px;
-
-}
-
-
-.icon{
-
-    width:42px;
-
-    text-align:center;
-
-    font-size:34px;
-
-    font-weight:800;
-
-}
-
-
-.letter{
-
-    color:var(--orange);
-
-    font-size:40px;
-
-}
-
-
-
-.title{
-
-    font-size:26px;
-
-    font-weight:700;
-
-    color:var(--blue);
-
-}
-
-
-.arrow{
-
-    font-size:30px;
-
-    color:#BBB;
-
-}
-
-
-
-footer{
-
-    text-align:center;
-
-    color:#999;
-
-    padding:20px;
-
-    font-size:12px;
-
-}
-
-</style>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Скорочтение — NeuroX</title>
+
+  <link rel="preload" href="../shared/styles.css" as="style">
+  <link rel="preload" href="../shared/layout.js" as="script">
+
+  <link rel="preconnect" href="https://fonts.bunny.net" />
+  <link href="https://fonts.bunny.net/css2?family=Fredoka:wght@600;700&family=Nunito+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../shared/styles.css" />
+
+  <style>
+    .logo { position: relative; }
+    .logo::after {
+      content: '←';
+      position: absolute;
+      top: -4px; left: -6px;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      background: #FF6A00; color: #fff;
+      font-size: 13px; font-weight: 800;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,.3);
+      font-family: "Nunito Sans", sans-serif;
+      line-height: 1;
+      pointer-events: none;
+    }
+    @media (max-width: 700px) {
+      .logo::after { width: 20px; height: 20px; font-size: 12px; top: -3px; left: -5px; }
+    }
+
+    @keyframes cellBlink {
+      0%, 40%  { fill: var(--blue); }
+      50%, 90% { fill: #FF6A00; }
+      100%     { fill: var(--blue); }
+    }
+    .c1, .c2, .c3, .c4, .c6, .c7, .c8, .c9 { transition: fill .3s; }
+    .card-1:hover .c1 { animation: cellBlink 2.4s ease-in-out infinite; }
+    .card-1:hover .c2 { animation: cellBlink 2.4s ease-in-out infinite .15s; }
+    .card-1:hover .c3 { animation: cellBlink 2.4s ease-in-out infinite .3s; }
+    .card-1:hover .c4 { animation: cellBlink 2.4s ease-in-out infinite .45s; }
+    .card-1:hover .c6 { animation: cellBlink 2.4s ease-in-out infinite .75s; }
+    .card-1:hover .c7 { animation: cellBlink 2.4s ease-in-out infinite .9s; }
+    .card-1:hover .c8 { animation: cellBlink 2.4s ease-in-out infinite 1.05s; }
+    .card-1:hover .c9 { animation: cellBlink 2.4s ease-in-out infinite 1.2s; }
+
+    @keyframes lineRun {
+      0%, 100% { transform: translateX(0); }
+      50%      { transform: translateX(3px); }
+    }
+    .text-line { transform-box: fill-box; }
+    .card-2:hover .tline-1 { animation: lineRun 1.4s ease-in-out infinite; }
+    .card-2:hover .tline-2 { animation: lineRun 1.4s ease-in-out infinite .2s; }
+    .card-2:hover .tline-3 { animation: lineRun 1.4s ease-in-out infinite .4s; }
+    .card-2:hover .tline-4 { animation: lineRun 1.4s ease-in-out infinite .6s; }
+
+    @keyframes digitToOrange {
+      0%, 25%  { fill: var(--blue); }
+      40%, 75% { fill: #FF6A00; }
+      90%, 100%{ fill: var(--blue); }
+    }
+    .digit-1, .digit-2 { transition: fill .3s; }
+    .card-2:hover .digit-1 { animation: digitToOrange 2.8s ease-in-out infinite; }
+    .card-2:hover .digit-2 { animation: digitToOrange 2.8s ease-in-out infinite 1.4s; }
+
+    @keyframes slantMove {
+      0%, 100% { transform: translateX(0); }
+      50%      { transform: translateX(5px); }
+    }
+    .slant { transform-box: fill-box; transform-origin: center; }
+    .card-3:hover .slant-1 { animation: slantMove 1.6s ease-in-out infinite; }
+    .card-3:hover .slant-2 { animation: slantMove 1.6s ease-in-out infinite .3s; }
+    .card-3:hover .slant-3 { animation: slantMove 1.6s ease-in-out infinite .6s; }
+
+    @keyframes swapLetters {
+      0%, 40%   { opacity: 1; }
+      50%, 90%  { opacity: 0; }
+      100%      { opacity: 1; }
+    }
+    .swap-a, .swap-o {
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: opacity .3s;
+    }
+    .card-4:hover .swap-a { animation: swapLetters 2.8s ease-in-out infinite; }
+    .card-4:hover .swap-o { animation: swapLetters 2.8s ease-in-out infinite reverse; }
+
+    @keyframes swapC1 {
+      0%, 15% { transform: translate(0, 0); }
+      30%     { transform: translate(28px, 0); }
+      55%     { transform: translate(28px, 22px); }
+      75%     { transform: translate(28px, 22px); }
+      100%    { transform: translate(0, 0); }
+    }
+    @keyframes swapC2 {
+      0%, 15% { transform: translate(0, 0); }
+      30%     { transform: translate(-28px, 0); }
+      55%     { transform: translate(-28px, 22px); }
+      75%     { transform: translate(-28px, 22px); }
+      100%    { transform: translate(0, 0); }
+    }
+    @keyframes swapC3 {
+      0%, 15% { transform: translate(0, 0); }
+      30%     { transform: translate(28px, 0); }
+      55%     { transform: translate(28px, -22px); }
+      75%     { transform: translate(28px, -22px); }
+      100%    { transform: translate(0, 0); }
+    }
+    @keyframes swapC4 {
+      0%, 15% { transform: translate(0, 0); }
+      30%     { transform: translate(-28px, 0); }
+      55%     { transform: translate(-28px, -22px); }
+      75%     { transform: translate(-28px, -22px); }
+      100%    { transform: translate(0, 0); }
+    }
+    .swap-letter { transform-box: fill-box; transform-origin: center; }
+    .card-5:hover .sw-1 { animation: swapC1 3.4s ease-in-out infinite; }
+    .card-5:hover .sw-2 { animation: swapC2 3.4s ease-in-out infinite; }
+    .card-5:hover .sw-3 { animation: swapC3 3.4s ease-in-out infinite; }
+    .card-5:hover .sw-4 { animation: swapC4 3.4s ease-in-out infinite; }
+
+    @keyframes wordBlink {
+      0%, 40%  { opacity: 1; }
+      50%, 90% { opacity: .25; }
+      100%     { opacity: 1; }
+    }
+    .word-1, .word-2 { transition: opacity .3s; }
+    .card-6:hover .word-1 { animation: wordBlink 2.4s ease-in-out infinite; }
+    .card-6:hover .word-2 { animation: wordBlink 2.4s ease-in-out infinite 1.2s; }
+
+    @keyframes wordBounceIn {
+      0%       { transform: translateY(-20px); opacity: 0; }
+      20%      { transform: translateY(0);     opacity: 1; }
+      30%      { transform: translateY(-4px);  opacity: 1; }
+      40%, 70% { transform: translateY(0);     opacity: 1; }
+      85%      { transform: translateY(10px);  opacity: 0; }
+      100%     { transform: translateY(-20px); opacity: 0; }
+    }
+    .fall-word { transform-box: fill-box; transform-origin: center; }
+    .card-7:hover .fall-1 { animation: wordBounceIn 3s ease-in-out infinite; }
+    .card-7:hover .fall-2 { animation: wordBounceIn 3s ease-in-out infinite 1s; }
+    .card-7:hover .fall-3 { animation: wordBounceIn 3s ease-in-out infinite 2s; }
+
+    @keyframes letterFade {
+      0%, 30%  { opacity: 1; }
+      50%, 80% { opacity: 0; }
+      100%     { opacity: 1; }
+    }
+    .lf { transition: opacity .3s; }
+    .card-8:hover .lf-1 { animation: letterFade 3s ease-in-out infinite; }
+    .card-8:hover .lf-2 { animation: letterFade 3s ease-in-out infinite .2s; }
+    .card-8:hover .lf-3 { animation: letterFade 3s ease-in-out infinite .4s; }
+    .card-8:hover .lf-4 { animation: letterFade 3s ease-in-out infinite .6s; }
+    .card-8:hover .lf-5 { animation: letterFade 3s ease-in-out infinite .8s; }
+
+    @keyframes slogShow {
+      0%, 8%   { opacity: 0; transform: translateY(-4px); }
+      20%, 90% { opacity: 1; transform: translateY(0); }
+      100%     { opacity: 0; transform: translateY(-4px); }
+    }
+    .slog-1, .slog-2, .slog-3 {
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .card-9:hover .slog-1 { animation: slogShow 3s ease-in-out infinite; }
+    .card-9:hover .slog-2 { animation: slogShow 3s ease-in-out infinite .9s; }
+    .card-9:hover .slog-3 { animation: slogShow 3s ease-in-out infinite 1.8s; }
+  </style>
 </head>
-
 
 <body>
 
+  <main class="container">
+    <div class="cards">
+
+      <!-- 1. ШУЛЬТЕ -->
+      <div class="card card-1" onclick="openTrainer('shulte.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+              <rect x="6" y="6" width="36" height="36" rx="4"/>
+              <path d="M18 6 L18 42 M30 6 L30 42"/>
+              <path d="M6 18 L42 18 M6 30 L42 30"/>
+              <text class="c1" x="12" y="15" font-family="Fredoka, sans-serif" font-size="8" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">1</text>
+              <text class="c2" x="24" y="15" font-family="Fredoka, sans-serif" font-size="8" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">4</text>
+              <text class="c3" x="36" y="15" font-family="Fredoka, sans-serif" font-size="8" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">7</text>
+              <text class="c4" x="12" y="27" font-family="Fredoka, sans-serif" font-size="8" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">2</text>
+              <text class="c5" x="24" y="27" font-family="Fredoka, sans-serif" font-size="8" font-weight="700" fill="#FF6A00" stroke="none" text-anchor="middle">5</text>
+              <text class="c6" x="36" y="27" font-family="Fredoka, sans-serif" font-size="8" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">8</text>
+              <text class="c7" x="12" y="39" font-family="Fredoka, sans-serif" font-size="8" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">3</text>
+              <text class="c8" x="24" y="39" font-family="Fredoka, sans-serif" font-size="8" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">6</text>
+              <text class="c9" x="36" y="39" font-family="Fredoka, sans-serif" font-size="8" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">9</text>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Шульте</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 2. ДВОЙНОЙ ФОКУС -->
+      <div class="card card-2" onclick="openTrainer('double_focus/double.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path class="text-line tline-1" d="M8 14 L20 14"/>
+              <path class="text-line tline-2" d="M8 20 L18 20"/>
+              <path class="text-line tline-3" d="M8 26 L20 26"/>
+              <path class="text-line tline-4" d="M8 32 L16 32"/>
+              <path d="M24 12 L24 36" stroke-dasharray="2 2" opacity=".5"/>
+              <text class="digit-1" x="37" y="22" font-family="Fredoka, sans-serif" font-size="11" font-weight="700" fill="#1E3F8A" stroke="none" text-anchor="middle">4</text>
+              <text class="digit-2" x="37" y="34" font-family="Fredoka, sans-serif" font-size="11" font-weight="700" fill="#1E3F8A" stroke="none" text-anchor="middle">7</text>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Двойной фокус</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 3. ЧИТАЛКА -->
+      <div class="card card-3" onclick="openTrainer('chitaem/chitalka.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 16 L40 16"/>
+              <path d="M8 24 L40 24"/>
+              <path d="M8 32 L40 32"/>
+              <path class="slant slant-1" d="M10 12 L16 20" stroke="#FF6A00" stroke-width="1.8" stroke-dasharray="3 3"/>
+              <path class="slant slant-2" d="M22 20 L28 28" stroke="#FF6A00" stroke-width="1.8" stroke-dasharray="3 3"/>
+              <path class="slant slant-3" d="M32 28 L38 36" stroke="#FF6A00" stroke-width="1.8" stroke-dasharray="3 3"/>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Читалка</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 4. АЛФАВИТ -->
+      <div class="card card-4" onclick="openTrainer('alfabet.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none">
+              <text class="swap-a" x="24" y="22" font-family="Fredoka, sans-serif" font-size="24" font-weight="700" fill="#FF6A00" stroke="none" text-anchor="middle">А</text>
+              <path d="M10 28 L38 28" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <text class="swap-o" x="24" y="46" font-family="Fredoka, sans-serif" font-size="24" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">О</text>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Алфавит</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 5. АНАГРАММЫ -->
+      <div class="card card-5" onclick="openTrainer('putal.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" stroke="none">
+              <text class="swap-letter sw-1" x="10" y="22" font-family="Fredoka, sans-serif" font-size="15" font-weight="700" fill="currentColor" text-anchor="middle">К</text>
+              <text x="24" y="22" font-family="Fredoka, sans-serif" font-size="15" font-weight="700" fill="#FF6A00" text-anchor="middle">О</text>
+              <text class="swap-letter sw-2" x="38" y="22" font-family="Fredoka, sans-serif" font-size="15" font-weight="700" fill="currentColor" text-anchor="middle">Т</text>
+              <text class="swap-letter sw-3" x="10" y="42" font-family="Fredoka, sans-serif" font-size="15" font-weight="700" fill="currentColor" text-anchor="middle">Т</text>
+              <text x="24" y="42" font-family="Fredoka, sans-serif" font-size="15" font-weight="700" fill="#FF6A00" text-anchor="middle">О</text>
+              <text class="swap-letter sw-4" x="38" y="42" font-family="Fredoka, sans-serif" font-size="15" font-weight="700" fill="currentColor" text-anchor="middle">К</text>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Анаграммы</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 6. РАДУГА -->
+      <div class="card card-6" onclick="openTrainer('raduga.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" stroke="none">
+              <text class="word-1" x="24" y="24" font-family="Fredoka, sans-serif" font-size="14" font-weight="700" fill="currentColor" text-anchor="middle">КРАСН</text>
+              <text class="word-2" x="24" y="42" font-family="Fredoka, sans-serif" font-size="14" font-weight="700" fill="#FF6A00" text-anchor="middle">ЗЕЛЁН</text>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Радуга</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 7. СТОЛБИКИ -->
+      <div class="card card-7" onclick="openTrainer('stolbiky/stolby.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" stroke="none">
+              <text class="fall-word fall-1" x="24" y="18" font-family="Fredoka, sans-serif" font-size="12" font-weight="700" fill="currentColor" text-anchor="middle">ДОМ</text>
+              <text class="fall-word fall-2" x="24" y="30" font-family="Fredoka, sans-serif" font-size="12" font-weight="700" fill="currentColor" text-anchor="middle">СОК</text>
+              <text class="fall-word fall-3" x="24" y="42" font-family="Fredoka, sans-serif" font-size="12" font-weight="700" fill="#FF6A00" text-anchor="middle">ЛЕС</text>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Столбики</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 8. ЛАВИНА -->
+      <div class="card card-8" onclick="openTrainer('bystro_chitaem/lavina.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none">
+              <text class="lf lf-1" x="6"  y="30" font-family="Fredoka, sans-serif" font-size="12" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">С</text>
+              <text class="lf lf-2" x="15" y="30" font-family="Fredoka, sans-serif" font-size="12" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">Л</text>
+              <text class="lf lf-3" x="24" y="30" font-family="Fredoka, sans-serif" font-size="12" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">О</text>
+              <text class="lf lf-4" x="33" y="30" font-family="Fredoka, sans-serif" font-size="12" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">В</text>
+              <text class="lf lf-5" x="42" y="30" font-family="Fredoka, sans-serif" font-size="12" font-weight="700" fill="#FF6A00" stroke="none" text-anchor="middle">О</text>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Лавина</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 9. СЛОГИ -->
+      <div class="card card-9" onclick="openTrainer('slogi/slogi.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none">
+              <text class="slog-1" x="24" y="18" font-family="Fredoka, sans-serif" font-size="13" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">БА</text>
+              <text class="slog-2" x="24" y="31" font-family="Fredoka, sans-serif" font-size="13" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">МА</text>
+              <text class="slog-3" x="24" y="44" font-family="Fredoka, sans-serif" font-size="13" font-weight="700" fill="#FF6A00" stroke="none" text-anchor="middle">ПА</text>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Слоги</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+    </div>
+  </main>
+
+<script src="../shared/layout.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/storage.js" defer></script>
+<script src="../shared/app.js" defer></script>
+
+  <script defer>
+    (function () {
+      'use strict';
+
+      const h1 = document.querySelector('header h1');
+      if (h1) h1.textContent = 'Скорочтение';
+
+      const subtitle = document.getElementById('headerSubtitle');
+      if (subtitle) subtitle.textContent = 'NeuroX · 9 тренажёров';
+
+      document.addEventListener('click', function (e) {
+        const logo = e.target.closest && e.target.closest('#logoBtn');
+        if (!logo) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        location.href = '../index.html';
+      }, true);
+
+      window.openTrainer = function (path) {
+        location.href = path;
+      };
+
+      const SVG_SUN  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+      const SVG_MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+
+      function syncThemeIcon() {
+        const btn = document.getElementById('themeBtn');
+        if (!btn) return;
+        const theme = document.documentElement.getAttribute('data-theme');
+        btn.innerHTML = theme === 'dark' ? SVG_SUN : SVG_MOON;
+      }
+
+      new MutationObserver(syncThemeIcon).observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme']
+      });
+      syncThemeIcon();
+    })();
+  </script>
 
-<header>
-
-<div class="header-top">
-
-
-<div class="left-menu">
-
-
-<button class="menu-btn" onclick="goBack()">
-☰
-</button>
-
-
-<div class="brand">
-
-<div class="logo">
-🧠
-</div>
-
-
-<div>
-
-<h1>NeuroX</h1>
-
-<div class="subtitle">
-Развитие когнитивных навыков
-</div>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-
-<div class="header-buttons">
-
-<button class="icon-btn">
-❔
-</button>
-
-<button class="icon-btn">
-⚙
-</button>
-
-</div>
-
-
-</div>
-
-</header>
-
-
-
-<div class="container">
-
-
-<div class="section-title">
-📖 Скорочтение
-</div>
-
-
-
-<div class="card" onclick="openTrainer('shulte.html')">
-
-<div class="left">
-<div class="icon">📋</div>
-<div class="title">Шульте</div>
-</div>
-
-<div class="arrow">›</div>
-
-</div>
-
-
-
-
-<div class="card" onclick="openTrainer('chitaem/chitalka.html')">
-
-<div class="left">
-<div class="icon">📖</div>
-<div class="title">Читалка</div>
-</div>
-
-<div class="arrow">›</div>
-
-</div>
-
-
-
-
-<div class="card" onclick="openTrainer('alfabet.html')">
-
-<div class="left">
-<div class="icon letter">А</div>
-<div class="title">Алфавит</div>
-</div>
-
-<div class="arrow">›</div>
-
-</div>
-
-
-
-
-<div class="card" onclick="openTrainer('putal.html')">
-
-<div class="left">
-<div class="icon">🧠</div>
-<div class="title">Анаграммы</div>
-</div>
-
-<div class="arrow">›</div>
-
-</div>
-
-
-
-
-<div class="card" onclick="openTrainer('raduga.html')">
-
-<div class="left">
-<div class="icon">🌈</div>
-<div class="title">Радуга</div>
-</div>
-
-<div class="arrow">›</div>
-
-</div>
-
-
-
-
-<div class="card" onclick="openTrainer('pereverton.html')">
-
-<div class="left">
-<div class="icon">🔄</div>
-<div class="title">Перевёртыши</div>
-</div>
-
-<div class="arrow">›</div>
-
-</div>
-
-
-
-
-<div class="card" onclick="openTrainer('stolbiky/stolby.html')">
-
-<div class="left">
-<div class="icon">🐌</div>
-<div class="title">Столбики</div>
-</div>
-
-<div class="arrow">›</div>
-
-</div>
-
-
-
-
-<div class="card" onclick="openTrainer('bystro_chitaem/lavina.html')">
-
-<div class="left">
-<div class="icon">🏔️</div>
-<div class="title">Лавина</div>
-</div>
-
-<div class="arrow">›</div>
-
-</div>
-
-
-
-
-<div class="card" onclick="openTrainer('slogi/slogi.html')">
-
-<div class="left">
-<div class="icon">🔤</div>
-<div class="title">Слоги</div>
-</div>
-
-<div class="arrow">›</div>
-
-</div>
-
-
-
-
-</div>
-
-
-
-<footer>
-© verner
-</footer>
-
-
-
-<script>
-
-
-function goBack(){
-
-    location.href="../index.html";
-
-}
-
-
-function openTrainer(path){
-
-    location.href=path;
-
-}
-
-
-</script>
-
-<script src="../menu/menu.js"></script>
 </body>
 </html>

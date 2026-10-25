@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Кристальная пещера — Дошколятам</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header id="topbar">
+    <div class="brand"><span class="gem">◆</span> Кристальная пещера</div>
+    <div class="progress">
+      <span class="ptxt" id="progressText">0 из 8</span>
+      <div class="pbar"><i id="pbarFill"></i></div>
+    </div>
+    <div class="tools">
+      <button id="btnSettings">Настройки</button>
+      <button id="btnFullscreen">Во весь экран</button>
+    </div>
+  </header>
+
+  <main id="stage">
+    <svg id="scene" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+    <div id="pausePanel"></div>
+  </main>
+
+  <footer id="taskbar">
+    <div class="task-left">
+      <div class="task-label">Задание</div>
+      <div class="task-sub">Прочитай вслух</div>
+    </div>
+    <div id="taskText" class="short">—</div>
+    <div class="task-actions">
+      <button class="btn" id="btnRepeat">Показать ещё раз</button>
+      <button class="btn primary" id="btnConfirm">Прочитано ✓</button>
+      <button class="btn" id="btnUndo">Отменить</button>
+    </div>
+  </footer>
+</div>
+
+<div id="overlay" class="overlay hidden"></div>
+
+<!-- Данные: загадки, тексты, банки вопросов -->
+<script src="data.js"></script>
+
+<!-- Движок игры -->
+<script src="engine.js"></script>
+</body>
+</html>

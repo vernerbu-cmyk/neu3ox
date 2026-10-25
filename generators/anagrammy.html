@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Анаграммы для печати - NeuroX</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --blue:#1E3F8A; --blue-soft:#3A5FA8; --blue-pale:#E8EEF9;
+  --orange:#FF6A00; --orange-soft:#FF8B3D; --orange-dark:#C85100;
+  --bg:#F4F6FB; --text:#24324B; --text-dim:#6B7280;
+  --border:rgba(30,63,138,.10); --panel:#FFFFFF; --line:#C3CCE0;
+}
+*{ box-sizing:border-box; }
+body{
+  margin:0; font-family:"Nunito Sans",sans-serif;
+  background-color:var(--bg);
+  background-image:radial-gradient(circle, rgba(30,63,138,.07) 1.5px, transparent 1.6px);
+  background-size:26px 26px; color:var(--text);
+  min-height:100vh; padding-bottom:80px;
+}
+.topbar{
+  position:sticky; top:0; z-index:100; background:var(--blue); color:#fff;
+  padding:20px 22px 22px; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 6px 20px rgba(30,63,138,.25); overflow:hidden;
+}
+.topbar::before,.topbar::after{ content:''; position:absolute; border-radius:50%; pointer-events:none; }
+.topbar::before{ width:220px; height:220px; top:-120px; right:-60px; background:rgba(255,106,0,.22); }
+.topbar::after{ width:170px; height:170px; bottom:-130px; left:40px; background:rgba(255,255,255,.09); }
+.topbar-title{
+  position:relative; z-index:1; font-family:"Fredoka",sans-serif;
+  font-size:26px; font-weight:700; letter-spacing:.4px; text-shadow:0 2px 6px rgba(0,0,0,.15);
+}
+.back-btn{
+  position:absolute; left:16px; top:50%; transform:translateY(-50%);
+  width:44px; height:44px; border:none; border-radius:14px;
+  background:rgba(255,255,255,.18); color:#fff; font-size:20px; cursor:pointer;
+  transition:.22s; z-index:2; display:flex; align-items:center; justify-content:center; padding:0;
+}
+.back-btn:hover{ background:var(--orange); transform:translateY(-50%) rotate(-6deg) scale(1.06); }
+.container{ max-width:900px; margin:0 auto; padding:24px 20px 40px; }
+.toggle-btn{
+  display:block; width:100%; padding:12px 18px; margin-bottom:14px; background:#fff;
+  color:var(--blue); border:2px solid var(--border); border-radius:16px;
+  font-family:"Nunito Sans",sans-serif; font-size:14px; font-weight:800;
+  letter-spacing:.3px; cursor:pointer; box-shadow:0 4px 0 rgba(30,63,138,.08);
+  transition:background .15s, transform .12s, box-shadow .12s; text-align:left;
+}
+.toggle-btn:hover{ background:var(--blue-pale); }
+.toggle-btn:active{ transform:translateY(2px); box-shadow:0 2px 0 rgba(30,63,138,.08); }
+#panel{
+  background:var(--panel); border:2px solid var(--border); border-radius:22px;
+  padding:20px 22px; margin-bottom:14px;
+  box-shadow:0 6px 0 rgba(30,63,138,.10), 0 14px 26px rgba(30,63,138,.08);
+}
+#panel.hidden{ display:none; }
+.settings{ display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:14px 20px; }
+.settings .full{ grid-column:1 / -1; }
+.settings label{ display:block; font-size:14px; font-weight:800; color:var(--blue); margin-bottom:2px; }
+.settings label span{ color:var(--orange); font-weight:800; }
+.settings select,.settings input[type=number],.settings input[type=text]{
+  width:100%; font-family:"Nunito Sans",sans-serif; font-size:14px; font-weight:700;
+  color:var(--blue); background:var(--blue-pale); border:2px solid transparent;
+  border-radius:12px; padding:10px 14px; outline:none; transition:.18s; margin-top:4px;
+}
+.settings select{ cursor:pointer; }
+.settings select:hover,.settings select:focus,.settings input[type=text]:focus,.settings input[type=number]:focus{ border-color:var(--orange); background:#fff; }
+.settings input[type=range]{ width:100%; accent-color:var(--orange); height:26px; margin-top:4px; cursor:pointer; }
+.settings .check-row{
+  display:flex; align-items:center; gap:8px; font-size:14px; font-weight:700;
+  color:var(--blue); cursor:pointer; user-select:none; padding:6px 0;
+}
+.settings .check-row input[type=checkbox]{ accent-color:var(--orange); width:18px; height:18px; margin:0; cursor:pointer; }
+.settings .note{ font-size:11.5px; font-weight:700; color:var(--text-dim); margin-top:4px; line-height:1.4; min-height:14px; }
+.controls{ display:flex; gap:12px; margin-bottom:18px; flex-wrap:wrap; }
+.controls button{
+  flex:1; min-width:150px; padding:13px 20px; border:none; border-radius:14px;
+  background:var(--orange); color:#fff; font-family:"Nunito Sans",sans-serif;
+  font-size:15px; font-weight:800; letter-spacing:.3px; cursor:pointer;
+  box-shadow:0 4px 0 var(--orange-dark); transition:background .15s, transform .12s, box-shadow .12s;
+}
+.controls button:hover{ background:var(--orange-soft); }
+.controls button:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--orange-dark); }
+.controls button.primary{ background:var(--blue); box-shadow:0 4px 0 #12295C; flex:1.4; }
+.controls button.primary:hover{ background:var(--blue-soft); }
+.controls button.primary:active{ box-shadow:0 1px 0 #12295C; }
+.hint-note{ font-size:12.5px; font-weight:700; color:var(--text-dim); margin:-8px 0 18px; text-align:center; line-height:1.4; }
+.sheet{
+  background:#fff; border-radius:18px; padding:34px 38px 38px; margin-bottom:22px;
+  box-shadow:0 6px 0 rgba(30,63,138,.10), 0 14px 26px rgba(30,63,138,.08);
+}
+.sheet-head{ text-align:center; margin-bottom:20px; }
+.sheet-title{
+  font-family:"Fredoka",sans-serif; font-size:26px; font-weight:700;
+  color:var(--blue); margin:0 0 14px; letter-spacing:.4px;
+}
+.sheet-fields{ display:flex; justify-content:space-between; gap:28px; font-size:13px; font-weight:800; color:var(--text-dim); margin-bottom:12px; }
+.sheet-fields span{ display:flex; align-items:flex-end; gap:6px; flex:1; white-space:nowrap; }
+.sheet-fields i{ flex:1; border-bottom:1.4px solid var(--line); height:15px; font-style:normal; }
+.sheet-instruction{ font-size:13px; font-weight:700; color:var(--text-dim); padding:9px 14px; background:#F7F9FE; border-radius:10px; margin:0; }
+.items{ display:grid; grid-template-columns:repeat(var(--cols, 2), minmax(0, 1fr)); column-gap:24px; row-gap:0; }
+.item{ display:flex; align-items:center; gap:8px; padding:7px 0; min-width:0; break-inside:avoid; page-break-inside:avoid; }
+.item-num{ flex:none; width:22px; text-align:right; font-size:12px; font-weight:800; color:#98A3BF; }
+.item-icon{
+  flex:none; width:calc(var(--asize, 20px) * 1.5); height:calc(var(--asize, 20px) * 1.5);
+  display:flex; align-items:center; justify-content:center; line-height:1;
+}
+.item-icon.emoji{ font-size:calc(var(--asize, 20px) * 1.15); }
+.item-icon svg{ width:100%; height:100%; display:block; }
+.item-anagram{
+  flex:none; font-family:"Fredoka","Nunito Sans",sans-serif; font-weight:700;
+  font-size:var(--asize, 20px); line-height:1.15; letter-spacing:1.5px;
+  color:var(--blue); white-space:nowrap;
+}
+.item-anagram.syll{ letter-spacing:.5px; white-space:normal; word-break:keep-all; }
+.item-hint{ flex:none; font-size:11px; font-weight:800; color:var(--orange); opacity:.9; }
+.item-answer{ flex:1; min-width:44px; display:flex; align-items:center; }
+.boxes{ display:flex; gap:3px; }
+.box{
+  width:var(--bw, 20px); height:calc(var(--bw, 20px) * 1.22);
+  border:1.4px solid var(--line); border-radius:3px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:"Fredoka",sans-serif; font-size:calc(var(--bw, 20px) * .72);
+  font-weight:700; color:var(--orange);
+}
+.ans-line{ flex:1; min-width:50px; height:calc(var(--asize, 20px) * 1.05); border-bottom:1.4px solid var(--line); }
+.key-items{ display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:7px 20px; }
+.key-item{ display:flex; align-items:center; gap:7px; font-size:14px; font-weight:700; }
+.key-num{ color:#98A3BF; font-size:12px; min-width:22px; text-align:right; flex:none; }
+.key-item .item-icon{ width:20px; height:20px; }
+.key-item .item-icon.emoji{ font-size:15px; }
+.key-word{ color:var(--blue); letter-spacing:.6px; font-family:"Fredoka",sans-serif; font-weight:600; }
+.signature{
+  position:fixed; bottom:8px; right:14px; font-size:12px; font-weight:600;
+  color:#98A3BF; opacity:.8; pointer-events:none; user-select:none;
+}
+@media (max-width:700px){
+  .topbar{ padding:16px 18px 18px; } .topbar-title{ font-size:19px; }
+  .back-btn{ width:38px; height:38px; font-size:18px; border-radius:12px; left:10px; }
+  .container{ padding:18px 12px 60px; } #panel{ padding:16px 14px; border-radius:18px; }
+  .controls button{ font-size:14px; padding:12px 16px; min-width:120px; }
+  .sheet{ padding:22px 16px 26px; border-radius:14px; } .items{ grid-template-columns:1fr !important; }
+  .sheet-title{ font-size:20px; } .sheet-fields{ flex-direction:column; gap:10px; }
+}
+@media print{
+  @page{ size:A4; margin:14mm; }
+  html, body{ background:#fff !important; background-image:none !important; padding:0 !important; margin:0 !important; color:#000; }
+  .no-print{ display:none !important; }
+  .container{ max-width:none !important; padding:0 !important; margin:0 !important; }
+  .sheet{ box-shadow:none !important; border-radius:0 !important; padding:0 !important; margin:0 !important; background:#fff !important; }
+  #keySheet{ page-break-before:always; break-before:page; }
+  .sheet-head{ break-inside:avoid; page-break-inside:avoid; break-after:avoid; page-break-after:avoid; }
+  .item{ break-inside:avoid; page-break-inside:avoid; }
+  .sheet-instruction{ background:transparent !important; border:1px solid #ddd; }
+  .box{ border-color:#8C97AE !important; } .ans-line{ border-color:#8C97AE !important; } .sheet-fields i{ border-color:#8C97AE !important; }
+  .sheet-title{ font-size:22px; }
+}
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+
+<body>
+
+<div class="topbar no-print">
+  <button class="back-btn" onclick="goBack()" aria-label="Назад">☰</button>
+  <div class="topbar-title">🖨 Анаграммы для печати</div>
+</div>
+
+<div class="container">
+
+  <button class="toggle-btn no-print" onclick="togglePanel()">⚙ Настройки листа</button>
+
+  <div id="panel" class="no-print">
+    <div class="settings">
+
+      <div class="full">
+        <label>Заголовок листа</label>
+        <input type="text" id="titleInput" value="Анаграммы" maxlength="60">
+      </div>
+
+      <div class="full">
+        <label>Инструкция</label>
+        <input type="text" id="instrInput" value="Посмотри на картинку и переставь буквы так, чтобы получилось слово. Запиши ответ." maxlength="140">
+      </div>
+
+      <div class="full">
+        <label>Что перемешиваем</label>
+        <select id="mixMode">
+          <option value="letters">Буквы</option>
+          <option value="syllables">Слоги</option>
+        </select>
+        <div class="note" id="mixNote"></div>
+      </div>
+
+      <div>
+        <label>Количество слов <span id="countVal">20</span></label>
+        <input type="range" id="count" min="4" max="60" value="20">
+      </div>
+
+      <div id="levelBlock">
+        <label>Сложность перемешивания <span id="lvlVal">2</span></label>
+        <input type="range" id="level" min="1" max="5" value="2">
+        <div class="note" id="lvlNote"></div>
+      </div>
+
+      <div>
+        <label>Длина слов</label>
+        <select id="length">
+          <option value="all">Любые</option>
+          <option value="short">Короткие (4–6 букв)</option>
+          <option value="medium">Средние (7–9 букв)</option>
+          <option value="long">Длинные (10+ букв)</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Колонок на листе <span id="colsVal">2</span></label>
+        <input type="range" id="cols" min="1" max="3" value="2">
+      </div>
+
+      <div>
+        <label>Размер букв <span id="sizeVal">20</span></label>
+        <input type="range" id="size" min="12" max="34" value="20">
+      </div>
+
+      <div>
+        <label>Место для ответа</label>
+        <select id="answerStyle">
+          <option value="boxes">Клетки для букв</option>
+          <option value="line">Строка для ответа</option>
+          <option value="none">Без места для ответа</option>
+        </select>
+      </div>
+
+      <div class="full">
+        <label class="check-row">
+          <input type="checkbox" id="optPictures" checked> С картинками
+        </label>
+        <label class="check-row">
+          <input type="checkbox" id="optHint"> Ещё подсказка — первая буква
+        </label>
+        <label class="check-row">
+          <input type="checkbox" id="optKey" checked> Печатать лист с ответами
+        </label>
+        <label class="check-row">
+          <input type="checkbox" id="optName" checked> Поля «Имя» и «Дата»
+        </label>
+        <div class="note">
+          «С картинками» — рядом с каждой анаграммой печатается иконка-подсказка (SVG или эмодзи).
+          Без галочки — только слова-анаграммы, чтобы ребёнок разгадывал по буквам.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="controls no-print">
+    <button onclick="generate()">🎲 Новый набор</button>
+    <button onclick="reshuffle()">🔄 Перемешать заново</button>
+    <button class="primary" onclick="window.print()">🖨 Печать / PDF</button>
+  </div>
+
+  <div class="hint-note no-print">
+    В диалоге печати выбери «Сохранить как PDF», чтобы получить файл для рассылки.
+  </div>
+
+  <div class="sheet" id="sheet">
+    <div class="sheet-head">
+      <h1 class="sheet-title" id="sheetTitle">Анаграммы</h1>
+      <div class="sheet-fields" id="sheetFields">
+        <span>Имя: <i></i></span>
+        <span>Дата: <i></i></span>
+      </div>
+      <p class="sheet-instruction" id="sheetInstruction"></p>
+    </div>
+    <div class="items" id="items"></div>
+  </div>
+
+  <div class="sheet" id="keySheet" style="display:none;">
+    <div class="sheet-head">
+      <h1 class="sheet-title">Ответы</h1>
+    </div>
+    <div class="key-items" id="keyItems"></div>
+  </div>
+
+</div>
+
+<div class="signature no-print">© verner</div>
+
+<script>
+
+/* ============================================
+   БАЗА СЛОВ — только то, что можно изобразить
+   ============================================ */
+
+const FALLBACK_TEXT = `
+кот кошка корова овца коза заяц лиса волк тигр слон жираф кит акула краб ёжик белка олень лев
+мышь змея конь бык свинья гусь лебедь павлин медведь верблюд обезьяна сова утка голубь барсук
+бабочка пчела муравей паук улитка черепаха лягушка крокодил пингвин попугай динозавр дракон единорог
+осьминог дельфин жаба уж
+
+ворона грач снегирь чиж стриж сорока дятел воробей синица ласточка скворец соловей кукушка
+
+рыба щука окунь карп сом лещ плотва ёрш налим судак треска сельдь камбала форель
+
+хлеб сыр яйцо сок чай ложка вилка нож чашка яблоко груша лимон банан персик абрикос виноград
+ананас апельсин мандарин клубника шоколад печенье мороженое торт пицца бургер картофель морковь
+помидор баклажан перец чеснок лук кукуруза тыква гриб орех мёд конфета капуста салат суп каша
+соль масло пирожок вафли батон редис редька репа укроп петрушка щавель шпинат сельдерей свёкла
+огурец горох кабачок
+
+снег снежинка дождь ветер трава лист цветок цвет солнце день луна ночь звезда радуга молния
+вулкан море костёр огонь камень гора небо облако поле остров палатка снеговик ёлка дерево
+река роза ромашка тюльпан кактус
+
+телефон компьютер телевизор карандаш ручка очки шляпа сумка чемодан часы замок картина рамка
+газета карта компас глобус телескоп микроскоп батарейка зонт корона принцесса король письмо
+конверт ключ книга тетрадь линейка кисть иголка нитка свеча зеркало дорога город диван шкаф
+стол стул кресло полка табурет комод коврик вешалка бутылка корзина ведро ящик лампочка розетка
+
+кастрюля сковорода чайник тарелка блюдце кружка кувшин стакан половник сито дуршлаг шумовка тёрка
+
+рубашка платье ботинки сапоги перчатки пижама футболка свитер юбка брюки кофта толстовка шапка
+шарф носки
+
+поезд паровоз велосипед мотоцикл самокат трамвай теплоход корабль яхта лодка вертолёт ракета
+планета комета автобус машина электричка троллейбус
+
+футбол мяч баскетбол теннис шахматы гитара пианино барабан скрипка труба нота песня танец клоун
+зоопарк шарик бант санки лыжи коньки робот призрак подарок праздник магазин рюкзак мама папа друг
+
+врач полицейский пожарный пилот космонавт повар строитель учитель художник учёный фермер механик
+судья программист певец
+`;
+
+const WORDS = FALLBACK_TEXT.trim().split(/\s+/).filter(w => w.length >= 3);
+
+/* ============================================
+   ЭМОДЗИ — ТОЛЬКО ТОЧНЫЕ СОВПАДЕНИЯ
+   ============================================ */
+
+const EMOJI_MAP = {
+  'кот':'🐱','кошка':'🐱','корова':'🐄','овца':'🐑','коза':'🐐','заяц':'🐰',
+  'лиса':'🦊','волк':'🐺','тигр':'🐯','слон':'🐘','жираф':'🦒','кит':'🐋',
+  'акула':'🦈','краб':'🦀','ёжик':'🦔','белка':'🐿️','олень':'🦌','лев':'🦁',
+  'мышь':'🐭','змея':'🐍','конь':'🐴','бык':'🐂','свинья':'🐷','гусь':'🦢',
+  'лебедь':'🦢','павлин':'🦚','медведь':'🐻','верблюд':'🐪',
+  'обезьяна':'🐵','сова':'🦉','утка':'🦆','голубь':'🕊️','барсук':'🦡',
+  'бабочка':'🦋','пчела':'🐝','муравей':'🐜','паук':'🕷️','улитка':'🐌',
+  'черепаха':'🐢','лягушка':'🐸','крокодил':'🐊','пингвин':'🐧','попугай':'🦜',
+  'динозавр':'🦕','дракон':'🐉','единорог':'🦄','осьминог':'🐙','дельфин':'🐬',
+  'жаба':'🐸','уж':'🐍',
+
+  'хлеб':'🍞','сыр':'🧀','яйцо':'🥚','сок':'🧃','чай':'🍵','ложка':'🥄',
+  'вилка':'🍴','нож':'🔪','чашка':'☕','яблоко':'🍎','груша':'🍐','лимон':'🍋','банан':'🍌',
+  'персик':'🍑','абрикос':'🍑','виноград':'🍇','ананас':'🍍','апельсин':'🍊',
+  'мандарин':'🍊','клубника':'🍓','шоколад':'🍫','печенье':'🍪','мороженое':'🍦',
+  'торт':'🎂','пицца':'🍕','бургер':'🍔','картофель':'🥔','морковь':'🥕',
+  'помидор':'🍅','баклажан':'🍆','перец':'🌶️','чеснок':'🧄','лук':'🧅',
+  'кукуруза':'🌽','тыква':'🎃','гриб':'🍄','орех':'🥜','мёд':'🍯',
+  'конфета':'🍬','капуста':'🥬','салат':'🥬','суп':'🍲','каша':'🥣',
+  'соль':'🧂','масло':'🧈','огурец':'🥒','горох':'🫛','кабачок':'🥒',
+
+  'снег':'❄️','снежинка':'❄️','дождь':'🌧️','ветер':'💨','трава':'🌿',
+  'лист':'🍃','цвет':'🌸','солнце':'☀️','день':'☀️',
+  'луна':'🌙','ночь':'🌙','звезда':'⭐','радуга':'🌈','молния':'⚡',
+  'вулкан':'🌋','море':'🌊','костёр':'🔥','огонь':'🔥','камень':'🪨',
+  'гора':'⛰️','небо':'☁️','облако':'☁️','поле':'🌾',
+  'остров':'🏝️','палатка':'⛺','снеговик':'⛄','ёлка':'🎄',
+
+  'телефон':'📱','компьютер':'💻','телевизор':'📺','карандаш':'✏️',
+  'ручка':'🖊️','очки':'👓','шляпа':'🎩','сумка':'👜','чемодан':'🧳',
+  'часы':'⌚','замок':'🔒','картина':'🖼️','рамка':'🖼️','газета':'📰',
+  'карта':'🗺️','компас':'🧭','глобус':'🌍','телескоп':'🔭','микроскоп':'🔬',
+  'батарейка':'🔋','зонт':'☂️','корона':'👑','принцесса':'👸','король':'🤴',
+  'письмо':'✉️','конверт':'✉️',
+
+  'рубашка':'👔','платье':'👗','ботинки':'👞','сапоги':'👢','перчатки':'🧤',
+  'пижама':'🩱',
+
+  'поезд':'🚂','паровоз':'🚂','велосипед':'🚲','мотоцикл':'🏍️','самокат':'🛴',
+  'трамвай':'🚊','теплоход':'🚢','корабль':'🚢','яхта':'⛵','лодка':'🛶',
+  'вертолёт':'🚁','ракета':'🚀','планета':'🪐','комета':'☄️','автобус':'🚌',
+  'машина':'🚗','электричка':'🚆','троллейбус':'🚎',
+
+  'футбол':'⚽','мяч':'⚽','баскетбол':'🏀','теннис':'🎾','шахматы':'♟️',
+  'гитара':'🎸','пианино':'🎹','барабан':'🥁','скрипка':'🎻','труба':'🎺',
+  'нота':'🎵','песня':'🎤','танец':'💃','клоун':'🤡','зоопарк':'🦁',
+  'шарик':'🎈','бант':'🎀','санки':'🛷','лыжи':'🎿','коньки':'⛸️',
+  'робот':'🤖','призрак':'👻','подарок':'🎁','праздник':'🎉','магазин':'🏪',
+  'рюкзак':'🎒','мама':'👩','папа':'👨','друг':'👫',
+
+  /* --- ПРОФЕССИИ --- */
+  'врач':'👨‍⚕️',
+  'полицейский':'👮',
+  'пожарный':'👨‍🚒',
+  'пилот':'👨‍✈️',
+  'космонавт':'👨‍🚀',
+  'повар':'👨‍🍳',
+  'строитель':'👷',
+  'учитель':'👨‍🏫',
+  'художник':'👨‍🎨',
+  'учёный':'👨‍🔬',
+  'фермер':'👨‍🌾',
+  'механик':'👨‍🔧',
+  'судья':'👨‍⚖️',
+  'программист':'👨‍💻',
+  'певец':'👨‍🎤'
+};
+
+/* ============================================
+   SVG-ИКОНКИ
+   ============================================ */
+
+const C = {
+  blue:'#5B8DEF', blueDark:'#1E3F8A', blueLight:'#B8C9E8',
+  orange:'#FF8B3D', orangeDark:'#C85100', orangeLight:'#FFD7B8',
+  green:'#7AB86C', greenDark:'#3D6B34', greenLight:'#C8E6C9',
+  brown:'#A0765A', brownDark:'#6B4A34', brownLight:'#C9A88C',
+  gray:'#8C97AE', grayLight:'#DDE3EF', grayDark:'#4A5570',
+  red:'#E57373', yellow:'#F4C95D', pink:'#E8B8B0',
+  sky:'#7EC8E3'
+};
+
+const SVG_MAP = {
+
+  /* --- РЫБЫ --- */
+  'рыба':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="20" rx="12" ry="7" fill="${C.blue}"/><path d="M31 20 L37 13 L37 27 Z" fill="${C.blue}"/><circle cx="12" cy="18" r="2" fill="#fff"/><circle cx="12" cy="18" r="1" fill="${C.blueDark}"/><path d="M17 20 Q20 24 23 20" stroke="${C.blueDark}" stroke-width=".8" fill="none"/></svg>`,
+  'щука':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="20" rx="15" ry="4.5" fill="${C.green}"/><path d="M34 20 L39 14 L39 26 Z" fill="${C.green}"/><circle cx="10" cy="19" r="1.6" fill="#fff"/><circle cx="10" cy="19" r=".8" fill="${C.greenDark}"/><path d="M14 22 L16 24 M18 22 L20 24 M22 22 L24 24 M26 22 L28 24" stroke="${C.greenDark}" stroke-width=".8"/></svg>`,
+  'окунь':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="20" rx="12" ry="7" fill="${C.orange}"/><path d="M31 20 L37 14 L37 26 Z" fill="${C.orange}"/><path d="M12 14 L12 26 M17 14 L17 26 M22 15 L22 25" stroke="${C.orangeDark}" stroke-width=".9"/><circle cx="12" cy="18" r="1.8" fill="#fff"/><circle cx="12" cy="18" r=".9" fill="${C.blueDark}"/></svg>`,
+  'карп':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="20" rx="12" ry="7.5" fill="${C.yellow}"/><path d="M31 20 L37 13 L37 27 Z" fill="${C.yellow}"/><circle cx="12" cy="18" r="2" fill="#fff"/><circle cx="12" cy="18" r="1" fill="${C.blueDark}"/><path d="M16 22 Q20 26 24 22" stroke="${C.orangeDark}" stroke-width=".8" fill="none"/></svg>`,
+  'сом':`<svg viewBox="0 0 40 40"><ellipse cx="20" cy="20" rx="13" ry="7" fill="${C.grayDark}"/><path d="M33 20 L38 14 L38 26 Z" fill="${C.grayDark}"/><circle cx="12" cy="18" r="1.8" fill="#fff"/><circle cx="12" cy="18" r=".9" fill="#000"/><path d="M8 19 Q4 18 3 20 M8 22 Q4 22 3 24" stroke="${C.grayDark}" stroke-width="1" fill="none" stroke-linecap="round"/></svg>`,
+  'лещ':`<svg viewBox="0 0 40 40"><ellipse cx="20" cy="20" rx="11" ry="9" fill="${C.gray}"/><path d="M31 20 L36 14 L36 26 Z" fill="${C.gray}"/><circle cx="13" cy="18" r="1.7" fill="#fff"/><circle cx="13" cy="18" r=".8" fill="${C.blueDark}"/></svg>`,
+  'плотва':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="20" rx="11" ry="6" fill="#A8C5D6"/><path d="M30 20 L36 14 L36 26 Z" fill="#A8C5D6"/><circle cx="12" cy="18" r="1.6" fill="#fff"/><circle cx="12" cy="18" r=".8" fill="${C.blueDark}"/></svg>`,
+  'ёрш':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="20" rx="11" ry="6.5" fill="${C.greenDark}"/><path d="M30 20 L36 14 L36 26 Z" fill="${C.greenDark}"/><path d="M18 12 L20 8 M22 12 L22 8 M14 12 L14 8" stroke="${C.greenDark}" stroke-width="1"/><circle cx="12" cy="19" r="1.6" fill="#fff"/><circle cx="12" cy="19" r=".8" fill="#000"/></svg>`,
+  'налим':`<svg viewBox="0 0 40 40"><ellipse cx="20" cy="20" rx="13" ry="6" fill="${C.brownDark}"/><path d="M33 20 L38 14 L38 26 Z" fill="${C.brownDark}"/><circle cx="12" cy="18" r="1.6" fill="#fff"/><circle cx="12" cy="18" r=".8" fill="#000"/><path d="M7 19 Q4 18 3 19 M7 22 Q4 22 3 23" stroke="${C.brownDark}" stroke-width=".9" fill="none" stroke-linecap="round"/></svg>`,
+  'судак':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="20" rx="13" ry="5.5" fill="${C.grayDark}"/><path d="M32 20 L37 14 L37 26 Z" fill="${C.grayDark}"/><circle cx="11" cy="19" r="1.5" fill="#fff"/><circle cx="11" cy="19" r=".7" fill="#000"/></svg>`,
+  'треска':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="20" rx="12" ry="6" fill="#C5CFD9"/><path d="M31 20 L37 14 L37 26 Z" fill="#C5CFD9"/><circle cx="12" cy="19" r="1.5" fill="#fff"/><circle cx="12" cy="19" r=".7" fill="${C.blueDark}"/></svg>`,
+  'сельдь':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="20" rx="13" ry="4.5" fill="#B0C4D4"/><path d="M32 20 L38 15 L38 25 Z" fill="#B0C4D4"/><circle cx="11" cy="19" r="1.4" fill="#fff"/><circle cx="11" cy="19" r=".7" fill="#000"/></svg>`,
+  'камбала':`<svg viewBox="0 0 40 40"><ellipse cx="20" cy="21" rx="13" ry="8" fill="${C.brown}"/><circle cx="15" cy="17" r="1.5" fill="#fff"/><circle cx="15" cy="17" r=".7" fill="#000"/><circle cx="24" cy="17" r="1.5" fill="#fff"/><circle cx="24" cy="17" r=".7" fill="#000"/></svg>`,
+  'форель':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="20" rx="13" ry="6.5" fill="#E8A87C"/><path d="M32 20 L37 14 L37 26 Z" fill="#E8A87C"/><circle cx="12" cy="18" r="1.6" fill="#fff"/><circle cx="12" cy="18" r=".8" fill="#000"/><circle cx="20" cy="21" r="1.2" fill="#C77B4A"/><circle cx="26" cy="19" r="1" fill="#C77B4A"/></svg>`,
+
+  /* --- ПТИЦЫ --- */
+  'ворона':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="23" rx="10" ry="7" fill="${C.grayDark}"/><circle cx="26" cy="15" r="5.5" fill="${C.grayDark}"/><path d="M31 15 L35 16 L31 17 Z" fill="${C.yellow}"/><circle cx="27.5" cy="14" r="1" fill="#fff"/><circle cx="27.5" cy="14" r=".5" fill="#000"/><path d="M12 27 L15 32 M19 27 L19 32" stroke="${C.grayDark}" stroke-width="1.2"/></svg>`,
+  'грач':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="23" rx="10" ry="7" fill="#2C2F45"/><circle cx="26" cy="15" r="5" fill="#2C2F45"/><path d="M30 15 L35 16 L30 17 Z" fill="${C.gray}"/><circle cx="27.5" cy="14" r=".9" fill="#fff"/><circle cx="27.5" cy="14" r=".4" fill="#000"/><path d="M12 27 L15 32 M19 27 L19 32" stroke="#2C2F45" stroke-width="1.2"/></svg>`,
+  'снегирь':`<svg viewBox="0 0 40 40"><ellipse cx="20" cy="24" rx="9" ry="8" fill="${C.red}"/><circle cx="22" cy="14" r="5" fill="#2C2F45"/><path d="M27 14 L31 15 L27 16 Z" fill="${C.yellow}"/><circle cx="23.5" cy="13" r=".9" fill="#fff"/><circle cx="23.5" cy="13" r=".4" fill="#000"/><ellipse cx="20" cy="27" rx="5" ry="4" fill="#fff"/></svg>`,
+  'чиж':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="23" rx="9" ry="7" fill="#B8C758"/><circle cx="25" cy="15" r="4.5" fill="#B8C758"/><path d="M29 15 L33 16 L29 17 Z" fill="${C.orangeDark}"/><circle cx="26.5" cy="14" r=".9" fill="#fff"/><circle cx="26.5" cy="14" r=".4" fill="#000"/><path d="M12 27 L14 31 M17 27 L17 31" stroke="#B8C758" stroke-width="1"/></svg>`,
+  'стриж':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="22" rx="10" ry="5.5" fill="#3B4A5C"/><circle cx="27" cy="17" r="4" fill="#3B4A5C"/><path d="M30 17 L34 18 L30 19 Z" fill="#5B8DEF"/><circle cx="28" cy="16" r=".8" fill="#fff"/><circle cx="28" cy="16" r=".4" fill="#000"/><path d="M10 22 L5 25 L10 24 Z M14 22 L8 25 L14 24 Z" fill="#3B4A5C"/></svg>`,
+  'сорока':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="23" rx="11" ry="6" fill="#2C2F45"/><circle cx="27" cy="14" r="5" fill="#2C2F45"/><ellipse cx="19" cy="24" rx="8" ry="3" fill="#fff"/><path d="M32 14 L35 15 L32 16 Z" fill="${C.gray}"/><circle cx="28.5" cy="13" r=".9" fill="#fff"/><circle cx="28.5" cy="13" r=".4" fill="#000"/><path d="M12 28 L14 33 M19 29 L19 34" stroke="#2C2F45" stroke-width="1.2"/></svg>`,
+  'дятел':`<svg viewBox="0 0 40 40"><ellipse cx="18" cy="23" rx="9" ry="8" fill="#2C2F45"/><circle cx="22" cy="12" r="4.5" fill="#2C2F45"/><circle cx="25" cy="13" r="2" fill="${C.red}"/><path d="M26 12 L31 12 L26 13 Z" fill="${C.yellow}"/><circle cx="23.5" cy="11" r=".8" fill="#fff"/><circle cx="23.5" cy="11" r=".4" fill="#000"/><path d="M14 30 L14 34 M20 30 L20 34" stroke="#2C2F45" stroke-width="1.2"/></svg>`,
+  'воробей':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="24" rx="9" ry="7" fill="${C.brown}"/><circle cx="25" cy="17" r="4.5" fill="${C.brown}"/><path d="M29 17 L33 17.5 L29 18.5 Z" fill="${C.grayDark}"/><circle cx="26.5" cy="16" r=".9" fill="#fff"/><circle cx="26.5" cy="16" r=".4" fill="#000"/><ellipse cx="19" cy="26" rx="5" ry="3" fill="${C.brownLight}"/><path d="M13 28 L15 32 M18 29 L18 33" stroke="${C.brownDark}" stroke-width="1"/></svg>`,
+  'синица':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="23" rx="9" ry="7" fill="${C.yellow}"/><circle cx="25" cy="15" r="4.5" fill="${C.blueDark}"/><path d="M29 15 L33 15.5 L29 16.5 Z" fill="${C.grayDark}"/><circle cx="26.5" cy="14" r=".9" fill="#fff"/><circle cx="26.5" cy="14" r=".4" fill="#000"/><path d="M19 16 Q19 20 19 24" stroke="#000" stroke-width="1.5" fill="none"/><path d="M13 27 L15 32 M19 28 L19 33" stroke="${C.grayDark}" stroke-width="1"/></svg>`,
+  'ласточка':`<svg viewBox="0 0 40 40"><ellipse cx="20" cy="22" rx="9" ry="5" fill="#2C2F45"/><circle cx="27" cy="16" r="4" fill="#2C2F45"/><path d="M30 16 L34 17 L30 18 Z" fill="${C.orangeDark}"/><circle cx="28" cy="15" r=".8" fill="#fff"/><circle cx="28" cy="15" r=".4" fill="#000"/><path d="M14 19 Q10 16 6 20 Q10 20 14 21" fill="#2C2F45"/><path d="M14 25 Q10 28 6 24 Q10 24 14 23" fill="#2C2F45"/><path d="M11 26 L8 32 M14 26 L14 32" stroke="#2C2F45" stroke-width="1"/></svg>`,
+  'скворец':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="23" rx="9" ry="7" fill="#3B3040"/><circle cx="25" cy="16" r="4.5" fill="#3B3040"/><path d="M29 16 L33 16.5 L29 17.5 Z" fill="${C.yellow}"/><circle cx="26.5" cy="15" r=".9" fill="#fff"/><circle cx="26.5" cy="15" r=".4" fill="#000"/><circle cx="17" cy="22" r=".9" fill="${C.yellow}"/><circle cx="21" cy="25" r=".9" fill="${C.yellow}"/><circle cx="19" cy="20" r=".8" fill="${C.yellow}"/><path d="M13 28 L15 32 M19 29 L19 33" stroke="#3B3040" stroke-width="1"/></svg>`,
+  'соловей':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="24" rx="9" ry="6.5" fill="${C.brown}"/><circle cx="25" cy="17" r="4.5" fill="${C.brown}"/><path d="M29 17 L33 17.5 L29 18.5 Z" fill="${C.brownDark}"/><circle cx="26.5" cy="16" r=".9" fill="#fff"/><circle cx="26.5" cy="16" r=".4" fill="#000"/><ellipse cx="19" cy="26" rx="6" ry="3" fill="${C.brownLight}"/><path d="M13 29 L15 32 M19 30 L19 33" stroke="${C.brownDark}" stroke-width="1"/></svg>`,
+  'кукушка':`<svg viewBox="0 0 40 40"><ellipse cx="19" cy="23" rx="10" ry="6.5" fill="${C.gray}"/><circle cx="26" cy="16" r="4.5" fill="${C.gray}"/><path d="M30 16 L34 17 L30 18 Z" fill="${C.grayDark}"/><circle cx="27.5" cy="15" r=".9" fill="#fff"/><circle cx="27.5" cy="15" r=".4" fill="#000"/><path d="M14 22 L20 22 M14 25 L20 25 M14 28 L20 28" stroke="${C.grayDark}" stroke-width=".8"/><path d="M12 25 Q8 24 8 28" stroke="${C.gray}" stroke-width="2" fill="none"/><path d="M13 29 L15 32 M19 29 L19 33" stroke="${C.grayDark}" stroke-width="1"/></svg>`,
+  'крот':`<svg viewBox="0 0 40 40"><ellipse cx="20" cy="22" rx="13" ry="10" fill="${C.brownDark}"/><ellipse cx="20" cy="26" rx="8" ry="6" fill="${C.brown}"/><circle cx="16" cy="20" r="1.5" fill="#000"/><circle cx="24" cy="20" r="1.5" fill="#000"/><ellipse cx="20" cy="24" rx="2" ry="1.5" fill="${C.pink}"/></svg>`,
+
+  /* --- ОВОЩИ / ТРАВЫ --- */
+  'редис':`<svg viewBox="0 0 40 40"><circle cx="20" cy="26" r="9" fill="${C.red}"/><circle cx="20" cy="26" r="9" fill="none" stroke="#A03030" stroke-width=".7"/><path d="M20 18 Q18 12 14 10 M20 18 Q22 12 26 10 M20 18 Q20 10 20 8" stroke="${C.green}" stroke-width="1.5" fill="none"/><ellipse cx="14" cy="10" rx="3" ry="2" fill="${C.green}"/><ellipse cx="26" cy="10" rx="3" ry="2" fill="${C.green}"/><ellipse cx="20" cy="8" rx="2.5" ry="3" fill="${C.green}"/></svg>`,
+  'редька':`<svg viewBox="0 0 40 40"><path d="M20 20 Q12 20 12 28 Q12 36 20 36 Q28 36 28 28 Q28 20 20 20 Z" fill="#F0F4E8"/><path d="M20 30 Q16 30 16 34" stroke="#C8D0B0" stroke-width=".7" fill="none"/><path d="M20 20 Q18 12 14 8 M20 20 Q22 12 26 8 M20 20 Q20 10 20 6" stroke="${C.green}" stroke-width="1.3" fill="none"/></svg>`,
+  'репа':`<svg viewBox="0 0 40 40"><circle cx="20" cy="25" r="10" fill="${C.yellow}"/><ellipse cx="20" cy="25" rx="10" ry="10" fill="none" stroke="${C.orangeDark}" stroke-width=".7"/><path d="M20 15 Q18 8 14 6 M20 15 Q22 8 26 6 M20 15 Q20 8 20 4" stroke="${C.green}" stroke-width="1.5" fill="none"/><path d="M20 28 Q16 28 16 33" stroke="${C.orangeDark}" stroke-width=".8" fill="none"/></svg>`,
+  'свёкла':`<svg viewBox="0 0 40 40"><circle cx="20" cy="26" r="10" fill="#8B1F3F"/><ellipse cx="20" cy="26" rx="10" ry="10" fill="none" stroke="#5C1229" stroke-width=".7"/><path d="M20 16 Q18 8 15 6 M20 16 Q22 8 25 6 M20 16 Q20 6 20 3" stroke="${C.green}" stroke-width="1.3" fill="none"/><path d="M20 30 Q16 30 16 34" stroke="#5C1229" stroke-width=".8" fill="none"/></svg>`,
+  'укроп':`<svg viewBox="0 0 40 40"><path d="M20 36 L20 12" stroke="${C.green}" stroke-width="1.5"/><path d="M20 26 L14 22 M20 26 L26 22 M20 20 L13 15 M20 20 L27 15 M20 14 L15 9 M20 14 L25 9" stroke="${C.green}" stroke-width="1"/><ellipse cx="14" cy="22" rx="2.5" ry="1.5" fill="${C.green}"/><ellipse cx="26" cy="22" rx="2.5" ry="1.5" fill="${C.green}"/><ellipse cx="13" cy="15" rx="2.5" ry="1.5" fill="${C.green}"/><ellipse cx="27" cy="15" rx="2.5" ry="1.5" fill="${C.green}"/><ellipse cx="15" cy="9" rx="2.5" ry="1.5" fill="${C.green}"/><ellipse cx="25" cy="9" rx="2.5" ry="1.5" fill="${C.green}"/></svg>`,
+  'петрушка':`<svg viewBox="0 0 40 40"><path d="M20 36 L20 18" stroke="${C.greenDark}" stroke-width="1.5"/><path d="M20 30 Q14 28 12 24 Q16 22 20 25" fill="${C.green}"/><path d="M20 30 Q26 28 28 24 Q24 22 20 25" fill="${C.green}"/><path d="M20 22 Q15 18 15 12 Q19 14 20 18" fill="${C.green}"/><path d="M20 22 Q25 18 25 12 Q21 14 20 18" fill="${C.green}"/></svg>`,
+  'щавель':`<svg viewBox="0 0 40 40"><path d="M20 36 L20 12" stroke="${C.greenDark}" stroke-width="1.3"/><ellipse cx="12" cy="14" rx="6" ry="9" fill="${C.green}"/><ellipse cx="28" cy="14" rx="6" ry="9" fill="${C.green}"/><ellipse cx="20" cy="18" rx="5" ry="8" fill="${C.green}"/></svg>`,
+  'шпинат':`<svg viewBox="0 0 40 40"><path d="M20 36 Q14 30 14 22 Q14 14 20 10 Q26 14 26 22 Q26 30 20 36 Z" fill="${C.green}"/><path d="M20 36 L20 12" stroke="${C.greenDark}" stroke-width=".8"/><path d="M20 20 L16 16 M20 24 L15 21 M20 28 L15 26 M20 20 L24 16 M20 24 L25 21 M20 28 L25 26" stroke="${C.greenDark}" stroke-width=".6"/></svg>`,
+  'сельдерей':`<svg viewBox="0 0 40 40"><rect x="17" y="12" width="6" height="24" rx="2" fill="${C.greenLight}"/><path d="M17 18 L12 12 M17 22 L12 18 M17 26 L13 24" stroke="${C.green}" stroke-width="1.5" fill="none"/><path d="M23 18 L28 12 M23 22 L28 18 M23 26 L27 24" stroke="${C.green}" stroke-width="1.5" fill="none"/><ellipse cx="12" cy="11" rx="3" ry="2" fill="${C.green}"/><ellipse cx="28" cy="11" rx="3" ry="2" fill="${C.green}"/></svg>`,
+  'пирожок':`<svg viewBox="0 0 40 40"><path d="M8 26 Q8 16 20 16 Q32 16 32 26 L32 30 L8 30 Z" fill="${C.orange}"/><circle cx="14" cy="22" r="1" fill="${C.orangeDark}"/><circle cx="20" cy="21" r="1" fill="${C.orangeDark}"/><circle cx="26" cy="22" r="1" fill="${C.orangeDark}"/></svg>`,
+  'вафли':`<svg viewBox="0 0 40 40"><rect x="10" y="10" width="20" height="20" rx="1" fill="${C.yellow}"/><line x1="13" y1="10" x2="13" y2="30" stroke="${C.orangeDark}" stroke-width=".7"/><line x1="20" y1="10" x2="20" y2="30" stroke="${C.orangeDark}" stroke-width=".7"/><line x1="27" y1="10" x2="27" y2="30" stroke="${C.orangeDark}" stroke-width=".7"/><line x1="10" y1="13" x2="30" y2="13" stroke="${C.orangeDark}" stroke-width=".7"/><line x1="10" y1="20" x2="30" y2="20" stroke="${C.orangeDark}" stroke-width=".7"/><line x1="10" y1="27" x2="30" y2="27" stroke="${C.orangeDark}" stroke-width=".7"/></svg>`,
+  'батон':`<svg viewBox="0 0 40 40"><ellipse cx="20" cy="20" rx="16" ry="7" fill="#D4A05A" transform="rotate(-20 20 20)"/><path d="M10 15 Q12 12 14 14 M16 13 Q18 10 20 12 M22 12 Q24 9 26 11" stroke="${C.brownDark}" stroke-width="1" fill="none"/></svg>`,
+
+  /* --- КУХОННЫЕ ПРИНАДЛЕЖНОСТИ --- */
+  'сито':`<svg viewBox="0 0 40 40"><path d="M6 16 L34 16 L30 30 Q26 34 20 34 Q14 34 10 30 Z" fill="${C.grayLight}"/><path d="M6 16 L34 16" stroke="${C.grayDark}" stroke-width="1.5"/><circle cx="14" cy="22" r=".7" fill="${C.grayDark}"/><circle cx="20" cy="22" r=".7" fill="${C.grayDark}"/><circle cx="26" cy="22" r=".7" fill="${C.grayDark}"/><circle cx="14" cy="26" r=".7" fill="${C.grayDark}"/><circle cx="20" cy="26" r=".7" fill="${C.grayDark}"/><circle cx="26" cy="26" r=".7" fill="${C.grayDark}"/><circle cx="17" cy="30" r=".7" fill="${C.grayDark}"/><circle cx="23" cy="30" r=".7" fill="${C.grayDark}"/><path d="M14 14 Q20 10 26 14" stroke="${C.grayDark}" stroke-width="1.5" fill="none"/></svg>`,
+  'дуршлаг':`<svg viewBox="0 0 40 40"><path d="M6 16 L34 16 Q34 32 20 32 Q6 32 6 16 Z" fill="${C.grayLight}"/><path d="M6 16 L34 16" stroke="${C.grayDark}" stroke-width="1.5"/><ellipse cx="14" cy="20" rx="1.3" ry=".8" fill="${C.grayDark}"/><ellipse cx="20" cy="18" rx="1.3" ry=".8" fill="${C.grayDark}"/><ellipse cx="26" cy="20" rx="1.3" ry=".8" fill="${C.grayDark}"/><ellipse cx="17" cy="24" rx="1.3" ry=".8" fill="${C.grayDark}"/><ellipse cx="23" cy="24" rx="1.3" ry=".8" fill="${C.grayDark}"/><ellipse cx="14" cy="28" rx="1.3" ry=".8" fill="${C.grayDark}"/><ellipse cx="26" cy="28" rx="1.3" ry=".8" fill="${C.grayDark}"/><path d="M20 12 L24 6 M20 12 L16 6" stroke="${C.grayDark}" stroke-width="1.3" fill="none"/></svg>`,
+  'шумовка':`<svg viewBox="0 0 40 40"><ellipse cx="20" cy="24" rx="11" ry="8" fill="none" stroke="${C.grayDark}" stroke-width="1.5"/><circle cx="15" cy="22" r=".8" fill="${C.grayDark}"/><circle cx="20" cy="20" r=".8" fill="${C.grayDark}"/><circle cx="25" cy="22" r=".8" fill="${C.grayDark}"/><circle cx="16" cy="27" r=".8" fill="${C.grayDark}"/><circle cx="20" cy="28" r=".8" fill="${C.grayDark}"/><circle cx="24" cy="27" r=".8" fill="${C.grayDark}"/><rect x="18" y="4" width="4" height="12" rx="1.5" fill="${C.grayDark}"/></svg>`,
+  'тёрка':`<svg viewBox="0 0 40 40"><rect x="10" y="8" width="20" height="26" rx="1.5" fill="${C.grayLight}"/><rect x="12" y="10" width="16" height="22" fill="#fff"/><circle cx="15" cy="14" r="1" fill="${C.grayDark}"/><circle cx="20" cy="14" r="1" fill="${C.grayDark}"/><circle cx="25" cy="14" r="1" fill="${C.grayDark}"/><circle cx="15" cy="19" r="1" fill="${C.grayDark}"/><circle cx="20" cy="19" r="1" fill="${C.grayDark}"/><circle cx="25" cy="19" r="1" fill="${C.grayDark}"/><circle cx="15" cy="24" r="1" fill="${C.grayDark}"/><circle cx="20" cy="24" r="1" fill="${C.grayDark}"/><circle cx="25" cy="24" r="1" fill="${C.grayDark}"/><circle cx="15" cy="29" r="1" fill="${C.grayDark}"/><circle cx="20" cy="29" r="1" fill="${C.grayDark}"/><circle cx="25" cy="29" r="1" fill="${C.grayDark}"/></svg>`,
+
+  /* --- ОДЕЖДА --- */
+  'футболка':`<svg viewBox="0 0 40 40"><path d="M10 12 L14 8 L17 11 Q20 13 23 11 L26 8 L30 12 L28 17 L26 16 L26 34 L14 34 L14 16 L12 17 Z" fill="${C.blue}"/></svg>`,
+  'свитер':`<svg viewBox="0 0 40 40"><path d="M8 12 L14 8 L17 11 Q20 13 23 11 L26 8 L32 12 L30 17 L27 15 L27 34 L13 34 L13 15 L10 17 Z" fill="${C.red}"/></svg>`,
+  'юбка':`<svg viewBox="0 0 40 40"><path d="M13 10 L27 10 L33 34 L7 34 Z" fill="${C.green}"/><rect x="12" y="8" width="16" height="4" rx="1" fill="${C.greenDark}"/></svg>`,
+  'брюки':`<svg viewBox="0 0 40 40"><path d="M10 8 L30 8 L28 34 L22 34 L20 20 L18 34 L12 34 Z" fill="${C.grayDark}"/></svg>`,
+  'кофта':`<svg viewBox="0 0 40 40"><path d="M9 13 L14 9 L17 11 Q20 13 23 11 L26 9 L31 13 L29 17 L27 15 L27 33 L13 33 L13 15 L11 17 Z" fill="${C.green}"/></svg>`,
+  'толстовка':`<svg viewBox="0 0 40 40"><path d="M8 12 L14 8 L17 11 Q20 14 23 11 L26 8 L32 12 L30 17 L27 15 L27 34 L13 34 L13 15 L10 17 Z" fill="${C.grayDark}"/></svg>`,
+  'шапка':`<svg viewBox="0 0 40 40"><path d="M8 24 Q8 10 20 10 Q32 10 32 24 Z" fill="${C.red}"/><rect x="6" y="24" width="28" height="6" rx="2" fill="${C.red}"/><circle cx="20" cy="7" r="3" fill="${C.red}"/><path d="M12 20 Q14 16 18 18 M22 18 Q26 16 28 20" stroke="#A03030" stroke-width=".7" fill="none"/></svg>`,
+  'шарф':`<svg viewBox="0 0 40 40"><path d="M10 10 L30 10 L28 16 L26 16 L26 34 L24 34 L24 16 L22 16 L22 34 L20 34 L20 16 L18 16 L18 34 L16 34 L16 16 L14 16 L12 16 Z" fill="${C.blue}"/><path d="M12 13 L28 13" stroke="${C.blueDark}" stroke-width=".8"/></svg>`,
+  'носки':`<svg viewBox="0 0 40 40"><path d="M10 6 L16 6 L16 22 Q16 30 24 32 Q30 34 30 28 Q30 24 26 22 L20 18" fill="${C.blue}" stroke="${C.blueDark}" stroke-width=".7"/><path d="M10 8 L16 8" stroke="${C.blueDark}" stroke-width="1"/><path d="M22 8 L28 8 L28 14 Q28 22 24 24" fill="${C.blue}" stroke="${C.blueDark}" stroke-width=".7"/></svg>`,
+
+  /* --- ПОСУДА --- */
+  'тарелка':`<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="${C.grayLight}"/><circle cx="20" cy="20" r="12" fill="#fff"/><circle cx="20" cy="20" r="10" fill="${C.grayLight}"/></svg>`,
+  'блюдце':`<svg viewBox="0 0 40 40"><circle cx="20" cy="22" r="14" fill="${C.grayLight}"/><circle cx="20" cy="22" r="9" fill="#fff"/></svg>`,
+  'кружка':`<svg viewBox="0 0 40 40"><rect x="8" y="12" width="20" height="20" rx="2" fill="${C.blue}"/><path d="M28 18 Q34 18 34 22 Q34 26 28 26" stroke="${C.blue}" stroke-width="3" fill="none"/><ellipse cx="18" cy="12" rx="10" ry="2" fill="${C.blueDark}"/></svg>`,
+  'кувшин':`<svg viewBox="0 0 40 40"><path d="M14 12 Q12 18 13 26 Q14 33 20 33 Q26 33 27 26 Q28 18 26 12 Z" fill="${C.orange}"/><rect x="16" y="8" width="8" height="5" rx="1" fill="${C.orangeDark}"/><path d="M26 16 Q30 16 30 20 Q30 24 27 24" stroke="${C.orange}" stroke-width="1.8" fill="none"/></svg>`,
+  'стакан':`<svg viewBox="0 0 40 40"><path d="M12 8 L28 8 L26 34 L14 34 Z" fill="${C.blueLight}"/></svg>`,
+  'половник':`<svg viewBox="0 0 40 40"><path d="M14 20 Q10 20 10 26 Q10 33 20 33 Q30 33 30 26 Q30 20 26 20 Z" fill="${C.gray}"/><rect x="18" y="4" width="4" height="18" rx="1.5" fill="${C.gray}"/></svg>`,
+  'кастрюля':`<svg viewBox="0 0 40 40"><rect x="8" y="14" width="24" height="18" rx="2" fill="${C.gray}"/><ellipse cx="20" cy="14" rx="12" ry="2.5" fill="${C.grayDark}"/><path d="M6 18 Q4 22 6 26 M34 18 Q36 22 34 26" stroke="${C.grayDark}" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`,
+  'сковорода':`<svg viewBox="0 0 40 40"><ellipse cx="18" cy="22" rx="12" ry="7" fill="${C.grayDark}"/><ellipse cx="18" cy="22" rx="10" ry="5.5" fill="${C.gray}"/><rect x="30" y="20" width="8" height="3" rx="1" fill="${C.brownDark}"/></svg>`,
+  'чайник':`<svg viewBox="0 0 40 40"><path d="M12 16 Q10 26 12 32 L28 32 Q30 26 28 16 Z" fill="${C.blue}"/><path d="M28 18 Q34 20 33 26" stroke="${C.blue}" stroke-width="2" fill="none"/><ellipse cx="20" cy="16" rx="8" ry="2" fill="${C.blueDark}"/><path d="M16 12 Q20 8 24 12" stroke="${C.blueDark}" stroke-width="1.5" fill="none"/></svg>`,
+
+  /* --- ПРИРОДА --- */
+  'дерево':`<svg viewBox="0 0 40 40"><rect x="18" y="24" width="4" height="12" fill="${C.brown}"/><circle cx="20" cy="16" r="10" fill="${C.green}"/><circle cx="14" cy="20" r="6" fill="${C.green}"/><circle cx="26" cy="20" r="6" fill="${C.green}"/></svg>`,
+  'цветок':`<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="3" fill="${C.yellow}"/><circle cx="20" cy="12" r="5" fill="${C.red}"/><circle cx="28" cy="20" r="5" fill="${C.red}"/><circle cx="20" cy="28" r="5" fill="${C.red}"/><circle cx="12" cy="20" r="5" fill="${C.red}"/><path d="M20 25 L20 36" stroke="${C.green}" stroke-width="1.5"/></svg>`,
+  'роза':`<svg viewBox="0 0 40 40"><path d="M20 12 Q14 14 14 20 Q14 26 20 28 Q26 26 26 20 Q26 14 20 12 Z" fill="${C.red}"/><path d="M20 15 Q17 17 17 20 Q17 23 20 24" fill="none" stroke="#A03030" stroke-width=".7"/><rect x="19" y="28" width="2" height="10" fill="${C.green}"/><path d="M20 32 Q14 30 12 34 Q16 36 20 32" fill="${C.green}"/></svg>`,
+  'ромашка':`<svg viewBox="0 0 40 40"><circle cx="20" cy="16" r="3" fill="${C.yellow}"/><ellipse cx="20" cy="9" rx="2.5" ry="4" fill="#fff" stroke="${C.grayLight}" stroke-width=".5"/><ellipse cx="27" cy="16" rx="4" ry="2.5" fill="#fff" stroke="${C.grayLight}" stroke-width=".5"/><ellipse cx="20" cy="23" rx="2.5" ry="4" fill="#fff" stroke="${C.grayLight}" stroke-width=".5"/><ellipse cx="13" cy="16" rx="4" ry="2.5" fill="#fff" stroke="${C.grayLight}" stroke-width=".5"/><path d="M20 26 L20 36" stroke="${C.green}" stroke-width="1.5"/></svg>`,
+  'тюльпан':`<svg viewBox="0 0 40 40"><path d="M14 10 Q14 20 20 24 Q26 20 26 10 Q22 14 20 10 Q18 14 14 10 Z" fill="${C.red}"/><path d="M20 24 L20 36" stroke="${C.green}" stroke-width="1.5"/><path d="M20 30 Q14 28 12 34 Q16 36 20 30" fill="${C.green}"/></svg>`,
+  'кактус':`<svg viewBox="0 0 40 40"><rect x="16" y="10" width="8" height="26" rx="4" fill="${C.green}"/><rect x="8" y="18" width="8" height="4" rx="2" fill="${C.green}"/><rect x="8" y="14" width="4" height="10" rx="2" fill="${C.green}"/><rect x="24" y="22" width="8" height="4" rx="2" fill="${C.green}"/><rect x="28" y="16" width="4" height="10" rx="2" fill="${C.green}"/></svg>`,
+  'река':`<svg viewBox="0 0 40 40"><path d="M3 14 Q10 7 16 14 Q22 21 29 14 Q35 8 38 13" stroke="${C.blue}" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M3 25 Q10 18 16 25 Q22 32 29 25 Q35 19 38 24" stroke="${C.blue}" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`,
+
+  /* --- БЫТОВЫЕ --- */
+  'зонт':`<svg viewBox="0 0 40 40"><path d="M6 20 Q20 6 34 20 Q28 18 22 20 Q20 18 18 20 Q12 18 6 20 Z" fill="${C.red}"/><rect x="19" y="20" width="1.6" height="14" fill="${C.grayDark}"/><path d="M20.6 34 Q24 34 24 30" stroke="${C.grayDark}" stroke-width="1.5" fill="none"/></svg>`,
+  'ключ':`<svg viewBox="0 0 40 40"><circle cx="13" cy="14" r="6" fill="none" stroke="${C.yellow}" stroke-width="3"/><rect x="12" y="19" width="3" height="16" fill="${C.yellow}"/><rect x="15" y="27" width="6" height="2.5" fill="${C.yellow}"/><rect x="15" y="32" width="4" height="2.5" fill="${C.yellow}"/></svg>`,
+  'книга':`<svg viewBox="0 0 40 40"><path d="M8 8 Q14 6 20 8 L20 32 Q14 30 8 32 Z" fill="${C.blue}"/><path d="M32 8 Q26 6 20 8 L20 32 Q26 30 32 32 Z" fill="${C.blueDark}"/></svg>`,
+  'тетрадь':`<svg viewBox="0 0 40 40"><rect x="10" y="6" width="22" height="28" rx="1.5" fill="#fff" stroke="${C.grayDark}" stroke-width="1.2"/><rect x="8" y="6" width="5" height="28" fill="${C.green}"/><path d="M16 12 L28 12 M16 17 L28 17 M16 22 L28 22" stroke="${C.gray}" stroke-width=".8"/></svg>`,
+  'линейка':`<svg viewBox="0 0 40 40"><rect x="6" y="16" width="28" height="8" fill="${C.yellow}" stroke="${C.orangeDark}" stroke-width=".8"/><path d="M10 16 L10 20 M14 16 L14 20 M18 16 L18 20 M22 16 L22 20 M26 16 L26 20 M30 16 L30 20" stroke="${C.orangeDark}" stroke-width=".8"/></svg>`,
+  'кисть':`<svg viewBox="0 0 40 40"><rect x="18" y="4" width="4" height="18" rx="1" fill="${C.brown}"/><rect x="16" y="20" width="8" height="6" rx="1" fill="${C.gray}"/><path d="M16 26 L24 26 L22 36 L18 36 Z" fill="${C.red}"/></svg>`,
+  'иголка':`<svg viewBox="0 0 40 40"><path d="M10 32 L28 10" stroke="${C.gray}" stroke-width="2" stroke-linecap="round"/><circle cx="29" cy="9" r="2" fill="none" stroke="${C.gray}" stroke-width="1.5"/></svg>`,
+  'нитка':`<svg viewBox="0 0 40 40"><circle cx="20" cy="16" r="9" fill="none" stroke="${C.red}" stroke-width="4"/><path d="M20 25 Q16 30 20 34 Q26 36 28 32" stroke="${C.red}" stroke-width="1.5" fill="none"/></svg>`,
+  'свеча':`<svg viewBox="0 0 40 40"><rect x="16" y="16" width="8" height="20" fill="${C.blueLight}"/><path d="M20 8 Q17 12 20 16 Q23 12 20 8 Z" fill="${C.orange}"/><ellipse cx="20" cy="15" rx="4" ry="1" fill="${C.orangeDark}"/><rect x="14" y="35" width="12" height="2.5" rx="1" fill="${C.gray}"/></svg>`,
+  'зеркало':`<svg viewBox="0 0 40 40"><ellipse cx="20" cy="16" rx="11" ry="13" fill="${C.blueLight}"/><ellipse cx="20" cy="16" rx="9" ry="11" fill="#fff"/><path d="M16 10 Q14 16 16 22" stroke="${C.blueLight}" stroke-width="1.5" fill="none"/><rect x="18" y="29" width="4" height="6" fill="${C.brown}"/></svg>`,
+  'часы':`<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="14" fill="${C.grayLight}" stroke="${C.grayDark}" stroke-width="1.5"/><circle cx="20" cy="20" r="11" fill="#fff"/><path d="M20 20 L20 12 M20 20 L26 22" stroke="${C.grayDark}" stroke-width="1.8" stroke-linecap="round"/><circle cx="20" cy="20" r="1.2" fill="${C.grayDark}"/></svg>`,
+  'машина':`<svg viewBox="0 0 40 40"><path d="M4 26 L8 18 L32 18 L36 26 L36 30 L4 30 Z" fill="${C.blue}"/><rect x="10" y="14" width="20" height="6" rx="2" fill="${C.blueLight}"/><circle cx="12" cy="30" r="3" fill="${C.grayDark}"/><circle cx="28" cy="30" r="3" fill="${C.grayDark}"/></svg>`,
+  'автобус':`<svg viewBox="0 0 40 40"><rect x="4" y="12" width="32" height="18" rx="2" fill="${C.orange}"/><rect x="7" y="15" width="8" height="7" fill="#fff"/><rect x="17" y="15" width="8" height="7" fill="#fff"/><rect x="27" y="15" width="7" height="7" fill="#fff"/><circle cx="11" cy="32" r="3" fill="${C.grayDark}"/><circle cx="29" cy="32" r="3" fill="${C.grayDark}"/></svg>`,
+  'дорога':`<svg viewBox="0 0 40 40"><path d="M14 40 L18 0 L22 0 L26 40 Z" fill="${C.gray}"/><path d="M19 6 L21 6 M19 14 L21 14 M19 22 L21 22 M19 30 L21 30 M19 38 L21 38" stroke="#fff" stroke-width="1.5"/></svg>`,
+  'город':`<svg viewBox="0 0 40 40"><rect x="4" y="18" width="8" height="18" fill="${C.blue}"/><rect x="14" y="10" width="10" height="26" fill="${C.blueDark}"/><rect x="26" y="16" width="10" height="20" fill="${C.blue}"/><rect x="6" y="22" width="2" height="2" fill="#fff"/><rect x="10" y="22" width="2" height="2" fill="#fff"/><rect x="16" y="14" width="2" height="2" fill="#fff"/><rect x="20" y="14" width="2" height="2" fill="#fff"/><rect x="16" y="20" width="2" height="2" fill="#fff"/><rect x="20" y="20" width="2" height="2" fill="#fff"/><rect x="28" y="20" width="2" height="2" fill="#fff"/><rect x="32" y="20" width="2" height="2" fill="#fff"/></svg>`,
+
+  /* --- МЕБЕЛЬ --- */
+  'диван':`<svg viewBox="0 0 40 40"><rect x="6" y="18" width="28" height="14" rx="3" fill="${C.blue}"/><rect x="8" y="12" width="24" height="10" rx="3" fill="${C.blueLight}"/><rect x="4" y="22" width="5" height="12" rx="2" fill="${C.blueDark}"/><rect x="31" y="22" width="5" height="12" rx="2" fill="${C.blueDark}"/></svg>`,
+  'шкаф':`<svg viewBox="0 0 40 40"><rect x="8" y="6" width="24" height="30" rx="1.5" fill="${C.brown}"/><rect x="10" y="8" width="20" height="26" fill="${C.brownLight}"/><line x1="20" y1="8" x2="20" y2="34" stroke="${C.brownDark}" stroke-width="1"/><circle cx="18" cy="21" r="1" fill="${C.brownDark}"/><circle cx="22" cy="21" r="1" fill="${C.brownDark}"/></svg>`,
+  'стол':`<svg viewBox="0 0 40 40"><rect x="4" y="14" width="32" height="4" rx="1" fill="${C.brown}"/><rect x="8" y="18" width="3" height="18" fill="${C.brownDark}"/><rect x="29" y="18" width="3" height="18" fill="${C.brownDark}"/></svg>`,
+  'стул':`<svg viewBox="0 0 40 40"><rect x="10" y="6" width="4" height="26" fill="${C.brown}"/><rect x="10" y="6" width="20" height="3" fill="${C.brown}"/><rect x="10" y="14" width="20" height="3" fill="${C.brown}"/><rect x="10" y="24" width="20" height="3" fill="${C.brown}"/><rect x="26" y="14" width="4" height="18" fill="${C.brown}"/></svg>`,
+  'кресло':`<svg viewBox="0 0 40 40"><rect x="8" y="10" width="24" height="18" rx="3" fill="${C.red}"/><rect x="6" y="20" width="28" height="10" rx="3" fill="${C.red}"/><rect x="6" y="14" width="6" height="14" rx="2" fill="${C.red}"/><rect x="28" y="14" width="6" height="14" rx="2" fill="${C.red}"/><rect x="8" y="28" width="2" height="6" fill="${C.brownDark}"/><rect x="30" y="28" width="2" height="6" fill="${C.brownDark}"/></svg>`,
+  'полка':`<svg viewBox="0 0 40 40"><rect x="6" y="10" width="28" height="3" fill="${C.brown}"/><rect x="6" y="22" width="28" height="3" fill="${C.brown}"/><rect x="6" y="34" width="28" height="3" fill="${C.brown}"/><rect x="6" y="8" width="3" height="30" fill="${C.brownDark}"/><rect x="31" y="8" width="3" height="30" fill="${C.brownDark}"/></svg>`,
+  'табурет':`<svg viewBox="0 0 40 40"><ellipse cx="20" cy="14" rx="12" ry="3" fill="${C.brown}"/><rect x="8" y="14" width="24" height="4" fill="${C.brown}"/><rect x="10" y="18" width="3" height="18" fill="${C.brownDark}"/><rect x="27" y="18" width="3" height="18" fill="${C.brownDark}"/></svg>`,
+  'комод':`<svg viewBox="0 0 40 40"><rect x="8" y="8" width="24" height="28" rx="1" fill="${C.brown}"/><rect x="10" y="11" width="20" height="6" fill="${C.brownLight}"/><rect x="10" y="19" width="20" height="6" fill="${C.brownLight}"/><rect x="10" y="27" width="20" height="6" fill="${C.brownLight}"/><circle cx="20" cy="14" r=".8" fill="${C.brownDark}"/><circle cx="20" cy="22" r=".8" fill="${C.brownDark}"/><circle cx="20" cy="30" r=".8" fill="${C.brownDark}"/></svg>`,
+  'коврик':`<svg viewBox="0 0 40 40"><rect x="4" y="14" width="32" height="14" rx="2" fill="${C.red}"/><rect x="7" y="17" width="26" height="8" fill="${C.orangeLight}"/><path d="M10 21 L13 21 M17 21 L20 21 M24 21 L27 21" stroke="${C.red}" stroke-width="1"/></svg>`,
+  'вешалка':`<svg viewBox="0 0 40 40"><path d="M20 8 Q22 12 20 14" stroke="${C.grayDark}" stroke-width="1.5" fill="none"/><path d="M20 14 L4 28 L36 28 L20 14" fill="none" stroke="${C.brown}" stroke-width="2.5" stroke-linejoin="round"/></svg>`,
+
+  /* --- ЁМКОСТИ И БЫТОВОЕ --- */
+  'бутылка':`<svg viewBox="0 0 40 40"><path d="M17 6 L17 12 L15 15 L15 34 Q15 36 17 36 L23 36 Q25 36 25 34 L25 15 L23 12 L23 6 Z" fill="${C.green}"/><rect x="16" y="4" width="8" height="3" fill="${C.brown}"/></svg>`,
+  'корзина':`<svg viewBox="0 0 40 40"><path d="M8 16 L32 16 L29 34 L11 34 Z" fill="${C.brown}"/><path d="M8 16 L32 16" stroke="${C.brownDark}" stroke-width="2"/><path d="M14 16 Q20 8 26 16" stroke="${C.brownDark}" stroke-width="1.5" fill="none"/></svg>`,
+  'ведро':`<svg viewBox="0 0 40 40"><path d="M10 12 L30 12 L27 36 L13 36 Z" fill="${C.blueLight}"/><ellipse cx="20" cy="12" rx="10" ry="2" fill="${C.grayLight}"/><path d="M14 12 Q20 4 26 12" stroke="${C.grayDark}" stroke-width="1.5" fill="none"/></svg>`,
+  'ящик':`<svg viewBox="0 0 40 40"><rect x="6" y="12" width="28" height="22" fill="${C.brown}"/><rect x="6" y="12" width="28" height="22" fill="none" stroke="${C.brownDark}" stroke-width="1.5"/><line x1="6" y1="22" x2="34" y2="22" stroke="${C.brownDark}" stroke-width="1"/><line x1="20" y1="12" x2="20" y2="34" stroke="${C.brownDark}" stroke-width="1"/></svg>`,
+  'лампочка':`<svg viewBox="0 0 40 40"><circle cx="20" cy="16" r="10" fill="${C.yellow}"/><path d="M14 12 Q16 8 20 8" stroke="#fff" stroke-width="1.5" fill="none"/><rect x="17" y="26" width="6" height="3" fill="${C.grayDark}"/><rect x="18" y="29" width="4" height="4" fill="${C.grayDark}"/><rect x="17" y="33" width="6" height="2" fill="${C.grayDark}"/></svg>`,
+  'розетка':`<svg viewBox="0 0 40 40"><rect x="8" y="8" width="24" height="24" rx="3" fill="#fff" stroke="${C.grayDark}" stroke-width="1.5"/><circle cx="15" cy="20" r="2" fill="${C.grayDark}"/><circle cx="25" cy="20" r="2" fill="${C.grayDark}"/></svg>`
+};
+
+/* ============================================
+   ВЫБОР ИКОНКИ
+   ============================================ */
+
+function getWordIcon(word, small){
+  const iconCls = 'item-icon' + (small ? ' small' : '');
+  if(SVG_MAP[word]){
+    return `<span class="${iconCls}">${SVG_MAP[word]}</span>`;
+  }
+  if(EMOJI_MAP[word]){
+    return `<span class="${iconCls} emoji">${EMOJI_MAP[word]}</span>`;
+  }
+  return '';
+}
+
+/* ============================================
+   СЛОГИ
+   ============================================ */
+
+const VOWELS = 'аеёиоуыэюя';
+
+function splitSyllables(word){
+  const w = word.toLowerCase();
+  const vowels = [];
+  for(let i = 0; i < w.length; i++){
+    if(VOWELS.includes(w[i])) vowels.push(i);
+  }
+  if(vowels.length <= 1) return [w];
+
+  const parts = [];
+  let start = 0;
+
+  for(let v = 0; v < vowels.length - 1; v++){
+    const cur = vowels[v];
+    const next = vowels[v + 1];
+    const between = next - cur - 1;
+
+    if(between <= 1){
+      parts.push(w.slice(start, cur + 1));
+      start = cur + 1;
+    } else {
+      parts.push(w.slice(start, next - 1));
+      start = next - 1;
+    }
+  }
+  parts.push(w.slice(start));
+  return parts.filter(p => p.length);
+}
+
+function scrambleSyllables(syls){
+  if(syls.length <= 1) return null;
+  const orig = syls.join('-');
+  const arr = syls.slice();
+
+  for(let t = 0; t < 20; t++){
+    shuffleArr(arr);
+    if(arr.join('-') !== orig) return arr.slice();
+  }
+
+  if(arr.length >= 2){
+    return [arr[1], arr[0], ...arr.slice(2)];
+  }
+  return arr.slice();
+}
+
+/* ============================================
+   ХЕЛПЕРЫ
+   ============================================ */
+
+const el = id => document.getElementById(id);
+
+function shuffleArr(a){
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ============================================
+   ПЕРЕМЕШИВАНИЕ БУКВ
+   ============================================ */
+
+function applyTransform(word, level){
+  const arr = word.split("");
+  const n = arr.length;
+  if(n < 2) return word;
+
+  if(level === 1){
+    const cand = [];
+    for(let i = 0; i < n - 1; i++){
+      if(arr[i] !== arr[i + 1]) cand.push(i);
+    }
+    if(!cand.length) return word;
+    const i = cand[Math.floor(Math.random() * cand.length)];
+    [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
+    return arr.join("");
+  }
+
+  if(level === 2) return arr.slice().reverse().join("");
+
+  if(level === 3){
+    for(let i = 0; i + 1 < n; i += 2){
+      if(arr[i] !== arr[i + 1]) [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
+    }
+    return arr.join("");
+  }
+
+  if(level === 4){
+    if(n < 4) return applyTransform(word, 3);
+    const first = arr[0];
+    const last = arr[n - 1];
+    const mid = shuffleArr(arr.slice(1, -1));
+    return first + mid.join("") + last;
+  }
+
+  return shuffleArr(arr.slice()).join("");
+}
+
+function transformLetters(word, level){
+  let res = applyTransform(word, level);
+  if(res !== word) return res;
+  for(let lv = 1; lv <= 5; lv++){
+    for(let t = 0; t < 12; t++){
+      res = applyTransform(word, lv);
+      if(res !== word) return res;
+    }
+  }
+  return word;
+}
+
+/* ============================================
+   ОПИСАНИЯ
+   ============================================ */
+
+function levelDescription(lvl){
+  switch(lvl){
+    case 1: return "меняются местами две соседние буквы";
+    case 2: return "слово переворачивается целиком";
+    case 3: return "буквы меняются попарно";
+    case 4: return "перемешивается середина, первая и последняя буквы остаются на месте";
+    case 5: return "полный хаос — все буквы в случайном порядке";
+    default: return "";
+  }
+}
+
+function updateMixNote(){
+  const mode = el("mixMode").value;
+  const note = el("mixNote");
+  const lvl  = +el("level").value;
+
+  if(mode === "letters"){
+    note.textContent =
+      "Буквы: слово разбирается на буквы и перемешивается целиком. " +
+      "Сложность " + lvl + " — " + levelDescription(lvl) + ".";
+  } else {
+    note.textContent =
+      "Слоги: слово делится на слоги, и они меняются местами — например, " +
+      "«МО-ЛО-КО» → «КО-МО-ЛО». Если в слове один слог — оно автоматически " +
+      "перемешивается по буквам, как в режиме «Буквы».";
+  }
+}
+
+function updateLevelNote(){
+  const lvl = +el("level").value;
+  el("lvlNote").textContent = "Уровень " + lvl + ": " + levelDescription(lvl) + ".";
+}
+
+function updateLevelVisibility(){
+  const mode = el("mixMode").value;
+  el("levelBlock").style.display = (mode === "syllables") ? "none" : "";
+}
+
+/* ============================================
+   ФИЛЬТР ПО ДЛИНЕ
+   ============================================ */
+
+function filterByLength(list){
+  const mode = el("length").value;
+  if(mode === "all") return list;
+  const filtered = list.filter(w => {
+    const L = w.length;
+    if(mode === "short")  return L >= 4 && L <= 6;
+    if(mode === "medium") return L >= 7 && L <= 9;
+    if(mode === "long")   return L >= 10;
+    return true;
+  });
+  return filtered.length ? filtered : list;
+}
+
+/* ============================================
+   STATE
+   ============================================ */
+
+let items = [];
+let rawWords = [];
+
+/* ============================================
+   ГЕНЕРАЦИЯ
+   ============================================ */
+
+function pickWords(count){
+  const pool = shuffleArr([...filterByLength(WORDS)]);
+  const used = new Set();
+  const picked = [];
+
+  for(const w of pool){
+    if(picked.length >= count) break;
+    if(used.has(w)) continue;
+    used.add(w);
+    picked.push(w);
+  }
+  return picked;
+}
+
+function buildItems(words, level){
+  const mode = el("mixMode").value;
+
+  return words.map((w, i) => {
+    let display = "";
+    let isSyll = false;
+
+    if(mode === "syllables"){
+      const syls = splitSyllables(w);
+      if(syls.length >= 2){
+        const scrambled = scrambleSyllables(syls);
+        if(scrambled){
+          display = scrambled.join("-").toUpperCase();
+          isSyll = true;
+        }
+      }
+    }
+
+    if(!display){
+      let ang = transformLetters(w, level);
+      if(ang === w) ang = transformLetters(w, 5);
+      if(ang === w) ang = w.split("").reverse().join("");
+      display = ang.toUpperCase();
+    }
+
+    return { num: i + 1, word: w, anagram: display, isSyll };
+  });
+}
+
+function generate(){
+  const count = +el("count").value;
+  const level = +el("level").value;
+  rawWords = pickWords(count);
+  items = buildItems(rawWords, level);
+  render();
+}
+
+function reshuffle(){
+  if(!rawWords.length){ generate(); return; }
+  const level = +el("level").value;
+  items = buildItems(rawWords, level);
+  render();
+}
+
+/* ============================================
+   РЕНДЕР
+   ============================================ */
+
+function buildItemHtml(it){
+  const style   = el("answerStyle").value;
+  const hintOn  = el("optHint").checked;
+  const picsOn  = el("optPictures").checked;
+  const size    = +el("size").value;
+  const len     = it.word.length;
+
+  const scale = len > 10 ? 0.7 : len > 8 ? 0.82 : 1;
+  const bw = Math.round(size * scale);
+
+  const iconHtml = picsOn ? getWordIcon(it.word) : '';
+
+  let answer = "";
+  if(style === "boxes"){
+    let boxes = "";
+    for(let i = 0; i < len; i++){
+      const fill = (hintOn && i === 0) ? it.word[0].toUpperCase() : "";
+      boxes += `<span class="box">${fill}</span>`;
+    }
+    answer = `<span class="boxes" style="--bw:${bw}px">${boxes}</span>`;
+  } else if(style === "line"){
+    answer = `<span class="ans-line"></span>`;
+  }
+
+  const hintSpan = (hintOn && style !== "boxes")
+    ? `<span class="item-hint">${it.word[0].toUpperCase()}…</span>`
+    : "";
+
+  return `<div class="item">
+    <span class="item-num">${it.num}.</span>
+    ${iconHtml}
+    <span class="item-anagram${it.isSyll ? ' syll' : ''}">${it.anagram}</span>
+    ${hintSpan}
+    <span class="item-answer">${answer}</span>
+  </div>`;
+}
+
+function render(){
+  const size  = +el("size").value;
+  const cols  = +el("cols").value;
+  const title = el("titleInput").value.trim() || "Анаграммы";
+  const instr = el("instrInput").value.trim();
+
+  el("sheetTitle").textContent = title;
+  el("sheetInstruction").textContent = instr;
+  el("sheetInstruction").style.display = instr ? "" : "none";
+  el("sheetFields").style.display = el("optName").checked ? "" : "none";
+
+  const itemsEl = el("items");
+  itemsEl.style.setProperty("--cols", cols);
+  itemsEl.style.setProperty("--asize", size + "px");
+  itemsEl.innerHTML = items.map(buildItemHtml).join("");
+
+  const keySheet = el("keySheet");
+  const picsOn = el("optPictures").checked;
+
+  if(el("optKey").checked && items.length){
+    keySheet.style.display = "";
+    el("keyItems").innerHTML = items.map(it =>
+      `<div class="key-item">
+        <span class="key-num">${it.num}.</span>
+        ${picsOn ? getWordIcon(it.word, true) : ''}
+        <span class="key-word">${it.word.toUpperCase()}</span>
+      </div>`
+    ).join("");
+  } else {
+    keySheet.style.display = "none";
+  }
+}
+
+/* ============================================
+   UI
+   ============================================ */
+
+function goBack(){ location.href = "index.html"; }
+function togglePanel(){ el("panel").classList.toggle("hidden"); }
+
+el("count").addEventListener("input", e => {
+  el("countVal").textContent = e.target.value;
+});
+
+el("level").addEventListener("input", e => {
+  el("lvlVal").textContent = e.target.value;
+  updateLevelNote();
+  updateMixNote();
+  reshuffle();
+});
+
+el("cols").addEventListener("input", e => {
+  el("colsVal").textContent = e.target.value;
+  render();
+});
+
+el("size").addEventListener("input", e => {
+  el("sizeVal").textContent = e.target.value;
+  render();
+});
+
+el("length").addEventListener("change", generate);
+el("answerStyle").addEventListener("change", render);
+el("optHint").addEventListener("change", render);
+el("optKey").addEventListener("change", render);
+el("optName").addEventListener("change", render);
+el("optPictures").addEventListener("change", render);
+
+el("mixMode").addEventListener("change", e => {
+  updateLevelVisibility();
+  updateMixNote();
+  reshuffle();
+});
+
+el("titleInput").addEventListener("input", render);
+el("instrInput").addEventListener("input", render);
+
+/* ============================================
+   СТАРТ
+   ============================================ */
+
+updateLevelNote();
+updateLevelVisibility();
+updateMixNote();
+generate();
+
+</script>
+
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

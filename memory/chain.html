@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Цепочка слов - Мнемо-Арена</title>
+<style>
+  :root {
+    --blue: #2D6CDF; --blue-dark: #1E4FA8; --blue-light: #EBF2FF;
+    --orange: #FF8C42; --orange-dark: #E86E1F; --orange-light: #FFF2E5;
+    --bg: #F7F9FC; --text: #1F2937; --text-muted: #6B7280;
+    --border: #E5EAF2; --green: #22C55E; --red: #EF4444;
+    --yellow: #F59E0B; --purple: #A855F7; --purple-light: #F5EDFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, 'Nunito Sans', sans-serif;
+    background: var(--bg); min-height: 100vh; color: var(--text);
+    padding: 16px; overflow-x: hidden;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding: 16px 22px;
+    background: #fff; border-radius: 20px; border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(45,108,223,.06); flex-wrap: wrap; gap: 10px;
+  }
+  .back-btn {
+    width: 46px; height: 46px; border: none; border-radius: 14px;
+    background: var(--blue-light); color: var(--blue);
+    font-size: 22px; font-weight: 700; cursor: pointer; transition: .18s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .back-btn:hover { background: var(--blue); color: #fff; transform: translateY(-1px); }
+  h1 { font-size: 20px; letter-spacing: .5px; color: var(--blue-dark); font-weight: 800; }
+  .score-bar {
+    background: var(--orange); color: #fff;
+    padding: 8px 18px; border-radius: 30px; font-size: 14px;
+    font-weight: 700; box-shadow: 0 4px 12px rgba(255,140,66,.3);
+  }
+  .score-bar span { color: #fff; font-weight: 800; font-size: 17px; }
+  main { min-height: 520px; }
+  .game-header { text-align: center; margin-bottom: 20px; }
+  .game-header h2 { font-size: 22px; margin-bottom: 6px; color: var(--blue-dark); font-weight: 800; }
+  .subtitle { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+  .status {
+    text-align: center; font-size: 16px; margin: 16px 0;
+    min-height: 26px; font-weight: 700; color: var(--text); transition: .3s;
+  }
+  .status.good { color: #16A34A; }
+  .status.bad { color: #DC2626; }
+  .status.warn { color: var(--orange-dark); }
+  .panel {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 22px; padding: 26px;
+    box-shadow: 0 8px 24px rgba(45,108,223,.06);
+  }
+  .presets { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
+  .preset-btn {
+    flex: 1 1 auto; min-width: 90px; padding: 10px 8px;
+    border-radius: 12px; border: 2px solid var(--border);
+    background: #fff; color: var(--blue-dark);
+    font-weight: 700; font-size: 13px; cursor: pointer; transition: .18s; font-family: inherit;
+  }
+  .preset-btn:hover { border-color: var(--orange); color: var(--orange-dark); transform: translateY(-1px); }
+  .preset-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .segment { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .segment-btn {
+    flex: 1 1 auto; padding: 12px 10px; border-radius: 12px;
+    border: 2px solid var(--border); background: #fff; color: var(--blue-dark);
+    font-weight: 700; font-size: 13px; cursor: pointer; transition: .18s;
+    font-family: inherit; line-height: 1.25; min-width: 100px;
+  }
+  .segment-btn:hover { border-color: var(--orange); }
+  .segment-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .segment-btn small { display: block; font-size: 10px; opacity: .7; font-weight: 600; margin-top: 3px; }
+  .segment-btn.active small { opacity: .9; }
+
+  /* Цепочка показа */
+  .chain-row {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    align-items: center; justify-content: center;
+    margin: 24px 0; min-height: 60px;
+  }
+  .chain-word {
+    display: inline-flex; align-items: center;
+    padding: 12px 18px;
+    background: linear-gradient(145deg, var(--orange-light), var(--purple-light));
+    border: 2px solid var(--border); border-radius: 14px;
+    font-size: 20px; font-weight: 800; color: var(--blue-dark);
+    letter-spacing: 0.5px;
+    animation: wordIn .35s cubic-bezier(.34,1.56,.64,1) backwards;
+    transition: .15s;
+  }
+  @keyframes wordIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .chain-arrow {
+    font-size: 22px; color: var(--text-muted); font-weight: 800;
+    animation: wordIn .25s ease backwards;
+  }
+
+  /* Слоты */
+  .chain-slot {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 100px; min-height: 50px; padding: 12px 18px;
+    background: var(--bg); border: 2px dashed var(--border); border-radius: 14px;
+    font-size: 20px; font-weight: 800; color: var(--text-muted);
+    transition: .15s; user-select: none;
+  }
+  .chain-slot.filled {
+    background: var(--blue-light); border-style: solid; border-color: var(--blue);
+    color: var(--blue-dark); cursor: grab; touch-action: none;
+    animation: slotPop .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .chain-slot.filled:active { cursor: grabbing; }
+  @keyframes slotPop { from { transform: scale(.6); } to { transform: scale(1); } }
+  .chain-slot.next-target {
+    border-color: var(--orange); border-style: solid; background: var(--orange-light);
+    box-shadow: 0 0 0 4px rgba(255,140,66,.15);
+    animation: pulseSlot 1.5s infinite;
+  }
+  @keyframes pulseSlot {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(255,140,66,.15); }
+    50% { box-shadow: 0 0 0 8px rgba(255,140,66,.05); }
+  }
+  .chain-slot.drop-hover {
+    border-color: var(--orange); background: var(--orange-light); transform: scale(1.05);
+  }
+  .chain-slot.result-correct { background: #DCFCE7; border-color: var(--green); border-style: solid; }
+  .chain-slot.result-misplaced { background: #FEF3C7; border-color: var(--yellow); border-style: solid; }
+  .chain-slot.result-wrong { background: #FEE2E2; border-color: var(--red); border-style: solid; }
+
+  /* Пул */
+  .pool {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    padding: 16px; background: var(--bg); border-radius: 16px;
+    border: 2px solid var(--border); margin-bottom: 20px; min-height: 80px;
+    transition: .15s;
+  }
+  .pool.drop-hover { border-color: var(--orange); background: var(--orange-light); }
+  .pool-item {
+    display: inline-flex; align-items: center;
+    padding: 12px 18px;
+    background: #fff; border: 2px solid var(--border); border-radius: 12px;
+    font-size: 20px; font-weight: 800; color: var(--blue-dark);
+    cursor: grab; transition: .15s; user-select: none; touch-action: none;
+    animation: popIn .25s cubic-bezier(.34,1.56,.64,1);
+  }
+  .pool-item:hover { border-color: var(--orange); transform: translateY(-2px); box-shadow: 0 8px 18px rgba(255,140,66,.18); }
+  .pool-item:active { cursor: grabbing; }
+  .pool-item.dragging { opacity: .3; }
+  @keyframes popIn { from { transform: scale(.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .pool-empty-hint { text-align: center; color: var(--text-muted); font-weight: 700; font-size: 14px; padding: 20px; width: 100%; }
+
+  /* Drag-ghost */
+  .drag-ghost {
+    position: fixed; display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 800; color: var(--blue-dark);
+    background: var(--blue-light); border: 2px solid var(--blue); border-radius: 12px;
+    box-shadow: 0 14px 32px rgba(45,108,223,.35);
+    pointer-events: none; z-index: 9999;
+  }
+
+  /* Варианты */
+  .options-label {
+    text-align: center; font-size: 13px; color: var(--text-muted);
+    font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;
+    margin-bottom: 14px; margin-top: 10px;
+  }
+  .options-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 8px; }
+  .option-text {
+    padding: 20px 10px; font-size: 18px; font-weight: 800;
+    border-radius: 16px; background: #fff; border: 2px solid var(--border);
+    color: var(--blue-dark); cursor: pointer; transition: .15s;
+    text-align: center; user-select: none; word-break: break-word;
+    font-family: inherit; line-height: 1.25;
+    animation: popIn .3s cubic-bezier(.34,1.56,.64,1) backwards;
+  }
+  .option-text:hover { background: var(--blue-light); border-color: var(--blue); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(45,108,223,.15); }
+  .option-text:active { transform: translateY(0) scale(.97); }
+  .option-text.correct { background: #DCFCE7; border-color: var(--green); animation: pulseGreen .5s ease; }
+  @keyframes pulseGreen { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+  /* Настройки */
+  .settings-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 15px; color: var(--text); font-weight: 700; }
+  .settings-row b { color: var(--blue-dark); font-size: 16px; font-weight: 800; }
+  input[type="range"] { width: 100%; accent-color: #FF8C42; height: 26px; }
+  .slider-disabled { opacity: .35; pointer-events: none; }
+  .timer-bar { height: 10px; border-radius: 10px; background: var(--border); overflow: hidden; margin-bottom: 20px; }
+  .timer-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--yellow), var(--red)); transition: width 0.5s linear; width: 100%; }
+  .checkbox-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; cursor: pointer; font-weight: 700; }
+  .checkbox-row input { width: 20px; height: 20px; accent-color: #FF8C42; cursor: pointer; }
+
+  /* Кнопки */
+  .btn-main {
+    display: block; margin: 24px auto 0; padding: 16px 40px;
+    border-radius: 14px; border: none;
+    background: var(--orange); color: #fff;
+    font-size: 17px; font-weight: 800; cursor: pointer;
+    transition: .2s; letter-spacing: .5px;
+    box-shadow: 0 8px 20px rgba(255,140,66,.3); font-family: inherit;
+  }
+  .btn-main:hover { background: var(--orange-dark); transform: translateY(-2px); box-shadow: 0 12px 28px rgba(255,140,66,.4); }
+  .btn-main:active { transform: translateY(0); }
+  .btn-main:disabled { opacity: .4; cursor: default; transform: none !important; }
+  .btn-secondary {
+    display: block; margin: 8px auto 0; padding: 12px 30px;
+    border-radius: 14px; border: none;
+    background: transparent; color: var(--blue-dark);
+    font-size: 15px; font-weight: 700; cursor: pointer; transition: .2s; font-family: inherit;
+  }
+  .btn-secondary:hover { background: var(--blue-light); }
+
+  /* Результат */
+  .result-screen { text-align: center; padding: 20px 0; }
+  .result-screen .big { font-size: 72px; margin-bottom: 12px; animation: popIn .5s cubic-bezier(.34,1.56,.64,1); }
+  .result-screen h2 { font-size: 26px; margin-bottom: 10px; color: var(--blue-dark); font-weight: 800; }
+  .result-screen p { color: var(--text-muted); font-size: 16px; margin: 6px 0; font-weight: 600; }
+  .stars { font-size: 40px; margin: 20px 0; letter-spacing: 6px; }
+  .review-block { margin-top: 20px; padding: 18px; background: rgba(45,108,223,.05); border-radius: 14px; }
+  .review-block .label {
+    font-size: 12px; color: var(--text-muted); font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; text-align: center;
+  }
+  .review-answers { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 14px; }
+  .review-answers .ans {
+    display: flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 10px;
+    font-size: 18px; font-weight: 800; border: 2px solid;
+  }
+  .review-answers .ans.ok { background: #DCFCE7; border-color: var(--green); }
+  .review-answers .ans.wrong { background: #FEE2E2; border-color: var(--red); }
+
+  /* Двойная цепочка */
+  .double-block {
+    padding: 16px; border-radius: 16px; border: 2px solid var(--border);
+    margin-bottom: 16px; background: var(--bg);
+  }
+  .double-title {
+    font-size: 13px; font-weight: 800; color: var(--orange-dark);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+    text-align: center;
+  }
+
+  @media (max-width: 600px) {
+    .options-row { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 500px) {
+    .chain-word, .chain-slot, .pool-item { font-size: 16px; padding: 10px 12px; }
+    .chain-slot { min-width: 80px; min-height: 42px; }
+    .chain-arrow { font-size: 18px; }
+    .preset-btn { font-size: 12px; }
+    .segment-btn { font-size: 12px; padding: 10px 6px; }
+    .option-text { font-size: 15px; padding: 16px 8px; }
+    .drag-ghost { font-size: 16px; }
+  }
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <button class="back-btn" onclick="location.href='index.html'">←</button>
+    <h1>🧬 ЦЕПОЧКА СЛОВ</h1>
+    <div class="score-bar">Очки: <span id="globalScore">0</span></div>
+  </header>
+  <main id="game"></main>
+</div>
+
+<script>
+/* ============ УТИЛИТЫ ============ */
+const $ = id => document.getElementById(id);
+const gameEl = $('game');
+let globalScore = 0;
+$('globalScore').textContent = globalScore;
+function addScore(n) { globalScore += n; $('globalScore').textContent = globalScore; }
+
+function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+const rand = n => Math.floor(Math.random() * n);
+
+let timeouts = [];
+function wait(ms, fn) { const id = setTimeout(fn, ms); timeouts.push(id); return id; }
+function clearTimeouts() { timeouts.forEach(clearTimeout); timeouts = []; }
+
+let audioCtx = null;
+function initAudio() { if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} } }
+function beep(freq, dur = 0.15, type = 'sine', vol = 0.08) {
+  if (!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = type; osc.frequency.value = freq;
+    const t = audioCtx.currentTime;
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.start(t); osc.stop(t + dur + 0.02);
+  } catch(e) {}
+}
+function sfxCorrect() { beep(660, 0.1); setTimeout(() => beep(880, 0.15), 90); }
+function sfxWrong() { beep(180, 0.3, 'sawtooth', 0.12); }
+function sfxClick() { beep(440, 0.05, 'triangle', 0.06); }
+function sfxWin() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.2), i * 120)); }
+
+/* ============ БАЗА СЛОВ ============ */
+const WORDS_ANIMALS = [
+  'акула','баран','белка','ворона','выдра','дельфин','дрозд','енот','жираф','жук',
+  'заяц','зебра','змея','индюк','кот','кит','кобра','крот','кенгуру','лиса','лев',
+  'морж','носорог','орёл','овца','пингвин','петух','пони','панда','рыба','слон',
+  'собака','сова','свинья','страус','тигр','улитка','утка','уж','филин','фламинго',
+  'хомяк','хорёк','цапля','черепаха','чайка','шакал','щука','щенок','ящерица','ягуар','як',
+  'аист','антилопа','анаконда','овчарка','оса','ослик','окунь','удод','ёрш','ёж',
+  'иволга','ирбис','игуана','ехидна','эму','соболь','питон','тапир','тукан','фазан',
+  'форель','чибис','шимпанзе','ястреб','мышь','рысь','лань','гадюка','чечётка','соловей',
+  'альбатрос','оцелот','опоссум','удав'
+].filter(w => w.length <= 14);
+
+const WORDS_FOOD = [
+  'ананас','арбуз','абрикос','банан','батон','борщ','бекон','вафля','вишня','виноград',
+  'груша','гриб','горох','дыня','желе','жвачка','зефир','изюм','икра','котлета',
+  'каша','курица','лимон','лапша','мёд','манго','морс','нектар','огурец','орех',
+  'омлет','пицца','печенье','пончик','плов','пряник','рыба','рис','рогалик','сыр',
+  'суп','сок','сосиска','салат','суши','торт','тыква','тост','уха','финик',
+  'хлеб','халва','чеснок','чизкейк','шоколад','шашлык','шарлотка','эскимо','эклер',
+  'яблоко','ягода','яичница',
+  'апельсин','айва','алыча','арахис','ежевика','ирис','облепиха','овсянка','оливье',
+  'устрица','уксус','ячмень','омар','артишок','айран','эдамаме','эстрагон','ирга',
+  'ююба','юкола','эскалоп'
+].filter((w,i,a) => a.indexOf(w) === i && w.length <= 14);
+
+const WORDS_OBJECTS = [
+  'автобус','аквариум','барабан','балкон','браслет','ботинок','велосипед','веник','ведро','гитара',
+  'глобус','галстук','дневник','диван','духи','жакет','журнал','замок','зонт','зеркало',
+  'игла','игрушка','ковёр','карандаш','кувшин','ключ','кубик','кастрюля','книга','лампа',
+  'ложка','лопата','ластик','линейка','мяч','маска','метла','мешок','монета','носок',
+  'нож','нитка','обруч','окно','одеяло','очки','пенал','платок','пылесос','подушка',
+  'пуговица','ручка','рюкзак','ранец','стул','стакан','стена','свеча','сковорода','сапог',
+  'телефон','тарелка','телевизор','труба','утюг','указка','учебник','фонарик','футболка','фартук',
+  'холодильник','халат','цветок','чашка','чемодан','шапка','шарф','шкаф','швабра','шар',
+  'щётка','щит','экран','юбка','ящик',
+  'абажур','альбом','антенна','арфа','афиша','атлас','азбука','аптечка','арка','аптека',
+  'ожерелье','орнамент','открытка','обложка','оправа','отвёртка','упаковка','этажерка',
+  'этикетка','экскаватор','эскалатор','эполет','икона','инструмент','яхта','ярлык','якорь'
+].filter(w => w.length <= 14);
+
+const WORDS_NATURE = [
+  'аллея','берёза','берег','бревно','ветер','ветка','водопад','гора','гроза','дерево',
+  'дуб','долина','жара','закат','заря','звезда','ива','куст','кактус','канал',
+  'клён','лес','лист','лужа','луна','луг','море','мост','молния','небо',
+  'нора','озеро','облако','овраг','остров','поле','песок','пляж','пруд','радуга',
+  'река','роза','родник','солнце','снег','скала','сад','сосна','трава','туча',
+  'туман','улица','утро','утёс','фонтан','ферма','холм','хребет','чаща','черешня',
+  'шишка','экватор','яма','яблоня',
+  'астра','акация','апрель','аромат','атмосфера','осина','ольха','осока','опушка','отмель',
+  'ущелье','устье','иней','ельник','ель','яр','ясень','эвкалипт','эдельвейс','эфедра',
+  'источник','излучина','оазис','озерцо','обрыв','осыпь','яруга','ягель'
+].filter(w => w.length <= 14);
+
+const THEMES = {
+  animals: { name: 'Животные', emoji: '🐾', words: [...new Set(WORDS_ANIMALS)] },
+  food:    { name: 'Еда',      emoji: '🍕', words: [...new Set(WORDS_FOOD)] },
+  objects: { name: 'Предметы', emoji: '🪑', words: [...new Set(WORDS_OBJECTS)] },
+  nature:  { name: 'Природа',  emoji: '🌳', words: [...new Set(WORDS_NATURE)] },
+  mix:     { name: 'Микс',     emoji: '🎲', words: [...new Set([...WORDS_ANIMALS, ...WORDS_FOOD, ...WORDS_OBJECTS, ...WORDS_NATURE])] }
+};
+
+const ALL_WORDS = THEMES.mix.words;
+
+/* ============ ПОСТРОЕНИЕ ЦЕПОЧКИ ============ */
+/* Теперь просто случайная выборка N уникальных слов — без правила «по буквам» */
+function buildChain(length, pool, usedWords = new Set()) {
+  const available = pool.filter(w => !usedWords.has(w));
+  if (available.length < length) return null;
+  return shuffle(available).slice(0, length);
+}
+
+/* ============ DRAG & DROP ============ */
+let drag = null;
+function attachDrag(el, item, sourceType, sourceIdx, onDrop) {
+  el.addEventListener('pointerdown', e => {
+    if (e.button !== undefined && e.button !== 0) return;
+    e.preventDefault();
+    const rect = el.getBoundingClientRect();
+    drag = {
+      item, sourceType, sourceIdx, element: el,
+      startX: e.clientX, startY: e.clientY,
+      offsetX: e.clientX - rect.left, offsetY: e.clientY - rect.top,
+      width: rect.width, height: rect.height,
+      ghost: null, hasMoved: false, onDrop
+    };
+    el.setPointerCapture(e.pointerId);
+    el.addEventListener('pointermove', onDragMove);
+    el.addEventListener('pointerup', onDragEnd);
+    el.addEventListener('pointercancel', onDragEnd);
+  });
+}
+function onDragMove(e) {
+  if (!drag) return;
+  const dx = e.clientX - drag.startX, dy = e.clientY - drag.startY;
+  if (!drag.hasMoved) {
+    if (Math.sqrt(dx*dx + dy*dy) < 6) return;
+    drag.hasMoved = true;
+    const ghost = document.createElement('div');
+    ghost.className = 'drag-ghost';
+    ghost.textContent = drag.item;
+    ghost.style.width = drag.width + 'px';
+    ghost.style.height = drag.height + 'px';
+    ghost.style.left = (e.clientX - drag.offsetX) + 'px';
+    ghost.style.top = (e.clientY - drag.offsetY) + 'px';
+    document.body.appendChild(ghost);
+    drag.ghost = ghost;
+    drag.element.classList.add('dragging');
+    beep(520, 0.04, 'triangle', 0.05);
+  }
+  if (drag.ghost) {
+    drag.ghost.style.left = (e.clientX - drag.offsetX) + 'px';
+    drag.ghost.style.top = (e.clientY - drag.offsetY) + 'px';
+  }
+  document.querySelectorAll('.drop-hover').forEach(x => x.classList.remove('drop-hover'));
+  if (drag.ghost) drag.ghost.style.display = 'none';
+  const under = document.elementFromPoint(e.clientX, e.clientY);
+  if (drag.ghost) drag.ghost.style.display = '';
+  if (under) {
+    const slot = under.closest('.chain-slot');
+    const pool = under.closest('.pool');
+    if (slot) slot.classList.add('drop-hover');
+    else if (pool) pool.classList.add('drop-hover');
+  }
+}
+function onDragEnd(e) {
+  if (!drag) return;
+  const d = drag;
+  drag = null;
+  d.element.removeEventListener('pointermove', onDragMove);
+  d.element.removeEventListener('pointerup', onDragEnd);
+  d.element.removeEventListener('pointercancel', onDragEnd);
+  try { d.element.releasePointerCapture(e.pointerId); } catch(err) {}
+  if (d.ghost) d.ghost.remove();
+  document.querySelectorAll('.drop-hover').forEach(x => x.classList.remove('drop-hover'));
+  d.element.classList.remove('dragging');
+  if (!d.hasMoved) return;
+  const under = document.elementFromPoint(e.clientX, e.clientY);
+  const targetSlot = under ? under.closest('.chain-slot') : null;
+  const targetPool = under ? under.closest('.pool') : null;
+  if (d.onDrop) d.onDrop(d, targetSlot, targetPool);
+}
+
+/* ============ НАСТРОЙКИ ============ */
+let chainCfg = {
+  mode: 'step',
+  reverse: false,
+  length: 4,
+  showTime: 12,
+  theme: 'mix'
+};
+try {
+  const s = localStorage.getItem('chainCfg');
+  if (s) chainCfg = { ...chainCfg, ...JSON.parse(s) };
+} catch(e) {}
+
+/* ============ ЭКРАН НАСТРОЕК ============ */
+function startChain() {
+  clearTimeouts();
+  drag = null;
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🧬 Цепочка слов</h2>
+      <div class="subtitle">Запомни слова и их порядок</div>
+    </div>
+    <div class="panel">
+      <div style="max-width: 500px; margin: 0 auto;">
+
+        <div class="presets" id="presets">
+          <button class="preset-btn" data-mode="step" data-len="4" data-time="12">⚡ Пошаговая</button>
+          <button class="preset-btn" data-mode="build" data-len="5" data-time="12">🏗 Сборка</button>
+          <button class="preset-btn" data-mode="step" data-len="5" data-time="10">🔄 Реверс</button>
+          <button class="preset-btn" data-mode="double" data-len="4" data-time="15">🧠 Двойная</button>
+          <button class="preset-btn" data-mode="build" data-len="12" data-time="25">📚 Длинная</button>
+        </div>
+
+        <div style="margin-bottom: 22px;">
+          <div class="settings-row"><span>Режим игры</span><b id="modeVal">Пошаговая</b></div>
+          <div class="segment" id="modeRow" style="flex-direction: column;">
+            <button class="segment-btn" data-mode="step" style="text-align:left; padding: 14px 16px;">
+              ⚡ Пошаговая<small>выбор из 4 вариантов на каждое слово</small>
+            </button>
+            <button class="segment-btn" data-mode="build" style="text-align:left; padding: 14px 16px;">
+              🏗 Сборка<small>вся цепочка сразу — тяни слова в слоты, есть помехи</small>
+            </button>
+            <button class="segment-btn" data-mode="double" style="text-align:left; padding: 14px 16px;">
+              🧠 Двойная<small>две цепочки одновременно, собери обе</small>
+            </button>
+          </div>
+        </div>
+
+        <label class="checkbox-row" id="reverseRow">
+          <input type="checkbox" id="reverseCheck" ${chainCfg.reverse ? 'checked' : ''}>
+          <span>🔄 Режим реверса — собирать в обратном порядке</span>
+        </label>
+
+        <label style="display:block; margin-bottom: 20px;">
+          <div class="settings-row"><span>Слов в цепочке</span><b id="lenVal">${chainCfg.length}</b></div>
+          <input type="range" id="lenRange" min="3" max="15" value="${chainCfg.length}">
+        </label>
+
+        <label style="display:block; margin-bottom: 20px;">
+          <div class="settings-row"><span>Время показа</span><b id="timeVal">${chainCfg.showTime} сек</b></div>
+          <input type="range" id="timeRange" min="3" max="40" value="${chainCfg.showTime}">
+        </label>
+
+        <div style="margin-bottom: 20px;">
+          <div class="settings-row"><span>Тема слов</span><b id="themeVal">микс</b></div>
+          <div class="segment" id="themeRow" style="flex-wrap: wrap;">
+            ${Object.keys(THEMES).map(k => {
+              const t = THEMES[k];
+              return `<button class="segment-btn ${k === chainCfg.theme ? 'active' : ''}" data-theme="${k}">
+                ${t.emoji} ${t.name}<small>${t.words.length} слов</small>
+              </button>`;
+            }).join('')}
+          </div>
+        </div>
+
+        <div class="subtitle" style="text-align:left; padding: 14px; background: var(--blue-light); border-radius: 12px; line-height: 1.5;">
+          💡 <b>Как играть:</b> увидишь случайную цепочку слов — запомни их и порядок.
+          <br>⚡ <b>Пошаговая</b> — выбирай слово за словом из 4 вариантов.
+          <br>🏗 <b>Сборка</b> — перетаскивай все слова в слоты. В пуле есть лишние — их не трогай.
+          <br>🧠 <b>Двойная</b> — две цепочки сразу, собери обе.
+          <br>🔄 <b>Реверс</b> — собери в обратном порядке.
+          <br>📚 <b>Длинная</b> — пресет на 12 слов, для тренировки памяти.
+          <br><b>База:</b> около 350 слов по 4 темам + микс. Чем длиннее цепочка, тем сложнее.
+        </div>
+
+        <button class="btn-main" id="startBtn">Начать 🧬</button>
+      </div>
+    </div>
+  `;
+
+  const lenRange = $('lenRange');
+  const timeRange = $('timeRange');
+
+  function updateModeUI() {
+    const names = { step: 'Пошаговая', build: 'Сборка', double: 'Двойная' };
+    $('modeVal').textContent = names[chainCfg.mode];
+    gameEl.querySelectorAll('#modeRow .segment-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === chainCfg.mode);
+    });
+    const revRow = $('reverseRow');
+    if (chainCfg.mode === 'double') {
+      revRow.classList.add('slider-disabled');
+    } else {
+      revRow.classList.remove('slider-disabled');
+    }
+  }
+  function updateThemeUI() {
+    $('themeVal').textContent = THEMES[chainCfg.theme].name.toLowerCase();
+    gameEl.querySelectorAll('#themeRow .segment-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.theme === chainCfg.theme);
+    });
+  }
+  function markPresetActive() {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.preset-btn').forEach(b => {
+      if (b.dataset.mode === chainCfg.mode &&
+          +b.dataset.len === +lenRange.value &&
+          +b.dataset.time === +timeRange.value) {
+        if (b.textContent.includes('Реверс')) {
+          if (chainCfg.reverse) b.classList.add('active');
+        } else if (!chainCfg.reverse) {
+          b.classList.add('active');
+        }
+      }
+    });
+  }
+
+  gameEl.querySelectorAll('#modeRow .segment-btn').forEach(b => {
+    b.onclick = () => {
+      chainCfg.mode = b.dataset.mode;
+      updateModeUI();
+      markPresetActive();
+      sfxClick();
+    };
+  });
+  gameEl.querySelectorAll('#themeRow .segment-btn').forEach(b => {
+    b.onclick = () => {
+      chainCfg.theme = b.dataset.theme;
+      updateThemeUI();
+      sfxClick();
+    };
+  });
+  $('reverseCheck').onchange = e => {
+    chainCfg.reverse = e.target.checked;
+    markPresetActive();
+    sfxClick();
+  };
+
+  document.querySelectorAll('.preset-btn').forEach(b => {
+    b.onclick = () => {
+      chainCfg.mode = b.dataset.mode;
+      chainCfg.reverse = b.textContent.includes('Реверс');
+      lenRange.value = b.dataset.len;
+      timeRange.value = b.dataset.time;
+      $('lenVal').textContent = b.dataset.len;
+      $('timeVal').textContent = b.dataset.time + ' сек';
+      $('reverseCheck').checked = chainCfg.reverse;
+      updateModeUI();
+      markPresetActive();
+      sfxClick();
+    };
+  });
+
+  lenRange.oninput = () => { $('lenVal').textContent = lenRange.value; markPresetActive(); sfxClick(); };
+  timeRange.oninput = () => { $('timeVal').textContent = timeRange.value + ' сек'; markPresetActive(); sfxClick(); };
+
+  updateModeUI();
+  updateThemeUI();
+  markPresetActive();
+
+  $('startBtn').onclick = () => {
+    chainCfg.length = +lenRange.value;
+    chainCfg.showTime = +timeRange.value;
+    try { localStorage.setItem('chainCfg', JSON.stringify(chainCfg)); } catch(e) {}
+    chainShow();
+  };
+}
+
+/* ============ ФАЗА 1: ПОКАЗ ============ */
+function chainShow() {
+  clearTimeouts();
+  drag = null;
+
+  const mode = chainCfg.mode;
+  const showTime = chainCfg.showTime;
+  const theme = THEMES[chainCfg.theme];
+
+  let chains = [];
+  if (mode === 'double') {
+    const used = new Set();
+    const chain1 = buildChain(chainCfg.length, theme.words, used);
+    if (!chain1) { alert('В этой теме не хватает слов для цепочки такой длины'); return; }
+    chain1.forEach(w => used.add(w));
+    const chain2 = buildChain(chainCfg.length, theme.words, used);
+    if (!chain2) { alert('В этой теме не хватает слов для двух цепочек такой длины'); return; }
+    chains = [chain1, chain2];
+  } else {
+    const chain = buildChain(chainCfg.length, theme.words);
+    if (!chain) { alert('В этой теме не хватает слов для цепочки такой длины'); return; }
+    chains = [chain];
+  }
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🧬 Цепочка слов</h2>
+      <div class="subtitle">
+        ${mode === 'double' ? 'Две цепочки — запомни обе' : 'Запоминай слова и порядок'}
+        ${chainCfg.reverse && mode !== 'double' ? ' · 🔄 реверс' : ''}
+        · <span id="time">${showTime}</span> сек
+      </div>
+    </div>
+    <div class="panel">
+      <div class="timer-bar"><div class="timer-fill" id="tfill" style="width:100%"></div></div>
+      <div class="status warn">Запоминай слова по порядку</div>
+      ${chains.map((chain, ci) => `
+        ${mode === 'double' ? `<div class="double-title">Цепочка ${ci + 1}</div>` : ''}
+        <div class="chain-row" id="chainRow${ci}"></div>
+      `).join('')}
+    </div>
+  `;
+
+  chains.forEach((chain, ci) => {
+    const row = $('chainRow' + ci);
+    chain.forEach((word, i) => {
+      const isLast = i === chain.length - 1;
+      const el = document.createElement('div');
+      el.className = 'chain-word';
+      el.style.animationDelay = (i * 0.18) + 's';
+      el.textContent = word;
+      row.appendChild(el);
+      if (!isLast) {
+        const arrow = document.createElement('div');
+        arrow.className = 'chain-arrow';
+        arrow.textContent = '→';
+        arrow.style.animationDelay = (i * 0.18 + 0.1) + 's';
+        row.appendChild(arrow);
+      }
+      wait(i * 180 + 80 + ci * 120, () => beep(400 + i * 40, 0.08));
+    });
+  });
+
+  let left = showTime;
+  const intervalId = setInterval(() => {
+    left--;
+    const t = $('time'); if (t) t.textContent = Math.max(0, left);
+    const f = $('tfill'); if (f) f.style.width = (Math.max(0, left) / showTime * 100) + '%';
+    if (left <= 0) clearInterval(intervalId);
+  }, 1000);
+  timeouts.push(intervalId);
+
+  wait(showTime * 1000, () => {
+    if (mode === 'step') chainStep(chains[0]);
+    else if (mode === 'build') chainBuild(chains[0]);
+    else chainDouble(chains[0], chains[1]);
+  });
+}
+
+/* ============ РЕЖИМ 1: ПОШАГОВАЯ ============ */
+function chainStep(chain) {
+  clearTimeouts();
+  const rev = !!chainCfg.reverse;
+  const targetChain = rev ? [...chain].reverse() : chain;
+  const count = targetChain.length;
+  const userChain = Array(count).fill(null);
+  userChain[0] = targetChain[0];
+  let activeSlot = 1;
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🧬 Цепочка слов</h2>
+      <div class="subtitle" id="progressLine">Позиция 2 из ${count}${rev ? ' · 🔄 реверс' : ''}</div>
+    </div>
+    <div class="panel">
+      <div class="status" id="status">Какое слово было дальше?</div>
+      <div class="chain-row" id="chainRow"></div>
+      <div class="options-label" id="optionsLabel">Варианты:</div>
+      <div class="options-row" id="optionsRow"></div>
+    </div>
+  `;
+
+  const chainRow = $('chainRow');
+  const optionsRow = $('optionsRow');
+  const optionsLabel = $('optionsLabel');
+  const progressLine = $('progressLine');
+  const statusEl = $('status');
+
+  function renderChain() {
+    chainRow.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const isLast = i === count - 1;
+      const slot = document.createElement('div');
+      slot.className = 'chain-slot';
+      if (userChain[i]) {
+        slot.classList.add('filled');
+        slot.textContent = userChain[i];
+      } else {
+        slot.innerHTML = `<span style="opacity:.35">?</span>`;
+        if (i === activeSlot) slot.classList.add('next-target');
+      }
+      chainRow.appendChild(slot);
+      if (!isLast) {
+        const arrow = document.createElement('div');
+        arrow.className = 'chain-arrow';
+        arrow.textContent = '→';
+        chainRow.appendChild(arrow);
+      }
+    }
+  }
+
+  function renderOptions() {
+    optionsRow.innerHTML = '';
+    if (activeSlot >= count) { checkResult(); return; }
+
+    optionsLabel.textContent = `Варианты для позиции ${activeSlot + 1}`;
+    progressLine.textContent = `Позиция ${activeSlot + 1} из ${count}${rev ? ' · 🔄 реверс' : ''}`;
+    statusEl.textContent = rev ? 'Какое слово было раньше?' : 'Какое слово было дальше?';
+    statusEl.className = 'status';
+
+    let noErrorsSoFar = true;
+    for (let i = 0; i < activeSlot; i++) {
+      if (userChain[i] !== targetChain[i]) { noErrorsSoFar = false; break; }
+    }
+
+    const tgt = targetChain[activeSlot];
+    const correct = noErrorsSoFar && tgt ? tgt : null;
+
+    // Обманки — любые слова из всей базы, не из цепочки
+    const decoyPool = ALL_WORDS.filter(w => !targetChain.includes(w) && !userChain.includes(w));
+    const decoys = shuffle(decoyPool).slice(0, 3);
+    let options = correct ? shuffle([correct, ...decoys]) : shuffle(decoys).slice(0, 4);
+    while (options.length < 3) options.push('—');
+
+    options.forEach((word, idx) => {
+      const opt = document.createElement('div');
+      opt.className = 'option-text';
+      opt.textContent = word;
+      opt.style.animationDelay = (idx * 0.06) + 's';
+      opt.onclick = () => selectWord(word, opt, correct);
+      optionsRow.appendChild(opt);
+    });
+  }
+
+  function selectWord(word, el, correct) {
+    if (word === '—') return;
+    optionsRow.querySelectorAll('.option-text').forEach(x => x.style.pointerEvents = 'none');
+    if (correct) {
+      optionsRow.querySelectorAll('.option-text').forEach(x => {
+        if (x.textContent === correct && x !== el) x.classList.add('correct');
+      });
+    }
+    if (word === correct) { el.classList.add('correct'); sfxCorrect(); addScore(5); }
+    else sfxWrong();
+    userChain[activeSlot] = word;
+    wait(700, () => {
+      activeSlot++;
+      renderChain();
+      renderOptions();
+    });
+  }
+
+  function checkResult() {
+    let correctPos = 0, correctItems = 0;
+    for (let i = 0; i < count; i++) {
+      if (userChain[i] === targetChain[i]) correctPos++;
+    }
+    const remaining = [...targetChain];
+    for (let i = 0; i < count; i++) {
+      const s = userChain[i];
+      if (s) {
+        const idx = remaining.indexOf(s);
+        if (idx !== -1) { correctItems++; remaining.splice(idx, 1); }
+      }
+    }
+    chainRow.querySelectorAll('.chain-slot').forEach((el, i) => {
+      el.classList.remove('next-target');
+      if (userChain[i] === targetChain[i]) el.classList.add('result-correct');
+      else if (userChain[i] && targetChain.includes(userChain[i])) el.classList.add('result-misplaced');
+      else el.classList.add('result-wrong');
+    });
+
+    let emoji, title, text, stars, points;
+    if (correctPos === count) {
+      emoji = '🏆'; title = 'Идеально!'; text = `Вся цепочка из ${count} слов восстановлена`; stars = 3; points = 50; sfxWin();
+    } else if (correctItems === count) {
+      emoji = '🎖️'; title = 'Почти'; text = `Все слова вспомнил, но порядок перепутан`; stars = 2; points = 30; sfxCorrect();
+    } else if (correctItems >= Math.ceil(count / 2)) {
+      emoji = '🔍'; title = 'Что-то забыл'; text = `Вспомнил ${correctItems} из ${count}`; stars = 1; points = 15; sfxCorrect();
+    } else {
+      emoji = '🌀'; title = 'Цепочка рассыпалась'; text = `Только ${correctItems} из ${count}`; stars = 0; points = 5; sfxWrong();
+    }
+    addScore(points);
+    wait(1000, () => chainResult({ emoji, title, text, stars, points, chain: targetChain, history: userChain.map((s, i) => s === targetChain[i]) }));
+  }
+
+  renderChain();
+  renderOptions();
+}
+
+/* ============ РЕЖИМ 2: СБОРКА С ПОМЕХАМИ ============ */
+function chainBuild(chain) {
+  clearTimeouts();
+  drag = null;
+  const rev = !!chainCfg.reverse;
+  const targetChain = rev ? [...chain].reverse() : chain;
+  const count = targetChain.length;
+
+  // Помехи — просто случайные слова не из цепочки
+  const decoyCount = Math.max(2, Math.min(4, Math.round(count / 3)));
+  const decoyPool = ALL_WORDS.filter(w => !targetChain.includes(w));
+  const decoys = shuffle(decoyPool).slice(0, decoyCount);
+
+  const pool = shuffle([...targetChain, ...decoys]);
+  const userSlots = Array(count).fill(null);
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🧬 Цепочка слов</h2>
+      <div class="subtitle">Собери всю цепочку${rev ? ' · 🔄 реверс' : ''}</div>
+    </div>
+    <div class="panel">
+      <div class="status" id="status">Перетаскивай слова в слоты по порядку. Слова-помехи в пуле — не трогай.</div>
+      <div class="chain-row" id="chainRow"></div>
+      <div class="options-label">Пул слов</div>
+      <div class="pool" id="pool"></div>
+      <button class="btn-main" id="checkBtn">Проверить ✓</button>
+    </div>
+  `;
+
+  const chainRow = $('chainRow');
+  const poolEl = $('pool');
+  const checkBtn = $('checkBtn');
+
+  function handleDrop(state, targetSlot, targetPool) {
+    if (!targetSlot && !targetPool) return;
+    const sourceType = state.sourceType;
+    const sourceIdx = state.sourceIdx;
+
+    if (sourceType === 'pool') {
+      pool.splice(sourceIdx, 1);
+    } else {
+      userSlots[sourceIdx] = null;
+    }
+
+    if (targetSlot) {
+      const targetIdx = +targetSlot.dataset.idx;
+      const existing = userSlots[targetIdx];
+      userSlots[targetIdx] = state.item;
+      if (existing) {
+        if (sourceType === 'pool') pool.push(existing);
+        else userSlots[sourceIdx] = existing;
+      }
+    } else if (targetPool) {
+      if (sourceType === 'slot') pool.push(state.item);
+      else pool.splice(sourceIdx, 0, state.item);
+    }
+    beep(620, 0.06, 'triangle', 0.07);
+    renderAll();
+  }
+
+  function renderAll() {
+    chainRow.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const isLast = i === count - 1;
+      const slot = document.createElement('div');
+      slot.className = 'chain-slot' + (userSlots[i] ? ' filled' : '');
+      slot.dataset.idx = i;
+      if (userSlots[i]) {
+        slot.textContent = userSlots[i];
+        attachDrag(slot, userSlots[i], 'slot', i, handleDrop);
+      } else {
+        slot.innerHTML = `<span style="opacity:.35">?</span>`;
+      }
+      chainRow.appendChild(slot);
+      if (!isLast) {
+        const arrow = document.createElement('div');
+        arrow.className = 'chain-arrow';
+        arrow.textContent = '→';
+        chainRow.appendChild(arrow);
+      }
+    }
+    poolEl.innerHTML = '';
+    if (pool.length === 0) {
+      poolEl.innerHTML = '<div class="pool-empty-hint">Пул пуст</div>';
+    } else {
+      pool.forEach((item, idx) => {
+        const p = document.createElement('div');
+        p.className = 'pool-item';
+        p.textContent = item;
+        attachDrag(p, item, 'pool', idx, handleDrop);
+        poolEl.appendChild(p);
+      });
+    }
+  }
+  renderAll();
+
+  checkBtn.onclick = () => {
+    const filledAll = userSlots.every(s => s !== null);
+    let correctPos = 0, correctItems = 0;
+    for (let i = 0; i < count; i++) if (userSlots[i] === targetChain[i]) correctPos++;
+    const remaining = [...targetChain];
+    for (let i = 0; i < count; i++) {
+      const u = userSlots[i];
+      if (u) {
+        const idx = remaining.indexOf(u);
+        if (idx !== -1) { correctItems++; remaining.splice(idx, 1); }
+      }
+    }
+    chainRow.querySelectorAll('.chain-slot').forEach((el, i) => {
+      el.onclick = null;
+      if (userSlots[i] === targetChain[i]) el.classList.add('result-correct');
+      else if (userSlots[i] && targetChain.includes(userSlots[i])) el.classList.add('result-misplaced');
+      else el.classList.add('result-wrong');
+    });
+
+    let emoji, title, text, stars, points;
+    if (correctPos === count && filledAll) {
+      emoji = '🏆'; title = 'Идеально!'; text = `Вся цепочка из ${count} слов собрана`; stars = 3; points = 60; sfxWin();
+    } else if (correctItems === count) {
+      emoji = '🎖️'; title = 'Почти'; text = `Все слова на месте, но порядок перепутан`; stars = 2; points = 35; sfxCorrect();
+    } else if (correctItems >= Math.ceil(count / 2)) {
+      emoji = '🔍'; title = 'Что-то забыл'; text = `Правильно: ${correctItems} из ${count}`; stars = 1; points = 20; sfxCorrect();
+    } else {
+      emoji = '🌀'; title = 'Цепочка рассыпалась'; text = `Правильно только ${correctItems} из ${count}`; stars = 0; points = 5; sfxWrong();
+    }
+    addScore(points);
+    wait(1200, () => chainResult({ emoji, title, text, stars, points, chain: targetChain, history: userSlots.map((s, i) => s === targetChain[i]) }));
+  };
+}
+
+/* ============ РЕЖИМ 3: ДВОЙНАЯ ЦЕПОЧКА ============ */
+function chainDouble(chain1, chain2) {
+  clearTimeouts();
+  drag = null;
+
+  function buildOne(chain, chainNum, onDone) {
+    const userSlots = Array(chain.length).fill(null);
+    const pool = shuffle([...chain]);
+
+    gameEl.innerHTML = `
+      <div class="game-header">
+        <h2>🧬 Двойная цепочка</h2>
+        <div class="subtitle">Собираем цепочку ${chainNum} из 2</div>
+      </div>
+      <div class="panel">
+        <div class="status">Перетаскивай слова в слоты по порядку</div>
+        <div class="chain-row" id="chainRow"></div>
+        <div class="options-label">Пул слов</div>
+        <div class="pool" id="pool"></div>
+        <button class="btn-main" id="checkBtn">Проверить ✓</button>
+      </div>
+    `;
+
+    const chainRow = $('chainRow');
+    const poolEl = $('pool');
+    const checkBtn = $('checkBtn');
+
+    function handleDrop(state, targetSlot, targetPool) {
+      if (!targetSlot && !targetPool) return;
+      if (state.sourceType === 'pool') pool.splice(state.sourceIdx, 1);
+      else userSlots[state.sourceIdx] = null;
+
+      if (targetSlot) {
+        const targetIdx = +targetSlot.dataset.idx;
+        const existing = userSlots[targetIdx];
+        userSlots[targetIdx] = state.item;
+        if (existing) {
+          if (state.sourceType === 'pool') pool.push(existing);
+          else userSlots[state.sourceIdx] = existing;
+        }
+      } else if (targetPool) {
+        if (state.sourceType === 'slot') pool.push(state.item);
+        else pool.splice(state.sourceIdx, 0, state.item);
+      }
+      beep(620, 0.06, 'triangle', 0.07);
+      renderAll();
+    }
+
+    function renderAll() {
+      chainRow.innerHTML = '';
+      for (let i = 0; i < chain.length; i++) {
+        const isLast = i === chain.length - 1;
+        const slot = document.createElement('div');
+        slot.className = 'chain-slot' + (userSlots[i] ? ' filled' : '');
+        slot.dataset.idx = i;
+        if (userSlots[i]) {
+          slot.textContent = userSlots[i];
+          attachDrag(slot, userSlots[i], 'slot', i, handleDrop);
+        } else {
+          slot.innerHTML = `<span style="opacity:.35">?</span>`;
+        }
+        chainRow.appendChild(slot);
+        if (!isLast) {
+          const arrow = document.createElement('div');
+          arrow.className = 'chain-arrow';
+          arrow.textContent = '→';
+          chainRow.appendChild(arrow);
+        }
+      }
+      poolEl.innerHTML = '';
+      if (pool.length === 0) {
+        poolEl.innerHTML = '<div class="pool-empty-hint">Пул пуст</div>';
+      } else {
+        pool.forEach((item, idx) => {
+          const p = document.createElement('div');
+          p.className = 'pool-item';
+          p.textContent = item;
+          attachDrag(p, item, 'pool', idx, handleDrop);
+          poolEl.appendChild(p);
+        });
+      }
+    }
+    renderAll();
+
+    checkBtn.onclick = () => {
+      let correctPos = 0;
+      for (let i = 0; i < chain.length; i++) if (userSlots[i] === chain[i]) correctPos++;
+      chainRow.querySelectorAll('.chain-slot').forEach((el, i) => {
+        if (userSlots[i] === chain[i]) el.classList.add('result-correct');
+        else el.classList.add('result-wrong');
+      });
+      const perfect = correctPos === chain.length;
+      if (perfect) { sfxWin(); addScore(30); } else sfxWrong();
+      checkBtn.textContent = 'Дальше →';
+      checkBtn.onclick = () => onDone(perfect, correctPos);
+    };
+  }
+
+  buildOne(chain1, 1, (perfect1, correct1) => {
+    buildOne(chain2, 2, (perfect2, correct2) => {
+      const total = chain1.length + chain2.length;
+      const score = correct1 + correct2;
+      let emoji, title, text, stars, points;
+      if (score === total) {
+        emoji = '🏆'; title = 'Обе цепочки собраны!'; text = 'Идеальный результат'; stars = 3; points = 80; sfxWin();
+      } else if (score >= total - 1) {
+        emoji = '🎖️'; title = 'Почти идеально'; text = `Правильно: ${score} из ${total}`; stars = 2; points = 50; sfxCorrect();
+      } else if (score >= Math.ceil(total / 2)) {
+        emoji = '🔍'; title = 'Неплохо'; text = `Правильно: ${score} из ${total}`; stars = 1; points = 25; sfxCorrect();
+      } else {
+        emoji = '🌀'; title = 'Обе цепочки рассыпались'; text = `Правильно только ${score} из ${total}`; stars = 0; points = 5; sfxWrong();
+      }
+      addScore(points);
+
+      gameEl.innerHTML = `
+        <div class="panel">
+          <div class="result-screen">
+            <div class="big">${emoji}</div>
+            <h2>${title}</h2>
+            <p>${text}</p>
+            <div class="stars">${'⭐'.repeat(stars)}${'☆'.repeat(3 - stars)}</div>
+            <p style="opacity:.6; font-size: 14px;">+${points} очков</p>
+            <div class="review-block">
+              <div class="label">Правильные цепочки</div>
+              <div class="double-block">
+                <div class="double-title">Цепочка 1</div>
+                <div class="chain-row" style="margin: 0;">
+                  ${chain1.map((w, i) => `
+                    <div class="chain-word" style="animation:none;">${w}</div>
+                    ${i < chain1.length - 1 ? '<div class="chain-arrow" style="animation:none;">→</div>' : ''}
+                  `).join('')}
+                </div>
+              </div>
+              <div class="double-block">
+                <div class="double-title">Цепочка 2</div>
+                <div class="chain-row" style="margin: 0;">
+                  ${chain2.map((w, i) => `
+                    <div class="chain-word" style="animation:none;">${w}</div>
+                    ${i < chain2.length - 1 ? '<div class="chain-arrow" style="animation:none;">→</div>' : ''}
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+            <button class="btn-main" id="retry">Ещё раз 🔄</button>
+            <button class="btn-secondary" id="menuBtn">← Настройки</button>
+          </div>
+        </div>
+      `;
+      $('retry').onclick = () => chainShow();
+      $('menuBtn').onclick = () => startChain();
+    });
+  });
+}
+
+/* ============ РЕЗУЛЬТАТ ============ */
+function chainResult(data) {
+  const { emoji, title, text, stars, points, chain, history } = data;
+  const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+  const historyRow = history.map(ok => `
+    <div class="ans ${ok ? 'ok' : 'wrong'}">${ok ? '✓' : '✗'}</div>
+  `).join('');
+  const chainHtml = chain.map((word, i) => {
+    const isLast = i === chain.length - 1;
+    return `<div style="display: inline-flex; align-items: center; gap: 8px;">
+      <div class="chain-word" style="animation: none;">${word}</div>
+      ${!isLast ? '<div class="chain-arrow" style="animation:none;">→</div>' : ''}
+    </div>`;
+  }).join('');
+
+  gameEl.innerHTML = `
+    <div class="panel">
+      <div class="result-screen">
+        <div class="big">${emoji}</div>
+        <h2>${title}</h2>
+        <p>${text}</p>
+        <div class="stars">${starStr}</div>
+        <p style="opacity:.6; font-size: 14px;">+${points} очков</p>
+        <div class="review-block">
+          <div class="label">🧬 Правильная цепочка:</div>
+          <div class="chain-row" style="margin: 0; flex-wrap: wrap; justify-content: center;">${chainHtml}</div>
+        </div>
+        <div class="review-answers">${historyRow}</div>
+        <button class="btn-main" id="retry">Ещё раз 🔄</button>
+        <button class="btn-secondary" id="menuBtn">← Настройки</button>
+      </div>
+    </div>
+  `;
+  $('retry').onclick = () => chainShow();
+  $('menuBtn').onclick = () => startChain();
+}
+
+document.addEventListener('click', initAudio, { once: true });
+startChain();
+</script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

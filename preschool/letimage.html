@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Живые буквы — Мнемо-Арена</title>
+<style>
+  :root{
+    --blue:#2D6CDF;--blue-dark:#1E4FA8;--blue-light:#EBF2FF;
+    --orange:#FF8C42;--orange-dark:#E86E1F;--orange-light:#FFF2E5;
+    --bg:#F7F9FC;--text:#1F2937;--text-muted:#6B7280;--border:#E5EAF2;
+    --green:#22C55E;--red:#EF4444;--yellow:#F59E0B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:-apple-system,'Segoe UI',Roboto,'Nunito Sans',sans-serif;background:var(--bg);min-height:100vh;color:var(--text);padding:16px;overflow-x:hidden;}
+  .container{max-width:960px;margin:0 auto;}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding:16px 22px;background:#fff;border-radius:20px;border:1px solid var(--border);box-shadow:0 4px 16px rgba(45,108,223,.06);flex-wrap:wrap;gap:10px;}
+  .back-btn{width:46px;height:46px;border:none;border-radius:14px;background:var(--blue-light);color:var(--blue);font-size:22px;font-weight:700;cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;}
+  .back-btn:hover{background:var(--blue);color:#fff;transform:translateY(-1px);}
+  .back-btn.hidden{visibility:hidden;pointer-events:none;}
+  h1{font-size:20px;letter-spacing:.5px;color:var(--blue-dark);font-weight:800;}
+  .score-bar{background:var(--orange);color:#fff;padding:8px 18px;border-radius:30px;font-size:14px;font-weight:700;box-shadow:0 4px 12px rgba(255,140,66,.3);white-space:nowrap;}
+  .score-bar span{color:#fff;font-weight:800;font-size:17px;}
+  main{min-height:520px;}
+  .game-header{text-align:center;margin-bottom:16px;}
+  .game-header h2{font-size:22px;margin-bottom:6px;color:var(--blue-dark);font-weight:800;}
+  .subtitle{font-size:14px;color:var(--text-muted);font-weight:600;line-height:1.4;}
+  .status{text-align:center;font-size:16px;margin:14px 0;min-height:26px;font-weight:700;color:var(--text);transition:.3s;line-height:1.4;}
+  .status.good{color:#16A34A;}
+  .panel{background:#fff;border:1px solid var(--border);border-radius:22px;padding:26px;box-shadow:0 8px 24px rgba(45,108,223,.06);margin-bottom:20px;}
+  .field{margin-bottom:22px;}
+  .field:last-child{margin-bottom:0;}
+  .field-label{display:block;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:12px;}
+  .pills{display:flex;gap:10px;flex-wrap:wrap;}
+  .pill{padding:10px 18px;border-radius:14px;border:2px solid var(--border);background:#fff;color:var(--text-muted);font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:8px;}
+  .pill:hover{border-color:var(--blue);color:var(--blue);}
+  .pill.on{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 6px 16px rgba(45,108,223,.25);}
+  .pill.on.easy{background:var(--green);border-color:var(--green);}
+  .pill.on.medium{background:var(--orange);border-color:var(--orange);}
+  .pill.on.hard{background:var(--red);border-color:var(--red);}
+  .letters-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:8px;max-height:230px;overflow-y:auto;padding:10px;border:1px solid var(--border);border-radius:16px;background:var(--bg);}
+  .letter-pick{aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--border);border-radius:12px;font-size:20px;font-weight:800;color:var(--text-muted);cursor:pointer;transition:.15s;user-select:none;}
+  .letter-pick:hover{border-color:var(--blue);color:var(--blue);}
+  .letter-pick.on{background:var(--orange);border-color:var(--orange);color:#fff;box-shadow:0 6px 14px rgba(255,140,66,.3);}
+  .letter-pick.rare{opacity:.55;}
+  .letter-pick.rare.on{opacity:1;}
+  .cat-actions{display:flex;gap:8px;}
+  .mini-btn{background:var(--orange-light);border:1px solid var(--orange-light);color:var(--orange-dark);font-family:inherit;font-size:12.5px;font-weight:800;padding:6px 14px;border-radius:10px;cursor:pointer;transition:.15s;}
+  .mini-btn:hover{background:var(--orange);color:#fff;border-color:var(--orange);}
+  .btn-main{display:block;width:100%;margin:24px auto 0;padding:18px 40px;border-radius:14px;border:none;background:var(--orange);color:#fff;font-family:inherit;font-size:17px;font-weight:800;cursor:pointer;transition:.2s;letter-spacing:.5px;box-shadow:0 8px 20px rgba(255,140,66,.3);}
+  .btn-main:hover{background:var(--orange-dark);transform:translateY(-2px);}
+  .btn-main:active{transform:translateY(0);}
+  .btn-main:disabled{background:#C9D3E0;box-shadow:none;cursor:default;transform:none;}
+  .btn-secondary{display:block;margin:8px auto 0;padding:12px 30px;border-radius:14px;border:none;background:transparent;color:var(--blue-dark);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:.2s;}
+  .btn-secondary:hover{background:var(--blue-light);}
+  .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;}
+  .actions .btn-main,.actions .btn-secondary{width:auto;margin:0;padding:14px 28px;font-size:15px;}
+  .setting-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:12px;font-size:14px;font-weight:700;margin-bottom:10px;}
+  .switch{position:relative;display:inline-block;width:46px;height:26px;flex:0 0 auto;}
+  .switch input{opacity:0;width:0;height:0;position:absolute;}
+  .slider{position:absolute;inset:0;background:#C9D3E0;border-radius:999px;cursor:pointer;transition:.2s;}
+  .slider::before{content:"";position:absolute;height:20px;width:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+  .switch input:checked + .slider{background:var(--orange);}
+  .switch input:checked + .slider::before{transform:translateX(20px);}
+  .progress{display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:13px;color:var(--text-muted);font-weight:700;}
+  .bar{flex:1;height:8px;background:var(--blue-light);border-radius:999px;overflow:hidden;}
+  .bar span{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--orange),var(--blue));border-radius:999px;transition:width .3s ease;}
+  .board{position:relative;margin-bottom:16px;}
+  .lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;}
+  .lines line{stroke:var(--green);stroke-width:4;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(34,197,94,.5));}
+  .letter-tile{position:relative;width:110px;height:110px;margin:0 auto 20px;border-radius:32px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--orange-light),#fff);border:3px solid var(--orange);box-shadow:0 12px 30px rgba(255,140,66,.28);animation:breathe 2.4s ease-in-out infinite;z-index:2;transition:box-shadow .3s,border-color .3s;}
+  .letter-tile .letter{font-size:66px;font-weight:900;color:var(--orange-dark);line-height:1;transition:color .3s;}
+  .letter-tile::before{content:"";position:absolute;inset:-14px;border-radius:40px;background:radial-gradient(circle,rgba(255,140,66,.22),transparent 70%);animation:glow 2.4s ease-in-out infinite;z-index:-1;}
+  @keyframes breathe{0%,100%{transform:scale(1) translateY(0);}50%{transform:scale(1.035) translateY(-3px);}}
+  @keyframes glow{0%,100%{opacity:.65;transform:scale(1);}50%{opacity:1;transform:scale(1.06);}}
+  .letter-tile.happy{animation:letterHappy .7s cubic-bezier(.34,1.56,.64,1);border-color:var(--green);box-shadow:0 12px 30px rgba(34,197,94,.35);}
+  .letter-tile.happy .letter{color:var(--green);}
+  .letter-tile.happy::before{background:radial-gradient(circle,rgba(34,197,94,.28),transparent 70%);}
+  @keyframes letterHappy{0%{transform:scale(1);}30%{transform:scale(1.14) rotate(-4deg);}60%{transform:scale(1.1) rotate(4deg);}100%{transform:scale(1);}}
+  .letter-tile.celebrate{animation:celebrate 1s ease;border-color:var(--green);}
+  .letter-tile.celebrate .letter{color:var(--green);}
+  @keyframes celebrate{0%{transform:scale(1) rotate(0);}15%{transform:scale(1.2) rotate(-8deg);}30%{transform:scale(1.2) rotate(8deg);}45%{transform:scale(1.25) rotate(-6deg);}60%{transform:scale(1.25) rotate(6deg);}80%{transform:scale(1.1) rotate(0);}100%{transform:scale(1) rotate(0);}}
+  .grid{display:grid;gap:10px;position:relative;z-index:2;grid-template-columns:repeat(var(--cols,4),1fr);}
+  @media (max-width:600px){.grid{gap:8px;grid-template-columns:repeat(var(--cols-m,3),1fr);}}
+  .card{aspect-ratio:1;background:#fff;border:2px solid var(--border);border-radius:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:4px;transition:transform .18s,border-color .18s,background .18s,box-shadow .18s;user-select:none;position:relative;overflow:hidden;}
+  .card:hover{transform:translateY(-3px);border-color:var(--orange);box-shadow:0 10px 22px rgba(255,140,66,.18);}
+  .card:active{transform:scale(.96);}
+  .card .emoji{font-size:clamp(38px,9vw,64px);line-height:1;transition:.2s;}
+  .card .word{position:absolute;left:0;right:0;bottom:0;font-size:clamp(11px,2vw,14px);color:#fff;font-weight:800;letter-spacing:.02em;text-align:center;padding:3px 4px;line-height:1.1;opacity:0;transform:translateY(6px);transition:.2s;pointer-events:none;}
+  .card .word.visible{opacity:1;transform:translateY(0);background:rgba(34,197,94,.9);}
+  .card.show-word .word{opacity:1;transform:translateY(0);background:rgba(45,108,223,.85);}
+  .card.found{background:#DCFCE7;border-color:var(--green);cursor:default;pointer-events:none;}
+  .card.found .emoji{font-size:clamp(30px,7.5vw,52px);}
+  .card.found::after{content:"✓";position:absolute;top:4px;right:8px;color:var(--green);font-size:18px;font-weight:900;}
+  .card.wrong{animation:cardShake .4s ease;border-color:var(--red);background:#FEE2E2;}
+  @keyframes cardShake{0%,100%{transform:translateX(0);}25%{transform:translateX(-7px);}75%{transform:translateX(7px);}}
+  .confetti{position:absolute;inset:0;pointer-events:none;z-index:5;overflow:hidden;}
+  .confetti span{position:absolute;width:10px;height:10px;border-radius:2px;animation:fall 1.4s ease-out forwards;}
+  @keyframes fall{0%{transform:translateY(0) rotate(0);opacity:1;}100%{transform:translateY(400px) rotate(540deg);opacity:0;}}
+  .result-screen{text-align:center;padding:30px 20px;}
+  .result-screen .big{font-size:72px;margin-bottom:12px;animation:pop .5s cubic-bezier(.34,1.56,.64,1);}
+  .result-screen h2{font-size:26px;margin-bottom:10px;color:var(--blue-dark);font-weight:800;}
+  .result-screen p{color:var(--text-muted);font-size:16px;margin:6px 0;font-weight:600;}
+  .stars{font-size:40px;margin:20px 0;letter-spacing:6px;}
+  @keyframes pop{0%{transform:scale(0);}100%{transform:scale(1);}}
+  .hidden{display:none !important;}
+  @media (max-width:500px){body{padding:12px;}header{padding:14px 16px;}.panel{padding:18px;border-radius:18px;}.letter-tile{width:90px;height:90px;}.letter-tile .letter{font-size:52px;}.card{border-radius:12px;padding:2px;}}
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <button class="back-btn hidden" id="backBtn" title="В меню">←</button>
+    <h1>🔤 ЖИВЫЕ БУКВЫ</h1>
+    <div class="score-bar hidden" id="score">Раунд: <span id="scoreVal">0</span></div>
+  </header>
+  <main id="game"></main>
+</div>
+
+<script>
+/* ============================================================
+   СЛОВАРЬ: буква → [ [эмодзи, слово], ... ]
+   Е и Ё разделены. Слова подобраны так, чтобы первый звук
+   точно совпадал с буквой.
+   ============================================================ */
+const WORDS = {
+  "А":[["🍉","арбуз"],["🍍","ананас"],["🍊","апельсин"],["🚌","автобус"],["🦈","акула"]],
+  "Б":[["🍌","банан"],["🥁","барабан"],["🐿️","белка"],["🦋","бабочка"],["🛢️","бочка"]],
+  "В":[["🍇","виноград"],["🐺","волк"],["🚲","велосипед"],["🪣","ведро"],["🍴","вилка"]],
+  "Г":[["🍄","гриб"],["🍐","груша"],["🦢","гусь"],["🎸","гитара"],["🌍","глобус"]],
+  "Д":[["🏠","дом"],["🌳","дерево"],["🐬","дельфин"],["🚪","дверь"],["🍈","дыня"]],
+  "Е":[["🦝","енот"],["🦄","единорог"],["🌲","ель"]],
+  "Ё":[["🦔","ёжик"],["🎄","ёлка"]],
+  "Ж":[["🐸","жаба"],["🦒","жираф"],["🌰","жёлудь"],["🐞","жук"]],
+  "З":[["🐰","заяц"],["🦓","зебра"],["☂️","зонт"],["⭐","звезда"],["🏰","замок"]],
+  "И":[["🪡","игла"],["🦃","индюк"],["🏚️","изба"]],
+  "К":[["🐱","кот"],["🐳","кит"],["📕","книга"],["🎲","кубик"],["🐮","корова"],["🔑","ключ"]],
+  "Л":[["🦁","лев"],["🦊","лиса"],["🧅","лук"],["⛵","лодка"],["🌙","луна"],["💡","лампа"]],
+  "М":[["⚽","мяч"],["🐭","мышь"],["🥕","морковь"],["🚗","машина"],["🐻","медведь"],["🍦","мороженое"]],
+  "Н":[["👃","нос"],["🔪","нож"],["🎵","нота"],["🦏","носорог"],["✂️","ножницы"]],
+  "О":[["🪟","окно"],["☁️","облако"],["🐙","осьминог"],["🦌","олень"],["👓","очки"],["🐑","овца"]],
+  "П":[["🐧","пингвин"],["🍕","пицца"],["🐓","петух"],["🚂","поезд"],["🍅","помидор"],["🦜","попугай"]],
+  "Р":[["🐟","рыба"],["🌹","роза"],["🚀","ракета"],["✋","рука"],["🖊️","ручка"],["🌈","радуга"]],
+  "С":[["🐘","слон"],["☀️","солнце"],["🐶","собака"],["🦉","сова"],["👜","сумка"],["⛄","снеговик"],["✈️","самолёт"],["🧀","сыр"]],
+  "Т":[["🐯","тигр"],["🍰","торт"],["🎃","тыква"],["📱","телефон"],["🌷","тюльпан"],["🚜","трактор"]],
+  "У":[["🦆","утка"],["🐌","улитка"],["👂","ухо"]],
+  "Ф":[["🏴","флаг"],["🔦","фонарь"],["📷","фотоаппарат"],["👕","футболка"]],
+  "Х":[["🍞","хлеб"],["🐹","хомяк"],["🥼","халат"]],
+  "Ц":[["🌸","цветок"],["🐣","цыплёнок"],["🎪","цирк"]],
+  "Ч":[["⌚","часы"],["☕","чашка"],["🐢","черепаха"],["🧄","чеснок"],["🧳","чемодан"]],
+  "Ш":[["🎈","шар"],["🧢","шапка"],["🍫","шоколад"],["🧣","шарф"]],
+  "Щ":[["🐕","щенок"],["🪥","щётка"],["🛡️","щит"]],
+  "Ю":[["👗","юбка"],["🪀","юла"]],
+  "Я":[["🍎","яблоко"],["⚓","якорь"],["🥚","яйцо"],["🦎","ящерица"]]
+};
+
+/* редкие буквы — бледнее в списке выбора */
+const RARE = new Set(["Е","Ё","Ж","И","У","Ф","Ц","Ю","Щ"]);
+const ALL_LETTERS = Object.keys(WORDS);
+
+function gridCols(n){
+  if (n <= 6) return 3;
+  if (n <= 9) return 3;
+  if (n <= 12) return 4;
+  if (n <= 16) return 4;
+  return 5;
+}
+function gridColsMobile(n){
+  if (n <= 6) return 3;
+  if (n <= 12) return 3;
+  return 4;
+}
+
+/* ============================================================
+   УТИЛИТЫ
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const gameEl = $("game");
+const backBtn = $("backBtn");
+const scoreEl = $("score");
+const scoreVal = $("scoreVal");
+
+let globalScore = 0;
+function addScore(n){ globalScore += n; scoreVal.textContent = globalScore; }
+
+function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+let audioCtx = null;
+function initAudio(){ if(!audioCtx){ try{audioCtx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} } }
+function beep(freq, dur=.15, type="sine", vol=.08){
+  if(!state.settings.sound || !audioCtx) return;
+  try{
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.type=type; o.frequency.value=freq;
+    const t=audioCtx.currentTime;
+    g.gain.setValueAtTime(vol,t);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.start(t); o.stop(t+dur+.02);
+  }catch(e){}
+}
+function sfxOk(){ beep(720,.1); setTimeout(()=>beep(960,.14),90); }
+function sfxErr(){ beep(180,.25,"triangle",.12); }
+function sfxClick(){ beep(440,.05,"triangle",.06); }
+function sfxWin(){ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.18),i*110)); }
+function speak(text){
+  if(!state.settings.voice) return;
+  if(!("speechSynthesis" in window)) return;
+  try{
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang="ru-RU"; u.rate=0.9; u.pitch=1.1;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ============================================================
+   СОСТОЯНИЕ
+   ============================================================ */
+const state = {
+  selectedLetters: new Set(),
+  cardsPerRound: 12,
+  correctPerRound: 2,
+  rounds: 10,
+  settings: { showWord:false, sound:true, voice:true, autoAdvance:true, showAnswerAfter:true },
+  queue: [], idx: 0, current: null,
+  foundIds: new Set(),
+  autoTimer: null
+};
+
+/* ============================================================
+   СТАРТ
+   ============================================================ */
+function showStartScreen(){
+  clearTimeout(state.autoTimer);
+  backBtn.classList.add("hidden");
+  scoreEl.classList.add("hidden");
+
+  if (state.selectedLetters.size === 0){
+    ALL_LETTERS.forEach(l => { if (!RARE.has(l) && WORDS[l].length >= 2) state.selectedLetters.add(l); });
+  }
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🔤 Живые буквы</h2>
+      <div class="subtitle">Настрой игру</div>
+    </div>
+
+    <div class="panel">
+      <div class="field">
+        <div class="cat-actions" style="justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div class="field-label" style="margin-bottom:0;">Какие буквы учим</div>
+          <div class="cat-actions">
+            <button class="mini-btn" id="allLetters">Все</button>
+            <button class="mini-btn" id="commonLetters">Частые</button>
+            <button class="mini-btn" id="noneLetters">Ничего</button>
+          </div>
+        </div>
+        <div class="letters-grid" id="lettersGrid"></div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Картинок в раунде</div>
+        <div class="pills" id="cardsRow">
+          <button class="pill easy" data-c="6">6</button>
+          <button class="pill easy" data-c="9">9 🌱</button>
+          <button class="pill medium on" data-c="12">12 🔥</button>
+          <button class="pill hard" data-c="16">16 💎</button>
+          <button class="pill hard" data-c="20">20 👑</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Правильных в раунде</div>
+        <div class="pills" id="correctRow">
+          <button class="pill on" data-k="1">1</button>
+          <button class="pill" data-k="2">2</button>
+          <button class="pill" data-k="3">3</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Раундов за игру</div>
+        <div class="pills" id="roundsRow">
+          <button class="pill" data-r="5">5</button>
+          <button class="pill on" data-r="10">10</button>
+          <button class="pill" data-r="20">20</button>
+          <button class="pill" data-r="0">Все</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Подписи и звук</div>
+        <div class="setting-row">
+          <label for="s-showWord">Показывать название сразу</label>
+          <label class="switch"><input type="checkbox" id="s-showWord"><span class="slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <label for="s-showAnswer">Показывать после верного клика</label>
+          <label class="switch"><input type="checkbox" id="s-showAnswer" checked><span class="slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <label for="s-voice">Озвучка названий</label>
+          <label class="switch"><input type="checkbox" id="s-voice" checked><span class="slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <label for="s-sound">Звуки игры</label>
+          <label class="switch"><input type="checkbox" id="s-sound" checked><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <div style="text-align:center;padding:12px;background:var(--blue-light);border-radius:12px;font-size:13.5px;font-weight:600;color:var(--blue-dark);line-height:1.5;">
+        💡 <b>Как играть:</b> назови вслух предмет на картинке и послушай первый звук. Если он совпадает с буквой — кликай!
+      </div>
+
+      <button class="btn-main" id="startBtn">Начать →</button>
+    </div>
+  `;
+
+  const lettersGrid = $("lettersGrid");
+  ALL_LETTERS.forEach(l => {
+    const el = document.createElement("div");
+    const has = state.selectedLetters.has(l);
+    el.className = "letter-pick" + (has ? " on" : "") + (RARE.has(l) ? " rare" : "");
+    el.textContent = l;
+    el.dataset.l = l;
+    el.addEventListener("click", () => {
+      if (state.selectedLetters.has(l)){ state.selectedLetters.delete(l); el.classList.remove("on"); }
+      else { state.selectedLetters.add(l); el.classList.add("on"); }
+      updateStartBtn(); sfxClick();
+    });
+    lettersGrid.appendChild(el);
+  });
+
+  $("allLetters").addEventListener("click", () => {
+    state.selectedLetters = new Set(ALL_LETTERS);
+    lettersGrid.querySelectorAll(".letter-pick").forEach(el => el.classList.add("on"));
+    updateStartBtn(); sfxClick();
+  });
+  $("commonLetters").addEventListener("click", () => {
+    state.selectedLetters = new Set(ALL_LETTERS.filter(l => !RARE.has(l)));
+    lettersGrid.querySelectorAll(".letter-pick").forEach(el => {
+      el.classList.toggle("on", state.selectedLetters.has(el.dataset.l));
+    });
+    updateStartBtn(); sfxClick();
+  });
+  $("noneLetters").addEventListener("click", () => {
+    state.selectedLetters.clear();
+    lettersGrid.querySelectorAll(".letter-pick").forEach(el => el.classList.remove("on"));
+    updateStartBtn(); sfxClick();
+  });
+
+  $("cardsRow").querySelectorAll(".pill").forEach(btn => btn.addEventListener("click", () => {
+    $("cardsRow").querySelectorAll(".pill").forEach(b=>b.classList.remove("on"));
+    btn.classList.add("on"); state.cardsPerRound=parseInt(btn.dataset.c,10); sfxClick();
+  }));
+  $("correctRow").querySelectorAll(".pill").forEach(btn => btn.addEventListener("click", () => {
+    $("correctRow").querySelectorAll(".pill").forEach(b=>b.classList.remove("on"));
+    btn.classList.add("on"); state.correctPerRound=parseInt(btn.dataset.k,10); sfxClick();
+  }));
+  $("roundsRow").querySelectorAll(".pill").forEach(btn => btn.addEventListener("click", () => {
+    $("roundsRow").querySelectorAll(".pill").forEach(b=>b.classList.remove("on"));
+    btn.classList.add("on"); state.rounds=parseInt(btn.dataset.r,10); sfxClick();
+  }));
+
+  $("s-showWord").addEventListener("change", e => { state.settings.showWord = e.target.checked; });
+  $("s-showAnswer").addEventListener("change", e => { state.settings.showAnswerAfter = e.target.checked; });
+  $("s-voice").addEventListener("change", e => { state.settings.voice = e.target.checked; });
+  $("s-sound").addEventListener("change", e => { state.settings.sound = e.target.checked; });
+  $("s-showWord").checked = state.settings.showWord;
+  $("s-showAnswer").checked = state.settings.showAnswerAfter;
+  $("s-voice").checked = state.settings.voice;
+  $("s-sound").checked = state.settings.sound;
+
+  $("startBtn").addEventListener("click", startGame);
+  updateStartBtn();
+}
+
+function updateStartBtn(){
+  const btn = $("startBtn");
+  if (!btn) return;
+  const n = state.selectedLetters.size;
+  btn.disabled = n === 0;
+  btn.textContent = n === 0 ? "Выбери хотя бы одну букву" : `Начать (${n} букв) →`;
+}
+
+/* ============================================================
+   ИГРА
+   ============================================================ */
+function startGame(){
+  backBtn.classList.remove("hidden");
+  scoreEl.classList.remove("hidden");
+
+  const pool = [];
+  ALL_LETTERS.forEach(l => {
+    if (state.selectedLetters.has(l) && WORDS[l].length >= state.correctPerRound) pool.push(l);
+  });
+  state.queue = shuffle(pool);
+  if (state.rounds > 0) state.queue = state.queue.slice(0, Math.min(state.rounds, state.queue.length));
+
+  state.idx = 0;
+  if (state.queue.length === 0) return showStartScreen();
+  renderRound();
+}
+
+function makeRound(letter){
+  const correctPool = WORDS[letter];
+  const numCorrect = Math.min(state.correctPerRound, correctPool.length);
+  const correct = shuffle(correctPool).slice(0, numCorrect);
+
+  const allOther = [];
+  Object.keys(WORDS).forEach(l => {
+    if (l === letter) return;
+    WORDS[l].forEach(w => allOther.push(w));
+  });
+  const numWrong = state.cardsPerRound - numCorrect;
+  const wrong = shuffle(allOther).slice(0, numWrong);
+
+  const cards = shuffle(
+    correct.map(c => ({ emoji:c[0], label:c[1], correct:true }))
+    .concat(wrong.map(w => ({ emoji:w[0], label:w[1], correct:false })))
+  );
+
+  return { letter, cards, totalCorrect: numCorrect };
+}
+
+function renderRound(){
+  clearTimeout(state.autoTimer);
+  state.foundIds = new Set();
+  state.current = makeRound(state.queue[state.idx]);
+
+  const total = state.queue.length;
+  const pct = (state.idx / total) * 100;
+  const last = state.idx === total - 1;
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>Найди на букву «${state.current.letter}»</h2>
+      <div class="subtitle">Назови вслух, послушай первый звук, кликни если совпадает</div>
+    </div>
+
+    <div class="panel">
+      <div class="progress">
+        <div class="bar"><span style="width:${pct}%"></span></div>
+        <div>Раунд ${state.idx + 1} / ${total}</div>
+      </div>
+
+      <div class="board" id="board">
+        <svg class="lines" id="lines"></svg>
+        <div class="letter-tile" id="letterTile">
+          <div class="letter">${state.current.letter}</div>
+        </div>
+        <div class="grid" id="grid"
+             style="--cols:${gridCols(state.current.cards.length)};--cols-m:${gridColsMobile(state.current.cards.length)}"></div>
+      </div>
+
+      <div class="status" id="status">Найдено 0 из ${state.current.totalCorrect}</div>
+
+      <div class="actions">
+        <button class="btn-main" id="next" disabled>${last ? "Финиш 🏁" : "Дальше →"}</button>
+        <button class="btn-secondary" id="menu">⚙️ Меню</button>
+      </div>
+    </div>
+  `;
+
+  const grid = $("grid");
+  state.current.cards.forEach((card, i) => {
+    const el = document.createElement("div");
+    el.className = "card";
+    el.dataset.idx = i;
+    if (state.settings.showWord) el.classList.add("show-word");
+    el.innerHTML = `
+      <div class="emoji">${card.emoji}</div>
+      <div class="word">${card.label}</div>
+    `;
+    el.addEventListener("click", () => pickCard(i, el));
+    grid.appendChild(el);
+  });
+
+  $("next").addEventListener("click", nextRound);
+  $("menu").addEventListener("click", () => { clearTimeout(state.autoTimer); showStartScreen(); });
+
+  speak("Найди картинки на букву " + state.current.letter);
+}
+
+function pickCard(i, el){
+  const card = state.current.cards[i];
+  if (state.foundIds.has(i)) return;
+
+  if (card.correct){
+    state.foundIds.add(i);
+    el.classList.add("found");
+    drawLine(el);
+
+    if (state.settings.showAnswerAfter){
+      const w = el.querySelector(".word");
+      if (w) w.classList.add("visible");
+    }
+
+    const tile = $("letterTile");
+    tile.classList.remove("happy");
+    void tile.offsetWidth;
+    tile.classList.add("happy");
+    setTimeout(() => tile.classList.remove("happy"), 750);
+
+    sfxOk();
+    speak(card.label);
+    updateStatus();
+
+    if (state.foundIds.size === state.current.totalCorrect){
+      setTimeout(winRound, 700);
+    }
+  } else {
+    el.classList.add("wrong");
+    sfxErr();
+    setTimeout(() => el.classList.remove("wrong"), 450);
+  }
+}
+
+function updateStatus(){
+  const s = $("status");
+  if (!s) return;
+  const found = state.foundIds.size;
+  const total = state.current.totalCorrect;
+  if (found === total){
+    s.textContent = "✅ Все нашлись! Молодец!";
+    s.className = "status good";
+  } else {
+    s.textContent = `Найдено ${found} из ${total}`;
+    s.className = "status";
+  }
+}
+
+function drawLine(cardEl){
+  const board = $("board"), svg = $("lines"), tile = $("letterTile");
+  if (!board || !svg || !tile) return;
+
+  const br = board.getBoundingClientRect();
+  const tr = tile.getBoundingClientRect();
+  const cr = cardEl.getBoundingClientRect();
+
+  const line = document.createElementNS("http://www.w3.org/2000/svg","line");
+  line.setAttribute("x1", tr.left + tr.width/2 - br.left);
+  line.setAttribute("y1", tr.bottom - br.top);
+  line.setAttribute("x2", cr.left + cr.width/2 - br.left);
+  line.setAttribute("y2", cr.top - br.top);
+  svg.appendChild(line);
+
+  requestAnimationFrame(() => {
+    const br2 = board.getBoundingClientRect();
+    const tr2 = tile.getBoundingClientRect();
+    const cr2 = cardEl.getBoundingClientRect();
+    line.setAttribute("x1", tr2.left + tr2.width/2 - br2.left);
+    line.setAttribute("y1", tr2.bottom - br2.top);
+    line.setAttribute("x2", cr2.left + cr2.width/2 - br2.left);
+    line.setAttribute("y2", cr2.top - br2.top);
+  });
+}
+
+function winRound(){
+  const tile = $("letterTile");
+  tile.classList.add("celebrate");
+  sfxWin();
+  confetti();
+
+  const nextBtn = $("next");
+  nextBtn.disabled = false;
+  // текст кнопки уже правильный из renderRound, тут только активируем
+
+  if (state.settings.autoAdvance) state.autoTimer = setTimeout(nextRound, 1800);
+}
+
+function confetti(){
+  const board = $("board"); if (!board) return;
+  const wrap = document.createElement("div");
+  wrap.className = "confetti";
+  const colors = ["#FF8C42","#2D6CDF","#22C55E","#F59E0B","#EF4444"];
+  for (let i = 0; i < 30; i++){
+    const s = document.createElement("span");
+    s.style.left = Math.random()*100 + "%";
+    s.style.top = "-20px";
+    s.style.background = colors[i % colors.length];
+    s.style.animationDelay = (Math.random()*.5)+"s";
+    s.style.animationDuration = (1+Math.random()*.8)+"s";
+    wrap.appendChild(s);
+  }
+  board.appendChild(wrap);
+  setTimeout(()=>wrap.remove(), 2200);
+}
+
+function nextRound(){
+  clearTimeout(state.autoTimer);
+  if (state.idx === state.queue.length - 1) finishGame();
+  else { state.idx++; renderRound(); }
+}
+
+function finishGame(){
+  const total = state.queue.length;
+  const points = total * 10;
+  addScore(points);
+  sfxWin();
+
+  gameEl.innerHTML = `
+    <div class="panel">
+      <div class="result-screen">
+        <div class="big">🏆</div>
+        <h2>Молодец!</h2>
+        <p>Прошёл ${total} ${total === 1 ? "букву" : total < 5 ? "буквы" : "букв"}</p>
+        <div class="stars">⭐⭐⭐</div>
+        <p style="opacity:.6;font-size:14px;">+${points} очков</p>
+        <div class="actions">
+          <button class="btn-main" id="again">Ещё раз 🔄</button>
+          <button class="btn-secondary" id="menu">⚙️ Настройки</button>
+        </div>
+      </div>
+    </div>
+  `;
+  $("again").addEventListener("click", startGame);
+  $("menu").addEventListener("click", showStartScreen);
+}
+
+backBtn.addEventListener("click", () => { clearTimeout(state.autoTimer); showStartScreen(); });
+document.addEventListener("click", initAudio, { once:true });
+window.addEventListener("resize", () => { const svg = $("lines"); if (svg) svg.innerHTML = ""; });
+
+showStartScreen();
+</script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

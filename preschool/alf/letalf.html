@@ -19,274 +19,215 @@
         }
 
         header {
-
             background: #1E3F8A;
             color: #fff;
-
             text-align: center;
-
             padding: 18px;
-
             font-size: 30px;
             font-style: italic;
-
         }
 
         .container {
-
             max-width: 820px;
             margin: auto;
-
             padding: 20px;
-
         }
 
         .card {
-
             background: #fff;
-
             border-radius: 22px;
-
             padding: 30px;
-
             box-shadow: 0 5px 20px rgba(0, 0, 0, .15);
-
         }
 
         .controls {
-
             display: flex;
             gap: 15px;
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
-
         }
 
         select {
-
             padding: 12px 16px;
-
             font-size: 20px;
-
             border-radius: 12px;
-
             border: 2px solid #ddd;
-
         }
 
         button {
-
             background: #FF6A00;
-
             color: #fff;
-
             border: none;
-
             border-radius: 12px;
-
             padding: 12px 28px;
-
             font-size: 20px;
-
             cursor: pointer;
-
             box-shadow: 0 4px 0 #c34d00;
-
         }
 
         button:active {
-
             transform: translateY(3px);
             box-shadow: none;
-
         }
 
         #rule {
-
-            margin-top: 25px;
-
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 25px 0;
             font-size: 24px;
-
         }
 
         #target {
-
             color: #FF6A00;
-
             font-size: 54px;
-
             font-weight: bold;
-
         }
 
-        #rule {
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            justify-content: center;
-
-            text-align: center;
-
-            margin: 25px 0;
-
-        }
-
-        .title {
-
-            width: 100%;
-
-            text-align: center;
-
-            font-size: 24px;
-
-            font-weight: bold;
-
-            color: #666;
-
-            margin-bottom: 10px;
-
-            text-transform: uppercase;
-
-        }
-
+        /* === Контейнер символа === */
         #symbol {
-
+            position: relative;
             height: 220px;
-
             display: flex;
-
             justify-content: center;
             align-items: center;
-
             font-size: 120px;
-
             font-weight: bold;
-
             color: #1E3F8A;
-
             user-select: none;
-
             cursor: pointer;
+            transition: color .15s, transform .15s, opacity .2s, filter .2s;
+        }
 
-            transition: .15s;
+        /* Внутренний span — на него вешаем анимацию смены */
+        #symbolText {
+            display: inline-block;
+            will-change: transform, opacity;
+        }
 
+        @keyframes swapIn {
+            0% {
+                transform: scale(0.25) rotate(-8deg);
+                opacity: 0;
+            }
+            55% {
+                transform: scale(1.1) rotate(2deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        #symbolText.swap {
+            animation: swapIn 0.3s cubic-bezier(.34,1.56,.64,1);
         }
 
         #symbol.good {
-
             color: #3bb54a;
             transform: scale(1.1);
-
         }
 
         #symbol.bad {
-
             color: #ff4040;
             transform: scale(.92);
+        }
 
+        /* Пауза — символ притухает */
+        #symbol.paused {
+            opacity: .25;
+            filter: grayscale(.8);
         }
 
         .stats {
-
             display: flex;
-
             justify-content: center;
-
             align-items: center;
-
             gap: 80px;
-
             margin-top: 20px;
-
             font-size: 22px;
-
         }
 
         .speed {
-
             margin-top: 30px;
-
             text-align: center;
-
         }
 
         .speed input {
-
             width: 300px;
-
         }
 
         .speedLabels {
-
             display: flex;
-
             justify-content: space-between;
-
             width: 300px;
-
             margin: 8px auto 0;
-
             font-size: 14px;
-
             color: #666;
+        }
 
+        #progress {
+            margin-top: 15px;
+            text-align: center;
+            color: #888;
+            font-size: 16px;
+            min-height: 22px;
+        }
+
+        #progress .pauseMark {
+            color: #FF6A00;
+            font-weight: bold;
+        }
+
+        .hint {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .hint kbd {
+            background: #eef1f8;
+            border: 1px solid #ccd3e0;
+            border-bottom-width: 2px;
+            border-radius: 5px;
+            padding: 1px 6px;
+            font-family: Consolas, monospace;
+            color: #444;
         }
 
         footer {
-
             margin: 25px;
-
             text-align: right;
-
             color: #888;
-
             font-size: 12px;
-
         }
 
         @media(max-width:700px) {
-
-            .card {
-
-                padding: 18px;
-
-            }
+            .card { padding: 18px; }
 
             #symbol {
-
                 font-size: 95px;
                 height: 180px;
-
             }
 
             .stats {
-
                 flex-direction: column;
                 gap: 10px;
-
             }
 
             .speed input,
-            .speedLabels {
-
-                width: 100%;
-
-            }
+            .speedLabels { width: 100%; }
 
             button,
-            select {
-
-                width: 100%;
-
-            }
-
+            select { width: 100%; }
         }
     </style>
+<link rel="stylesheet" href="../../assets/menu-drawer.css">
 </head>
 
 <body>
@@ -301,28 +242,19 @@
 
             <div class="controls">
 
-                <select id="targetSelect">
-                </select>
+                <select id="targetSelect"></select>
 
-
-                <button id="startBtn">
-                    Старт
-                </button>
+                <button id="startBtn">Старт</button>
 
             </div>
 
             <div id="rule">
-
                 Цель
-
-                <div id="target">
-                    М
-                </div>
-
+                <div id="target">—</div>
             </div>
 
             <div id="symbol">
-                —
+                <span id="symbolText">—</span>
             </div>
 
             <div class="stats">
@@ -339,17 +271,21 @@
 
             </div>
 
+            <div id="progress"></div>
+
             <div class="speed">
 
                 <input type="range" id="speed" min="1" max="10" value="5">
 
                 <div class="speedLabels">
-
                     <span>Медленно</span>
                     <span>Быстро</span>
-
                 </div>
 
+            </div>
+
+            <div class="hint">
+                <kbd>Пробел</kbd> — пауза / продолжить
             </div>
 
         </div>
@@ -361,284 +297,327 @@
     </footer>
 
     <script>
+        /* =========================================================
+           БАЗА ЗНАНИЙ — встроена прямо в код.
+           ========================================================= */
+        const SIMILAR = {
+            "А": ["Д", "Л", "М", "П"],
+            "Б": ["В", "Ь", "Ъ", "Ы"],
+            "В": ["Б", "Ь", "Ы", "З"],
+            "Г": ["Т", "П", "Р"],
+            "Д": ["А", "Л", "Ц"],
+            "Е": ["Ё", "З", "С", "Э"],
+            "Ё": ["Е", "Ж", "З"],
+            "Ж": ["Х", "К", "Ё"],
+            "З": ["В", "Е", "Э"],
+            "И": ["Н", "М", "Й", "П"],
+            "Й": ["И", "Н", "М"],
+            "К": ["Ж", "Х", "Я"],
+            "Л": ["А", "Д", "П", "И"],
+            "М": ["Н", "И", "Ш", "Л", "А"],
+            "Н": ["М", "И", "П", "Ч"],
+            "О": ["С", "Э", "Ю", "Ф"],
+            "П": ["Н", "И", "Л", "Т", "Г"],
+            "Р": ["Г", "Ь", "Ф", "Я"],
+            "С": ["О", "Э", "Е"],
+            "Т": ["Г", "П"],
+            "У": ["Ч", "Х"],
+            "Ф": ["О", "Ю", "Р"],
+            "Х": ["Ж", "К", "У"],
+            "Ц": ["Щ", "Ш", "Ч"],
+            "Ч": ["У", "Н", "Ц"],
+            "Ш": ["Щ", "Ц", "И", "М"],
+            "Щ": ["Ш", "Ц", "И"],
+            "Ъ": ["Ь", "Б", "Ы"],
+            "Ы": ["Ь", "В", "Б"],
+            "Ь": ["Ъ", "Ы", "В", "Б"],
+            "Э": ["З", "С", "Е", "О"],
+            "Ю": ["О", "Ф", "Н"],
+            "Я": ["Р", "К", "В"]
+        };
 
-        let lettersData = {};
+        /* =========================================================
+           НАСТРОЙКИ СЕРИИ
+           ========================================================= */
+        const TARGET_COUNT  = 22;
+        const SIMILAR_COUNT = 12;
+        const RANDOM_COUNT  = 6;
 
+        /* =========================================================
+           ТАБЛИЦА СКОРОСТИ (мс). Индекс = ползунок − 1.
+           ========================================================= */
+        const SPEED_TABLE = [1500, 1300, 1150, 1000, 900, 800, 700, 600, 500, 400];
+
+        /* ================= СОСТОЯНИЕ ================= */
         let series = [];
         let index = 0;
         let timer = null;
-        let speed = 1100;
+        let flashTimer = null;
+        let speed = SPEED_TABLE[4];
 
         let good = 0;
         let bad = 0;
 
+        let currentTarget = "";
+        let isTargetStimulus = false;
+        let answered = true;
+        let playing = false;
+        let paused = false;
 
-        async function loadLetters() {
+        /* ================= ЭЛЕМЕНТЫ ================= */
+        const symbolEl = document.getElementById("symbol");
+        const symbolTextEl = document.getElementById("symbolText");
+        const targetEl = document.getElementById("target");
+        const selectEl = document.getElementById("targetSelect");
+        const startBtn = document.getElementById("startBtn");
+        const speedEl = document.getElementById("speed");
+        const goodEl = document.getElementById("good");
+        const badEl = document.getElementById("bad");
+        const progressEl = document.getElementById("progress");
 
-            const response = await fetch("letters.json");
+        /* ================= ВСПОМОГАТЕЛЬНОЕ ================= */
+        function shuffle(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
 
-            lettersData = await response.json();
+        function pick(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
 
+        /* ================= СПИСОК ЦЕЛЕЙ ================= */
+        function fillSelect() {
+            selectEl.innerHTML = "";
 
-            const select = document.getElementById("targetSelect");
+            const optRandom = document.createElement("option");
+            optRandom.value = "";
+            optRandom.textContent = "🎲 Случайно";
+            selectEl.appendChild(optRandom);
 
-            select.innerHTML = "";
-
-
-            Object.keys(lettersData).forEach(letter => {
-
+            Object.keys(SIMILAR).forEach(letter => {
                 const option = document.createElement("option");
-
                 option.value = letter;
                 option.textContent = letter;
-
-                select.appendChild(option);
-
+                selectEl.appendChild(option);
             });
-
-
-            document.getElementById("target").textContent =
-                select.value;
-
         }
 
-        function shuffle(arr) {
-
-            for (let i = arr.length - 1; i > 0; i--) {
-
-                const j = Math.floor(Math.random() * (i + 1));
-
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-
-            }
-
-            return arr;
-
-        }
+        /* ================= ПОСТРОЕНИЕ СЕРИИ ================= */
         function buildSeries(target) {
-
             series = [];
 
+            const allLetters = Object.keys(SIMILAR);
+            const similarList = (SIMILAR[target] || []).filter(l => l !== target);
+            const restList = allLetters.filter(
+                l => l !== target && !similarList.includes(l)
+            );
 
-            const data = lettersData[target];
+            const simPool = similarList.length ? similarList : restList;
+            const randPool = restList.length ? restList : allLetters;
 
-
-            // цель
-            for (let i = 0; i < 14; i++) {
-
-                series.push(target);
-
-            }
-
-
-            // похожие буквы
-            for (let i = 0; i < 18; i++) {
-
-                const arr = data.distractors;
-
-                series.push(
-                    arr[Math.floor(Math.random() * arr.length)]
-                );
-
-            }
-
-
-            // случайные буквы
-            for (let i = 0; i < 8; i++) {
-
-                const arr = data.random;
-
-                series.push(
-                    arr[Math.floor(Math.random() * arr.length)]
-                );
-
-            }
-
+            for (let i = 0; i < TARGET_COUNT; i++)  series.push(target);
+            for (let i = 0; i < SIMILAR_COUNT; i++) series.push(pick(simPool));
+            for (let i = 0; i < RANDOM_COUNT; i++)  series.push(pick(randPool));
 
             shuffle(series);
 
-
+            // Не начинать серию с целевой буквы
+            if (series[0] === target) {
+                const idx = series.findIndex(s => s !== target);
+                if (idx > 0) {
+                    [series[0], series[idx]] = [series[idx], series[0]];
+                }
+            }
         }
 
-
-
+        /* ================= ПОДСВЕТКА ОТВЕТА ================= */
         function flash(className) {
+            symbolEl.classList.remove("good", "bad");
+            void symbolEl.offsetWidth;
+            symbolEl.classList.add(className);
 
-            const s = document.getElementById("symbol");
-
-            s.classList.remove("good", "bad");
-
-            void s.offsetWidth;
-
-            s.classList.add(className);
-
-            setTimeout(() => {
-
-                s.classList.remove("good", "bad");
-
-            }, 150);
-
+            clearTimeout(flashTimer);
+            flashTimer = setTimeout(() => {
+                symbolEl.classList.remove("good", "bad");
+            }, 180);
         }
 
-
-
+        /* ================= СТАТИСТИКА / ПРОГРЕСС ================= */
         function updateStats() {
+            goodEl.textContent = good;
+            badEl.textContent = bad;
 
-            document.getElementById("good").textContent = good;
-
-            document.getElementById("bad").textContent = bad;
+            if (playing) {
+                const prefix = paused
+                    ? '<span class="pauseMark">⏸ ПАУЗА</span> · '
+                    : "";
+                progressEl.innerHTML = prefix + (index + 1) + " / " + series.length;
+            } else {
+                progressEl.textContent = "";
+            }
         }
 
+        /* ================= АНИМАЦИЯ СМЕНЫ ================= */
+        function animateSwap() {
+            symbolTextEl.classList.remove("swap");
+            void symbolTextEl.offsetWidth;
+            symbolTextEl.classList.add("swap");
+        }
+
+        /* ================= ПОКАЗ СТИМУЛА ================= */
         function showNext() {
-
             if (index >= series.length) {
-
                 finishGame();
                 return;
-
             }
 
-            document.getElementById("symbol").textContent =
-                series[index];
+            const sym = series[index];
+            isTargetStimulus = (sym === currentTarget);
+            answered = false;
 
+            symbolTextEl.textContent = sym;
+            animateSwap();
             updateStats();
-
         }
 
-
-
+        /* ================= ШАГ ================= */
         function nextStep() {
+            if (!answered && isTargetStimulus) {
+                bad++;
+            }
 
             index++;
-
             showNext();
-
         }
 
-
-
-        function finishGame() {
-
-            clearTimeout(timer);
-
-            timer = null;
-
-            document.getElementById("symbol").textContent = "✔";
-
-        }
-
-
-
+        /* ================= ТАЙМЕР ================= */
         function scheduleNext() {
-
             clearTimeout(timer);
+            if (!playing || paused) return;
 
             timer = setTimeout(() => {
-
                 nextStep();
-
-                scheduleNext();
-
+                if (playing && !paused) scheduleNext();
             }, speed);
-
         }
 
-
-
-        document.getElementById("targetSelect").onchange = function () {
-
-            document.getElementById("target").textContent = this.value;
-
-        };
-
-
-
-        document.getElementById("startBtn").onclick = function () {
-            if (Object.keys(lettersData).length === 0) {
-
-                alert("JSON ещё не загрузился");
-
-                return;
-
-            }
+        /* ================= ФИНАЛ ================= */
+        function finishGame() {
+            playing = false;
+            paused = false;
+            answered = true;
 
             clearTimeout(timer);
+            timer = null;
+
+            symbolEl.classList.remove("good", "bad", "paused");
+            symbolTextEl.textContent = "✔";
+            animateSwap();
+
+            selectEl.disabled = false;
+            updateStats();
+        }
+
+        /* ================= СТАРТ ================= */
+        startBtn.onclick = function () {
+            clearTimeout(timer);
+            clearTimeout(flashTimer);
 
             good = 0;
             bad = 0;
-
             index = 0;
+            paused = false;
 
-            const keys = Object.keys(lettersData);
+            let chosen = selectEl.value;
+            if (!chosen) chosen = pick(Object.keys(SIMILAR));
+            currentTarget = chosen;
+            targetEl.textContent = currentTarget;
 
-            const target = keys[
-                Math.floor(Math.random() * keys.length)
-            ];
+            buildSeries(currentTarget);
 
-            document.getElementById("target").textContent = target;
+            playing = true;
+            answered = true;
+            selectEl.disabled = true;
 
-            buildSeries(target);
+            symbolEl.classList.remove("good", "bad", "paused");
+            symbolTextEl.textContent = "—";
+
+            // убираем фокус с кнопки, чтобы пробел не «нажимал» её
+            startBtn.blur();
 
             showNext();
-
             scheduleNext();
-
         };
 
-
-
-        document.getElementById("symbol").onclick = function () {
-
-            if (!series.length) return;
-
+        /* ================= КЛИК ПО СИМВОЛУ ================= */
+        symbolEl.onclick = function () {
+            if (!playing || paused) return;
+            if (answered) return;
             if (index >= series.length) return;
 
-            const target =
-                document.getElementById("target").textContent;
+            answered = true;
 
-            if (series[index] === target) {
-
+            if (isTargetStimulus) {
                 good++;
                 flash("good");
-
             } else {
-
                 bad++;
                 flash("bad");
-
             }
 
             updateStats();
-
         };
 
+        /* ================= СМЕНА ЦЕЛИ ВРУЧНУЮ ================= */
+        selectEl.onchange = function () {
+            if (playing) return;
+            const v = this.value;
+            targetEl.textContent = v ? v : "—";
+        };
 
-
-        document.getElementById("speed").oninput = function () {
-
+        /* ================= СКОРОСТЬ =================
+           Текущий отсчёт не сбрасывается.
+           Новая скорость применится к следующему символу.
+           ============================================= */
+        speedEl.oninput = function () {
             const v = Number(this.value);
+            speed = SPEED_TABLE[v - 1];
+        };
 
-            speed = 1700 - v * 130;
+        /* ================= ПАУЗА ПО ПРОБЕЛУ ================= */
+        document.addEventListener("keydown", function (e) {
+            if (e.code !== "Space") return;
 
-            if (timer) {
+            // Если игра не идёт — не мешаем браузеру (например, кнопке)
+            if (!playing) return;
 
+            e.preventDefault(); // не прокручивать страницу
+
+            paused = !paused;
+
+            if (paused) {
+                clearTimeout(timer);
+                timer = null;
+                symbolEl.classList.add("paused");
+            } else {
+                symbolEl.classList.remove("paused");
                 scheduleNext();
-
             }
 
-        };
-
-        loadLetters().then(() => {
-
-            console.log("JSON загружен");
-            console.log(lettersData);
-
+            updateStats();
         });
 
+        /* ================= ИНИЦИАЛИЗАЦИЯ ================= */
+        fillSelect();
         updateStats();
-
     </script>
 
+
+<script src="../../assets/menu-data.js"></script>
+<script src="../../assets/menu-drawer.js"></script>
 </body>
 
 </html>

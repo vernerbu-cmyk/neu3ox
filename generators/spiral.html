@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Спиралограф — NeuroX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1E3F8A;
+  --orange:#FF6A00;
+  --orange-soft:#FF8B3D;
+  --orange-dark:#C85100;
+  --bg:#F4F6FB;
+  --text:#24324B;
+  --text-dim:#6B7280;
+  --border:rgba(30,63,138,.10);
+  --panel:#FFFFFF;
+  --page-w:210;
+  --page-h:297;
+  --page-w-mm:210mm;
+  --page-h-mm:297mm;
+}
+
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  font-family:"Nunito Sans",sans-serif;
+  background-color:var(--bg);
+  background-image:radial-gradient(circle, rgba(30,63,138,.07) 1.5px, transparent 1.6px);
+  background-size:26px 26px;
+  color:var(--text);
+  min-height:100vh;
+}
+
+header{
+  background:var(--blue);
+  color:#fff;
+  padding:14px 22px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  box-shadow:0 4px 16px rgba(30,63,138,.22);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+header h1{
+  margin:0;
+  font-family:"Fredoka",sans-serif;
+  font-size:19px;
+  font-weight:700;
+  letter-spacing:.4px;
+  flex:1;
+}
+
+header .actions{
+  display:flex;
+  gap:8px;
+}
+
+header button{
+  padding:10px 16px;
+  border:none;
+  border-radius:12px;
+  font-family:inherit;
+  font-weight:800;
+  font-size:14px;
+  cursor:pointer;
+  transition:.15s;
+  background:var(--orange);
+  color:#fff;
+  box-shadow:0 3px 0 var(--orange-dark);
+}
+
+header button:hover{ background:var(--orange-soft); }
+header button:active{ transform:translateY(2px); box-shadow:0 1px 0 var(--orange-dark); }
+
+header button.ghost{
+  background:rgba(255,255,255,.15);
+  box-shadow:none;
+}
+header button.ghost:hover{ background:rgba(255,255,255,.25); }
+
+.layout{
+  display:grid;
+  grid-template-columns:340px 1fr;
+  gap:20px;
+  padding:20px;
+  max-width:1500px;
+  margin:0 auto;
+}
+
+@media(max-width:1000px){
+  .layout{ grid-template-columns:1fr; }
+  header h1{ font-size:16px; }
+  header button{ padding:8px 12px; font-size:13px; }
+}
+
+.panel{
+  background:var(--panel);
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 4px 0 rgba(30,63,138,.08), 0 10px 24px rgba(30,63,138,.06);
+  border:2px solid var(--border);
+}
+
+.panel h2{
+  margin:0 0 14px;
+  font-family:"Fredoka",sans-serif;
+  font-size:15px;
+  font-weight:600;
+  color:var(--blue);
+  letter-spacing:.3px;
+}
+
+.field{
+  margin-bottom:14px;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.field label{
+  font-size:12px;
+  font-weight:800;
+  color:var(--text-dim);
+  letter-spacing:.3px;
+  text-transform:uppercase;
+}
+
+.field input[type="text"],
+.field textarea,
+.field select,
+.field input[type="file"]{
+  width:100%;
+  padding:10px 12px;
+  border:2px solid var(--border);
+  border-radius:10px;
+  font-family:inherit;
+  font-size:14px;
+  font-weight:600;
+  color:var(--text);
+  background:#fff;
+  outline:none;
+  transition:.15s;
+}
+
+.field textarea{
+  min-height:100px;
+  resize:vertical;
+  font-weight:500;
+  line-height:1.5;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus{
+  border-color:var(--orange);
+}
+
+.field input[type="range"]{
+  width:100%;
+  accent-color:var(--orange);
+}
+
+.field .hint{
+  font-size:11px;
+  color:var(--text-dim);
+  font-weight:600;
+}
+
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.radio-group{
+  display:flex;
+  gap:4px;
+  background:#EEF2FA;
+  padding:4px;
+  border-radius:10px;
+}
+
+.radio-group label{
+  flex:1;
+  position:relative;
+  text-align:center;
+  padding:9px 8px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+  color:var(--text-dim);
+  transition:.15s;
+  margin:0;
+  text-transform:none;
+  letter-spacing:0;
+  user-select:none;
+}
+
+.radio-group input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+
+.radio-group label:has(input:checked){
+  background:var(--orange);
+  color:#fff;
+  box-shadow:0 2px 0 var(--orange-dark);
+}
+
+.preview-panel{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+}
+
+.page-frame{
+  background:#fff;
+  border-radius:4px;
+  box-shadow:0 8px 30px rgba(30,63,138,.15), 0 2px 6px rgba(30,63,138,.08);
+  overflow:hidden;
+  aspect-ratio: var(--page-w) / var(--page-h);
+  width:100%;
+  max-width:640px;
+}
+
+.page-frame svg{
+  display:block;
+  width:100%;
+  height:100%;
+}
+
+.pager{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-weight:800;
+  color:var(--text-dim);
+}
+
+.pager button{
+  width:44px;
+  height:44px;
+  padding:0;
+  border:none;
+  border-radius:12px;
+  background:var(--orange);
+  color:#fff;
+  font-size:18px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 3px 0 var(--orange-dark);
+  transition:.15s;
+  font-family:inherit;
+}
+
+.pager button:hover{ background:var(--orange-soft); }
+.pager button:active{ transform:translateY(2px); box-shadow:0 1px 0 var(--orange-dark); }
+.pager button:disabled{ opacity:.35; cursor:not-allowed; }
+.pager button:disabled:active{ transform:none; box-shadow:0 3px 0 var(--orange-dark); }
+
+.pager .info{
+  font-size:14px;
+  min-width:80px;
+  text-align:center;
+  letter-spacing:.5px;
+}
+
+.stat{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+  justify-content:center;
+  font-size:12px;
+  font-weight:700;
+  color:var(--text-dim);
+}
+
+.stat b{ color:var(--blue); }
+
+.warning{
+  padding:12px 14px;
+  border-radius:12px;
+  font-size:13px;
+  font-weight:700;
+  line-height:1.5;
+  border:2px solid transparent;
+  width:100%;
+  max-width:640px;
+  transition:opacity .2s;
+}
+.warning.hidden{ display:none; }
+.warning b{ font-weight:800; }
+
+.warning.info{
+  background:#E8EEF9;
+  color:#1E3F8A;
+  border-color:rgba(30,63,138,.15);
+}
+.warning.warn{
+  background:#FFEADB;
+  color:#C85100;
+  border-color:rgba(200,81,0,.22);
+}
+.warning.alert{
+  background:#FFE0E0;
+  color:#A02020;
+  border-color:rgba(160,32,32,.28);
+}
+
+#printArea{ display:none; }
+
+@media print{
+  html,body{
+    margin:0 !important;
+    padding:0 !important;
+    background:#fff !important;
+    background-image:none !important;
+  }
+  body > *:not(#printArea){ display:none !important; }
+  #printArea{ display:block !important; }
+  #printArea .print-page{
+    width: var(--page-w-mm);
+    height: var(--page-h-mm);
+    overflow:hidden;
+    page-break-after: always;
+    break-after: page;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  #printArea .print-page:last-child{
+    page-break-after: auto;
+    break-after: auto;
+  }
+  #printArea svg{
+    display:block;
+    width:100%;
+    height:100%;
+  }
+}
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+
+<header>
+  <h1>🌀 Спиралограф</h1>
+  <div class="actions">
+    <button id="printBtn" type="button">🖨 Печать</button>
+    <button id="exportBtn" class="ghost" type="button">💾 SVG</button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <div class="panel">
+    <h2>Текст</h2>
+    <div class="field">
+      <textarea id="textInput" placeholder="Вставь или загрузи текст...">Жили-были дед да баба. Была у них курочка Ряба. Снесла курочка яичко, да не простое — золотое. Дед бил, бил — не разбил. Баба била, била — не разбила. Мышка бежала, хвостиком махнула — яичко упало и разбилось. Дед плачет, баба плачет, а курочка кудахчет: «Не плачь, дед, не плачь, баба! Я снесу вам яичко другое, не золотое — простое».</textarea>
+    </div>
+    <div class="field">
+      <input type="file" id="fileInput" accept=".txt,text/plain">
+    </div>
+
+    <h2 style="margin-top:22px;">Параметры</h2>
+
+    <div class="field">
+      <label>Направление</label>
+      <div class="radio-group">
+        <label><input type="radio" name="dir" value="out" checked>Из центра →</label>
+        <label><input type="radio" name="dir" value="in">← Из края</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Поворот: <span id="rotationVal">0°</span></label>
+      <input type="range" id="rotationRange" min="0" max="360" value="0" step="1">
+    </div>
+
+    <div class="field">
+      <label>Формат</label>
+      <div class="row">
+        <select id="paperSel">
+          <option value="a4" selected>A4</option>
+          <option value="a5">A5</option>
+          <option value="letter">Letter</option>
+        </select>
+        <select id="orientSel">
+          <option value="portrait" selected>Портрет</option>
+          <option value="landscape">Ландшафт</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Поля: <span id="marginVal">15 мм</span></label>
+      <input type="range" id="marginRange" min="5" max="30" value="15" step="1">
+    </div>
+
+    <div class="field">
+      <label>Шрифт</label>
+      <select id="fontSel">
+        <option value="Georgia" selected>Georgia (с засечками)</option>
+        <option value="'Times New Roman',serif">Times New Roman</option>
+        <option value="Arial, sans-serif">Arial</option>
+        <option value="Verdana, sans-serif">Verdana</option>
+        <option value="'Courier New', monospace">Courier New</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Размер шрифта: <span id="fontVal">9 pt</span></label>
+      <input type="range" id="fontRange" min="6" max="16" value="9" step="0.5">
+    </div>
+
+    <div class="field">
+      <label>Витков: <span id="turnsVal">10</span></label>
+      <input type="range" id="turnsRange" min="4" max="24" value="10" step="1">
+      <span class="hint" id="capHint">≈ 0 знаков на страницу</span>
+    </div>
+
+  </div>
+
+  <div class="preview-panel">
+
+    <div id="warning" class="warning hidden"></div>
+
+    <div class="stat">
+      <span>Страниц: <b id="statPages">1</b></span>
+      <span>Слов: <b id="statWords">0</b></span>
+      <span>Знаков на странице: <b id="statCap">0</b></span>
+      <span>Всего знаков: <b id="statTotal">0</b></span>
+    </div>
+
+    <div class="page-frame" id="pageFrame"></div>
+
+    <div class="pager">
+      <button id="prevBtn" type="button" aria-label="Назад">←</button>
+      <span class="info" id="pageInfo">1 / 1</span>
+      <button id="nextBtn" type="button" aria-label="Вперёд">→</button>
+    </div>
+
+  </div>
+
+</div>
+
+<div id="printArea"></div>
+
+<script>
+
+/* ==================== БАЗА ==================== */
+
+const PAPER = {
+  a4:     { w: 210,   h: 297   },
+  a5:     { w: 148,   h: 210   },
+  letter: { w: 215.9, h: 279.4 }
+};
+
+const state = {
+  direction: "out",
+  rotation: 0,            // градусы
+  paper: "a4",
+  orientation: "portrait",
+  margin: 15,
+  fontFamily: "Georgia",
+  fontSizePt: 9,
+  turns: 10,
+  density: 0.85,
+  currentPage: 0,
+  pages: [],
+  pageW: 210,
+  pageH: 297
+};
+
+/* ==================== РАЗМЕРЫ ==================== */
+
+function updatePageDims(){
+  const p = PAPER[state.paper];
+  let w = p.w, h = p.h;
+  if(state.orientation === "landscape") [w, h] = [h, w];
+  state.pageW = w;
+  state.pageH = h;
+
+  const root = document.documentElement.style;
+  root.setProperty("--page-w", w);
+  root.setProperty("--page-h", h);
+  root.setProperty("--page-w-mm", w + "mm");
+  root.setProperty("--page-h-mm", h + "mm");
+
+  let styleEl = document.getElementById("pageStyle");
+  if(!styleEl){
+    styleEl = document.createElement("style");
+    styleEl.id = "pageStyle";
+    document.head.appendChild(styleEl);
+  }
+  styleEl.textContent = `@page { size: ${w}mm ${h}mm; margin: 0; }`;
+}
+
+function spiralGeometry(){
+  const w = state.pageW;
+  const h = state.pageH;
+  const cx = w / 2;
+  const cy = h / 2;
+  const R = Math.min(w, h) / 2 - state.margin - 2;
+  return { cx, cy, R, w, h };
+}
+
+function capacity(){
+  const { R } = spiralGeometry();
+  const fontSizeMm = state.fontSizePt * 0.352778;
+  const spacing = fontSizeMm * state.density;
+  if(spacing <= 0 || R <= 0) return 0;
+  const arcLength = Math.PI * R * state.turns;
+  return Math.max(4, Math.floor(arcLength / spacing));
+}
+
+/* ==================== SPIRAL POINTS ==================== */
+
+function spiralPoints(text, opts){
+  const chars = Array.from(text);
+  const N = chars.length;
+  const xs = new Array(N);
+  const ys = new Array(N);
+  const rots = new Array(N);
+  const rotRad = (opts.rotationOffset || 0) * Math.PI / 180;
+
+  for(let i = 0; i < N; i++){
+    let t;
+    if(opts.direction === "in"){
+      t = Math.sqrt(Math.max(0.0001, (N - i) / N));
+    } else {
+      t = Math.sqrt(Math.max(0.0001, (i + 1) / N));
+    }
+    const a = opts.turns * 2 * Math.PI * t - Math.PI / 2 + rotRad;
+    const r = opts.R * t;
+    xs[i] = opts.cx + r * Math.cos(a);
+    ys[i] = opts.cy + r * Math.sin(a);
+    rots[i] = (a + Math.PI / 2) * 180 / Math.PI;
+  }
+  return { xs, ys, rots, chars };
+}
+
+/* ==================== SVG ==================== */
+
+function escapeXml(s){
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function buildSVG(text){
+  const { cx, cy, R, w, h } = spiralGeometry();
+  const fontSizeMm = state.fontSizePt * 0.352778;
+
+  const { xs, ys, rots } = spiralPoints(text, {
+    cx, cy, R,
+    turns: state.turns,
+    direction: state.direction,
+    rotationOffset: state.rotation
+  });
+
+  const xAttr = xs.map(v => v.toFixed(2)).join(" ");
+  const yAttr = ys.map(v => v.toFixed(2)).join(" ");
+  const rAttr = rots.map(v => v.toFixed(2)).join(" ");
+
+  const safeText = escapeXml(text).replace(/ /g, "\u00A0");
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">
+<rect width="${w}" height="${h}" fill="#ffffff"/>
+<text font-family="${state.fontFamily}" font-size="${fontSizeMm.toFixed(3)}" fill="#111111" text-anchor="middle" dominant-baseline="central" xml:space="preserve">
+<tspan x="${xAttr}" y="${yAttr}" rotate="${rAttr}">${safeText}</tspan>
+</text>
+</svg>`;
+}
+
+/* ==================== ПАГИНАЦИЯ ==================== */
+
+function paginate(text, cap){
+  const clean = text.replace(/\s+/g, " ").trim();
+  if(!clean) return [""];
+  if(cap <= 0) return [clean];
+
+  const words = clean.split(" ");
+  const pages = [];
+  let current = "";
+
+  for(const word of words){
+    const candidate = current ? current + " " + word : word;
+    if(candidate.length <= cap){
+      current = candidate;
+      continue;
+    }
+    if(current) pages.push(current);
+    if(word.length > cap){
+      let rest = word;
+      while(rest.length > cap){
+        pages.push(rest.slice(0, cap));
+        rest = rest.slice(cap);
+      }
+      current = rest;
+    } else {
+      current = word;
+    }
+  }
+  if(current) pages.push(current);
+  return pages.length ? pages : [""];
+}
+
+/* ==================== ПРЕДУПРЕЖДЕНИЕ ==================== */
+
+function updateWarning(cap){
+  const raw = textInput.value;
+  const total = raw.replace(/\s+/g, " ").trim().length;
+  const pages = state.pages.length;
+
+  if(!total){
+    warningEl.classList.add("hidden");
+    return;
+  }
+
+  let cls = "info";
+  let msg = "";
+
+  if(pages >= 16){
+    cls = "alert";
+    msg = `⚠️ Очень длинный текст: получится <b>${pages} страниц</b> ` +
+          `(≈ ${pages * 2} листов при двусторонней печати). ` +
+          `Если это не задумано — увеличь витки или уменьши шрифт.`;
+  } else if(pages >= 8){
+    cls = "warn";
+    msg = `Текст разбит на <b>${pages} страниц</b>. ` +
+          `На одной спирали влезает ≈ ${cap} знаков — ` +
+          `больше не поместится без потери читаемости.`;
+  } else if(pages > 1){
+    cls = "info";
+    msg = `Текст разбит на <b>${pages} страниц</b>, ` +
+          `по ≈ ${cap} знаков на каждой.`;
+  } else if(total < cap * 0.25){
+    cls = "info";
+    msg = `Спираль будет почти пустой: текста ${total} знаков, ` +
+          `а влезает ${cap}. Уменьши витки или добавь текста.`;
+  }
+
+  if(!msg){
+    warningEl.classList.add("hidden");
+    return;
+  }
+
+  warningEl.className = "warning " + cls;
+  warningEl.innerHTML = msg;
+}
+
+/* ==================== РЕНДЕР ==================== */
+
+function rebuild(){
+  updatePageDims();
+  const cap = capacity();
+  const text = textInput.value;
+
+  state.pages = paginate(text, cap);
+
+  if(state.currentPage >= state.pages.length) state.currentPage = state.pages.length - 1;
+  if(state.currentPage < 0) state.currentPage = 0;
+
+  capHint.textContent = "≈ " + cap + " знаков на страницу";
+  statPages.textContent = state.pages.length;
+  statCap.textContent = cap;
+  statTotal.textContent = text.replace(/\s+/g, " ").trim().length;
+
+  statWords.textContent = text.trim()
+    ? text.trim().split(/\s+/).length
+    : 0;
+
+  updateWarning(cap);
+  renderPreview();
+}
+
+function renderPreview(){
+  const chunk = state.pages[state.currentPage] || "";
+  pageFrame.innerHTML = buildSVG(chunk);
+
+  pageInfo.textContent = (state.currentPage + 1) + " / " + state.pages.length;
+  prevBtn.disabled = state.currentPage === 0;
+  nextBtn.disabled = state.currentPage === state.pages.length - 1;
+}
+
+/* ==================== ПЕЧАТЬ / ЭКСПОРТ ==================== */
+
+function renderAllForPrint(){
+  printArea.innerHTML = state.pages.map(chunk =>
+    `<div class="print-page">${buildSVG(chunk)}</div>`
+  ).join("");
+}
+
+function handlePrint(){
+  renderAllForPrint();
+  requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
+}
+
+function handleExport(){
+  const chunk = state.pages[state.currentPage] || "";
+  const svg = buildSVG(chunk);
+  const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `spiral-${String(state.currentPage + 1).padStart(2, "0")}.svg`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/* ==================== DOM ==================== */
+
+const textInput    = document.getElementById("textInput");
+const fileInput    = document.getElementById("fileInput");
+const paperSel     = document.getElementById("paperSel");
+const orientSel    = document.getElementById("orientSel");
+const marginRange  = document.getElementById("marginRange");
+const marginVal    = document.getElementById("marginVal");
+const fontSel      = document.getElementById("fontSel");
+const fontRange    = document.getElementById("fontRange");
+const fontVal      = document.getElementById("fontVal");
+const turnsRange   = document.getElementById("turnsRange");
+const turnsVal     = document.getElementById("turnsVal");
+const rotationRange = document.getElementById("rotationRange");
+const rotationVal  = document.getElementById("rotationVal");
+const capHint      = document.getElementById("capHint");
+
+const pageFrame    = document.getElementById("pageFrame");
+const pageInfo     = document.getElementById("pageInfo");
+const prevBtn      = document.getElementById("prevBtn");
+const nextBtn      = document.getElementById("nextBtn");
+
+const statPages    = document.getElementById("statPages");
+const statWords    = document.getElementById("statWords");
+const statCap      = document.getElementById("statCap");
+const statTotal    = document.getElementById("statTotal");
+
+const printBtn     = document.getElementById("printBtn");
+const exportBtn    = document.getElementById("exportBtn");
+const printArea    = document.getElementById("printArea");
+const warningEl    = document.getElementById("warning");
+
+/* ==================== СОБЫТИЯ ==================== */
+
+textInput.addEventListener("input", () => {
+  state.currentPage = 0;
+  rebuild();
+});
+
+fileInput.addEventListener("change", e => {
+  const f = e.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    textInput.value = ev.target.result;
+    state.currentPage = 0;
+    rebuild();
+  };
+  r.readAsText(f);
+});
+
+paperSel.addEventListener("change", () => {
+  state.paper = paperSel.value;
+  state.currentPage = 0;
+  rebuild();
+});
+
+orientSel.addEventListener("change", () => {
+  state.orientation = orientSel.value;
+  state.currentPage = 0;
+  rebuild();
+});
+
+marginRange.addEventListener("input", () => {
+  state.margin = parseInt(marginRange.value, 10);
+  marginVal.textContent = state.margin + " мм";
+  state.currentPage = 0;
+  rebuild();
+});
+
+fontSel.addEventListener("change", () => {
+  state.fontFamily = fontSel.value;
+  rebuild();
+});
+
+fontRange.addEventListener("input", () => {
+  state.fontSizePt = parseFloat(fontRange.value);
+  fontVal.textContent = state.fontSizePt + " pt";
+  state.currentPage = 0;
+  rebuild();
+});
+
+turnsRange.addEventListener("input", () => {
+  state.turns = parseInt(turnsRange.value, 10);
+  turnsVal.textContent = state.turns;
+  state.currentPage = 0;
+  rebuild();
+});
+
+rotationRange.addEventListener("input", () => {
+  state.rotation = parseInt(rotationRange.value, 10);
+  rotationVal.textContent = state.rotation + "°";
+  rebuild();
+});
+
+document.querySelectorAll('input[name="dir"]').forEach(r => {
+  r.addEventListener("change", e => {
+    if(e.target.checked){
+      state.direction = e.target.value;
+      rebuild();
+    }
+  });
+});
+
+prevBtn.addEventListener("click", () => {
+  if(state.currentPage > 0){
+    state.currentPage--;
+    renderPreview();
+  }
+});
+
+nextBtn.addEventListener("click", () => {
+  if(state.currentPage < state.pages.length - 1){
+    state.currentPage++;
+    renderPreview();
+  }
+});
+
+printBtn.addEventListener("click", handlePrint);
+exportBtn.addEventListener("click", handleExport);
+
+document.addEventListener("keydown", e => {
+  if(e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
+  if(e.key === "ArrowLeft" && !prevBtn.disabled){ e.preventDefault(); prevBtn.click(); }
+  if(e.key === "ArrowRight" && !nextBtn.disabled){ e.preventDefault(); nextBtn.click(); }
+});
+
+/* ==================== СТАРТ ==================== */
+
+marginVal.textContent = state.margin + " мм";
+fontVal.textContent = state.fontSizePt + " pt";
+turnsVal.textContent = state.turns;
+rotationVal.textContent = state.rotation + "°";
+rebuild();
+
+</script>
+
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>

@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Подземелье - Мнемо-Арена</title>
+<style>
+  :root {
+    --blue: #2D6CDF;
+    --blue-dark: #1E4FA8;
+    --blue-light: #EBF2FF;
+    --orange: #FF8C42;
+    --orange-dark: #E86E1F;
+    --orange-light: #FFF2E5;
+    --bg: #F7F9FC;
+    --text: #1F2937;
+    --text-muted: #6B7280;
+    --border: #E5EAF2;
+    --green: #22C55E;
+    --red: #EF4444;
+    --yellow: #F59E0B;
+    --purple: #A855F7;
+    --purple-light: #F5EDFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--text);
+    padding: 16px;
+    overflow-x: hidden;
+  }
+
+  .container { max-width: 800px; margin: 0 auto; }
+
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding: 16px 22px;
+    background: #fff; border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(45,108,223,.06);
+    flex-wrap: wrap; gap: 10px;
+  }
+
+  .back-btn {
+    width: 46px; height: 46px;
+    border: none; border-radius: 14px;
+    background: var(--blue-light);
+    color: var(--blue);
+    font-size: 22px; font-weight: 700;
+    cursor: pointer; transition: .18s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .back-btn:hover { background: var(--blue); color: #fff; transform: translateY(-1px); }
+
+  h1 { font-size: 20px; letter-spacing: .5px; color: var(--blue-dark); font-weight: 800; }
+
+  .score-bar {
+    background: var(--orange); color: #fff;
+    padding: 8px 18px; border-radius: 30px; font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(255,140,66,.3);
+  }
+  .score-bar span { color: #fff; font-weight: 800; font-size: 17px; }
+
+  main { min-height: 520px; }
+
+  .game-header { text-align: center; margin-bottom: 20px; }
+  .game-header h2 { font-size: 22px; margin-bottom: 6px; color: var(--blue-dark); font-weight: 800; }
+  .subtitle { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+
+  .status {
+    text-align: center; font-size: 16px; margin: 16px 0;
+    min-height: 26px; font-weight: 700; color: var(--text); transition: .3s;
+  }
+  .status.good { color: #16A34A; }
+  .status.bad { color: #DC2626; }
+  .status.warn { color: var(--orange-dark); }
+
+  .panel {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 22px; padding: 26px;
+    box-shadow: 0 8px 24px rgba(45,108,223,.06);
+  }
+
+  /* ---------- Пресеты ---------- */
+  .presets {
+    display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap;
+  }
+  .preset-btn {
+    flex: 1 1 auto; min-width: 90px;
+    padding: 10px 8px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: #fff;
+    color: var(--blue-dark);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: .18s;
+    font-family: inherit;
+  }
+  .preset-btn:hover { border-color: var(--orange); color: var(--orange-dark); transform: translateY(-1px); }
+  .preset-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  /* ---------- Размер поля ---------- */
+  .size-row {
+    display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;
+  }
+  .size-btn {
+    flex: 1 1 auto; min-width: 70px;
+    padding: 12px 10px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: #fff;
+    color: var(--blue-dark);
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    transition: .18s;
+    font-family: inherit;
+  }
+  .size-btn:hover { border-color: var(--orange); }
+  .size-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  /* ---------- Режим вопросов ---------- */
+  .mode-row {
+    display: flex; gap: 8px; margin-top: 8px;
+  }
+  .mode-btn {
+    flex: 1;
+    padding: 12px 10px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: #fff;
+    color: var(--blue-dark);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: .18s;
+    font-family: inherit;
+  }
+  .mode-btn:hover { border-color: var(--orange); }
+  .mode-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  /* ---------- Сетка подземелья ---------- */
+  .dungeon-grid {
+    display: grid;
+    gap: 12px;
+    max-width: 460px;
+    margin: 24px auto;
+  }
+
+  .room {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    background: linear-gradient(145deg, var(--purple-light), var(--blue-light));
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    animation: popIn .35s cubic-bezier(.34,1.56,.64,1) backwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .room-emoji {
+    font-size: 28px;
+    opacity: .55;
+    line-height: 1;
+  }
+
+  .room-item {
+    font-size: 36px;
+    line-height: 1;
+    margin-top: 4px;
+    animation: itemPop .4s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  @keyframes itemPop {
+    from { transform: scale(0) rotate(-15deg); opacity: 0; }
+    to { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* Кликабельная комната для режима "клик по клетке" */
+  .room.clickable {
+    cursor: pointer;
+    transition: .15s;
+  }
+  .room.clickable:hover {
+    border-color: var(--orange);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255,140,66,.18);
+  }
+  .room.clickable:active {
+    transform: scale(.97);
+  }
+
+  /* Результаты подсветки */
+  .room.result-correct {
+    background: #DCFCE7;
+    border-color: var(--green);
+  }
+  .room.result-wrong {
+    background: #FEE2E2;
+    border-color: var(--red);
+  }
+  .room.result-reveal {
+    background: #DCFCE7;
+    border-color: var(--green);
+    animation: pulseGreen 1s ease;
+  }
+
+  @keyframes pulseGreen {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  /* Прогресс-точки */
+  .progress-dots {
+    display: flex; gap: 6px; justify-content: center;
+    margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border);
+    transition: .3s;
+  }
+  .dot.active { background: var(--orange); transform: scale(1.4); }
+  .dot.correct { background: var(--green); }
+  .dot.wrong { background: var(--red); }
+
+  /* ---------- Варианты ответов ---------- */
+  .options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+    max-width: 460px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .option-btn {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    border-radius: 16px;
+    background: #fff;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    transition: .15s;
+    user-select: none;
+  }
+  .option-btn:hover:not(:disabled) {
+    background: var(--blue-light);
+    border-color: var(--blue);
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 10px 20px rgba(45,108,223,.15);
+  }
+  .option-btn:disabled { cursor: default; }
+  .option-btn.correct {
+    background: #DCFCE7;
+    border-color: var(--green);
+    transform: scale(1.05);
+  }
+  .option-btn.wrong {
+    background: #FEE2E2;
+    border-color: var(--red);
+    animation: shake .35s ease;
+  }
+  .option-btn.dimmed { opacity: .35; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    50% { transform: translateX(6px); }
+    75% { transform: translateX(-4px); }
+  }
+
+  /* ---------- Настройки ---------- */
+  .settings-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; font-size: 15px; color: var(--text); font-weight: 700;
+  }
+  .settings-row b { color: var(--blue-dark); font-size: 16px; font-weight: 800; }
+  input[type="range"] { width: 100%; accent-color: #FF8C42; height: 26px; }
+
+  .time-hint {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 700;
+    padding: 10px;
+    background: var(--blue-light);
+    border-radius: 10px;
+    margin-top: 6px;
+  }
+  .time-hint b { color: var(--blue-dark); }
+
+  .btn-main {
+    display: block; margin: 24px auto 0; padding: 16px 40px;
+    border-radius: 14px; border: none;
+    background: var(--orange); color: #fff;
+    font-size: 17px; font-weight: 800; cursor: pointer;
+    transition: .2s; letter-spacing: .5px;
+    box-shadow: 0 8px 20px rgba(255,140,66,.3);
+    font-family: inherit;
+  }
+  .btn-main:hover {
+    background: var(--orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(255,140,66,.4);
+  }
+  .btn-main:active { transform: translateY(0); }
+
+  .btn-secondary {
+    display: block; margin: 8px auto 0; padding: 12px 30px;
+    border-radius: 14px; border: none;
+    background: transparent; color: var(--blue-dark);
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: .2s;
+    font-family: inherit;
+  }
+  .btn-secondary:hover { background: var(--blue-light); }
+
+  /* ---------- Таймер ---------- */
+  .timer-bar {
+    height: 10px; border-radius: 10px; background: var(--border);
+    overflow: hidden; margin-bottom: 20px;
+  }
+  .timer-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--yellow), var(--red));
+    transition: width 0.5s linear;
+    width: 100%;
+  }
+
+  /* ---------- Результат ---------- */
+  .result-screen { text-align: center; padding: 30px 20px; }
+  .result-screen .big {
+    font-size: 72px; margin-bottom: 12px;
+    animation: popIn .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .result-screen h2 { font-size: 26px; margin-bottom: 10px; color: var(--blue-dark); font-weight: 800; }
+  .result-screen p { color: var(--text-muted); font-size: 16px; margin: 6px 0; font-weight: 600; }
+  .stars { font-size: 40px; margin: 20px 0; letter-spacing: 6px; }
+
+  @media (max-width: 500px) {
+    .room-emoji { font-size: 22px; }
+    .room-item { font-size: 30px; }
+    .option-btn { font-size: 32px; }
+    .preset-btn { font-size: 12px; }
+    .size-btn { font-size: 13px; padding: 10px 6px; }
+  }
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <button class="back-btn" onclick="location.href='index.html'">←</button>
+    <h1>🏰 ПОДЗЕМЕЛЬЕ</h1>
+    <div class="score-bar">Очки: <span id="globalScore">0</span></div>
+  </header>
+  <main id="game"></main>
+</div>
+
+<script>
+/* ============ УТИЛИТЫ ============ */
+const $ = id => document.getElementById(id);
+const gameEl = $('game');
+let globalScore = 0;
+$('globalScore').textContent = globalScore;
+function addScore(n) { globalScore += n; $('globalScore').textContent = globalScore; }
+
+function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+const rand = n => Math.floor(Math.random() * n);
+
+let timeouts = [];
+function wait(ms, fn) {
+  const id = setTimeout(fn, ms);
+  timeouts.push(id);
+  return id;
+}
+function clearTimeouts() {
+  timeouts.forEach(clearTimeout);
+  timeouts = [];
+}
+
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+}
+function beep(freq, dur = 0.15, type = 'sine', vol = 0.08) {
+  if (!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = type;
+    osc.frequency.value = freq;
+    const t = audioCtx.currentTime;
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.start(t); osc.stop(t + dur + 0.02);
+  } catch(e) {}
+}
+function sfxCorrect() { beep(660, 0.1); setTimeout(() => beep(880, 0.15), 90); }
+function sfxWrong() { beep(180, 0.3, 'sawtooth', 0.12); }
+function sfxClick() { beep(440, 0.05, 'triangle', 0.06); }
+function sfxWin() {
+  [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.2), i * 120));
+}
+
+/* ============ ДАННЫЕ ============ */
+const DUNGEON_ITEMS = [
+  '⚔️','🛡️','💎','🔮','🗝️','📜','🧪','👑','🪄','🏹',
+  '🪓','⚗️','🧿','🌙','🔱','🦄','🏺','🕸️','🔥','❄️',
+  '⚱️','🕯️','📿','⚜️','🎭','🏆','🍄','🧿'
+];
+
+const DUNGEON_ROOMS = ['🏛️','⚰️','🕯️','🕸️','🗿','⚗️','🪦','🏺','🕳️','⛓️','🗼','🛖'];
+
+/* ============ НАСТРОЙКИ ============ */
+let dungeonCfg = {
+  cols: 3,
+  rows: 3,
+  items: 4,
+  showTime: 6,
+  mode: 'click'   // 'click' или 'choice'
+};
+try {
+  const s = localStorage.getItem('dungeonCfg');
+  if (s) dungeonCfg = { ...dungeonCfg, ...JSON.parse(s) };
+} catch(e) {}
+
+/* ============ ЭКРАН НАСТРОЕК ============ */
+function startDungeon() {
+  clearTimeouts();
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🏰 Подземелье</h2>
+      <div class="subtitle">Запомни, где лежат сокровища</div>
+    </div>
+    <div class="panel">
+      <div style="max-width: 500px; margin: 0 auto;">
+
+        <div class="presets" id="presets">
+          <button class="preset-btn" data-cols="3" data-rows="3" data-items="3" data-time="8" data-mode="click">🌱 Разминка</button>
+          <button class="preset-btn" data-cols="3" data-rows="3" data-items="5" data-time="7" data-mode="click">⚡ Стандарт</button>
+          <button class="preset-btn" data-cols="4" data-rows="4" data-items="7" data-time="6" data-mode="click">🔥 Сложнее</button>
+          <button class="preset-btn" data-cols="4" data-rows="4" data-items="9" data-time="5" data-mode="choice">💀 Хардкор</button>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <div class="settings-row"><span>Размер поля</span><b id="sizeVal">${dungeonCfg.cols}×${dungeonCfg.rows}</b></div>
+          <div class="size-row" id="sizeRow">
+            ${[[3,3],[3,4],[4,4],[4,5],[5,5]].map(([c,r]) => `
+              <button class="size-btn" data-cols="${c}" data-rows="${r}">${c}×${r}</button>
+            `).join('')}
+          </div>
+        </div>
+
+        <label style="display:block; margin-bottom: 20px;">
+          <div class="settings-row">
+            <span>Сокровищ в подземелье</span>
+            <b id="itemsVal">${dungeonCfg.items}</b>
+          </div>
+          <input type="range" id="itemsRange" min="1" max="20" value="${dungeonCfg.items}">
+          <div class="time-hint" id="itemsHint">
+            Всего комнат: <b id="totalCells">9</b> · сокровищ <b id="itemsPct">44%</b>
+          </div>
+        </label>
+
+        <label style="display:block; margin-bottom: 20px;">
+          <div class="settings-row"><span>Время показа</span><b id="timeVal">${dungeonCfg.showTime} сек</b></div>
+          <input type="range" id="timeRange" min="2" max="20" value="${dungeonCfg.showTime}">
+        </label>
+
+        <div style="margin-bottom: 20px;">
+          <div class="settings-row"><span>Режим вопросов</span><b id="modeVal">${dungeonCfg.mode === 'click' ? 'клик по комнате' : 'выбор из 4'}</b></div>
+          <div class="mode-row" id="modeRow">
+            <button class="mode-btn" data-mode="click">🎯 Клик по комнате</button>
+            <button class="mode-btn" data-mode="choice">🔢 Выбор из 4</button>
+          </div>
+        </div>
+
+        <div class="subtitle" style="text-align:left; padding: 12px; background: var(--blue-light); border-radius: 12px; line-height: 1.5; margin-top: 14px;">
+          💡 <b>Как играть:</b> увидишь сетку комнат подземелья. В некоторых спрятаны сокровища. Запомни, где что лежит. Потом нужно будет показать, где находится каждый предмет.
+        </div>
+
+        <button class="btn-main" id="startBtn">Начать 🏰</button>
+      </div>
+    </div>
+  `;
+
+  const itemsRange = $('itemsRange');
+  const timeRange = $('timeRange');
+
+  function totalCells() { return dungeonCfg.cols * dungeonCfg.rows; }
+
+  function updateItemsMax() {
+    const total = totalCells();
+    itemsRange.max = Math.max(1, total - 1);
+    if (+itemsRange.value > total - 1) {
+      itemsRange.value = total - 1;
+    }
+    updateItemsHint();
+  }
+
+  function updateItemsHint() {
+    const total = totalCells();
+    const f = +itemsRange.value;
+    $('totalCells').textContent = total;
+    $('itemsPct').textContent = Math.round(f / total * 100) + '%';
+  }
+
+  function markSizeActive() {
+    gameEl.querySelectorAll('.size-btn').forEach(b => {
+      const on = +b.dataset.cols === dungeonCfg.cols && +b.dataset.rows === dungeonCfg.rows;
+      b.classList.toggle('active', on);
+    });
+  }
+
+  function markModeActive() {
+    gameEl.querySelectorAll('.mode-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === dungeonCfg.mode);
+    });
+    $('modeVal').textContent = dungeonCfg.mode === 'click' ? 'клик по комнате' : 'выбор из 4';
+  }
+
+  function markPresetActive() {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.preset-btn').forEach(b => {
+      if (+b.dataset.cols === dungeonCfg.cols &&
+          +b.dataset.rows === dungeonCfg.rows &&
+          +b.dataset.items === +itemsRange.value &&
+          +b.dataset.time === +timeRange.value &&
+          b.dataset.mode === dungeonCfg.mode) {
+        b.classList.add('active');
+      }
+    });
+  }
+
+  gameEl.querySelectorAll('.size-btn').forEach(b => {
+    b.onclick = () => {
+      dungeonCfg.cols = +b.dataset.cols;
+      dungeonCfg.rows = +b.dataset.rows;
+      $('sizeVal').textContent = `${dungeonCfg.cols}×${dungeonCfg.rows}`;
+      markSizeActive();
+      updateItemsMax();
+      markPresetActive();
+      sfxClick();
+    };
+  });
+
+  gameEl.querySelectorAll('.mode-btn').forEach(b => {
+    b.onclick = () => {
+      dungeonCfg.mode = b.dataset.mode;
+      markModeActive();
+      markPresetActive();
+      sfxClick();
+    };
+  });
+
+  document.querySelectorAll('.preset-btn').forEach(b => {
+    b.onclick = () => {
+      dungeonCfg.cols = +b.dataset.cols;
+      dungeonCfg.rows = +b.dataset.rows;
+      dungeonCfg.mode = b.dataset.mode;
+      $('sizeVal').textContent = `${dungeonCfg.cols}×${dungeonCfg.rows}`;
+      itemsRange.value = b.dataset.items;
+      timeRange.value = b.dataset.time;
+      $('itemsVal').textContent = b.dataset.items;
+      $('timeVal').textContent = b.dataset.time + ' сек';
+      markSizeActive();
+      markModeActive();
+      updateItemsMax();
+      markPresetActive();
+      sfxClick();
+    };
+  });
+
+  itemsRange.oninput = () => {
+    $('itemsVal').textContent = itemsRange.value;
+    updateItemsHint();
+    markPresetActive();
+    sfxClick();
+  };
+  timeRange.oninput = () => {
+    $('timeVal').textContent = timeRange.value + ' сек';
+    markPresetActive();
+    sfxClick();
+  };
+
+  markSizeActive();
+  markModeActive();
+  updateItemsMax();
+  markPresetActive();
+
+  $('startBtn').onclick = () => {
+    dungeonCfg.items = +itemsRange.value;
+    dungeonCfg.showTime = +timeRange.value;
+    try { localStorage.setItem('dungeonCfg', JSON.stringify(dungeonCfg)); } catch(e) {}
+    dungeonShow();
+  };
+}
+
+/* ============ ФАЗА 1: ПОКАЗ ============ */
+function dungeonShow() {
+  clearTimeouts();
+  const cols = dungeonCfg.cols;
+  const rows = dungeonCfg.rows;
+  const total = cols * rows;
+  const itemCount = Math.min(dungeonCfg.items, total - 1);
+  const showTime = dungeonCfg.showTime;
+
+  // Генерируем комнаты
+  const roomEmojis = [];
+  for (let i = 0; i < total; i++) roomEmojis.push(DUNGEON_ROOMS[i % DUNGEON_ROOMS.length]);
+
+  // Раскладываем сокровища
+  const itemIndices = shuffle([...Array(total).keys()]).slice(0, itemCount);
+  const items = shuffle(DUNGEON_ITEMS).slice(0, itemCount);
+  const roomItems = Array(total).fill(null);
+  itemIndices.forEach((ri, i) => { roomItems[ri] = items[i]; });
+
+  gameEl.innerHTML = `
+    <div class="game-header">
+      <h2>🏰 Подземелье</h2>
+      <div class="subtitle">Запоминай... <span id="time">${showTime}</span> сек</div>
+    </div>
+    <div class="panel">
+      <div class="timer-bar"><div class="timer-fill" id="tfill" style="width:100%"></div></div>
+      <div class="status warn">Изучай, где что лежит</div>
+      <div class="dungeon-grid" id="grid" style="grid-template-columns: repeat(${cols}, 1fr);"></div>
+    </div>
+  `;
+
+  const grid = $('grid');
+  for (let i = 0; i < total; i++) {
+    const el = document.createElement('div');
+    el.className = 'room';
+    el.style.animationDelay = (i * 0.06) + 's';
+    el.innerHTML = `
+      <div class="room-emoji">${roomEmojis[i]}</div>
+      ${roomItems[i] ? `<div class="room-item" style="animation-delay: ${0.15 + i * 0.05}s">${roomItems[i]}</div>` : ''}
+    `;
+    grid.appendChild(el);
+    if (roomItems[i]) {
+      wait(100 + i * 60, () => beep(400 + i * 40, 0.06));
+    }
+  }
+
+  let left = showTime;
+  const intervalId = setInterval(() => {
+    left--;
+    const t = $('time'); if (t) t.textContent = Math.max(0, left);
+    const f = $('tfill'); if (f) f.style.width = (Math.max(0, left) / showTime * 100) + '%';
+    if (left <= 0) clearInterval(intervalId);
+  }, 1000);
+  timeouts.push(intervalId);
+
+  wait(showTime * 1000, () => dungeonAsk({
+    cols, rows, total, roomEmojis, roomItems, itemIndices, items
+  }));
+}
+
+/* ============ ФАЗА 2: ВОПРОСЫ ============ */
+function dungeonAsk(data) {
+  clearTimeouts();
+  const { cols, rows, total, roomEmojis, roomItems, itemIndices, items } = data;
+
+  // Очередь вопросов
+  const queue = shuffle([...itemIndices]);
+  const history = [];
+
+  function askNext(idx) {
+    if (idx >= queue.length) {
+      return dungeonResult(data, history);
+    }
+
+    const targetRoomIdx = queue[idx];
+    const targetItem = roomItems[targetRoomIdx];
+
+    const dotsHtml = queue.map((_, i) => {
+      let cls = 'dot';
+      if (i < idx) cls += history[i] ? ' correct' : ' wrong';
+      else if (i === idx) cls += ' active';
+      return `<div class="${cls}"></div>`;
+    }).join('');
+
+    if (dungeonCfg.mode === 'click') {
+      // === Режим "клик по комнате" ===
+      gameEl.innerHTML = `
+        <div class="game-header">
+          <h2>🏰 Подземелье</h2>
+          <div class="subtitle">Вопрос ${idx + 1} / ${queue.length}</div>
+        </div>
+        <div class="panel">
+          <div class="progress-dots">${dotsHtml}</div>
+          <div class="status">Где лежит <b style="font-size: 28px;">${targetItem}</b>?</div>
+          <div class="dungeon-grid" id="grid" style="grid-template-columns: repeat(${cols}, 1fr);"></div>
+        </div>
+      `;
+
+      const grid = $('grid');
+      let answered = false;
+
+      for (let i = 0; i < total; i++) {
+        const el = document.createElement('div');
+        el.className = 'room clickable';
+        el.innerHTML = `<div class="room-emoji">${roomEmojis[i]}</div>`;
+        el.onclick = () => {
+          if (answered) return;
+          answered = true;
+
+          const good = i === targetRoomIdx;
+
+          // Показываем правильный ответ, если ошибся
+          if (good) {
+            el.classList.add('result-correct');
+            el.innerHTML = `<div class="room-emoji">${roomEmojis[i]}</div><div class="room-item">${targetItem}</div>`;
+            sfxCorrect();
+            addScore(10);
+          } else {
+            el.classList.add('result-wrong');
+            // раскрываем правильную комнату
+            const correctEl = grid.children[targetRoomIdx];
+            correctEl.classList.add('result-reveal');
+            correctEl.innerHTML = `<div class="room-emoji">${roomEmojis[targetRoomIdx]}</div><div class="room-item">${targetItem}</div>`;
+            sfxWrong();
+          }
+
+          grid.querySelectorAll('.room').forEach(x => x.classList.remove('clickable'));
+          history.push(good);
+          wait(1300, () => askNext(idx + 1));
+        };
+        grid.appendChild(el);
+      }
+
+    } else {
+      // === Режим "выбор из 4" ===
+      const wrongPool = items.filter(it => it !== targetItem);
+      const wrongs = shuffle(wrongPool).slice(0, 3);
+      const options = shuffle([targetItem, ...wrongs]);
+
+      gameEl.innerHTML = `
+        <div class="game-header">
+          <h2>🏰 Подземелье</h2>
+          <div class="subtitle">Вопрос ${idx + 1} / ${queue.length}</div>
+        </div>
+        <div class="panel">
+          <div class="progress-dots">${dotsHtml}</div>
+          <div class="status">Что лежит в комнате <b>${roomEmojis[targetRoomIdx]}</b>?</div>
+          <div class="options" id="opts"></div>
+        </div>
+      `;
+
+      const opts = $('opts');
+      let answered = false;
+
+      options.forEach(o => {
+        const b = document.createElement('div');
+        b.className = 'option-btn';
+        b.textContent = o;
+        b.onclick = () => {
+          if (answered) return;
+          answered = true;
+
+          const good = o === targetItem;
+          opts.querySelectorAll('.option-btn').forEach(x => {
+            x.style.pointerEvents = 'none';
+            if (x.textContent !== targetItem && x !== b) x.classList.add('dimmed');
+          });
+
+          if (good) {
+            b.classList.add('correct');
+            sfxCorrect();
+            addScore(10);
+          } else {
+            b.classList.add('wrong');
+            sfxWrong();
+            opts.querySelectorAll('.option-btn').forEach(x => {
+              if (x.textContent === targetItem) {
+                x.classList.add('correct');
+                x.classList.remove('dimmed');
+              }
+            });
+          }
+
+          history.push(good);
+          wait(1100, () => askNext(idx + 1));
+        };
+        opts.appendChild(b);
+      });
+    }
+  }
+
+  askNext(0);
+}
+
+/* ============ ФАЗА 3: РЕЗУЛЬТАТ ============ */
+function dungeonResult(data, history) {
+  const score = history.filter(Boolean).length;
+  const max = history.length;
+
+  let emoji, title, text, stars, points;
+
+  if (score === max) {
+    emoji = '🏆'; title = 'Подземелье пройдено!';
+    text = `Все ${max} сокровищ найдены`;
+    stars = 3; points = 50;
+    sfxWin();
+  } else if (score >= max - 1) {
+    emoji = '💎'; title = 'Почти идеально';
+    text = `Правильно: ${score} из ${max}`;
+    stars = 2; points = 30;
+    sfxCorrect();
+  } else if (score >= Math.ceil(max / 2)) {
+    emoji = '🗺️'; title = 'Хорошая ориентировка';
+    text = `Правильно: ${score} из ${max}`;
+    stars = 1; points = 15;
+    sfxCorrect();
+  } else {
+    emoji = '💀'; title = 'Заблудился...';
+    text = `Правильно: ${score} из ${max}`;
+    stars = 0; points = 5;
+    sfxWrong();
+  }
+
+  addScore(points);
+  const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+
+  const historyRow = history.map(ok => `
+    <div style="display:inline-flex; align-items:center; justify-content:center;
+      width: 36px; height: 36px; margin: 3px;
+      border-radius: 10px;
+      background: ${ok ? '#DCFCE7' : '#FEE2E2'};
+      border: 2px solid ${ok ? '#22C55E' : '#EF4444'};
+      font-size: 18px;">
+      ${ok ? '✓' : '✗'}
+    </div>
+  `).join('');
+
+  gameEl.innerHTML = `
+    <div class="panel">
+      <div class="result-screen">
+        <div class="big">${emoji}</div>
+        <h2>${title}</h2>
+        <p>${text}</p>
+        <div class="stars">${starStr}</div>
+        <p style="opacity:.6; font-size: 14px;">+${points} очков</p>
+        <div style="margin-top: 20px; padding: 14px; background: rgba(168,85,247,.06); border-radius: 14px;">
+          <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px; font-weight: 700;">Твои ответы:</div>
+          <div style="display:flex; flex-wrap:wrap; justify-content:center;">${historyRow}</div>
+        </div>
+        <button class="btn-main" id="retry">Ещё раз 🔄</button>
+        <button class="btn-secondary" id="menuBtn">← Настройки</button>
+      </div>
+    </div>
+  `;
+  $('retry').onclick = () => dungeonShow();
+  $('menuBtn').onclick = () => startDungeon();
+}
+
+/* ============ СТАРТ ============ */
+document.addEventListener('click', initAudio, { once: true });
+startDungeon();
+</script>
+
+<script src="../assets/menu-data.js"></script>
+<script src="../assets/menu-drawer.js"></script>
+</body>
+</html>
