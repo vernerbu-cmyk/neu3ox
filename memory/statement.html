@@ -276,6 +276,8 @@
 </div>
 
 <script src="texts.js"></script>
+<script src="statement-scopes.js"></script>
+<script src="statement-logic.js"></script>
 
 <script>
 /* ============ УТИЛИТЫ ============ */
@@ -342,15 +344,6 @@ const STOP_WORDS = new Set([
   'который','которая','которое','которые'
 ]);
 
-function extractRoots(text) {
-  const words = text.toLowerCase()
-    .replace(/ё/g, 'е')
-    .replace(/[^а-я\s]/g, ' ')
-    .split(/\s+/)
-    .filter(w => w.length >= 4 && !STOP_WORDS.has(w));
-  return [...new Set(words.map(w => w.slice(0, 5)))];
-}
-
 function getKeyWords(paragraph) {
   const words = paragraph.toLowerCase()
     .replace(/ё/g, 'е')
@@ -373,36 +366,6 @@ function getPlanKeysForParagraph(textObj, i, paragraph) {
   }
   // Иначе — fallback на автокорни
   return getKeyWords(paragraph).slice(0, 4);
-}
-
-// Сколько корней из ответа совпало с ключами
-function countMatches(userInput, planKeys) {
-  const userRoots = extractRoots(userInput);
-  if (userRoots.length === 0) return 0;
-
-  const keyRoots = planKeys.map(k => k.toLowerCase().replace(/ё/g, 'е').slice(0, 5));
-  let matches = 0;
-  const usedKeys = new Set();
-
-  for (const ur of userRoots) {
-    for (let i = 0; i < keyRoots.length; i++) {
-      if (usedKeys.has(i)) continue;
-      const kr = keyRoots[i];
-      // Совпадение первых 4+ символов или полное совпадение
-      const minLen = Math.min(ur.length, kr.length);
-      let prefix = 0;
-      for (let j = 0; j < minLen; j++) {
-        if (ur[j] === kr[j]) prefix++;
-        else break;
-      }
-      if (prefix >= 4) {
-        matches++;
-        usedKeys.add(i);
-        break;
-      }
-    }
-  }
-  return matches;
 }
 
 if (typeof window.TEXTS === 'undefined' || !window.TEXTS.length) {
@@ -458,10 +421,10 @@ function startRetelling() {
               📋 Составь план<small>Озаглавь каждый абзац — ключевой навык для изложения</small>
             </button>
             <button class="segment-btn" data-mode="keys" style="text-align:left; padding: 14px 16px;">
-              🎯 Три опоры<small>Выбери 4 главных слова из 9</small>
+              🎯 Три опоры<small>Выбери опорные слова из предложенных</small>
             </button>
             <button class="segment-btn" data-mode="questions" style="text-align:left; padding: 14px 16px;">
-              📋 По вопросам<small>Ответь на 5 вопросов по порядку событий</small>
+              📋 По вопросам<small>Ответь на вопросы по прочитанному фрагменту</small>
             </button>
             <button class="segment-btn" data-mode="retell" style="text-align:left; padding: 14px 16px;">
               ✍️ Своими словами<small>Напиши пересказ — система проверит ключевые слова</small>
@@ -591,17 +554,11 @@ function retellShow() {
   clearTimeouts();
   if (!window.TEXTS || !window.TEXTS.length) { alert('База текстов не загружена.'); return; }
 
-  const textObj = TEXTS[rand(TEXTS.length)];
+  const textObj = getRetellExercise(TEXTS[rand(TEXTS.length)], retellCfg.textLength);
   const showTime = retellCfg.showTime;
   const timerMode = retellCfg.timerMode;
 
-  const allParagraphs = getParagraphs(textObj.text);
-  let displayParagraphs;
-  if (retellCfg.textLength === 'short') {
-    displayParagraphs = allParagraphs.slice(0, 2);
-  } else {
-    displayParagraphs = allParagraphs;
-  }
+  const displayParagraphs = getParagraphs(textObj.text);
 
   gameEl.innerHTML = `
     <div class="game-header">
@@ -758,7 +715,7 @@ function retellPlan(textObj, paragraphs) {
 
     addScore(points);
 
-    checkBtn.disabled = true;
+    checkBtn.disabled = false;
     checkBtn.textContent = 'Дальше →';
     checkBtn.onclick = () => retellResult(textObj, {
       emoji, title, text, stars, points,
@@ -841,7 +798,7 @@ function retellKeys(textObj) {
     }
 
     addScore(points);
-    checkBtn.disabled = true;
+    checkBtn.disabled = false;
     checkBtn.textContent = 'Дальше →';
     checkBtn.onclick = () => retellResult(textObj, { emoji, title, text, stars, points, keys: textObj.keysFor3 });
   };
@@ -929,9 +886,10 @@ function retellWrite(textObj) {
       <div class="subtitle">✍️ Напиши пересказ своими словами</div>
     </div>
     <div class="panel">
-      <div class="retell-label">Попробуй написать 3–5 предложений</div>
-      <div class="retell-hint">Пиши как помнишь — не обязательно дословно</div>
-      <textarea class="retell-textarea" id="retell" placeholder="Однажды..."></textarea>
+      <div class="retell-label">Напиши ${Math.min(3, textObj.paragraphCount || getParagraphs(textObj.text).length)}–5 предложений</div>
+      <div class="retell-hint">Расскажи, что произошло, своими словами. Перечня слов недостаточно.</div>
+      <textarea class="retell-textarea" id="retell" placeholder="Однажды..." aria-describedby="retellFeedback"></textarea>
+      <div class="retell-hint" id="retellFeedback" role="status" aria-live="polite"></div>
       <div class="retell-stats">
         <span>Символов: <b id="charCount">0</b></span>
         <span>Предложений: <b id="sentCount">0</b></span>
@@ -946,7 +904,7 @@ function retellWrite(textObj) {
   textarea.oninput = () => {
     const val = textarea.value.trim();
     $('charCount').textContent = val.length;
-    const sentences = val.split(/[.!?]+/).filter(s => s.trim().length > 3).length;
+    const sentences = val.split(/[.!?]+/).filter(s => getWords(s).length >= 2).length;
     $('sentCount').textContent = sentences;
     checkBtn.disabled = val.length < 30;
   };
@@ -956,20 +914,22 @@ function retellWrite(textObj) {
   checkBtn.onclick = () => {
     const val = textarea.value.trim();
     if (val.length < 30) return;
-    const lower = val.toLowerCase();
+    const issue = getRetellDraftIssue(val, textObj);
+    if (issue) { $('retellFeedback').textContent = issue; textarea.focus(); return; }
     const found = [], missed = [];
     keywords.forEach(k => {
-      if (lower.includes(k.toLowerCase())) found.push(k);
+      if (hasKeyword(val, k)) found.push(k);
       else missed.push(k);
     });
     const percent = Math.round(found.length / keywords.length * 100);
 
     let emoji, title, text, stars, points;
-    if (percent >= 80) { emoji = '🏆'; title = 'Отличный пересказ!'; text = `Ты упомянул ${found.length} из ${keywords.length} главных слов (${percent}%)`; stars = 3; points = 50; sfxWin(); }
-    else if (percent >= 60) { emoji = '✍️'; title = 'Хорошо!'; text = `Упомянуто ${found.length} из ${keywords.length} (${percent}%)`; stars = 2; points = 30; sfxCorrect(); }
-    else if (percent >= 40) { emoji = '🔍'; title = 'Сократил слишком сильно'; text = `Упомянуто ${found.length} из ${keywords.length} (${percent}%)`; stars = 1; points = 15; sfxCorrect(); }
-    else { emoji = '🌀'; title = 'Потерял сюжет'; text = `Упомянуто только ${found.length} из ${keywords.length}`; stars = 0; points = 5; sfxWrong(); }
+    if (percent >= 80) { emoji = '🏆'; title = 'Опорные слова найдены'; text = `Ты упомянул ${found.length} из ${keywords.length} главных слов (${percent}%)`; stars = 3; points = 50; sfxWin(); }
+    else if (percent >= 60) { emoji = '✍️'; title = 'Большинство опорных слов найдено'; text = `Упомянуто ${found.length} из ${keywords.length} (${percent}%)`; stars = 2; points = 30; sfxCorrect(); }
+    else if (percent >= 40) { emoji = '🔍'; title = 'Найдена часть опорных слов'; text = `Упомянуто ${found.length} из ${keywords.length} (${percent}%)`; stars = 1; points = 15; sfxCorrect(); }
+    else { emoji = '🌀'; title = 'Сравни пересказ с оригиналом'; text = `Упомянуто только ${found.length} из ${keywords.length}`; stars = 0; points = 5; sfxWrong(); }
 
+    text += '. Сравни с оригиналом: сохранились ли события и их порядок?';
     addScore(points);
     retellResult(textObj, { emoji, title, text, stars, points, userText: val, foundKeys: found, missedKeys: missed });
   };
@@ -1008,7 +968,7 @@ function retellResult(textObj, data) {
   const userTextHtml = userText ? `
     <div class="review-block">
       <div class="label">✍️ Твой пересказ:</div>
-      <div class="text">${userText.replace(/\n/g, '<br>')}</div>
+      <div class="text">${escapeHtml(userText).replace(/\n/g, '<br>')}</div>
     </div>` : '';
 
   const planReviewHtml = planReview ? `
