@@ -133,10 +133,11 @@
 
   /* ===== SETTINGS ===== */
   .settings-grid{
-    display:grid; grid-template-columns:1fr; gap:16px;
+    display:grid; grid-template-columns:minmax(0, 1fr); gap:16px;
     margin-top:18px;
   }
   .settings-group{
+    min-width:0;
     padding:14px 16px;
     background:var(--blue-light);
     border-radius:14px;
@@ -166,7 +167,7 @@
     height:24px; cursor:pointer;
   }
   select{
-    width:100%; font-family:inherit;
+    width:100%; min-width:0; font-family:inherit;
     font-size:13.5px; font-weight:700;
     color:var(--text); background:var(--panel);
     border:2px solid var(--border); border-radius:12px;
@@ -253,7 +254,7 @@
 
   /* ===== LOCK ===== */
   .locks-grid{
-    display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(min(260px, 100%), 1fr));
     gap:44px 24px; justify-items:center;
   }
   .lock{
@@ -663,7 +664,9 @@
     .lock--color .code-cell{ width:30px; height:30px; }
     .hack-slot{ width:32px; height:40px; font-size:17px; }
     .opt-btn{ width:36px; height:42px; font-size:17px; }
-    .types-grid{ grid-template-columns:1fr 1fr; }
+    .types-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
+    .type-check{ padding:10px 6px; gap:4px; }
+    .type-check span{ min-width:0; overflow-wrap:anywhere; }
     .lock-rule{ font-size:11px; padding:4px 9px; top:-12px; left:8px; }
     .locks-grid{ gap:38px 16px; }
     .btn-main{ padding:13px 22px; font-size:15px; }
@@ -1129,18 +1132,14 @@ function shackleSvg(){
 }
 
 function generateCode(pool, length, allowRepeats, seedChar){
-  const code=[]; const used=new Set();
-  if(seedChar !== undefined && seedChar !== null){
-    code.push(seedChar);
-    used.add(seedChar);
-  }
-  const maxLen = Math.min(length, pool.length);
-  let guard=0;
-  while(code.length < maxLen && guard<300){
-    guard++;
-    const v=pick(pool);
-    if(!allowRepeats && used.has(v)) continue;
-    used.add(v); code.push(v);
+  const available = [...new Set(pool)];
+  if(!available.length) return [];
+  const code = available.includes(seedChar) ? [seedChar] : [];
+  const maxLen = allowRepeats ? length : Math.min(length, available.length);
+  if(allowRepeats){
+    while(code.length < maxLen) code.push(pick(available));
+  } else {
+    code.push(...shuffle(available.filter(v => v !== seedChar)).slice(0, maxLen - code.length));
   }
   return code;
 }
@@ -1357,7 +1356,7 @@ function renderSelect(){
 
             <label class="check-row">
               <input type="checkbox" ${settings.dependencies ? 'checked' : ''} onchange="onBool('dependencies', this.checked)">
-              <span>Цепочка зависимостей — в коде каждого замка символ из предыдущего</span>
+              <span>Связанные коды — символ из предыдущего кода задаёт первый символ следующего. При смене типа переносится его номер в наборе (по кругу).</span>
             </label>
 
             <label class="check-row">
@@ -1485,22 +1484,22 @@ function startGame(){
 
   const total = chosen.length;
 
-  // Зависимости: символ из предыдущего кода попадает в следующий
+  // Передаём номер символа: он допустим и при смене типа замка.
   let seedFromPrev = null;
   locks = chosen.map((t, idx) => {
     const params = computeLockParams(idx, total);
     let code;
 
     if(settings.dependencies && idx > 0 && seedFromPrev !== null){
-      // Берём случайный символ из предыдущего кода и используем как seed
-      const seedChar = seedFromPrev;
+      // В новом наборе выбираем символ с тем же номером (по кругу).
+      const seedChar = t.pool[seedFromPrev % t.pool.length];
       code = generateCode(t.pool, params.length, settings.allowRepeats !== false, seedChar);
     } else {
       code = generateCode(t.pool, params.length, settings.allowRepeats !== false);
     }
 
-    // Запоминаем первый символ для следующего замка
-    seedFromPrev = pick(code);
+    // Номер случайного символа текущего кода задаёт связь со следующим.
+    seedFromPrev = t.pool.indexOf(pick(code));
 
     const rule = pickRuleForType(t);
     const target = applyRule(code, rule, t);

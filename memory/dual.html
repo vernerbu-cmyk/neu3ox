@@ -785,7 +785,7 @@ function dualResult(cards, dUser, lUser, digitCorrect, letterCorrect, fullCorrec
     text = `Верно ${fullCorrect} из ${count} полностью`;
     stars = 2; points = 30;
     sfxCorrect();
-  } else if (fullCorrect >= count / 2 || digitCorrect + letterCorrect >= count) {
+  } else if (fullCorrect >= count / 2 || (needDigit && needLetter && digitCorrect + letterCorrect >= count)) {
     emoji = '🎯'; title = 'Хорошо';
     text = `Верно ${fullCorrect} из ${count} полностью`;
     stars = 1; points = 15;

@@ -731,17 +731,22 @@ function generateNews(size) {
   const p6 = `${expert.charAt(0).toUpperCase() + expert.slice(1)} прокомментировал: «${expertQuote}»`;
   const p7 = `${ending}`;
 
-  let paragraphs;
-  if (size === 'short') {
-    paragraphs = [p1, p3, p7];
-  } else if (size === 'medium') {
-    paragraphs = [p1, p3, p4, p6, p7];
-  } else {
-    paragraphs = [p1, p2, p3, p4, p5, p6, p7];
-  }
+  const sections = [
+    { text: p1, keys: ['place', 'creature', 'action', 'time'] },
+    { text: p2, keys: ['circumstance'] },
+    { text: p3, keys: ['witness', 'witnessQuote'] },
+    { text: p4, keys: ['consequence'] },
+    { text: p5, keys: ['detail'] },
+    { text: p6, keys: ['expert', 'expertQuote'] },
+    { text: p7, keys: ['ending'] }
+  ];
+  const indexes = size === 'short' ? [0, 2, 6]
+    : size === 'medium' ? [0, 2, 3, 5, 6] : [0, 1, 2, 3, 4, 5, 6];
+  const selected = indexes.map(i => sections[i]);
 
   return {
-    paragraphs,
+    paragraphs: selected.map(s => s.text),
+    factKeys: selected.flatMap(s => s.keys),
     facts: {
       place: place.nom,
       creature,
@@ -1066,12 +1071,10 @@ function newsAsk(news) {
     }
   ];
 
-  // Оставляем только те, чей правильный ответ реально был в тексте
-  const paragraphText = news.paragraphs.join(' ');
-  const validQuestions = allQuestions.filter(q => {
-    if (!q.correct || q.wrongs.length < 3) return false;
-    return paragraphText.includes(q.correct);
-  });
+  // Факты привязаны к показанным абзацам, независимо от регистра и падежа.
+  const validQuestions = allQuestions.filter(q =>
+    q.correct && q.wrongs.length >= 3 && news.factKeys.includes(q.key)
+  );
 
   const questionCount = Math.min(newsCfg.questions, validQuestions.length);
   const questionPool = shuffle([...validQuestions]).slice(0, questionCount);

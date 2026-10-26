@@ -175,6 +175,8 @@
     line-height: 1;
   }
 
+  .room-number { font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 4px; }
+
   .room-item {
     font-size: 36px;
     line-height: 1;
@@ -437,7 +439,7 @@ function sfxWin() {
 const DUNGEON_ITEMS = [
   '⚔️','🛡️','💎','🔮','🗝️','📜','🧪','👑','🪄','🏹',
   '🪓','⚗️','🧿','🌙','🔱','🦄','🏺','🕸️','🔥','❄️',
-  '⚱️','🕯️','📿','⚜️','🎭','🏆','🍄','🧿'
+  '⚱️','🕯️','📿','⚜️','🎭','🏆','🍄'
 ];
 
 const DUNGEON_ROOMS = ['🏛️','⚰️','🕯️','🕸️','🗿','⚗️','🪦','🏺','🕳️','⛓️','🗼','🛖'];
@@ -665,6 +667,7 @@ function dungeonShow() {
     el.className = 'room';
     el.style.animationDelay = (i * 0.06) + 's';
     el.innerHTML = `
+      <div class="room-number">№${i + 1}</div>
       <div class="room-emoji">${roomEmojis[i]}</div>
       ${roomItems[i] ? `<div class="room-item" style="animation-delay: ${0.15 + i * 0.05}s">${roomItems[i]}</div>` : ''}
     `;
@@ -732,7 +735,7 @@ function dungeonAsk(data) {
       for (let i = 0; i < total; i++) {
         const el = document.createElement('div');
         el.className = 'room clickable';
-        el.innerHTML = `<div class="room-emoji">${roomEmojis[i]}</div>`;
+        el.innerHTML = `<div class="room-number">№${i + 1}</div><div class="room-emoji">${roomEmojis[i]}</div>`;
         el.onclick = () => {
           if (answered) return;
           answered = true;
@@ -742,7 +745,7 @@ function dungeonAsk(data) {
           // Показываем правильный ответ, если ошибся
           if (good) {
             el.classList.add('result-correct');
-            el.innerHTML = `<div class="room-emoji">${roomEmojis[i]}</div><div class="room-item">${targetItem}</div>`;
+            el.innerHTML = `<div class="room-number">№${i + 1}</div><div class="room-emoji">${roomEmojis[i]}</div><div class="room-item">${targetItem}</div>`;
             sfxCorrect();
             addScore(10);
           } else {
@@ -750,7 +753,7 @@ function dungeonAsk(data) {
             // раскрываем правильную комнату
             const correctEl = grid.children[targetRoomIdx];
             correctEl.classList.add('result-reveal');
-            correctEl.innerHTML = `<div class="room-emoji">${roomEmojis[targetRoomIdx]}</div><div class="room-item">${targetItem}</div>`;
+            correctEl.innerHTML = `<div class="room-number">№${targetRoomIdx + 1}</div><div class="room-emoji">${roomEmojis[targetRoomIdx]}</div><div class="room-item">${targetItem}</div>`;
             sfxWrong();
           }
 
@@ -763,7 +766,7 @@ function dungeonAsk(data) {
 
     } else {
       // === Режим "выбор из 4" ===
-      const wrongPool = items.filter(it => it !== targetItem);
+      const wrongPool = DUNGEON_ITEMS.filter(it => it !== targetItem);
       const wrongs = shuffle(wrongPool).slice(0, 3);
       const options = shuffle([targetItem, ...wrongs]);
 
@@ -774,7 +777,7 @@ function dungeonAsk(data) {
         </div>
         <div class="panel">
           <div class="progress-dots">${dotsHtml}</div>
-          <div class="status">Что лежит в комнате <b>${roomEmojis[targetRoomIdx]}</b>?</div>
+          <div class="status">Что лежит в комнате <b>№${targetRoomIdx + 1} ${roomEmojis[targetRoomIdx]}</b>?</div>
           <div class="options" id="opts"></div>
         </div>
       `;
@@ -834,7 +837,7 @@ function dungeonResult(data, history) {
     text = `Все ${max} сокровищ найдены`;
     stars = 3; points = 50;
     sfxWin();
-  } else if (score >= max - 1) {
+  } else if (score > 0 && score >= max - 1) {
     emoji = '💎'; title = 'Почти идеально';
     text = `Правильно: ${score} из ${max}`;
     stars = 2; points = 30;

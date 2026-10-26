@@ -108,10 +108,10 @@
 
   /* ---------- Размер поля ---------- */
   .size-row {
-    display: flex; gap: 8px; margin-top: 8px;
+    display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;
   }
   .size-btn {
-    flex: 1;
+    flex: 1 1 64px;
     padding: 12px;
     border-radius: 12px;
     border: 2px solid var(--border);
@@ -197,6 +197,10 @@
   }
 
   /* Результаты */
+  .mirror-cell.result-missed {
+    background: #FFF7ED !important;
+    border-color: var(--orange) !important;
+  }
   .mirror-cell.result-correct {
     background: #DCFCE7 !important;
     border-color: var(--green) !important;
@@ -672,11 +676,11 @@ function reflectionPlay(pattern) {
 function reflectionCheck(pattern, userGrid, cellSize) {
   const cols = reflectionCfg.cols;
   const rows = reflectionCfg.rows;
-  const total = cols * rows;
 
-  // Зеркальная проверка: pattern[r][c] === userGrid[r][cols-1-c]
-  let correct = 0;
-  let mirroredCorrect = 0; // сколько совпало бы в НЕзеркальном виде (для подсказки)
+  // Пустые клетки не дают баллов. Лишние отметки снижают точность.
+  const filled = pattern.flat().filter(Boolean).length;
+  let matched = 0, extra = 0;
+  let directMatched = 0, directExtra = 0;
 
   const leftGrid = $('leftGrid');
   const rightGrid = $('rightGrid');
@@ -705,30 +709,34 @@ function reflectionCheck(pattern, userGrid, cellSize) {
     cell.onclick = null;
     cell.style.cursor = 'default';
 
-    if (userVal === expectedMirror) {
-      correct++;
-      if (userVal) cell.classList.add('result-correct');
-    } else {
-      if (userVal) cell.classList.add('result-wrong');
+    if (userVal && expectedMirror) {
+      matched++;
+      cell.classList.add('result-correct');
+    } else if (userVal) {
+      extra++;
+      cell.classList.add('result-wrong');
+    } else if (expectedMirror) {
+      cell.classList.add('result-missed');
     }
 
-    // Считаем «прямые» совпадения — если много, значит ребёнок не зеркалил
-    if (userVal === expectedDirect) mirroredCorrect++;
+    if (userVal && expectedDirect) directMatched++;
+    else if (userVal) directExtra++;
   });
 
   // Определяем результат
   let emoji, title, text, stars, points;
-  const mirrorRatio = correct / total;
-  const directRatio = mirroredCorrect / total;
+  const mirrorRatio = filled ? matched / (filled + extra) : 0;
+  const directRatio = filled ? directMatched / (filled + directExtra) : 0;
+  const accuracyText = `Совпало закрашенных клеток: ${matched} из ${filled}. Лишних: ${extra}.`;
 
-  if (correct === total) {
+  if (filled > 0 && matched === filled && extra === 0) {
     emoji = '🏆'; title = 'Идеальное отражение!';
-    text = `Все ${total} клеток зеркальны как надо`;
+    text = `Все ${filled} закрашенных клеток отражены верно`;
     stars = 3; points = 50;
     sfxWin();
   } else if (mirrorRatio >= 0.8) {
     emoji = '✨'; title = 'Почти идеально';
-    text = `Правильно: ${correct} из ${total}`;
+    text = accuracyText;
     stars = 2; points = 30;
     sfxCorrect();
   } else if (directRatio > mirrorRatio + 0.2) {
@@ -738,12 +746,12 @@ function reflectionCheck(pattern, userGrid, cellSize) {
     sfxWrong();
   } else if (mirrorRatio >= 0.5) {
     emoji = '🎯'; title = 'Неплохо!';
-    text = `Правильно: ${correct} из ${total}`;
+    text = accuracyText;
     stars = 1; points = 15;
     sfxCorrect();
   } else {
     emoji = '🌀'; title = 'Не рассчитал';
-    text = `Правильно: ${correct} из ${total}`;
+    text = accuracyText;
     stars = 0; points = 5;
     sfxWrong();
   }

@@ -336,7 +336,7 @@ function startSimon() {
         </div>
 
         <label style="display:block; margin-bottom: 18px;">
-          <div class="settings-row"><span>Стартовый уровень</span><b id="startVal">${simonCfg.startLevel}</b></div>
+          <div class="settings-row"><span>Стартовая длина</span><b id="startVal">${simonCfg.startLevel}</b></div>
           <input type="range" id="startRange" min="1" max="8" value="${simonCfg.startLevel}">
         </label>
 
@@ -496,7 +496,7 @@ function simonPlay() {
     chars
   };
 
-  for (let i = 0; i < simonCfg.startLevel; i++) {
+  for (let i = 0; i < simonCfg.startLevel - 1; i++) {
     simonState.sequence.push(rand(btnCount));
   }
 
@@ -546,7 +546,7 @@ function nextSimonRound() {
 
   s.sequence.push(rand(s.btnCount));
 
-  let subtitle = `Уровень ${level} · длина ${s.sequence.length} · ${s.currentSpeed}мс`;
+  let subtitle = `Раунд ${level} · длина ${s.sequence.length} · ${s.currentSpeed}мс`;
   if (s.reverse) subtitle = `⚠️ РЕВЕРС · ` + subtitle;
   if (s.isDouble) subtitle = `🔁 ДВОЙНОЙ ПОКАЗ · ` + subtitle;
   $('subtitle').textContent = subtitle;
@@ -659,13 +659,13 @@ function simonClick(i) {
     $('status').textContent = '❌ Ошибка!';
     $('status').className = 'status bad';
     const reached = s.level - 1;
-    const correctSeq = s.sequence.map(x => SIMON_CHARS[x].emoji).join(' ');
-    wait(1200, () => simonResult(reached, correctSeq));
+    const correctSeq = seq.map(x => SIMON_CHARS[x].emoji).join(' ');
+    wait(1200, () => simonResult(reached, correctSeq, seq.length));
   }
 }
 
 /* ============ РЕЗУЛЬТАТ ============ */
-function simonResult(reached, correctSeq) {
+function simonResult(reached, correctSeq, sequenceLength) {
   let emoji, title, stars;
 
   if (reached >= 10) {
@@ -694,8 +694,8 @@ function simonResult(reached, correctSeq) {
       <div class="result-screen">
         <div class="big">${emoji}</div>
         <h2>${title}</h2>
-        <p>Ты прошёл до уровня <b style="color: var(--blue-dark); font-size: 20px;">${reached}</b></p>
-        <p style="font-size: 14px;">Длина последней последовательности: ${reached + 1}</p>
+        <p>Пройдено раундов: <b style="color: var(--blue-dark); font-size: 20px;">${reached}</b></p>
+        <p style="font-size: 14px;">Длина последней последовательности: ${sequenceLength}</p>
         <div class="stars">${starStr}</div>
         <p style="opacity:.6; font-size: 14px;">+${points} очков</p>
         <div style="margin-top: 20px; padding: 14px; background: rgba(45,108,223,.05); border-radius: 14px;">
