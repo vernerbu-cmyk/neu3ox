@@ -770,18 +770,12 @@ function chainStep(chain) {
     statusEl.textContent = rev ? 'Какое слово было раньше?' : 'Какое слово было дальше?';
     statusEl.className = 'status';
 
-    let noErrorsSoFar = true;
-    for (let i = 0; i < activeSlot; i++) {
-      if (userChain[i] !== targetChain[i]) { noErrorsSoFar = false; break; }
-    }
-
-    const tgt = targetChain[activeSlot];
-    const correct = noErrorsSoFar && tgt ? tgt : null;
+    const correct = targetChain[activeSlot];
 
     // Обманки — любые слова из всей базы, не из цепочки
     const decoyPool = ALL_WORDS.filter(w => !targetChain.includes(w) && !userChain.includes(w));
     const decoys = shuffle(decoyPool).slice(0, 3);
-    let options = correct ? shuffle([correct, ...decoys]) : shuffle(decoys).slice(0, 4);
+    let options = shuffle([correct, ...decoys]);
     while (options.length < 3) options.push('—');
 
     options.forEach((word, idx) => {

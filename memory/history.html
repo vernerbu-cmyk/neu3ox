@@ -368,6 +368,7 @@
   <main id="game"></main>
 </div>
 
+<script src="history-logic.js"></script>
 <script>
 /* ============ УТИЛИТЫ ============ */
 const $ = id => document.getElementById(id);
@@ -431,18 +432,18 @@ function setupThemeToggle() {
 
 /* 🌍 Мировая история */
 const EVENTS_WORLD = [
-  { year: 3000, event: 'Основание Египетского царства', emoji: '🏛️' },
-  { year: 776, event: 'Первые Олимпийские игры (Др. Греция)', emoji: '🏅' },
-  { year: 753, event: 'Основание Рима', emoji: '🏛️' },
-  { year: 586, event: 'Разрушение Первого Иерусалимского храма', emoji: '🕯️' },
-  { year: 490, event: 'Марафонская битва', emoji: '⚔️' },
-  { year: 480, event: 'Фермопильское сражение', emoji: '🛡️' },
-  { year: 431, event: 'Начало Пелопоннесской войны', emoji: '⚔️' },
-  { year: 336, event: 'Александр Македонский стал царём', emoji: '👑' },
-  { year: 323, event: 'Смерть Александра Македонского', emoji: '⚰️' },
-  { year: 146, event: 'Разрушение Карфагена', emoji: '🔥' },
-  { year: 44, event: 'Убийство Юлия Цезаря', emoji: '🗡️' },
-  { year: 27, event: 'Октавиан Август — первый император Рима', emoji: '👑' },
+  { year: -3000, event: 'Основание Египетского царства', emoji: '🏛️' },
+  { year: -776, event: 'Первые Олимпийские игры (Др. Греция)', emoji: '🏅' },
+  { year: -753, event: 'Основание Рима', emoji: '🏛️' },
+  { year: -586, event: 'Разрушение Первого Иерусалимского храма', emoji: '🕯️' },
+  { year: -490, event: 'Марафонская битва', emoji: '⚔️' },
+  { year: -480, event: 'Фермопильское сражение', emoji: '🛡️' },
+  { year: -431, event: 'Начало Пелопоннесской войны', emoji: '⚔️' },
+  { year: -336, event: 'Александр Македонский стал царём', emoji: '👑' },
+  { year: -323, event: 'Смерть Александра Македонского', emoji: '⚰️' },
+  { year: -146, event: 'Разрушение Карфагена', emoji: '🔥' },
+  { year: -44, event: 'Убийство Юлия Цезаря', emoji: '🗡️' },
+  { year: -27, event: 'Октавиан Август — первый император Рима', emoji: '👑' },
   { year: 313, event: 'Миланский эдикт (христианство)', emoji: '✝️' },
   { year: 395, event: 'Разделение Римской империи', emoji: '🗺️' },
   { year: 476, event: 'Падение Западной Римской империи', emoji: '🏛️' },
@@ -861,9 +862,9 @@ const EVENTS_RUS_ART = [
 
 /* 🔬 Наука */
 const EVENTS_SCIENCE = [
-  { year: 400, event: 'Гиппократ — основатель медицины', emoji: '⚕️' },
-  { year: 300, event: '«Начала» Эвклида', emoji: '📐' },
-  { year: 240, event: 'Эратосфен измерил Землю', emoji: '🌍' },
+  { year: -400, event: 'Гиппократ — основатель медицины', emoji: '⚕️' },
+  { year: -300, event: '«Начала» Эвклида', emoji: '📐' },
+  { year: -240, event: 'Эратосфен измерил Землю', emoji: '🌍' },
   { year: 1543, event: 'Коперник: Земля вокруг Солнца', emoji: '☀️' },
   { year: 1600, event: 'Джордано Бруно сожжён', emoji: '🔥' },
   { year: 1610, event: 'Галилей открыл спутники Юпитера', emoji: '🔭' },
@@ -949,7 +950,7 @@ const EVENTS_TECH = [
 
 /* 🎨 Мировое искусство */
 const EVENTS_ART = [
-  { year: 447, event: 'Построен Парфенон в Афинах', emoji: '🏛️' },
+  { year: -447, event: 'Начало строительства Парфенона в Афинах', emoji: '🏛️' },
   { year: 1302, event: 'Фрески Джотто в Падуе', emoji: '🎨' },
   { year: 1420, event: 'Купол Брунеллески во Флоренции', emoji: '⛪' },
   { year: 1503, event: '«Мона Лиза» Леонардо да Винчи', emoji: '🖼️' },
@@ -1338,10 +1339,10 @@ function generateTimeline() {
       used.add(uid);
       picked.push(ev);
     }
-    return picked.sort((a, b) => a.year - b.year);
+    return prepareHistoryTimeline(picked, getEventPool(), historyCfg.mode);
   }
   const pool = getEventPool();
-  return shuffle(pool).slice(0, count).sort((a, b) => a.year - b.year);
+  return prepareHistoryTimeline(shuffle(pool).slice(0, count), pool, historyCfg.mode);
 }
 
 function applyEmojiMode() {
@@ -1374,7 +1375,7 @@ function historyShow() {
     el.className = 'timeline-item';
     el.style.animationDelay = (i * 0.1) + 's';
     el.innerHTML = `
-      <div class="timeline-year">${item.year}</div>
+      <div class="timeline-year">${formatHistoryYear(item.year)}</div>
       <div class="timeline-sep">—</div>
       <div class="timeline-event">${item.event}</div>
       <div class="timeline-emoji">${item.emoji}</div>
@@ -1406,6 +1407,7 @@ function historyOrder(timeline) {
   const count = timeline.length;
   const slots = Array(count).fill(null);
   const pool = shuffle([...timeline]);
+  let submitted = false;
 
   gameEl.innerHTML = `
     <div class="game-header">
@@ -1413,7 +1415,7 @@ function historyOrder(timeline) {
       <div class="subtitle">Расставь события от раннего к позднему</div>
     </div>
     <div class="panel">
-      <div class="status">Клик по событию → в следующий свободный слот. Клик по слоту → вернуть.</div>
+      <div class="status">Клик по событию → в следующий свободный слот. Клик по слоту → вернуть. События одного года можно ставить в любом порядке.</div>
       <div class="slots" id="slots"></div>
       <div class="pool" id="pool"></div>
       <button class="btn-main" id="checkBtn">Проверить ✓</button>
@@ -1436,6 +1438,7 @@ function historyOrder(timeline) {
           <div class="slot-event">${slots[i].event}</div>
         `;
         s.onclick = () => {
+          if (submitted) return;
           pool.push(slots[i]);
           slots[i] = null;
           beep(360, 0.06, 'triangle', 0.06);
@@ -1462,6 +1465,7 @@ function historyOrder(timeline) {
           <div class="slot-event">${item.event}</div>
         `;
         p.onclick = () => {
+          if (submitted) return;
           const emptyIdx = slots.indexOf(null);
           if (emptyIdx === -1) return;
           slots[emptyIdx] = item;
@@ -1476,10 +1480,13 @@ function historyOrder(timeline) {
   renderAll();
 
   $('checkBtn').onclick = () => {
+    if (submitted) return;
+    submitted = true;
+    $('checkBtn').disabled = true;
     let correctPos = 0;
     let correctItems = 0;
     for (let i = 0; i < count; i++) {
-      if (slots[i] === timeline[i]) correctPos++;
+      if (isHistoryPositionCorrect(slots[i], timeline[i])) correctPos++;
     }
     const remaining = [...timeline];
     for (let i = 0; i < count; i++) {
@@ -1493,13 +1500,13 @@ function historyOrder(timeline) {
     slotsEl.querySelectorAll('.slot').forEach((el, i) => {
       el.onclick = null;
       el.style.cursor = 'default';
-      if (slots[i] === timeline[i]) el.classList.add('result-correct');
+      if (isHistoryPositionCorrect(slots[i], timeline[i])) el.classList.add('result-correct');
       else if (slots[i] && timeline.includes(slots[i])) el.classList.add('result-misplaced');
       else el.classList.add('result-wrong');
     });
 
     let emoji, title, text, stars, points;
-    if (correctPos === count) {
+    if (correctPos === count && correctItems === count) {
       emoji = '🏆'; title = 'Идеальный порядок!';
       text = `Все ${count} событий на своих местах`;
       stars = 3; points = 50;
@@ -1520,13 +1527,12 @@ function historyOrder(timeline) {
       stars = 0; points = 5;
       sfxWrong();
     }
-    addScore(points);
 
     wait(1400, () => {
       historyResult({
         emoji, title, text, stars, points,
         timeline,
-        history: slots.map((s, i) => s === timeline[i])
+        history: slots.map((s, i) => isHistoryPositionCorrect(s, timeline[i]))
       });
     });
   };
@@ -1559,14 +1565,7 @@ function historyYears(timeline) {
     } else {
       pool = ALL_EVENTS;
     }
-    const close = pool.filter(e => e.year !== cur.year && Math.abs(e.year - cur.year) <= 150).map(e => e.year);
-    const far = pool.filter(e => e.year !== cur.year && Math.abs(e.year - cur.year) > 150).map(e => e.year);
-    let wrongs = shuffle(close).slice(0, 3);
-    if (wrongs.length < 3) {
-      const extra = shuffle(far).slice(0, 3 - wrongs.length);
-      wrongs = [...wrongs, ...extra];
-    }
-    const options = shuffle([cur.year, ...wrongs]);
+    const options = getHistoryYearOptions(cur.year, pool);
 
     const dotsHtml = questionPool.map((_, i) => {
       let cls = 'dot';
@@ -1597,14 +1596,15 @@ function historyYears(timeline) {
     options.forEach(y => {
       const b = document.createElement('div');
       b.className = 'option-text year';
-      b.textContent = y;
+      b.dataset.year = String(y);
+      b.textContent = formatHistoryYear(y);
       b.onclick = () => {
         if (answered) return;
         answered = true;
         const good = y === cur.year;
         opts.querySelectorAll('.option-text').forEach(x => {
           x.style.pointerEvents = 'none';
-          if (+x.textContent !== cur.year && x !== b) x.classList.add('dimmed');
+          if (Number(x.dataset.year) !== cur.year && x !== b) x.classList.add('dimmed');
         });
         if (good) {
           b.classList.add('correct');
@@ -1613,7 +1613,7 @@ function historyYears(timeline) {
           b.classList.add('wrong');
           sfxWrong();
           opts.querySelectorAll('.option-text').forEach(x => {
-            if (+x.textContent === cur.year) {
+            if (Number(x.dataset.year) === cur.year) {
               x.classList.add('correct');
               x.classList.remove('dimmed');
             }
@@ -1633,18 +1633,13 @@ function historyBefore(timeline) {
   clearTimeouts();
   applyEmojiMode();
   const pairCount = Math.min(6, Math.max(3, timeline.length));
-  const pairs = [];
-  const usedPairs = new Set();
-  let guard = 0;
-  while (pairs.length < pairCount && guard < 100) {
-    guard++;
-    const a = timeline[rand(timeline.length)];
-    const b = timeline[rand(timeline.length)];
-    if (a === b) continue;
-    const key = [a.year, b.year].sort().join('-');
-    if (usedPairs.has(key)) continue;
-    usedPairs.add(key);
-    pairs.push([a, b]);
+  const pairs = buildHistoryPairs(timeline, pairCount);
+  if (!pairs.length) {
+    gameEl.innerHTML = `<div class="panel"><h2>События одного года</h2>
+      <p>Для сравнения нужны события разных лет. Выбери новую подборку.</p>
+      <button class="btn-main" id="retry">Новая подборка</button></div>`;
+    $('retry').onclick = () => historyShow();
+    return;
   }
   const history = [];
 
@@ -1739,7 +1734,7 @@ function historyResult(data) {
 
   const timelineHtml = timeline.map(item => `
     <div class="item">
-      <div class="item-year">${item.year}</div>
+      <div class="item-year">${formatHistoryYear(item.year)}</div>
       <div>${historyCfg.noEmoji ? '' : item.emoji + ' '}${item.event}</div>
     </div>
   `).join('');
