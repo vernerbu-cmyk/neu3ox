@@ -204,6 +204,8 @@
     }
 
     #textSelect {
+      min-width: 0;
+      max-width: 100%;
       background: rgba(255,255,255,.18);
       color: #fff;
       border: none;
@@ -867,7 +869,9 @@ function setLevel(lv) {
   texts.forEach((t, idx) => {
     const opt = document.createElement("option");
     opt.value = idx;
-    opt.textContent = "Текст " + (idx + 1);
+    opt.textContent = t.author && t.title
+      ? `${t.author} — ${t.title}${t.fragment ? ` (отрывок ${t.fragment})` : ""}`
+      : "Текст " + (idx + 1);
     textSelect.appendChild(opt);
   });
 
