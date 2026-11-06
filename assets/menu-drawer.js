@@ -49,13 +49,16 @@
     }[c]));
   }
 
+
+  const iconSvg = (...args) => window.NeuroXIconSvg ? window.NeuroXIconSvg(...args) : '';
+
   /* ---------- Построение ---------- */
   function build() {
-    // Кнопка ☰
+    // Кнопка открытия бокового меню
     const btn = document.createElement('button');
     btn.id = 'nx-drawer-btn';
     btn.setAttribute('aria-label', 'Открыть меню');
-    btn.innerHTML = '☰';
+    btn.innerHTML = iconSvg('grid', 'nx-menu-trigger-icon'); 
 
     // Оверлей
     const overlay = document.createElement('div');
@@ -65,20 +68,24 @@
     const drawer = document.createElement('aside');
     drawer.id = 'nx-drawer';
     drawer.setAttribute('aria-hidden', 'true');
+    drawer.inert = true;
+    drawer.setAttribute('role', 'dialog');
+    drawer.setAttribute('aria-label', 'Меню NeuroX');
+    ['keydown','keyup','keypress','click'].forEach(type=>drawer.addEventListener(type,event=>event.stopPropagation()));
 
     const sectionsHtml = window.NEUROX_MENU.map(sec => {
       const subLinks = sec.items.map(it => {
         const href = new URL(it.file, ROOT).href;
         const active = new URL(location.href).pathname === new URL(href).pathname;
-        return `<a href="${esc(href)}" ${active ? 'aria-current="page" class="nx-current"' : ''}>${esc(it.icon)} ${esc(it.title)}</a>`;
+        return `<a href="${esc(href)}" ${active ? 'aria-current="page" class="nx-current"' : ''}><span class="nx-item-icon">${iconSvg(it.icon)}</span><span class="nx-item-title">${esc(it.title)}</span></a>`;
       }).join('');
       return `
         <button type="button" class="nx-section" data-section="${esc(sec.id)}" aria-expanded="false">
-          <span class="nx-section__icon">${esc(sec.icon)}</span>
+          <span class="nx-section__icon">${iconSvg(sec.icon)}</span>
           <span>${esc(sec.title)}</span>
-          <span class="nx-section__chev" aria-hidden="true">▾</span>
+          <span class="nx-section__chev" aria-hidden="true">${iconSvg('chevron')}</span>
         </button>
-        <div class="nx-sub" data-sub="${esc(sec.id)}">
+        <div class="nx-sub" data-sub="${esc(sec.id)}" inert>
           <div class="nx-sub__inner">${subLinks}</div>
         </div>
       `;
@@ -86,21 +93,36 @@
 
     drawer.innerHTML = `
       <div class="nx-head">
-        <div class="nx-brand">
-          <span class="nx-brain">🧠</span>
-          <span>NeuroX</span>
-        </div>
-        <button class="nx-close" aria-label="Закрыть">×</button>
+        <a class="nx-brand" href="${esc(new URL('index.html', ROOT).href)}" aria-label="На главную NeuroX">
+          <span class="nx-brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#FF6A00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15.5 13a3.5 3.5 0 0 0-3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8"/>
+              <path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1-7 0v-1.8"/>
+              <path d="M17.5 16a3.5 3.5 0 0 0 0-7H17"/>
+              <path d="M19 9.3V6.5a3.5 3.5 0 0 0-7 0"/>
+              <path d="M6.5 16a3.5 3.5 0 0 1 0-7H7"/>
+              <path d="M5 9.3V6.5a3.5 3.5 0 0 1 7 0v10"/>
+              <circle cx="9" cy="11.5" r="1.6" fill="#fff" stroke="#FF6A00" stroke-width=".7"/>
+              <circle cx="15" cy="11.5" r="1.6" fill="#fff" stroke="#FF6A00" stroke-width=".7"/>
+              <circle cx="9" cy="11.5" r=".55" fill="#FF6A00" stroke="none"/>
+              <circle cx="15" cy="11.5" r=".55" fill="#FF6A00" stroke="none"/>
+            </svg>
+          </span>
+          <span class="nx-brand-copy"><strong>NeuroX</strong><small>МЕНЮ И РАЗДЕЛЫ</small></span>
+        </a>
+        <button class="nx-close" aria-label="Закрыть">${iconSvg('multiply')}</button>
       </div>
 
       <div class="nx-body">
-        <a class="nx-home" href="${esc(new URL('index.html', ROOT).href)}">🏠 Главное меню</a>
+        <a class="nx-home" href="${esc(new URL('index.html', ROOT).href)}"><span class="nx-home-icon">${iconSvg('house')}</span><span>Главная NeuroX</span></a>
+        <div id="nx-quick-drawer"></div>
         ${sectionsHtml}
       </div>
 
       <div class="nx-foot">
-        <a id="nx-profile-link" href="${esc(new URL('index.html#profile', ROOT).href)}">👤 Профиль и рекомендации</a>
-        <button type="button" id="nx-fullscreen">⛶ Полный экран</button>
+        <a id="nx-profile-link" href="${esc(new URL('index.html#profile', ROOT).href)}"><span class="nx-foot-icon">${iconSvg('person')}</span>Профиль и рекомендации</a>
+        <a href="${esc(new URL('index.html#settings', ROOT).href)}"><span class="nx-foot-icon">${iconSvg('wrench')}</span>Настройки NeuroX</a>
+        <button type="button" id="nx-fullscreen"><span class="nx-foot-icon">${iconSvg('grid')}</span>Полный экран</button>
       </div>
     `;
 
@@ -114,24 +136,38 @@
   /* ---------- Открыть / закрыть ---------- */
   let isOpen = false;
   let previousOverflow = '';
+  let previousFocus = null;
 
   function open(drawer, overlay, btn) {
+    if (isOpen) return;
     isOpen = true;
+    previousFocus = document.activeElement;
+    drawer.inert = false;
+    drawer.setAttribute('aria-modal', 'true');
     drawer.classList.add('open');
     overlay.classList.add('open');
     drawer.setAttribute('aria-hidden', 'false');
     btn.setAttribute('aria-label', 'Закрыть меню');
     previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    drawer.querySelector('.nx-close').focus({preventScroll:true});
+    window.dispatchEvent(new CustomEvent('neurox:drawer-state', {detail:{open:true}}));
   }
 
   function close(drawer, overlay, btn) {
+    if (!isOpen) return;
     isOpen = false;
+    if (previousFocus?.isConnected) previousFocus.focus({preventScroll:true});
+    drawer.removeAttribute('aria-modal');
     drawer.classList.remove('open');
     overlay.classList.remove('open');
     drawer.setAttribute('aria-hidden', 'true');
+    drawer.inert = true;
+    drawer.setAttribute('role', 'dialog');
+    drawer.setAttribute('aria-label', 'Меню NeuroX');
     btn.setAttribute('aria-label', 'Открыть меню');
     document.body.style.overflow = previousOverflow;
+    window.dispatchEvent(new CustomEvent('neurox:drawer-state', {detail:{open:false}}));
   }
 
   /* ---------- Свайпы ---------- */
@@ -167,6 +203,7 @@
     applyStoredTheme();
 
     const { btn, overlay, drawer } = build();
+    window.NeuroXQuickAccess?.refreshDrawer();
 
     btn.addEventListener('click', () => {
       if (isOpen) close(drawer, overlay, btn);
@@ -182,12 +219,12 @@
         const wasOpen = sec.classList.contains('open');
 
         drawer.querySelectorAll('.nx-section').forEach(s => { s.classList.remove('open'); s.setAttribute('aria-expanded', 'false'); });
-        drawer.querySelectorAll('.nx-sub').forEach(s => s.classList.remove('open'));
+        drawer.querySelectorAll('.nx-sub').forEach(s => {s.classList.remove('open');s.inert=true;});
 
         if (!wasOpen) {
           sec.classList.add('open');
           sec.setAttribute('aria-expanded', 'true');
-          sub.classList.add('open');
+          sub.classList.add('open'); sub.inert=false;
         }
       });
     });
@@ -196,15 +233,25 @@
     if (active) {
       const sub = active.closest('.nx-sub');
       const sec = drawer.querySelector(`.nx-section[data-section="${sub.dataset.sub}"]`);
-      if (sec) { sec.classList.add('open'); sec.setAttribute('aria-expanded', 'true'); sub.classList.add('open'); }
+      if (sec) { sec.classList.add('open'); sec.setAttribute('aria-expanded', 'true'); sub.classList.add('open'); sub.inert=false; }
     }
 
     const fsBtn = drawer.querySelector('#nx-fullscreen');
     if (fsBtn) fsBtn.addEventListener('click', toggleFullscreen);
 
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && isOpen) close(drawer, overlay, btn);
-    });
+      if (!isOpen) return;
+      if (e.key === 'Escape') {e.preventDefault();e.stopImmediatePropagation();close(drawer,overlay,btn);return;}
+      if (e.key !== 'Tab') return;
+      const focusable = [...drawer.querySelectorAll('a[href],button:not(:disabled),input:not(:disabled),select:not(:disabled),[tabindex="0"]')]
+        .filter(el => !el.closest('[inert]') && el.checkVisibility());
+      if (!focusable.length) return;
+      const index = focusable.indexOf(document.activeElement);
+      if ((e.shiftKey && index <= 0) || (!e.shiftKey && (index === focusable.length-1 || index === -1))) {
+        e.preventDefault();(e.shiftKey ? focusable.at(-1) : focusable[0]).focus();
+      }
+      e.stopImmediatePropagation();
+    }, true);
 
     setupSwipe(drawer, overlay, btn);
   }

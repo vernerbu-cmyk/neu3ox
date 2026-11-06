@@ -20,12 +20,16 @@ const CARD_VISUALS = {
     badge: '',
     svg: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><rect x="8" y="8" width="32" height="32" rx="8"/><circle class="dot dot-1" cx="17" cy="17" r="2.2" fill="#FF6A00" stroke="none"/><circle class="dot dot-2" cx="31" cy="17" r="2.2" fill="currentColor" stroke="none"/><circle class="dot dot-3" cx="17" cy="31" r="2.2" fill="currentColor" stroke="none"/><circle class="dot dot-4" cx="31" cy="31" r="2.2" fill="#FF6A00" stroke="none"/><circle class="dot dot-5" cx="24" cy="24" r="2.2" fill="currentColor" stroke="none"/></svg>`
   },
-  memory: {
+  attention: {
     badge: 'в разработке',
+    svg: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M3 24Q24 3 45 24Q24 45 3 24Z"/><circle class="nx-main-eye" cx="24" cy="24" r="9"/><circle class="nx-main-pupil" cx="24" cy="24" r="4" fill="#FF6A00" stroke="none"/></svg>`
+  },
+  memory: {
+    badge: '',
     svg: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M8 8 L34 8 L40 14 L40 40 L8 40 Z"/><rect class="disk-shutter" x="16" y="8" width="16" height="12" fill="#FF6A00" stroke="#FF6A00"/><rect x="22" y="10" width="4" height="8" fill="white" stroke="none"/><rect x="14" y="26" width="20" height="14"/></svg>`
   },
   generators: {
-    badge: 'в разработке',
+    badge: '',
     svg: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><defs><clipPath id="printClipMain"><rect x="0" y="0" width="48" height="20"/></clipPath></defs><g clip-path="url(#printClipMain)"><g class="print-paper"><rect x="15" y="3" width="18" height="15" rx="1.5"/><path d="M20 8 L28 8" stroke="#FF6A00" stroke-width="1.8"/><path d="M20 12 L26 12" stroke="#FF6A00" stroke-width="1.8"/></g></g><rect x="6" y="20" width="36" height="20" rx="3"/><circle cx="11" cy="26" r="1.5" fill="#FF6A00" stroke="none"/><circle class="print-led" cx="37" cy="26" r="1.6" fill="#FF6A00" stroke="none"/><path d="M14 34 L34 34" stroke-width="3.2"/></svg>`
   },
   orfografos: {
@@ -45,6 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Проходим по каждому разделу из menu-data.js
   window.NEUROX_MENU.forEach(section => {
+    // Генераторы открываются отдельно — через кнопку принтера в «Мои тренажёры».
+    if (section.id === 'generators') return;
     const visual = CARD_VISUALS[section.id] || { svg: '', badge: '' };
     const badgeHtml = visual.badge ? `<span class="badge">${visual.badge}</span>` : '';
     const countText = section.items.length > 0 ? `<div class="subtitle">${section.items.length} тренажёров</div>` : '';

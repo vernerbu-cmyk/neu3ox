@@ -329,3 +329,245 @@
 [data-theme="dark"] #nx-drawer .nx-sub .nx-current {
   color: #FFB37A; background: rgba(255, 139, 61, .1);
 }
+
+
+/* ============================================================
+   NeuroX • оформление бокового меню в стиле самого приложения.
+   Синяя шапка, мозг-маскот, светлые карточки и оранжевые акценты.
+   ============================================================ */
+#nx-drawer, #nx-drawer * { box-sizing: border-box; }
+#nx-drawer {
+  width: min(350px, 90vw);
+  max-width: 90vw;
+  color: #24324B;
+  background: #F4F6FB;
+  border-right: 1px solid rgba(30,63,138,.12);
+  box-shadow: 8px 0 30px rgba(17,39,82,.22);
+  font-family: 'Nunito Sans','Segoe UI',system-ui,sans-serif;
+}
+#nx-drawer .nx-head {
+  min-height: 88px;
+  padding: 17px 17px 16px;
+  border: 0;
+  color: #fff;
+  background: linear-gradient(110deg,#152E68 0%,#1E3F8A 66%,#2A4A99 100%);
+  box-shadow: 0 4px 14px rgba(20,48,105,.16);
+}
+#nx-drawer .nx-brand {
+  display:flex; align-items:center; gap:11px; min-width:0;
+  color:#fff; text-decoration:none; font-family:'Fredoka','Nunito Sans',sans-serif;
+}
+#nx-drawer .nx-brand-mark {
+  width:46px;height:46px;display:grid;place-items:center;flex:none;
+  border-radius:14px;background:rgba(255,106,0,.17);
+  border:1px solid rgba(255,177,124,.24);
+}
+#nx-drawer .nx-brand-mark svg {width:35px;height:35px;display:block}
+#nx-drawer .nx-brand-copy {display:flex;flex-direction:column;gap:2px;min-width:0}
+#nx-drawer .nx-brand-copy strong {font-size:23px;line-height:1.05;letter-spacing:.2px;color:#fff}
+#nx-drawer .nx-brand-copy small {font:800 9px/1.25 'Nunito Sans',sans-serif;letter-spacing:.85px;color:#D4DFF7;white-space:nowrap}
+#nx-drawer .nx-close {
+  width:37px;height:37px;border:1px solid rgba(255,255,255,.24);
+  border-radius:11px;background:rgba(255,255,255,.11);color:#fff;
+  font-size:23px;line-height:1;
+}
+#nx-drawer .nx-close:hover {background:#FF6A00;border-color:#FF9A57;color:#fff;transform:rotate(90deg)}
+#nx-drawer .nx-body {
+  padding:13px 12px 22px;
+  background:#F4F6FB;
+  scrollbar-color:rgba(30,63,138,.22) transparent;
+  scrollbar-width:thin;
+}
+#nx-drawer .nx-body::-webkit-scrollbar {width:7px}
+#nx-drawer .nx-body::-webkit-scrollbar-thumb {background:rgba(30,63,138,.2);border-radius:8px}
+#nx-drawer .nx-home {
+  min-height:47px;margin:0 0 11px;padding:11px 13px;gap:10px;
+  border:1px solid rgba(30,63,138,.1);border-radius:13px;
+  background:#E8EEF9;color:#1E3F8A;font-size:14px;font-weight:900;
+  box-shadow:0 2px 0 rgba(30,63,138,.04);
+}
+#nx-drawer .nx-home:hover {background:#FFEADB;color:#C85100;border-color:rgba(255,106,0,.24);transform:translateY(-1px)}
+#nx-drawer .nx-home-icon {width:28px;height:28px;display:grid;place-items:center;border-radius:9px;background:#fff;color:#1E3F8A;font-size:20px}
+#nx-drawer .nx-home-arrow {margin-left:auto;color:#D95800;font-size:16px}
+#nx-quick-drawer {
+  margin:0 0 11px;padding:10px;border:1px solid rgba(30,63,138,.1);
+  border-radius:14px;background:#fff;box-shadow:0 2px 8px rgba(30,63,138,.045);
+}
+#nx-quick-drawer .nx-quick-title {color:#1E3F8A;font-size:13px;font-weight:900}
+#nx-quick-drawer .nx-quick-group + .nx-quick-group {border-top:1px solid rgba(30,63,138,.1)}
+#nx-quick-drawer .nx-quick-link {background:#F4F6FB;border-color:rgba(30,63,138,.1);color:#24324B}
+#nx-quick-drawer .nx-quick-link:hover {background:#FFEADB;border-color:rgba(255,106,0,.3);color:#A94300}
+#nx-quick-drawer .nx-quick-count {color:#C85100}
+#nx-quick-drawer .nx-quick-empty {color:#6B7280}
+#nx-quick-drawer .nx-quick-item .nx-fav-button {background:#fff;border-color:rgba(30,63,138,.14);color:#1E3F8A}
+#nx-quick-drawer .nx-quick-item .nx-fav-button[aria-pressed=true] {background:#FFEADB;border-color:#FF6A00;color:#C85100}
+#nx-drawer .nx-section {
+  position:relative;min-height:46px;margin:5px 0;padding:8px 11px;
+  border:1px solid rgba(30,63,138,.095);border-radius:13px;
+  background:#fff;color:#1E3F8A;font:800 14px/1.25 'Nunito Sans',sans-serif;
+  box-shadow:0 2px 7px rgba(30,63,138,.035);
+  transition:background .16s,border-color .16s,color .16s,transform .16s;
+}
+#nx-drawer .nx-section:hover {background:#F9FBFF;border-color:rgba(30,63,138,.2);color:#17346F;transform:translateX(2px)}
+#nx-drawer .nx-section.open {background:#FFF1E6;border-color:rgba(255,106,0,.35);color:#A94300;box-shadow:0 2px 8px rgba(255,106,0,.07)}
+#nx-drawer .nx-section.open::before {content:'';position:absolute;left:-1px;top:8px;bottom:8px;width:4px;border-radius:0 4px 4px 0;background:#FF6A00}
+#nx-drawer .nx-section__icon {width:30px;height:30px;display:grid;place-items:center;flex:none;border-radius:9px;background:#E8EEF9;font-size:17px}
+#nx-drawer .nx-section.open .nx-section__icon {background:#fff;color:#C85100}
+#nx-drawer .nx-section__chev {color:#6B7890;opacity:.8}
+#nx-drawer .nx-sub {transition:grid-template-rows .24s ease}
+#nx-drawer .nx-sub__inner {padding:4px 0 7px 13px;margin:0 0 3px 13px;border-left:2px solid rgba(30,63,138,.12)}
+#nx-drawer .nx-sub a {
+  display:flex;align-items:center;gap:9px;min-height:34px;margin:2px 0;padding:7px 10px 7px 13px;
+  border-radius:9px;color:#46536B;font-size:12.5px;font-weight:700;
+  transition:background .15s,color .15s,transform .15s;
+}
+#nx-drawer .nx-sub a::before {left:1px;width:5px;height:5px;background:rgba(30,63,138,.28)}
+#nx-drawer .nx-sub a:hover {background:#fff;color:#C85100;transform:translateX(2px)}
+#nx-drawer .nx-sub a:hover::before {background:#FF6A00}
+#nx-drawer .nx-sub .nx-current {background:#FFEADB;color:#A94300;font-weight:900}
+#nx-drawer .nx-sub .nx-current::before {background:#FF6A00;width:6px;height:6px}
+#nx-drawer .nx-foot {
+  padding:10px 12px max(13px,env(safe-area-inset-bottom));
+  border-top:1px solid rgba(30,63,138,.12);background:#fff;
+}
+#nx-drawer .nx-foot a,#nx-drawer .nx-foot button {
+  min-height:39px;margin:2px 0;padding:9px 11px;border-radius:10px;
+  color:#46536B;font-size:12.5px;font-weight:800;gap:10px;
+}
+#nx-drawer .nx-foot a:hover,#nx-drawer .nx-foot button:hover {background:#E8EEF9;color:#1E3F8A}
+#nx-drawer .nx-foot-icon {width:25px;height:25px;display:grid;place-items:center;flex:none;border-radius:8px;background:#FFEADB;color:#C85100;font-size:15px}
+#nx-overlay {background:rgba(13,31,70,.42);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+#nx-drawer-btn {
+  width:50px;height:50px;right:18px;bottom:18px;border:1px solid rgba(255,255,255,.24);
+  border-radius:15px;background:linear-gradient(145deg,#1E3F8A,#152E68);color:#fff;
+  box-shadow:0 6px 18px rgba(20,48,105,.24);opacity:.92;font-size:22px;
+}
+#nx-drawer-btn:hover {background:#FF6A00;border-color:#FF9A57;opacity:1}
+#nx-drawer :is(a,button):focus-visible {outline:3px solid #FF6A00;outline-offset:2px}
+
+/* Тёмная тема использует те же карточки и акценты, без синей заливки всего меню. */
+html[data-theme="dark"] #nx-drawer {background:#171E2B;color:#E8EEF9;border-right-color:rgba(140,170,240,.14)}
+html[data-theme="dark"] #nx-drawer .nx-head {background:linear-gradient(110deg,#15233F 0%,#20365F 66%,#294572 100%)}
+html[data-theme="dark"] #nx-drawer .nx-body {background:#171E2B}
+html[data-theme="dark"] #nx-drawer .nx-home {background:#25334C;border-color:rgba(140,170,240,.12);color:#E8EEF9}
+html[data-theme="dark"] #nx-drawer .nx-home:hover {background:#4A2E1A;color:#FFB37A;border-color:rgba(255,139,61,.35)}
+html[data-theme="dark"] #nx-drawer .nx-home-icon {background:#1C2739;color:#FFB37A}
+html[data-theme="dark"] #nx-quick-drawer {background:#1C2739;border-color:rgba(140,170,240,.13)}
+html[data-theme="dark"] #nx-quick-drawer .nx-quick-title {color:#DDE7FA}
+html[data-theme="dark"] #nx-quick-drawer .nx-quick-group + .nx-quick-group {border-top-color:rgba(140,170,240,.12)}
+html[data-theme="dark"] #nx-quick-drawer .nx-quick-link {background:#25334C;border-color:rgba(140,170,240,.12);color:#E8EEF9}
+html[data-theme="dark"] #nx-quick-drawer .nx-quick-link:hover {background:#3A2B25;border-color:rgba(255,139,61,.35);color:#FFD0AD}
+html[data-theme="dark"] #nx-quick-drawer .nx-quick-empty {color:#A4AFC5}
+html[data-theme="dark"] #nx-quick-drawer .nx-quick-item .nx-fav-button {background:#25334C;border-color:rgba(140,170,240,.16);color:#E8EEF9}
+html[data-theme="dark"] #nx-quick-drawer .nx-quick-item .nx-fav-button[aria-pressed=true] {background:#4A2E1A;border-color:#FF8B3D;color:#FFB37A}
+html[data-theme="dark"] #nx-drawer .nx-section {background:#1C2739;border-color:rgba(140,170,240,.12);color:#E8EEF9;box-shadow:none}
+html[data-theme="dark"] #nx-drawer .nx-section:hover {background:#25334C;border-color:rgba(140,170,240,.2);color:#fff}
+html[data-theme="dark"] #nx-drawer .nx-section.open {background:#3A2B25;border-color:rgba(255,139,61,.35);color:#FFD0AD}
+html[data-theme="dark"] #nx-drawer .nx-section__icon {background:#25334C;color:#C7D6F5}
+html[data-theme="dark"] #nx-drawer .nx-section.open .nx-section__icon {background:#4A2E1A;color:#FFB37A}
+html[data-theme="dark"] #nx-drawer .nx-sub__inner {border-left-color:rgba(140,170,240,.15)}
+html[data-theme="dark"] #nx-drawer .nx-sub a {color:#B8C2D6}
+html[data-theme="dark"] #nx-drawer .nx-sub a:hover {background:#25334C;color:#FFB37A}
+html[data-theme="dark"] #nx-drawer .nx-sub .nx-current {background:#3A2B25;color:#FFD0AD}
+html[data-theme="dark"] #nx-drawer .nx-foot {background:#1C2331;border-top-color:rgba(140,170,240,.14)}
+html[data-theme="dark"] #nx-drawer .nx-foot a,html[data-theme="dark"] #nx-drawer .nx-foot button {color:#B8C2D6}
+html[data-theme="dark"] #nx-drawer .nx-foot a:hover,html[data-theme="dark"] #nx-drawer .nx-foot button:hover {background:#25334C;color:#fff}
+html[data-theme="dark"] #nx-drawer .nx-foot-icon {background:#3A2B25;color:#FFB37A}
+html[data-theme="dark"] #nx-drawer-btn {background:linear-gradient(145deg,#263D68,#172A4D)}
+html[data-theme="dark"] #nx-drawer-btn:hover {background:#FF6A00}
+
+@media(max-width:620px) {
+  #nx-drawer {width:min(340px,92vw);max-width:92vw}
+  #nx-drawer .nx-head {padding:15px 14px 14px;min-height:76px}
+  #nx-drawer .nx-brand-copy strong {font-size:21px}
+  #nx-drawer .nx-body {padding:10px 9px 18px}
+  #nx-drawer .nx-section {min-height:44px}
+  #nx-drawer .nx-foot {padding-bottom:max(12px,env(safe-area-inset-bottom))}
+  #nx-drawer-btn {right:13px;bottom:max(13px,env(safe-area-inset-bottom));width:47px;height:47px}
+}
+@media(prefers-reduced-motion:reduce) {
+  #nx-drawer *,#nx-drawer,#nx-overlay,#nx-drawer-btn {transition:none!important;animation:none!important}
+}
+@media print {#nx-drawer,#nx-overlay,#nx-drawer-btn {display:none!important}}
+
+
+/* NeuroX • единый SVG-набор вместо emoji и символов шрифта в боковом меню. */
+#nx-drawer .nx-line-icon {width:19px;height:19px;display:block;flex:none;overflow:visible}
+#nx-drawer .nx-section__icon .nx-line-icon {width:20px;height:20px}
+#nx-drawer .nx-sub a .nx-item-icon {width:22px;height:22px;display:grid;place-items:center;flex:none;border-radius:7px;color:#1E3F8A;background:#E8EEF9}
+#nx-drawer .nx-sub a .nx-item-icon .nx-line-icon {width:16px;height:16px}
+#nx-drawer .nx-sub a:hover .nx-item-icon,
+#nx-drawer .nx-sub .nx-current .nx-item-icon {color:#C85100;background:#FFEADB}
+#nx-drawer .nx-section__icon .nx-line-icon,
+#nx-drawer .nx-home-icon .nx-line-icon,
+#nx-drawer .nx-foot-icon .nx-line-icon {width:19px;height:19px}
+#nx-drawer .nx-home-icon,#nx-drawer .nx-foot-icon {display:grid;place-items:center}
+#nx-drawer .nx-home-arrow .nx-line-icon {width:16px;height:16px}
+#nx-drawer .nx-close .nx-line-icon {width:19px;height:19px}
+#nx-drawer-btn .nx-menu-trigger-icon {width:23px;height:23px;stroke:currentColor}
+.nx-quick-emoji .nx-line-icon {width:17px;height:17px;color:#1E3F8A}
+.nx-manage-icon {width:25px;height:25px;display:inline-grid;place-items:center;flex:none;color:#1E3F8A;background:#E8EEF9;border-radius:8px}
+.nx-manage-icon .nx-line-icon {width:16px;height:16px}
+.nx-manage-name {display:flex;align-items:center;gap:8px;min-width:0}
+html[data-theme="dark"] #nx-drawer .nx-sub a .nx-item-icon,
+html[data-theme="dark"] .nx-manage-icon {background:#25334C;color:#C7D6F5}
+html[data-theme="dark"] #nx-drawer .nx-sub a:hover .nx-item-icon,
+html[data-theme="dark"] #nx-drawer .nx-sub .nx-current .nx-item-icon {background:#4A2E1A;color:#FFB37A}
+html[data-theme="dark"] .nx-quick-emoji .nx-line-icon {color:#DDE7FA}
+@media(max-width:620px) {
+  #nx-drawer .nx-sub a {gap:8px;padding-left:10px}
+  #nx-drawer .nx-sub a::before {display:none}
+}
+
+/* SVG-звёзды избранного и SVG-маркеры подборок — без emoji и текстовых пиктограмм. */
+.nx-fav-button {font-size:0!important}
+.nx-fav-button .nx-line-icon {width:19px;height:19px;display:block;fill:none;stroke:currentColor;stroke-width:1.8}
+.nx-fav-button[aria-pressed="true"] .nx-line-icon {fill:currentColor}
+.nx-quick-title {display:flex;align-items:center;gap:7px}
+.nx-quick-title .nx-line-icon {width:17px;height:17px;display:block;color:var(--blue,#1E3F8A);flex:none}
+#nx-drawer .nx-section__chev .nx-line-icon {width:15px;height:15px;display:block}
+#nx-drawer .nx-section.open .nx-section__chev .nx-line-icon {transform:rotate(180deg)}
+html[data-theme="dark"] .nx-quick-title .nx-line-icon {color:#DDE7FA}
+
+/* Beta 12.7 — изоляция органов управления drawer от глобальных button-стилей игр.
+   Некоторые старые страницы задают всем button padding:12px 28px и
+   button {width:100%} в медиаправилах: это растягивало SVG-звёзды. */
+#nx-drawer, #nx-drawer * { box-sizing: border-box; }
+#nx-drawer .nx-close {
+  padding: 0 !important;
+  width: 37px !important;
+  height: 37px !important;
+  min-width: 37px !important;
+  max-width: 37px !important;
+  flex: 0 0 37px !important;
+  display: grid !important;
+  place-items: center !important;
+  box-shadow: none;
+}
+#nx-drawer .nx-fav-button,
+#nx-drawer #nx-quick-drawer .nx-quick-item .nx-fav-button,
+#nx-drawer #nx-quick-drawer .nx-current-favorite .nx-fav-button {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  flex: 0 0 32px !important;
+  display: grid !important;
+  place-items: center !important;
+  line-height: 1 !important;
+  border-radius: 9px;
+  box-shadow: none !important;
+}
+#nx-drawer .nx-fav-button .nx-line-icon { width: 19px; height: 19px; }
+#nx-drawer .nx-quick-item {min-width:0;display:flex;align-items:center;gap:6px}
+#nx-drawer .nx-quick-link {min-width:0;flex:1 1 auto}
+#nx-drawer .nx-current-favorite {min-width:0;gap:7px}
+#nx-drawer .nx-current-favorite > span {min-width:0;overflow-wrap:anywhere}
+#nx-drawer .nx-section {width:100%;box-sizing:border-box;box-shadow:0 2px 7px rgba(30,63,138,.035)}
+#nx-drawer .nx-foot button {width:100%;box-sizing:border-box;box-shadow:none}
+/* Главная уже обозначена домиком, дополнительная стрелка была визуальным шумом. */
+#nx-drawer .nx-home-arrow {display:none!important}
