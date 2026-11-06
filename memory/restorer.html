@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<script src="../shared/theme.js"></script>
+<script>/* NeuroX: читаем общую настройку до первой отрисовки */
+try {
+  const nxSavedTheme = localStorage.getItem('neurox_theme');
+  const nxTheme = (nxSavedTheme === 'light' || nxSavedTheme === 'dark')
+    ? nxSavedTheme
+    : ((window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
+  document.documentElement.dataset.theme = nxTheme;
+} catch (_) { document.documentElement.dataset.theme = 'light'; }
+</script>
+
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Реставратор · NeuroX · v2</title>
+<style>
+:root{--blue:#1e3f8a;--orange:#ff6a00;--ink:#192b47;--muted:#687b94;--bg:#f3f6fc;--paper:#fff;--line:#dfe7f2;--pale:#eaf1ff;--green:#13846f;--shadow:0 14px 34px rgba(34,62,113,.065)}
+:root[data-theme="dark"]{--blue:#9db9ff;--orange:#ff953f;--ink:#eff4ff;--muted:#b1c1d8;--bg:#0e1829;--paper:#19273e;--line:#32445f;--pale:#263b59;--green:#79e0bd;--shadow:0 12px 35px rgba(0,0,0,.17)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.46 'Segoe UI',Inter,Arial,sans-serif}h1,h2,h3,p{margin:0}button,select,input{font:inherit}button{cursor:pointer}button:disabled,input:disabled{opacity:.5;cursor:not-allowed}button:focus-visible,input:focus-visible{outline:3px solid var(--orange);outline-offset:3px}.hidden{display:none!important}
+.container{max-width:1440px;margin:auto;padding:22px 24px 45px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}.brand{display:flex;gap:11px;align-items:center}.back{width:42px;height:42px;display:grid;place-items:center;background:var(--paper);border:1px solid var(--line);border-radius:13px;text-decoration:none;color:var(--blue);font-size:25px;font-weight:800}.logo{width:43px;height:43px;display:grid;place-items:center;background:#1e3f8a;border-radius:13px;color:white}.logo svg{width:27px}.brand-name{font-weight:850;font-size:20px;line-height:1.1}.sub{font-size:11px;font-weight:800;letter-spacing:.11em;color:var(--muted);margin-top:4px}.righttop{display:flex;gap:8px;align-items:center}.tiny-btn{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:12px;padding:9px 13px;font-weight:750}.version{border-radius:99px;background:var(--pale);color:var(--blue);padding:9px 12px;font-size:11px;font-weight:800}
+h1{font-size:clamp(30px,3.5vw,45px);font-weight:850;letter-spacing:-1.6px;line-height:1.05;margin-bottom:8px}.lead{font-size:15px;color:var(--muted);max-width:890px;margin-bottom:22px}.layout{display:grid;grid-template-columns:minmax(270px,323px) minmax(0,1fr);gap:18px}.card{background:var(--paper);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:22px}.side{padding:22px;display:flex;flex-direction:column;gap:18px}.eyebrow{font-size:11px;letter-spacing:.13em;font-weight:850;color:var(--muted);text-transform:uppercase}.side h2{font-size:23px;letter-spacing:-.6px;line-height:1.13;margin:6px 0}.muted{font-size:13px;color:var(--muted)}.presets{display:grid;gap:8px}.preset{text-align:left;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);width:100%;border-radius:14px;padding:11px 13px}.preset strong{display:block;font-size:14px}.preset span{display:block;color:var(--muted);font-size:12px;margin-top:2px}.preset.active{border-color:var(--blue);background:var(--pale)}.preset:hover:not(:disabled){border-color:var(--orange)}.split{height:1px;background:var(--line)}.setting-title{display:flex;justify-content:space-between;gap:8px;align-items:center}.detail{border:1px solid var(--line);border-radius:14px;padding:13px;background:var(--bg)}.detail summary{cursor:pointer;font-weight:800;color:var(--blue)}.fields{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:15px}.field label{display:block;color:var(--muted);font-size:12px;font-weight:750;margin-bottom:5px}.field input,.field select{background:var(--paper);color:var(--ink);width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 8px;min-width:0}.checks{margin-top:13px;display:flex;flex-wrap:wrap;gap:7px}.tick{background:var(--paper);border:1px solid var(--line);border-radius:9px;display:flex;gap:6px;align-items:center;padding:6px 8px;font-size:12px;font-weight:700}.tick input{accent-color:#1e3f8a}.rules{background:var(--bg);border:1px solid var(--line);padding:12px;border-radius:13px;font-size:13px}.rules strong{color:var(--blue)}.buttons{display:flex;gap:9px}.btn{min-height:46px;border-radius:12px;padding:12px 16px;font-weight:800;border:0}.primary{background:var(--orange);color:white;box-shadow:0 6px 18px rgba(255,106,0,.15)}.secondary{background:var(--pale);color:var(--blue);border:1px solid var(--line)}.outline{background:var(--paper);color:var(--ink);border:1px solid var(--line)}.side .buttons .primary{flex:1}.smallnote{font-size:12px;color:var(--muted)}
+.work{padding:20px;display:flex;flex-direction:column;gap:14px;min-height:680px}.worktop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.worktop h2{font-size:23px;letter-spacing:-.4px;margin-bottom:4px}.status{font-size:13px;color:var(--muted)}.phase{font-size:11px;color:var(--muted);font-weight:800;padding:9px 12px;border:1px solid var(--line);border-radius:50px;white-space:nowrap}.phase.live{background:#e9f8f4;color:#117661;border-color:#a4deca}.phase.edit{background:#fff0e4;color:#a95a0c;border-color:#ffd1a8}.steps{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.step{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:750;color:var(--muted)}.step i{display:grid;place-items:center;width:23px;height:23px;border-radius:8px;border:1px solid var(--line);font-style:normal}.step.current{color:var(--blue)}.step.current i{background:var(--pale);border-color:var(--blue)}.step.done{color:var(--green)}.step.done i{background:#e7f7f0;border-color:#a4deca}.step-arrow{color:var(--muted);font-size:13px}.artwrap{background:linear-gradient(145deg,#13233b,#102b40 70%,#10293c);border:1px solid #2d4e64;overflow:hidden;border-radius:20px;padding:14px;position:relative}.arthead{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#a9c0d2;font-size:11px;letter-spacing:.1em;font-weight:800;padding:1px 4px 11px}.arthead strong{color:#5cddca}.timer{font-variant-numeric:tabular-nums;background:rgba(107,186,204,.12);border:1px solid rgba(122,203,217,.25);border-radius:8px;padding:5px 9px;min-width:65px;text-align:center;color:#9cebe0}.artboard{position:relative;width:100%;aspect-ratio:900/520;border-radius:13px;overflow:hidden;background:#0b1b2d;border:1px solid #31465f}.artboard svg{display:block;width:100%;height:100%}.artboard.editable svg{touch-action:none;cursor:crosshair}.artboard.editable [data-obj]{cursor:grab}.artboard.editable.dragging [data-obj]{cursor:grabbing}.edit-layout{display:grid;grid-template-columns:minmax(0,1fr) 242px;gap:14px;align-items:start}.edit-layout:not(.editing){display:block}.editor{background:var(--bg);border:1px solid var(--line);border-radius:15px;padding:14px;display:flex;flex-direction:column;gap:13px}.editor h3{font-size:17px}.editor .instr{font-size:12px;color:var(--muted)}.palette{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.swatch{height:38px;border-radius:11px;border:3px solid var(--paper);box-shadow:0 0 0 1px var(--line);transition:transform .12s}.swatch:hover{transform:scale(1.07)}.swatch.active{box-shadow:0 0 0 3px var(--orange)}.control-range{display:flex;flex-direction:column;gap:7px}.control-head{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:800}.control-range input{width:100%;accent-color:#1e3f8a}.mini-row{display:grid;grid-template-columns:1fr 1fr;gap:7px}.mini-row button,.direction button{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:9px;min-height:35px;font-weight:850}.direction{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:160px;margin:0 auto}.direction .blank{border:0;background:transparent}.hintline{border-radius:12px;background:var(--pale);padding:11px 13px;font-size:13px;color:var(--blue);font-weight:700}.footer-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.footer-actions .primary{margin-left:auto}.helper{color:var(--muted);font-size:12px}.results{display:flex;flex-direction:column;gap:17px}.scorebox{border:1px solid var(--line);background:var(--bg);border-radius:15px;padding:17px;display:flex;gap:17px;align-items:center}.bigscore{font-size:42px;letter-spacing:-2px;line-height:1;color:var(--blue);font-weight:850;min-width:100px}.compare{display:grid;grid-template-columns:1fr 1fr;gap:13px}.comparecard{background:#10233a;border:1px solid #334960;border-radius:14px;overflow:hidden}.comparecard b{display:block;color:#b7cfe0;padding:11px 12px 0;font-size:12px}.comparecard svg{width:100%;height:auto;display:block}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.metric{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px}.metric strong{display:block;font-size:20px}.metric span{display:block;color:var(--muted);font-size:11px}.feedback{border:1px solid var(--line);border-radius:13px;padding:14px;font-size:13px;line-height:1.6}.feedback strong{color:var(--blue)}.foot{text-align:center;font-size:11px;color:var(--muted);padding:22px 0 0}
+@media(max-width:1000px){.layout{grid-template-columns:270px minmax(0,1fr)}.edit-layout{grid-template-columns:1fr}.editor{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.editor h3,.editor .instr{grid-column:1/-1}.work{min-height:0}.metrics{grid-template-columns:1fr 1fr}}
+@media(max-width:770px){.container{padding:13px 12px 28px}.layout{grid-template-columns:1fr}.side{gap:13px}.work{padding:13px}.top{margin-bottom:18px}.lead{font-size:13px}.presets{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.preset{padding:9px}.preset strong{font-size:12px}.preset span{font-size:11px}.artwrap{padding:8px}.arthead{font-size:9px;padding-bottom:8px}.edit-layout{grid-template-columns:1fr}.editor{display:flex}.compare{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.righttop .version{display:none}.worktop h2{font-size:20px}.footer-actions .primary{margin-left:0}.scorebox{gap:10px}.bigscore{font-size:34px}.rules{font-size:12px}}
+@media(max-width:420px){.presets{grid-template-columns:1fr}.preset span{display:none}.work{padding:10px}.artwrap{padding:5px}.artboard{border-radius:7px}.steps{gap:3px}.step{font-size:10px}.step i{width:20px;height:20px}.footer-actions button{flex:1}.arthead{padding:6px 6px}.brand-name{font-size:17px}}
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/new-trainers.css">
+<link rel="stylesheet" href="../shared/new-trainers-theme.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<link rel="stylesheet" href="../shared/mobile-new-trainers.css">
+</head>
+<body class="nx-added-game nx-game-restorer nx-has-native-dark" data-nx-section="memory">
+<div class="container">
+<header class="top"><div class="brand"><a class="back" href="index.html" title="К разделу Память">‹</a><div class="logo"><svg viewBox="0 0 40 40" fill="none" stroke="white" stroke-width="2.3" stroke-linejoin="round"><path d="M8 6H32V34H8Z"/><path d="M13 23L21 11L29 23L21 29Z" fill="#ff6a00" stroke="#ff6a00"/><path d="M13 34V30M27 34V30"/></svg></div><div><div class="brand-name">NeuroX</div><div class="sub">ПАМЯТЬ / РЕСТАВРАТОР</div></div></div><div class="righttop"><button type="button" class="tiny-btn" id="themeBtn">☾ Тема</button><span class="version">ПРОТОТИП v2</span></div></header>
+<h1>Реставратор</h1><p class="lead">Запомни композицию. Затем верни фигурам цвета, наклоны и места. В обычном режиме достаточно выбрать нужную область: точное попадание мышью не требуется.</p>
+<div class="layout">
+<aside class="card side"><div><div class="eyebrow">Параметры раунда</div><h2>Сложность</h2><p class="muted">Начни с разминки или настрой своё испытание.</p></div>
+<div class="presets" id="presets"><button class="preset" data-preset="warmup" type="button"><strong>Разминка</strong><span>2 фигуры · цвет и место · 9 с</span></button><button class="preset active" data-preset="normal" type="button"><strong>Обычный</strong><span>3 фигуры · ещё и поворот · 8 с</span></button><button class="preset" data-preset="hard" type="button"><strong>Сложный</strong><span>5 фигур · цвет, место, поворот, размер · 7 с</span></button></div>
+<details class="detail" id="details"><summary>Точные настройки</summary><div class="fields"><div class="field"><label for="count">Фигур, 2–6</label><input type="number" id="count" min="2" max="6" value="3"/></div><div class="field"><label for="seconds">Показ, 3–15 с</label><input type="number" id="seconds" min="3" max="15" value="8"/></div></div><div class="muted" style="margin-top:12px">Что можно изменить на копии:</div><div class="field place-option" style="margin-top:12px"><label for="positionMode">Как восстанавливать положение</label><select id="positionMode"><option value="zones">По 6 большим областям (рекомендуется)</option><option value="free">Свободно, без привязки</option></select></div><div class="field place-option" id="toleranceField" style="margin-top:10px;display:none"><label for="positionTolerance">Допуск при свободном размещении</label><select id="positionTolerance"><option value="110">Мягкий — около 12% ширины</option><option value="75">Средний — около 8% ширины</option><option value="40">Точный — как в первой версии</option></select></div><div class="checks"><label class="tick"><input id="colorCheck" type="checkbox" checked/> Цвет</label><label class="tick"><input id="placeCheck" type="checkbox" checked/> Положение</label><label class="tick"><input id="angleCheck" type="checkbox" checked/> Поворот</label><label class="tick"><input id="sizeCheck" type="checkbox"/> Размер</label></div></details>
+<div class="rules"><strong>Как играть:</strong> сначала внимательно посмотри на оригинал. Затем выбери фигуру на изменённой копии и восстанови её параметры. Фигуры можно перетаскивать мышью или пальцем.</div>
+<div class="buttons"><button class="btn primary" id="startBtn" type="button">▶ Начать</button><button class="btn outline" id="stopBtn" type="button" disabled>Закончить</button></div><p class="smallnote">Каждый раунд создаётся заново. В режиме областей все фигуры фиксируются автоматически и не могут перекрывать друг друга. Оригинал до проверки скрыт.</p>
+</aside>
+<main class="card work"><div class="worktop"><div><h2 id="stageTitle">Мастерская готова</h2><p class="status" id="stageStatus">Выбери сложность и начни восстановление.</p></div><span class="phase" id="phasePill">ОЖИДАНИЕ</span></div><div class="steps"><div class="step current" data-step="ready"><i>1</i> Запомни</div><span class="step-arrow">›</span><div class="step" data-step="edit"><i>2</i> Восстанови</div><span class="step-arrow">›</span><div class="step" data-step="result"><i>3</i> Сравни</div></div>
+<section class="artwrap" id="mainArt"><div class="arthead"><span>RESTORE LAB / ВИЗУАЛЬНАЯ КОМПОЗИЦИЯ</span><span class="timer" id="timer">НЕ НАЧАТО</span></div><div class="edit-layout" id="editLayout"><div class="artboard" id="artboard"><svg id="scene" viewBox="0 0 900 520" aria-label="Композиция из фигур"></svg></div><div class="editor hidden" id="editor"><h3 id="selectedName">Фигура 1</h3><p class="instr" id="placeInstruction">Выбери фигуру и нажми на нужную область поля, либо перетащи её туда. Она встанет на место сама.</p><div class="control-range" id="colorTool"><div class="control-head"><span>Цвет</span></div><div class="palette" id="palette"></div></div><div class="control-range" id="angleTool"><div class="control-head"><label for="angle">Поворот</label><span id="angleNumber">0°</span></div><input type="range" id="angle" min="-180" max="180" step="5"/><div class="mini-row"><button id="angleMinus" type="button">↶ −15°</button><button id="anglePlus" type="button">↷ +15°</button></div></div><div class="control-range" id="sizeTool"><div class="control-head"><label for="size">Размер</label><span id="sizeNumber">100%</span></div><input type="range" id="size" min="0.65" max="1.5" step="0.05"/></div><div class="control-range" id="placeTool"><div class="control-head"><span>Положение</span><span class="muted" id="placeStep">Области 3×2</span></div><div class="direction"><span class="blank"></span><button data-move="0,-15" type="button">↑</button><span class="blank"></span><button data-move="-15,0" type="button">←</button><button data-move="0,15" type="button">↓</button><button data-move="15,0" type="button">→</button></div></div></div></div></section>
+<div class="hintline" id="hint">Три фигуры, восемь секунд: положение оценивается по крупным областям.</div><div class="footer-actions" id="editActions" style="display:none"><button type="button" class="btn outline" id="resetBtn">↶ Сбросить правки</button><span class="helper">Исправляй, пока не будешь довольна результатом.</span><button type="button" class="btn primary" id="checkBtn">Сравнить с оригиналом →</button></div>
+<section class="results hidden" id="results"><div class="scorebox"><div class="bigscore" id="bigScore">0%</div><div><strong id="scoreTitle">Результат реставрации</strong><p class="muted" id="scoreDesc"></p></div></div><div class="compare"><div class="comparecard"><b>ОРИГИНАЛ</b><svg viewBox="0 0 900 520" id="originalSvg"></svg></div><div class="comparecard"><b>ТВОЯ РЕСТАВРАЦИЯ</b><svg viewBox="0 0 900 520" id="answerSvg"></svg></div></div><div class="metrics" id="metrics"></div><div class="feedback" id="feedback"></div><div class="footer-actions"><button class="btn secondary" id="againBtn" type="button">↻ Новый раунд</button><button class="btn outline" id="settingsBtn" type="button">К настройкам</button></div></section>
+</main></div><div class="foot">NeuroX · Точность зрительной памяти · Автономный тренажёр · Не медицинская диагностика</div></div>
+<script>
+'use strict';
+(()=>{
+ const $=id=>document.getElementById(id);
+ const palette=['#49cfc5','#ff9a55','#9c8df1','#68b3fc','#eac35c','#f0789c','#8fca68','#f0ece2'];
+ const shapes=[
+  '<path d="M-46 -31L45 -10L11 6L-8 46L-21 13Z"/>',
+  '<path d="M-11 -46H37L10 -12L38 4L-29 45L-6 5L-37 -7Z"/>',
+  '<path d="M-42 -41H8V-10H38V17H7V43H-42V20H-18V-17H-42Z"/>',
+  '<path d="M-48 -27L-7 -47L43 -23L35 26L0 45L-40 20Z"/><circle cx="-12" cy="-9" r="10" fill="#10263e" stroke="none"/>',
+  '<path d="M-46 -35L-1 -7L29 -43L48 -21L6 43L-47 -12Z"/>',
+  '<path d="M-43 -38H18L46 -14V27H4L-21 45L-43 16Z"/><path d="M-15 -13H15V7H-15Z" fill="#10263e" stroke="none"/>'
+ ];
+ const presets={warmup:{count:2,seconds:9,props:['color','place']},normal:{count:3,seconds:8,props:['color','place','angle']},hard:{count:5,seconds:7,props:['color','place','angle','size']}};
+ const names={color:'Цвет',place:'Положение',angle:'Поворот',size:'Размер'};
+ const slotPos=[[150,140],[450,140],[750,140],[150,390],[450,390],[750,390]];
+ const sample=[{id:0,x:190,y:160,c:0,a:25,size:1.05},{id:1,x:450,y:350,c:1,a:-45,size:1},{id:2,x:725,y:178,c:3,a:40,size:1.1}];
+ let phase='ready',currentPreset='normal',cfg={...presets.normal,positionMode:'zones',positionTolerance:110},original=[],damaged=[],answer=[],selected=0,deadline=0,timerId=0,drag=null,startedAt=0;
+ const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+ const rand=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+ const shuffle=a=>{let t=[...a];for(let i=t.length-1;i>0;i--){let j=rand(0,i);[t[i],t[j]]=[t[j],t[i]];}return t;};
+ const copy=a=>a.map(x=>({...x}));
+ const angleDiff=(a,b)=>Math.abs(((a-b+540)%360)-180);
+ const rot=a=>((a+180+3600)%360)-180;
+ const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+ const nearestSlot=(x,y)=>slotPos.reduce((best,p,i)=>Math.hypot(x-p[0],y-p[1])<Math.hypot(x-slotPos[best][0],y-slotPos[best][1])?i:best,0);
+ function assignSlot(obj,slot){obj.slot=slot;obj.x=slotPos[slot][0];obj.y=slotPos[slot][1];}
+ function moveIntoSlot(id,slot){
+  if(phase!=='edit'||!cfg.props.includes('place')||cfg.positionMode!=='zones')return;
+  const obj=answer[id],before=obj.slot;
+  if(slot===before)return;
+  const occupant=answer.find(p=>p.id!==id&&p.slot===slot);
+  if(occupant)assignSlot(occupant,before);
+  assignSlot(obj,slot);
+  updateScene();
+ }
+ function updatePlaceSettings(){
+  $('toleranceField').style.display=$('positionMode').value==='free'?'block':'none';
+  $('placeInstruction').textContent=cfg.positionMode==='zones'?'Выбери фигуру и нажми на одну из 6 больших областей либо перетащи фигуру туда. Попадать в центр не нужно.':'Выбери фигуру и перетащи в любое место поля. Положение проверяется с заданным допуском.';
+  $('placeStep').textContent=cfg.positionMode==='zones'?'Области 3×2':'Шаг 15';
+ }
+ function artSvg(items,sel=-1){
+  let out='<defs><pattern id="boardgrid" width="44" height="44" patternUnits="userSpaceOnUse"><path d="M44 0H0V44" fill="none" stroke="#41607a" stroke-width=".8" opacity=".24"/></pattern></defs><rect width="900" height="520" fill="#0b1b2d"/><rect width="900" height="520" fill="url(#boardgrid)"/><path d="M26 36H874M26 484H874" stroke="#4a7081" opacity=".38"/><path d="M26 52V468M874 52V468" stroke="#4a7081" opacity=".22"/><text x="40" y="64" fill="#436078" font-size="13" font-weight="600" letter-spacing="3">NEUROX / VISUAL MEMORY</text>';
+  if(cfg.positionMode==='zones'){
+   for(let i=0;i<6;i++){
+    const col=i%3,row=Math.floor(i/3);
+    out+=`<rect data-zone="${i}" x="${col*300+5}" y="${row*260+5}" width="290" height="250" rx="15" fill="#ffffff" fill-opacity="0.008" stroke="#85abc0" stroke-opacity=".23" stroke-width="1.5" stroke-dasharray="7 8"/>`;
+   }
+  }
+  for(let i=0;i<items.length;i++){
+   const p=items[i];const active=sel===p.id;
+   out+=`<g data-obj="${p.id}" transform="translate(${p.x} ${p.y})"><g transform="rotate(${p.a}) scale(${p.size})">${active?'<circle r="59" fill="none" stroke="#ff9b50" stroke-width="3.5" stroke-dasharray="7 6" opacity=".98"/>':''}<g fill="${palette[p.c]}" stroke="rgba(255,255,255,.25)" stroke-width="2.5" stroke-linejoin="round" style="filter:drop-shadow(0px 8px 10px rgba(0,0,0,.35))">${shapes[p.id]}</g></g><circle r="64" fill="transparent" stroke="none"/></g>`;
+  }
+  return out;
+ }
+ function updateScene(){
+  $('scene').innerHTML=artSvg(phase==='memorize'?original:phase==='edit'?answer:sample,phase==='edit'?selected:-1);
+ }
+ function setPhase(p){phase=p;const edit=p==='edit',mem=p==='memorize',result=p==='result',busy=mem||edit;
+  $('mainArt').classList.toggle('hidden',result);$('results').classList.toggle('hidden',!result);
+  $('editActions').style.display=edit?'flex':'none';$('editLayout').classList.toggle('editing',edit);$('editor').classList.toggle('hidden',!edit);$('artboard').classList.toggle('editable',edit);
+  $('stageTitle').textContent=p==='ready'?'Мастерская готова':mem?'Запомни оригинал':edit?'Восстанови композицию':'Результат реставрации';
+  $('stageStatus').textContent=p==='ready'?'Выбери сложность и начни восстановление.':mem?'Запомни цвет, расположение и наклон фигур.':edit?'Выбери фигуру и внеси исправления. Оригинал скрыт.':'Сравни свою работу с исходной композицией.';
+  const labels={ready:'ОЖИДАНИЕ',memorize:'ЗАПОМИНАНИЕ',edit:'РЕСТАВРАЦИЯ',result:'ПРОВЕРЕНО'};
+  $('phasePill').textContent=labels[p];$('phasePill').className='phase'+(mem?' live':edit?' edit':'');
+  document.querySelectorAll('.step').forEach((x,i)=>{x.classList.remove('current','done');let idx=p==='ready'?0:p==='memorize'?0:p==='edit'?1:2;x.classList.add(i===idx?'current':i<idx?'done':'none')});
+  $('startBtn').disabled=busy;$('stopBtn').disabled=!busy;$('startBtn').textContent=result?'↻ Новый раунд':'▶ Начать';
+  document.querySelectorAll('.preset,#details input').forEach(x=>x.disabled=busy);$('checkBtn').disabled=!edit;
+  if(!mem)$('timer').textContent=edit?'ПО ПАМЯТИ':result?'ГОТОВО':'НЕ НАЧАТО';
+  if(!result)updateScene();
+ }
+ function setPreset(name){if(phase==='memorize'||phase==='edit')return;const p=presets[name];if(!p)return;currentPreset=name;cfg={count:p.count,seconds:p.seconds,props:[...p.props],positionMode:'zones',positionTolerance:110};
+  $('count').value=cfg.count;$('seconds').value=cfg.seconds;$('positionMode').value=cfg.positionMode;$('positionTolerance').value=String(cfg.positionTolerance);updatePlaceSettings();
+  for(let prop of ['color','place','angle','size'])$(prop+'Check').checked=cfg.props.includes(prop);
+  document.querySelectorAll('.preset').forEach(b=>b.classList.toggle('active',b.dataset.preset===name));
+  $('hint').textContent=name==='warmup'?'Начнём с двух фигур: восстанови их цвета и положение.':name==='normal'?'Три фигуры. Выбери нужную область, цвет и поворот.':'Пять фигур. Важно вспомнить и размеры.';
+ }
+ function readCustom(){if(['memorize','edit'].includes(phase))return;
+  cfg.count=clamp(Math.round(Number($('count').value)||3),2,6);cfg.seconds=clamp(Math.round(Number($('seconds').value)||8),3,15);
+  $('count').value=cfg.count;$('seconds').value=cfg.seconds;
+  cfg.props=['color','place','angle','size'].filter(x=>$(x+'Check').checked);cfg.positionMode=$('positionMode').value;cfg.positionTolerance=Number($('positionTolerance').value);updatePlaceSettings();
+  if(!cfg.props.length){$('colorCheck').checked=true;cfg.props=['color'];}
+  currentPreset='custom';document.querySelectorAll('.preset').forEach(b=>b.classList.remove('active'));
+  $('hint').textContent=`Свои настройки: ${cfg.count} фигур · ${cfg.seconds} с · ${cfg.props.map(x=>names[x].toLowerCase()).join(', ')}.`;
+ }
+ function generate(){
+  const positions=shuffle(slotPos);const pickedColors=shuffle(palette.map((_,i)=>i));const ag=[-135,-100,-70,-35,0,35,70,110,145];
+  const selectedSlots=shuffle([0,1,2,3,4,5]).slice(0,cfg.count);
+  original=Array.from({length:cfg.count},(_,i)=>({id:i,slot:selectedSlots[i],x:cfg.positionMode==='zones'?slotPos[selectedSlots[i]][0]:clamp(slotPos[selectedSlots[i]][0]+rand(-24,24),86,813),y:cfg.positionMode==='zones'?slotPos[selectedSlots[i]][1]:clamp(slotPos[selectedSlots[i]][1]+rand(-17,17),92,428),c:pickedColors[i],a:ag[rand(0,ag.length-1)],size:[.85,1,1.15][rand(0,2)]}));
+  damaged=copy(original);
+  let coverage=shuffle(cfg.props);
+  for(let i=0;i<damaged.length;i++){
+   const p=damaged[i];const mandatory=coverage[i%coverage.length];
+   const active=cfg.props.filter(key=>key===mandatory||(Math.random()<.46));
+   if(!active.includes(mandatory))active.push(mandatory);
+   for(let prop of active){
+    if(prop==='color'){p.c=shuffle(palette.map((_,j)=>j).filter(v=>v!==p.c))[0]}
+    if(prop==='place'&&cfg.positionMode==='free'){
+     let dx=[-165,-135,-105,105,135,165][rand(0,5)],dy=[-105,-85,85,105][rand(0,3)];
+     p.x=clamp(p.x+dx,73,827);p.y=clamp(p.y+dy,72,448);
+    }
+    if(prop==='angle')p.a=rot(p.a+[45,60,75,90,-45,-60,-75,-90][rand(0,7)]);
+    if(prop==='size')p.size=clamp(Number((p.size+[-.25,-.2,.2,.25][rand(0,3)]).toFixed(2)),.65,1.5);
+   }
+  }
+  // Зонный режим: все фигуры располагаются в уникальных областях. Ошибочные
+  // позиции гарантированы; незанятые области тоже могут использоваться.
+  if(cfg.props.includes('place')&&cfg.positionMode==='zones'){
+   const originalSlots=original.map(x=>x.slot);
+   let wrong=[];
+   for(let attempt=0;attempt<100;attempt++){
+    const candidate=shuffle([0,1,2,3,4,5]).slice(0,cfg.count);
+    if(candidate.filter((v,i)=>v!==originalSlots[i]).length>=Math.min(2,cfg.count)){
+     wrong=candidate;break;
+    }
+   }
+   if(!wrong.length)wrong=originalSlots.map((_,i)=>originalSlots[(i+1)%originalSlots.length]);
+   damaged.forEach((o,i)=>assignSlot(o,wrong[i]));
+  }
+  answer=copy(damaged);
+ }
+ function start(){if(phase==='edit'||phase==='memorize')return;
+  if(currentPreset==='custom')readCustom();
+  generate();selected=0;startedAt=Date.now();setPhase('memorize');
+  deadline=Date.now()+cfg.seconds*1000;clearInterval(timerId);
+  const tick=()=>{if(phase!=='memorize'){clearInterval(timerId);return}let left=Math.max(0,deadline-Date.now());$('timer').textContent=(left/1000).toFixed(1).replace('.',',')+' с';$('hint').textContent='Запомни композицию. После окончания показа она изменится.';if(left<=0){clearInterval(timerId);beginEdit()}};
+  timerId=setInterval(tick,80);tick();
+ }
+ function beginEdit(){if(phase!=='memorize')return;answer=copy(damaged);selected=0;setPhase('edit');refreshEditor();$('hint').textContent=cfg.positionMode==='zones'?'Оригинал скрыт. Перетаскивай фигуры между крупными областями или нажимай на выбранное место. Точная установка не нужна.':'Оригинал скрыт. Перемещай фигуры, подбирай параметры, затем нажми «Сравнить».';}
+ function refreshEditor(){if(phase!=='edit')return;const a=answer[selected];$('selectedName').textContent='Фигура '+(selected+1);
+  $('colorTool').classList.toggle('hidden',!cfg.props.includes('color'));
+  $('angleTool').classList.toggle('hidden',!cfg.props.includes('angle'));
+  $('sizeTool').classList.toggle('hidden',!cfg.props.includes('size'));
+  $('placeTool').classList.toggle('hidden',!cfg.props.includes('place'));
+  $('palette').innerHTML=palette.map((c,i)=>`<button type="button" class="swatch ${a.c===i?'active':''}" data-color="${i}" aria-label="Цвет ${i+1}" style="background:${c}"></button>`).join('');
+  $('angle').value=a.a;$('angleNumber').textContent=a.a+'°';$('size').value=a.size;$('sizeNumber').textContent=Math.round(a.size*100)+'%';
+  updateScene();
+ }
+ function resetEdits(){if(phase!=='edit')return;answer=copy(damaged);selected=0;refreshEditor();$('hint').textContent='Правки сброшены. Попробуй восстановить ещё раз.';}
+ function propCorrect(a,b,prop){if(prop==='color')return a.c===b.c;if(prop==='place')return cfg.positionMode==='zones'?a.slot===b.slot:distance(a,b)<=cfg.positionTolerance;if(prop==='angle')return angleDiff(a.a,b.a)<=16;if(prop==='size')return Math.abs(a.size-b.size)<.105;return false;}
+ function check(){if(phase!=='edit')return;
+  const report={};let total=0,restored=0,newMistakes=0;
+  for(const prop of cfg.props){const val={damaged:0,restored:0,newMistakes:0};
+   for(let i=0;i<original.length;i++){
+    const initial=propCorrect(damaged[i],original[i],prop),final=propCorrect(answer[i],original[i],prop);
+    if(!initial){val.damaged++;if(final)val.restored++;}else if(!final)val.newMistakes++;
+   }report[prop]=val;total+=val.damaged;restored+=val.restored;newMistakes+=val.newMistakes;
+  }
+  const score=total?Math.round(clamp((restored-newMistakes*.5)/total*100,0,100)):100;
+  setPhase('result');$('bigScore').textContent=score+'%';$('scoreTitle').textContent=score>=90?'Очень точное восстановление':score>=60?'Хорошее начало':'Есть что восстановить';
+  $('scoreDesc').textContent=`Исправлено ${restored} из ${total} изменённых свойств.${newMistakes?' Новых неточностей: '+newMistakes+'.':''} Время работы: ${Math.max(1,Math.floor((Date.now()-startedAt)/1000))} с.`;
+  $('originalSvg').innerHTML=artSvg(original);$('answerSvg').innerHTML=artSvg(answer);
+  $('metrics').innerHTML=cfg.props.map(prop=>{let r=report[prop];return `<div class="metric"><strong>${r.restored}/${r.damaged}</strong><span>${names[prop]} · исправлено${r.newMistakes?' · новых ошибок '+r.newMistakes:''}</span></div>`;}).join('');
+  let details=cfg.props.map(prop=>{const r=report[prop];return `${names[prop].toLowerCase()}: ${r.restored}/${r.damaged}${r.newMistakes?', добавлено ошибок '+r.newMistakes:''}`}).join(' · ');
+  $('feedback').innerHTML=`<strong>Что оцениваем:</strong> ${details}.<br>${cfg.positionMode==='zones'?'Положение оценивается по крупным областям 3×2, точность мыши не влияет на результат.':'Свободное положение: допуск '+cfg.positionTolerance+' единиц поля.'} Поворот до 16°, размер до 10%. Оценка относится только к этому раунду и не является диагнозом.`;
+  $('hint').textContent='Теперь оригинал и твой вариант можно сравнить рядом. Исправленные свойства посчитаны отдельно.';
+ }
+ function stop(){if(!['memorize','edit'].includes(phase))return;if(!window.confirm('Закончить раунд без результата?'))return;clearInterval(timerId);setPhase('ready');$('hint').textContent='Раунд остановлен. Можно выбрать настройки и начать заново.';}
+ function home(){if(phase==='memorize'||phase==='edit')return;clearInterval(timerId);setPhase('ready');$('hint').textContent='Настройки можно изменить перед следующим раундом.';}
+ // Pointer coordinates need the SVG transform, not the outer container's bounding box.
+ const point=e=>{const svg=$('scene');let pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform(svg.getScreenCTM().inverse())};
+ $('scene').addEventListener('pointerdown',e=>{
+  if(phase!=='edit')return;
+  const g=e.target.closest('[data-obj]');
+  if(!g){
+   if(cfg.positionMode==='zones'&&cfg.props.includes('place')){
+    const p=point(e);
+    moveIntoSlot(selected,nearestSlot(p.x,p.y));
+   }
+   return;
+  }
+  const n=Number(g.getAttribute('data-obj'));selected=n;refreshEditor();
+  if(cfg.props.includes('place')){
+   const p=point(e);
+   drag={id:n,start:p,initial:{x:answer[n].x,y:answer[n].y,slot:answer[n].slot},moved:false};
+   try{$('scene').setPointerCapture(e.pointerId)}catch(_){}
+   $('artboard').classList.add('dragging');
+  }
+  e.preventDefault();
+ });
+ $('scene').addEventListener('pointermove',e=>{
+  if(!drag||phase!=='edit')return;
+  const p=point(e),a=answer[drag.id];
+  if(Math.hypot(p.x-drag.start.x,p.y-drag.start.y)>5)drag.moved=true;
+  a.x=clamp(Math.round(drag.initial.x+p.x-drag.start.x),65,835);
+  a.y=clamp(Math.round(drag.initial.y+p.y-drag.start.y),65,455);
+  updateScene();
+ });
+ const endDrag=()=>{
+  if(drag&&phase==='edit'&&cfg.positionMode==='zones'){
+   const d=drag;
+   if(d.moved){
+    // Вернём перетаскиваемую фигуру на её старую ячейку перед перестановкой.
+    const target=nearestSlot(answer[d.id].x,answer[d.id].y);
+    assignSlot(answer[d.id],d.initial.slot);
+    moveIntoSlot(d.id,target);
+   }else{
+    assignSlot(answer[d.id],d.initial.slot);
+    updateScene();
+   }
+  }
+  drag=null;$('artboard').classList.remove('dragging');
+ };
+ $('scene').addEventListener('pointerup',endDrag);
+ $('scene').addEventListener('pointercancel',endDrag);
+ $('scene').addEventListener('lostpointercapture',endDrag);
+ $('palette').addEventListener('click',e=>{const b=e.target.closest('[data-color]');if(phase!=='edit'||!b)return;answer[selected].c=Number(b.dataset.color);refreshEditor();});
+ $('angle').addEventListener('input',e=>{if(phase!=='edit')return;answer[selected].a=Number(e.target.value);refreshEditor();});
+ $('size').addEventListener('input',e=>{if(phase!=='edit')return;answer[selected].size=Number(e.target.value);refreshEditor();});
+ const turn=delta=>{if(phase!=='edit')return;answer[selected].a=rot(answer[selected].a+delta);refreshEditor();};
+ $('angleMinus').onclick=()=>turn(-15);$('anglePlus').onclick=()=>turn(15);
+ document.querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>{
+  if(phase!=='edit')return;
+  const [dx,dy]=b.dataset.move.split(',').map(Number);
+  if(cfg.positionMode==='zones'){
+   const slot=answer[selected].slot,col=slot%3,row=Math.floor(slot/3);
+   const nx=clamp(col+Math.sign(dx),0,2),ny=clamp(row+Math.sign(dy),0,1);
+   moveIntoSlot(selected,ny*3+nx);
+  }else{
+   answer[selected].x=clamp(answer[selected].x+dx,70,830);
+   answer[selected].y=clamp(answer[selected].y+dy,65,455);
+   updateScene();
+  }
+ });
+ document.addEventListener('keydown',e=>{if(phase!=='edit'||!cfg.props.includes('place')||['INPUT','BUTTON','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;let motions={ArrowLeft:[-10,0],ArrowRight:[10,0],ArrowUp:[0,-10],ArrowDown:[0,10]};let d=motions[e.key];if(!d)return;e.preventDefault();if(cfg.positionMode==='zones'){
+   const slot=answer[selected].slot,col=slot%3,row=Math.floor(slot/3);
+   moveIntoSlot(selected,clamp(row+Math.sign(d[1]),0,1)*3+clamp(col+Math.sign(d[0]),0,2));
+  }else{
+   answer[selected].x=clamp(answer[selected].x+d[0],70,830);
+   answer[selected].y=clamp(answer[selected].y+d[1],65,455);updateScene();
+  }});
+ document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>setPreset(b.dataset.preset));
+ document.querySelectorAll('#details input,#details select').forEach(x=>x.addEventListener('change',readCustom));
+ $('startBtn').onclick=start;$('stopBtn').onclick=stop;$('resetBtn').onclick=resetEdits;$('checkBtn').onclick=check;$('againBtn').onclick=start;$('settingsBtn').onclick=home;
+ $('themeBtn').onclick=()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;try{localStorage.setItem('neurox_theme',next)}catch(_){}};
+ try{const t=localStorage.getItem('neurox_theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t;}catch(_){}
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&phase==='memorize'&&Date.now()>=deadline)beginEdit()});
+ setPreset('normal');setPhase('ready');
+ // Read-only debug snapshot for automated regression checks.
+ Object.defineProperty(window,'__restoreTest',{value:()=>({phase,cfg,original:copy(original),damaged:copy(damaged),answer:copy(answer),selected})});
+})();
+</script>
+<script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
+<script src="../assets/menu-drawer.js"></script>
+<script src="../shared/new-trainers.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/mobile-new-trainers.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
+</body>
+</html>

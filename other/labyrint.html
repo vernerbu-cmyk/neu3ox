@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script src="../shared/theme.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Лабиринты - NeuroX</title>
@@ -315,8 +316,44 @@ canvas{
     display:none !important;
 }
 
+
+/* NeuroX: сворачиваемая панель лабиринта, независимо от общей шапки */
+#mazeToolbarToggle {
+  position:fixed;
+  top:calc(var(--nx-nav-height, 58px) + var(--maze-controls-height, 88px) + 6px);
+  right:12px;
+  z-index:130;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-height:36px;
+  padding:7px 12px;
+  border:1px solid var(--border, #d9e3f0);
+  border-radius:0 0 12px 12px;
+  background:var(--card, #fff);
+  color:var(--blue-dark, #1e3f8a);
+  box-shadow:var(--shadow, 0 3px 12px rgba(20,46,85,.15));
+  font:700 12px/1.2 -apple-system,'Segoe UI',Roboto,sans-serif;
+  cursor:pointer;
+  white-space:nowrap;
+}
+#mazeToolbarToggle:hover {background:var(--blue-light, #e8eef9);}
+#mazeToolbarToggle:focus-visible {outline:3px solid var(--orange);outline-offset:2px;}
+#mazeToolbarToggle svg {width:15px;height:15px;flex-shrink:0;transition:transform .15s;}
+body.maze-toolbar-collapsed #topbar {display:none!important;}
+body.maze-toolbar-collapsed #mazeToolbarToggle {
+  top:calc(var(--nx-nav-height, 58px) + 6px);
+  border-radius:12px;
+}
+body.maze-toolbar-collapsed #mazeToolbarToggle svg {transform:rotate(180deg);}
+@media print {#mazeToolbarToggle{display:none!important;}}
+
 </style>
 <link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
 </head>
 
 <body>
@@ -348,6 +385,12 @@ canvas{
     </div>
 
 </div>
+
+
+<button id="mazeToolbarToggle" type="button" aria-controls="topbar" aria-expanded="true" title="Свернуть настройки лабиринта">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 14 6-6 6 6"/></svg>
+  <span>Свернуть настройки</span>
+</button>
 
 <canvas id="maze"></canvas>
 
@@ -391,7 +434,7 @@ let TOP=88;
 
 
 function updateTop(){
-    TOP=document.getElementById("topbar").offsetHeight;
+    TOP=document.getElementById("topbar").offsetHeight + (document.getElementById("nx-unified-bar")?.offsetHeight || 0);
 }
 
 let cols,rows,cell;
@@ -649,7 +692,52 @@ function exportImage(){
 </script>
 
 
+
+<script>
+/* Настройки лабиринта можно скрыть, чтобы расширить игровое поле. */
+(() => {
+  const panel = document.getElementById('topbar');
+  const button = document.getElementById('mazeToolbarToggle');
+  if (!panel || !button) return;
+  const label = button.querySelector('span');
+  const key = 'neurox:maze-toolbar:' + (location.pathname.endsWith('labyrint2.html') ? 'v2' : 'v1');
+  let folded = false;
+  try { folded = localStorage.getItem(key) === 'folded'; } catch (_) {}
+
+  const measure = () => {
+    if (!folded && panel.offsetHeight)
+      document.documentElement.style.setProperty('--maze-controls-height', panel.offsetHeight + 'px');
+  };
+  const redraw = () => requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
+  const show = (collapsed, persist = true) => {
+    folded = collapsed;
+    if (!folded) document.body.classList.remove('maze-toolbar-collapsed');
+    measure();
+    if (folded) document.body.classList.add('maze-toolbar-collapsed');
+    button.setAttribute('aria-expanded', String(!folded));
+    button.title = folded ? 'Показать настройки лабиринта' : 'Свернуть настройки лабиринта';
+    label.textContent = folded ? 'Показать настройки' : 'Свернуть настройки';
+    if (persist) {
+      try { localStorage.setItem(key, folded ? 'folded' : 'expanded'); } catch (_) {}
+    }
+    redraw();
+  };
+  button.addEventListener('click', () => show(!folded));
+  const observer = new ResizeObserver(measure);
+  observer.observe(panel);
+  window.addEventListener('resize', measure);
+  show(folded, false);
+})();
+</script>
+
 <script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
 <script src="../assets/menu-drawer.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
 </body>
 </html>

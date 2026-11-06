@@ -1,0 +1,554 @@
+<!DOCTYPE html><html lang="ru"><head>
+<script src="../shared/theme.js"></script>
+<script>/* NeuroX: читаем общую настройку до первой отрисовки */
+try {
+  const nxSavedTheme = localStorage.getItem('neurox_theme');
+  const nxTheme = (nxSavedTheme === 'light' || nxSavedTheme === 'dark')
+    ? nxSavedTheme
+    : ((window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
+  document.documentElement.dataset.theme = nxTheme;
+} catch (_) { document.documentElement.dataset.theme = 'light'; }
+</script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Слепые ячейки · NeuroX</title><style>
+:root{
+  --blue:#1e3f8a;--blue-dark:#142d67;--blue-pale:#eaf0fc;--orange:#ff6a00;
+  --ink:#172948;--muted:#64758c;--bg:#f5f8fd;--paper:#fff;--line:#e1e9f4;
+  --green:#15835e;--green-pale:#e6f8ef;--red:#b7424a;--red-pale:#fff0f1;
+  --shadow:0 14px 44px rgba(28,58,112,.07);
+}
+:root[data-theme="dark"]{
+  --blue:#83a9ff;--blue-dark:#b9ceff;--blue-pale:#243c69;--orange:#ff913f;
+  --ink:#edf3ff;--muted:#a6b7d1;--bg:#10192a;--paper:#1a2840;--line:#32445f;
+  --green:#6bd2a7;--green-pale:#1e493e;--red:#ffa0aa;--red-pale:#4d2a39;
+  --shadow:0 14px 44px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box}html{min-height:100%}body{
+  margin:0;min-height:100vh;background:var(--bg);color:var(--ink);
+  font-family:'Segoe UI',Inter,Arial,sans-serif;line-height:1.45;
+}
+button{font:inherit;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.55}
+button:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+.shell{max-width:1360px;margin:0 auto;padding:clamp(14px,2vw,30px)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:23px}
+.brand{display:flex;align-items:center;gap:13px;min-width:0}
+.back{width:47px;height:47px;border-radius:14px;border:1px solid var(--line);background:var(--paper);color:var(--blue);font-size:25px;font-weight:700;display:grid;place-items:center;flex-shrink:0}
+.brand-mark{width:44px;height:44px;border-radius:14px;background:#1e3f8a;color:#fff;display:grid;place-items:center;box-shadow:0 6px 16px rgba(30,63,138,.16)}
+.brand-mark svg{width:29px;height:29px}
+.brand-title{font-size:20px;line-height:1.15;letter-spacing:-.6px;font-weight:850}
+.brand-subtitle{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.1em;margin-top:4px}
+.top-actions{display:flex;gap:9px;align-items:center}
+.theme-btn{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:12px;padding:11px 14px;font-size:13px;font-weight:750}
+.pill{font-size:12px;color:var(--blue);background:var(--blue-pale);padding:9px 13px;border-radius:99px;font-weight:750}
+.intro{margin:0 0 22px}.intro h1{font-size:clamp(29px,3.6vw,43px);letter-spacing:-1.2px;line-height:1.1;margin:0 0 9px;font-weight:850}
+.intro p{margin:0;max-width:920px;color:var(--muted);font-size:15px}
+.layout{display:grid;grid-template-columns:minmax(300px,360px) minmax(0,1fr);gap:18px;align-items:stretch}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+.control{padding:24px;display:flex;flex-direction:column;gap:19px}
+.section-kicker{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:850;margin-bottom:8px}
+.panel-title{font-size:22px;font-weight:850;letter-spacing:-.6px;margin:0 0 5px}
+.helper{font-size:13px;color:var(--muted);margin:0}
+.presets{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.preset{background:var(--paper);border:1.5px solid var(--line);color:var(--ink);border-radius:15px;text-align:left;min-height:82px;padding:12px;transition:.16s}
+.preset strong{display:block;font-size:15px;letter-spacing:-.15px}.preset small{color:var(--muted);font-size:12px;display:block;margin-top:5px}
+.preset:hover:not(:disabled){border-color:var(--blue);transform:translateY(-1px)}
+.preset.active{border-color:var(--blue);background:var(--blue-pale);box-shadow:inset 0 0 0 .5px var(--blue)}
+.preset.active strong{color:var(--blue)}
+.setting{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.setting label{font-weight:750;font-size:14px}
+select{background:var(--paper);border:1px solid var(--line);color:var(--ink);border-radius:11px;padding:10px 11px;font:inherit;font-size:14px;max-width:155px}
+.rules{border:1px solid var(--line);background:var(--bg);padding:14px 16px;border-radius:15px;color:var(--ink);font-size:13px;line-height:1.6}
+.rules strong{color:var(--blue)}
+.btn{border:0;padding:14px 20px;border-radius:14px;display:flex;justify-content:center;align-items:center;gap:10px;font-weight:800;min-height:50px;transition:transform .15s,filter .15s}
+.btn:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.03)}
+.btn-main{background:var(--orange);color:white;box-shadow:0 7px 19px rgba(255,106,0,.18);width:100%}
+.btn-alt{background:var(--blue-pale);color:var(--blue);width:100%;border:1px solid var(--line)}
+.btn-outline{background:var(--paper);color:var(--ink);border:1.5px solid var(--line);width:100%}
+.hidden{display:none!important}.tip{font-size:12px;color:var(--muted);margin:0}
+.game-state{display:flex;flex-direction:column;gap:17px;flex:1}
+.status-icon{width:44px;height:44px;background:var(--blue-pale);border-radius:14px;color:var(--blue);display:grid;place-items:center;font-size:24px}
+.game-state p{font-size:14px;color:var(--muted);margin:0}
+.results{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.result-metric{border:1px solid var(--line);border-radius:13px;background:var(--bg);padding:12px 13px}
+.result-metric strong{display:block;font-size:23px;color:var(--ink);font-weight:850;font-variant-numeric:tabular-nums}
+.result-metric span{font-size:12px;color:var(--muted);font-weight:650}
+.end-note{padding:12px 14px;border-radius:13px;background:var(--blue-pale);color:var(--blue);font-size:13px;font-weight:750}
+.end-note.success{background:var(--green-pale);color:var(--green)}
+.board-panel{padding:clamp(17px,2.4vw,30px);min-height:610px;display:flex;flex-direction:column;gap:20px}
+.board-toolbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.board-heading{margin:0;font-size:23px;line-height:1.2;letter-spacing:-.6px;font-weight:850}
+.board-help{font-size:13px;color:var(--muted);margin-top:6px}
+.live-tag{font-size:12px;padding:8px 11px;border:1px solid var(--line);border-radius:99px;color:var(--muted);font-weight:750;white-space:nowrap}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.metric{border-radius:14px;background:var(--bg);border:1px solid var(--line);padding:12px 13px;min-width:0}
+.metric span{display:block;font-size:11px;font-weight:750;color:var(--muted);margin-bottom:5px}
+.metric strong{display:block;font-size:21px;line-height:1.1;font-weight:850;letter-spacing:-.45px;font-variant-numeric:tabular-nums}
+.metric:first-child strong{color:var(--orange)}
+.progress{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:-11px}
+.progress > div{height:100%;width:0;background:var(--orange);border-radius:99px;transition:width .2s ease}
+.board-area{display:grid;place-items:center;min-height:320px;flex:1;padding:3px}
+.cells{display:grid;grid-template-columns:repeat(var(--columns),minmax(0,1fr));gap:clamp(9px,1.45vw,17px);width:min(100%,650px);margin:auto}
+.cell{min-width:0;aspect-ratio:1.14;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border-radius:clamp(11px,1.4vw,18px);border:2px solid #c8d6ea;background:linear-gradient(155deg,#fff,#eaf0f9);box-shadow:0 7px 0 #dce5f1,0 9px 18px rgba(20,45,103,.09);color:#6987b1;transition:transform .13s,border-color .13s,box-shadow .13s,background .13s;padding:5px}
+:root[data-theme="dark"] .cell{border-color:#446083;background:linear-gradient(155deg,#2b4264,#233650);box-shadow:0 7px 0 #152439,0 9px 18px rgba(0,0,0,.17);color:#a1badd}
+.cell svg{width:clamp(21px,3.2vw,36px);height:clamp(21px,3.2vw,36px);stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.cell:not(:disabled):hover{border-color:var(--orange);transform:translateY(-2px)}
+.cell:disabled{opacity:1;cursor:default}
+.cell.reveal-empty{background:var(--red-pale);border-color:var(--red);color:var(--red);transform:translateY(3px);box-shadow:0 3px 0 rgba(183,66,74,.23)}
+.cell.reveal-key{background:var(--green-pale);border-color:var(--green);color:var(--green);transform:translateY(3px);box-shadow:0 3px 0 rgba(21,131,94,.2)}
+.cell .cell-caption{font-size:clamp(9px,1.2vw,13px);font-weight:850;letter-spacing:.05em}
+.cell.review-empty{background:var(--paper);border:1.5px dashed var(--line);box-shadow:none;color:var(--muted)}
+.cell.review-key{background:var(--green-pale);border:1.5px solid var(--green);box-shadow:none;color:var(--green)}
+.cell.recall-selected{background:var(--blue-pale);color:var(--blue);border:2px solid var(--blue);box-shadow:0 3px 0 rgba(30,63,138,.18);transform:translateY(3px)}
+.cell.review-correct{background:var(--green-pale);border:1.5px solid var(--green);box-shadow:none;color:var(--green)}
+.cell.review-missed{background:var(--red-pale);border:1.5px solid var(--red);box-shadow:none;color:var(--red)}
+.cell.review-extra{background:#fff2e7;border:1.5px solid var(--orange);box-shadow:none;color:#b34a00}
+:root[data-theme="dark"] .cell.review-extra{background:#553820;color:#ffb47c}
+.recall-info{padding:12px 14px;border-radius:13px;background:var(--blue-pale);color:var(--blue);font-weight:750;font-size:14px}
+.recall-info strong{font-variant-numeric:tabular-nums}
+
+.cell .count{position:absolute;right:6px;top:5px;padding:3px 6px;background:var(--red);color:white;border-radius:7px;font-size:11px;line-height:1;font-weight:850}
+.cell--idle{opacity:.72}
+.feedback{min-height:39px;display:flex;gap:9px;align-items:center;justify-content:center;text-align:center;font-weight:750;font-size:14px;color:var(--muted);border-radius:13px;padding:8px 12px;background:var(--bg)}
+.feedback.good{color:var(--green);background:var(--green-pale)}
+.feedback.bad{color:var(--red);background:var(--red-pale)}
+.feedback.neutral{color:var(--blue);background:var(--blue-pale)}
+.legend{display:flex;gap:16px;justify-content:center;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend strong{color:var(--ink)}
+.footer{margin-top:18px;color:var(--muted);font-size:12px;text-align:center}
+.modal{position:fixed;inset:0;z-index:20;background:rgba(12,26,49,.65);display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-box{background:var(--paper);padding:26px;border-radius:22px;max-width:440px;width:100%;box-shadow:0 18px 80px rgba(0,0,0,.2)}
+.modal-box h2{margin:0 0 8px;font-size:23px}.modal-box p{color:var(--muted);margin:0 0 23px;font-size:14px}
+.modal-actions{display:flex;gap:9px}.modal-actions .btn{flex:1}
+@media(min-width:1300px){.cell{min-height:98px}.board-panel{min-height:660px}}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.control{gap:13px}.board-panel{min-height:560px}.intro{margin-bottom:18px}}
+@media(max-width:520px){.topbar{align-items:flex-start}.pill{display:none}.theme-btn{padding:10px}.brand-title{font-size:17px}.brand-subtitle{font-size:10px}.brand-mark{display:none}.intro h1{font-size:31px}.control{padding:17px}.board-panel{padding:16px;min-height:480px;gap:13px}.board-heading{font-size:19px}.live-tag{font-size:10px}.metrics{gap:5px}.metric{padding:9px 7px}.metric span{font-size:10px}.metric strong{font-size:17px}.board-area{min-height:260px}.cells{gap:8px}.cell{border-radius:11px;box-shadow:0 4px 0 #dce5f1,0 7px 12px rgba(20,45,103,.08)}.cell .cell-caption{font-size:9px}.legend{gap:8px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+
+/* Shuffle prototype: boxes keep their identities as they change slots. */
+.cell.shuffle-box{will-change:transform;transition:none!important;}
+.cells[data-shuffling="true"]{pointer-events:none}
+.shuffle-progress{display:flex;gap:6px;justify-content:center;align-items:center;flex-wrap:wrap}
+.shuffle-dot{height:9px;width:27px;border-radius:99px;background:var(--line);transition:background .15s}
+.shuffle-dot.done{background:var(--green)}
+.shuffle-dot.current{background:var(--orange)}
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.config-item label{display:block;font-size:12px;color:var(--muted);font-weight:800;margin-bottom:6px}
+.config-item select{width:100%;max-width:none}
+.review-controls{display:grid;grid-template-columns:1fr;gap:8px}
+.result-metric[hidden]{display:none}
+@media(min-width:1050px){.review-controls{grid-template-columns:1fr 1fr}.review-controls:has(#showFinalBtn:not(.hidden)){grid-template-columns:1fr}}
+.check-setting{display:flex;align-items:flex-start;gap:10px;color:var(--ink);font-size:13px;font-weight:720;line-height:1.4;cursor:pointer}
+.check-setting input{width:19px;height:19px;accent-color:var(--blue);flex-shrink:0}
+.step-rail{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;font-weight:750;color:var(--muted)}
+.step-rail span{padding:6px 9px;border:1px solid var(--line);border-radius:20px}
+.step-rail span.current{background:var(--blue-pale);color:var(--blue);border-color:var(--blue)}
+.board-area{overflow:visible}
+@media(max-width:520px){.config-grid{gap:9px}.config-item select{padding:9px 5px;font-size:13px}}
+</style><link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/new-trainers.css">
+<link rel="stylesheet" href="../shared/new-trainers-theme.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<link rel="stylesheet" href="../shared/mobile-new-trainers.css">
+</head><body class="nx-added-game nx-game-keys nx-has-native-dark" data-nx-section="memory"><div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <button class="back" type="button" onclick="location.href='index.html'" aria-label="В меню памяти" title="В меню памяти">←</button>
+      <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"><rect x="4" y="4" width="10" height="10" rx="2"/><rect x="18" y="4" width="10" height="10" rx="2"/><rect x="4" y="18" width="10" height="10" rx="2"/><rect x="18" y="18" width="10" height="10" rx="2"/><circle cx="23" cy="23" r="2.5" fill="#FF6A00" stroke="none"/></svg></div>
+      <div><div class="brand-title">NeuroX</div><div class="brand-subtitle">ПАМЯТЬ / ТРЕНАЖЁР 15</div></div>
+    </div>
+    <div class="top-actions"><span class="pill">Зрительная рабочая память</span><button type="button" class="theme-btn" id="themeBtn" aria-label="Тема — сменить оформление">◐ Тема</button></div>
+  </header>
+  <div class="intro"><h1>Слепые ячейки</h1><p>Найди ключи, проверь свою память, проследи за честными перестановками и восстанови расположение ключей.</p></div>
+  <main class="layout">
+    <aside class="panel control" aria-label="Настройки и результаты">
+      <section id="setup">
+        <div class="section-kicker">Подготовка раунда</div><h2 class="panel-title">Настройки</h2>
+        <p class="helper">Поиск → проверка без подсказок → перестановки. Все ответы раскрываются только в конце.</p>
+        <div class="config-item" style="margin-top:14px"><label for="modeSelect">Режим</label>
+          <select id="modeSelect" style="width:100%;max-width:none"><option value="standard" selected>Основной · 4 перестановки</option><option value="challenge">Испытание · 4 + 3 перестановки</option></select>
+        </div>
+        <div class="config-grid" style="margin-top:15px">
+          <div class="config-item"><label for="boxCount">Коробок</label><select id="boxCount"><option value="8">8</option><option value="9" selected>9</option><option value="12">12</option><option value="16">16</option><option value="20">20</option></select></div>
+          <div class="config-item"><label for="keyCount">Ключей</label><select id="keyCount"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select></div>
+          <div class="config-item"><label for="swapCount">Перестановок в серии</label><select id="swapCount"><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option><option value="8">8</option><option value="10">10</option><option value="12">12</option></select></div>
+          <div class="config-item"><label for="shuffleSpeed">Скорость</label><select id="shuffleSpeed"><option value="slow">Медленно</option><option value="normal" selected>Обычно</option><option value="fast">Быстро</option></select></div>
+        </div>
+        <label class="check-setting" style="margin-top:16px"><input type="checkbox" id="simultaneous"><span>Перемещать две пары одновременно <small style="display:block;color:var(--muted);font-weight:500">По умолчанию выключено. В испытании вторая серия всегда из 3 перестановок.</small></span></label>
+      </section>
+      <div class="rules" id="rules"></div>
+      <div id="readyActions"><button type="button" class="btn btn-main" id="startBtn">▶ Начать</button></div>
+      <div class="game-state hidden" id="playing"><div class="status-icon" aria-hidden="true">⌕</div><h2 class="panel-title">Поиск ключей</h2><p>Ребёнок указывает коробку, педагог нажимает. После просмотра она закрывается.</p><p class="tip">Следующий ключ не появится в коробке, где уже находили ключ.</p><div style="flex:1"></div><button type="button" class="btn btn-outline" id="finishBtn">■ Закончить</button></div>
+      <div class="game-state hidden" id="recalling"><div class="status-icon" aria-hidden="true">⌖</div><h2 class="panel-title" id="recallHeading">Проверка памяти</h2><p id="recallDescription">Отметь коробки с ключами.</p><div class="recall-info">Отмечено: <strong id="recallCount">0 / 3</strong></div><p class="tip">Ответ сохраняется без проверки. Правильные места покажем только в конце всего раунда.</p><div style="flex:1"></div><button type="button" class="btn btn-main" id="checkRecallBtn" disabled>Сохранить ответ (0 / 3)</button><button type="button" class="btn btn-outline" id="finishRecallBtn">■ Закончить</button></div>
+      <div class="game-state hidden" id="swapReady"><div class="status-icon" aria-hidden="true">⇄</div><h2 class="panel-title" id="swapReadyHeading">Начинаем перемещения</h2><p id="swapReadyDescription">Следи за коробками с ключами. Содержимое остаётся внутри.</p><div class="end-note" id="swapReadyNote"></div><div style="flex:1"></div><button type="button" class="btn btn-main" id="beginShuffleBtn">⇄ Начать перестановки</button><button type="button" class="btn btn-outline" id="finishSwapReadyBtn">■ Закончить</button></div>
+      <div class="game-state hidden" id="shuffling"><div class="status-icon" aria-hidden="true">⇄</div><h2 class="panel-title">Следи за коробками</h2><p>Коробки действительно меняются местами, но ключи остаются внутри своих коробок.</p><div class="shuffle-progress" id="shuffleProgressSide"></div><p class="tip">Во время перемещения выбирать коробки нельзя.</p><div style="flex:1"></div><button type="button" class="btn btn-outline" id="finishShufflingBtn">■ Закончить</button></div>
+      <div class="game-state hidden" id="finished"><div class="section-kicker">Результат</div><h2 class="panel-title" id="resultHeading">Раунд завершён</h2><div class="end-note" id="endNote"></div>
+        <div class="results">
+          <div class="result-metric"><strong id="resultBaseline">—</strong><span>Память до движения</span></div>
+          <div class="result-metric"><strong id="resultMid">—</strong><span id="resultMidLabel">После 4 перестановок</span></div>
+          <div class="result-metric" id="finalMetric" hidden><strong id="resultFinal">—</strong><span>После второй серии</span></div>
+          <div class="result-metric"><strong id="resultTime">00:00</strong><span>Время</span></div>
+          <div class="result-metric"><strong id="resultKeys">0 / 3</strong><span>Найдено ключей</span></div>
+          <div class="result-metric"><strong id="resultSwaps">0 / 4</strong><span>Перестановок</span></div>
+          <div class="result-metric"><strong id="resultMoves">0</strong><span>Открытий</span></div>
+          <div class="result-metric"><strong id="resultRepeats">0</strong><span>Повторных проверок</span></div>
+        </div>
+        <div class="review-controls"><button type="button" class="btn btn-outline" id="showInitialBtn">До движения</button><button type="button" class="btn btn-outline" id="showMidBtn">После первой серии</button><button type="button" class="btn btn-outline hidden" id="showFinalBtn">После второй серии</button></div>
+        <p class="tip">На карте: зелёный = верно, красный = пропущено, оранжевый = лишняя отметка. Если исходный ответ был неверным, позднюю ошибку нельзя однозначно объяснить перестановками.</p>
+        <div style="flex:1"></div><button type="button" class="btn btn-main" id="againBtn">↻ Новый раунд</button><button type="button" class="btn btn-alt" id="settingsBtn">Изменить настройки</button>
+      </div>
+    </aside>
+    <section class="panel board-panel" aria-label="Игровое поле">
+      <div class="board-toolbar"><div><h2 class="board-heading" id="boardHeading">Поле готово</h2><div class="board-help" id="boardHelp">Укажи настройки и нажми «Начать».</div></div><span class="live-tag" id="modeTag">9 коробок · 3 ключа</span></div>
+      <div class="step-rail" aria-label="Этапы игры"><span id="stepSearch" class="current">1 · Поиск</span><span id="stepBaseline">2 · До движения</span><span id="stepShuffle">3 · Перестановки</span><span id="stepRecall">4 · После движения</span></div>
+      <div class="metrics">
+        <div class="metric"><span>Найдено ключей</span><strong id="keysMetric">0 / 3</strong></div>
+        <div class="metric"><span>Перестановки</span><strong id="swapsMetric">0 / 4</strong></div>
+        <div class="metric"><span>Открытий</span><strong id="movesMetric">0</strong></div>
+        <div class="metric"><span>Время</span><strong id="timeMetric">00:00</strong></div>
+      </div>
+      <div class="progress" role="group" aria-label="Прогресс"><div id="progressFill"></div></div>
+      <div class="board-area"><div class="cells" id="cells" role="group" aria-label="Коробки"></div></div>
+      <div class="shuffle-progress" id="shuffleProgressBoard" role="group" aria-label="Прогресс перестановок"></div>
+      <div class="feedback" id="feedback" role="status" aria-live="polite">Найди ключи, затем проверь свою память и проследи за перемещениями.</div>
+      <div class="legend" id="legend"><span>▢ Коробки закрываются</span><span>🔑 Ключи по одному</span><span>⇄ 4 перестановки</span></div>
+    </section>
+  </main>
+  <div class="footer">NeuroX · «Слепые ячейки» · Офлайн-тренажёр для педагога и Smart TV. Без сохранения в профиль ученика.</div>
+</div>
+<div class="modal hidden" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmHeading"><div class="modal-box"><h2 id="confirmHeading">Закончить раунд?</h2><p id="confirmText">Раунд завершится досрочно, а результаты памяти не будут оцениваться.</p><div class="modal-actions"><button type="button" class="btn btn-alt" id="cancelFinish">Продолжить</button><button type="button" class="btn btn-main" id="confirmFinish">Закончить</button></div></div></div>
+<script>(() => {
+'use strict';
+const $=id=>document.getElementById(id);
+const CLOSED='<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="7" y="7" width="26" height="26" rx="6"/><path d="M13 20h14M20 13v14" opacity=".35"/><circle cx="20" cy="20" r="4"/></svg>';
+const KEY='<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="14" cy="17" r="7"/><path d="M20 21l14 14M27 28l4-4M30 31l4-4"/></svg>';
+const EMPTY='<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M10 10l20 20M30 10L10 30"/></svg>';
+const CHECK='<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M9 20l8 8 15-17"/></svg>';
+const durations={slow:2000,normal:1250,fast:700};
+const keyWord=n=>n===1?'ключ':n>=2&&n<=4?'ключа':'ключей';
+const swapWord=n=>n===1?'перестановка':n>=2&&n<=4?'перестановки':'перестановок';
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const shuffled=arr=>{for(let i=arr.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;};
+const timeText=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
+const allCells=()=>[...$('cells').querySelectorAll('.cell')];
+let settings={cells:9,keys:3,swaps:4,speed:'normal',simultaneous:false,mode:'standard'};
+let phase='ready',recallStage='baseline',seriesIndex=0,keyBoxes=[],slotToBox=[],stageVisited=new Set(),selected=new Set();
+let answers={baseline:null,mid:null,final:null},snapshots={initial:null,mid:null,final:null};
+let found=0,opens=0,repeats=0,swapsDone=0,seriesDone=0,openLocked=false,completed=false;
+let elapsedMs=0,startedAt=0,clockTimer=null,revealTimer=null,shuffleToken=0,animations=[],lastFocus=null,lastPair='';
+let currentPlan=[],planInfo={};
+const totalSwaps=()=>settings.swaps+(settings.mode==='challenge'?3:0);
+const seriesLimit=()=>seriesIndex===0?settings.swaps:3;
+function readSettings(){
+ const cells=Number($('boxCount').value),keys=Number($('keyCount').value);
+ return {cells,keys:Math.min(keys,cells-1),swaps:Number($('swapCount').value),speed:$('shuffleSpeed').value,simultaneous:$('simultaneous').checked,mode:$('modeSelect').value};
+}
+function feedback(t,kind='neutral'){$('feedback').textContent=t;$('feedback').className='feedback '+kind;}
+function phaseSet(next){
+ phase=next;
+ const shown={ready:['setup','rules','readyActions'],active:['playing'],recall:['recalling'],swapReady:['swapReady'],shuffling:['shuffling'],finished:['finished']};
+ ['setup','rules','readyActions','playing','recalling','swapReady','shuffling','finished'].forEach(id=>$(id).classList.toggle('hidden',!shown[next].includes(id)));
+ const activeStep=next==='ready'||next==='active'?'stepSearch':next==='recall'&&recallStage==='baseline'?'stepBaseline':next==='swapReady'||next==='shuffling'?'stepShuffle':'stepRecall';
+ ['stepSearch','stepBaseline','stepShuffle','stepRecall'].forEach(id=>$(id).classList.toggle('current',id===activeStep));
+ $('modeTag').textContent=settings.cells+' коробок · '+settings.keys+' '+keyWord(settings.keys)+(settings.mode==='challenge'?' · Испытание':'');
+}
+function stats(){
+ $('keysMetric').textContent=found+' / '+settings.keys;
+ $('swapsMetric').textContent=swapsDone+' / '+totalSwaps();
+ $('movesMetric').textContent=opens;
+ $('timeMetric').textContent=timeText(elapsedMs);
+ const stagePoints=phase==='ready'?0:phase==='active'?.03+found/settings.keys*.25:phase==='recall'&&recallStage==='baseline'?.32:phase==='swapReady'?.37+swapsDone/totalSwaps()*.49:phase==='shuffling'?.37+swapsDone/totalSwaps()*.49:phase==='recall'?.37+swapsDone/totalSwaps()*.49:phase==='finished'?1:0;
+ $('progressFill').style.width=Math.round(stagePoints*100)+'%';
+}
+function showDots(){
+ const len=seriesLimit();
+ const html=Array.from({length:len},(_,i)=>'<span class="shuffle-dot '+(i<seriesDone?'done':i===seriesDone&&phase==='shuffling'?'current':'')+'" title="Перестановка '+(i+1)+'"></span>').join('');
+ $('shuffleProgressBoard').innerHTML=html;$('shuffleProgressSide').innerHTML=html;
+ $('shuffleProgressBoard').classList.toggle('hidden',!['swapReady','shuffling','recall','finished'].includes(phase));
+}
+function renderBoard(review=false){
+ const board=$('cells');board.replaceChildren();board.dataset.shuffling=String(phase==='shuffling');
+ board.style.setProperty('--columns',settings.cells===9?'3':settings.cells===20?'5':'4');
+ board.style.maxWidth=settings.cells===9?'520px':'';
+ let layout=slotToBox,truth=new Set(keyBoxes.slice(0,found)),marks=null;
+ if(review){
+   layout=snapshots[review]||slotToBox;
+   marks=answers[review==='initial'?'baseline':review==='mid'?(settings.mode==='challenge'?'mid':'final'):'final'];
+ }
+ for(let slot=0;slot<settings.cells;slot++){
+   const id=layout[slot],cell=document.createElement('button');cell.type='button';cell.className='cell';
+   cell.dataset.boxid=id;cell.style.order=String(slot+1);
+   cell.disabled=!(phase==='active'||phase==='recall')||openLocked;
+   cell.setAttribute('aria-label','Коробка на позиции '+(slot+1));cell.innerHTML=CLOSED;
+   if(review){
+     const has=truth.has(id),mark=marks&&marks.has(id);
+     let color='review-empty',label='ПУСТО',svg=EMPTY;
+     if(has&&mark){color='review-correct';label='ВЕРНО';svg=KEY;}
+     else if(has){color=marks?'review-missed':'review-key';label=marks?'ПРОПУСК':'КЛЮЧ';svg=KEY;}
+     else if(mark){color='review-extra';label='ЛИШНЯЯ';svg=CHECK;}
+     cell.className='cell '+color;cell.innerHTML=svg+'<span class="cell-caption">'+label+'</span>';
+     cell.setAttribute('aria-label','Позиция '+(slot+1)+': '+label);
+   }else if(phase==='recall'){
+     const checked=selected.has(id);cell.classList.toggle('recall-selected',checked);
+     cell.innerHTML=checked?CHECK+'<span class="cell-caption">ОТМЕЧЕНО</span>':CLOSED;
+     cell.setAttribute('aria-pressed',String(checked));cell.addEventListener('click',()=>toggleRecall(id));
+   }else if(phase==='active')cell.addEventListener('click',()=>openBox(id,cell));
+   board.appendChild(cell);
+ }
+}
+function stopAsync(){
+ shuffleToken++;
+ if(revealTimer!==null)clearTimeout(revealTimer);revealTimer=null;
+ if(clockTimer!==null)clearInterval(clockTimer);clockTimer=null;
+ animations.forEach(a=>{try{a.cancel();}catch(e){}});animations=[];
+ $('cells').dataset.shuffling='false';
+}
+function updateSettingsPreview(){
+ if(phase!=='ready')return;
+ settings=readSettings();
+ [...$('keyCount').options].forEach(o=>o.disabled=Number(o.value)>=settings.cells);
+ $('rules').innerHTML='<strong>1. Поиск:</strong> найди '+settings.keys+' '+keyWord(settings.keys)+' по одному. В найденную коробку ключи не возвращаются.<br><strong>2. Память:</strong> отметь исходные коробки, но правильные ответы пока не увидишь.<br><strong>3. Перестановки:</strong> '+settings.swaps+' перемещений, минимум два из них с участием ключей. '+(settings.mode==='challenge'?'Затем отметь ключи, следи за ещё тремя перестановками и отметь снова.':'Затем отметь ключи на новых местах.')+'<br><strong>4. Итог:</strong> сравни ответы до и после перемещений.';
+ slotToBox=Array.from({length:settings.cells},(_,i)=>i);found=0;opens=0;swapsDone=0;seriesDone=0;elapsedMs=0;
+ $('boardHeading').textContent='Поле готово';$('boardHelp').textContent='Укажи настройки и нажми «Начать».';
+ $('legend').innerHTML='<span>▢ Закрытые коробки</span><span>🔑 Ключи по одному</span><span>⇄ Видимые перестановки</span>';
+ phaseSet('ready');renderBoard();showDots();stats();
+}
+function begin(){
+ stopAsync();settings=readSettings();
+ keyBoxes=shuffled(Array.from({length:settings.cells},(_,i)=>i)).slice(0,settings.keys);
+ slotToBox=Array.from({length:settings.cells},(_,i)=>i);
+ snapshots={initial:slotToBox.slice(),mid:null,final:null};answers={baseline:null,mid:null,final:null};
+ selected=new Set();stageVisited=new Set();
+ found=0;opens=0;repeats=0;swapsDone=0;seriesDone=0;seriesIndex=0;recallStage='baseline';lastPair='';currentPlan=[];
+ openLocked=false;completed=false;elapsedMs=0;
+ phaseSet('active');
+ $('boardHeading').textContent='Ищем ключ № 1';
+ $('boardHelp').textContent='После поиска отметишь исходное положение ключей, затем начнутся перемещения.';
+ $('legend').innerHTML='<span>▢ Коробки закрываются</span><span>🔑 Ключи по одному</span>';
+ renderBoard();showDots();stats();feedback('Найди первый ключ. Педагог нажимает на выбранную коробку.');
+ startedAt=performance.now();clockTimer=setInterval(()=>{if(phase!=='ready'&&phase!=='finished'){elapsedMs=performance.now()-startedAt;stats();}},150);
+}
+function openBox(boxId,cell){
+ if(phase!=='active'||openLocked)return;
+ openLocked=true;opens++;
+ const wasKey=keyBoxes.slice(0,found).includes(boxId),repeat=stageVisited.has(boxId),hit=boxId===keyBoxes[found];
+ if(wasKey||repeat)repeats++;else stageVisited.add(boxId);
+ if(hit){found++;stageVisited=new Set();}
+ cell.classList.add(hit?'reveal-key':'reveal-empty');
+ cell.innerHTML=(hit?KEY:EMPTY)+'<span class="cell-caption">'+(hit?'КЛЮЧ':'ПУСТО')+'</span>';
+ allCells().forEach(c=>c.disabled=true);
+ feedback(wasKey?'Здесь уже находили ключ.':repeat?'Эту коробку уже проверяли для текущего ключа.':hit?'Ключ найден! Запомни его коробку.':'Пусто.',wasKey||repeat?'bad':hit?'good':'neutral');
+ elapsedMs=performance.now()-startedAt;stats();
+ revealTimer=setTimeout(()=>{
+   revealTimer=null;if(phase!=='active')return;
+   openLocked=false;
+   if(found===settings.keys){startRecall('baseline');return;}
+   if(hit){$('boardHeading').textContent='Ищем ключ № '+(found+1);$('boardHelp').textContent='В прежней пустой коробке теперь может появиться ключ.';}
+   renderBoard();feedback(hit?'Следующий ключ спрятан. Помни уже найденные места.':'Продолжай поиск.');
+ },950);
+}
+function startRecall(stage){
+ recallStage=stage;selected=new Set();phaseSet('recall');
+ const titles={baseline:'Где ключи были сначала?',mid:'После первых перестановок',final:settings.mode==='challenge'?'После второй серии':'После перестановок'};
+ const body={baseline:'Отметь '+settings.keys+' коробки в исходных позициях. Мы запишем ответ и не покажем результат.',mid:'После '+settings.swaps+' перемещений выбери нынешние коробки с ключами. Не показываем правильный ответ: впереди вторая серия.',final:'Укажи '+settings.keys+' коробки, в которых ключи сейчас.'};
+ $('recallHeading').textContent=titles[stage];$('recallDescription').textContent=body[stage];
+ $('boardHeading').textContent=titles[stage];$('boardHelp').textContent=body[stage];
+ $('legend').innerHTML='<span>✓ Отметь нужные коробки</span><span>Ответы появятся только после завершения</span>';
+ feedback(stage==='baseline'?'Проверка исходной памяти. Отметь коробки, где находили ключи.':stage==='mid'?'Первая проверка после движения. Без подсказок.':'Финальная проверка после движения.');
+ updateRecall();renderBoard();showDots();stats();
+}
+function toggleRecall(id){
+ if(phase!=='recall')return;
+ if(selected.has(id))selected.delete(id);
+ else if(selected.size<settings.keys)selected.add(id);
+ else{feedback('Выбрано достаточно. Сначала сними одну отметку.');return;}
+ updateRecall();renderBoard();
+ feedback(selected.size===settings.keys?'Все коробки отмечены. Сохрани ответ.':'Осталось выбрать: '+(settings.keys-selected.size)+'.');
+}
+function updateRecall(){
+ $('recallCount').textContent=selected.size+' / '+settings.keys;
+ $('checkRecallBtn').textContent='Сохранить ответ ('+selected.size+' / '+settings.keys+')';
+ $('checkRecallBtn').disabled=selected.size!==settings.keys;
+}
+function checkRecall(){
+ if(phase!=='recall'||selected.size!==settings.keys)return;
+ answers[recallStage]=new Set(selected);
+ if(recallStage==='baseline'){
+   seriesIndex=0;startReady();
+ }else if(recallStage==='mid'){
+   seriesIndex=1;startReady();
+ }else{
+   finish(true);
+ }
+}
+function startReady(){
+ phaseSet('swapReady');seriesDone=0;
+ const n=seriesLimit();
+ $('swapReadyHeading').textContent=seriesIndex===0?'Первая серия':'Вторая серия';
+ $('swapReadyDescription').textContent=seriesIndex===0?'Исходный ответ записан без подсказок. Теперь следи за коробками с ключами.':'Первый ответ записан без подсказок. Теперь следи за следующими перемещениями тех же коробок.';
+ $('swapReadyNote').textContent=n+' '+swapWord(n)+(settings.simultaneous?' (две пары могут двигаться одновременно).':' (по одной паре).')+' Ключи остаются внутри своих коробок.';
+ $('boardHeading').textContent=seriesIndex===0?'Готовимся к перестановкам':'Впереди ещё 3 перестановки';
+ $('boardHelp').textContent='Следи за самими коробками, а не за прежними координатами.';
+ feedback('Ответ сохранён. Правильные места пока скрыты.');
+ $('legend').innerHTML='<span>⇄ Коробки движутся, а ключи остаются внутри</span>';
+ renderBoard();showDots();stats();
+}
+// A move of a key-bearing box into an empty box's slot counts as a meaningful key movement.
+// The generator guarantees at least 2 such swaps per series, skips the immediately preceding
+// pair (including across series), and chooses different actual box objects by moving slots.
+function makeSmartPlan(n){
+ const sim=slotToBox.slice(),truth=new Set(keyBoxes),plan=[];
+ const cols=settings.cells===9?3:settings.cells===20?5:4;
+ const need=Math.min(n,Math.max(2,Math.ceil(n*.65)));
+ let keyMoves=0,previous=lastPair;
+ const repeatedBefore=new Set();
+ for(let k=0;k<n;k++){
+   const remaining=n-k,mustKey=keyMoves+remaining<=need;
+   let options=[];
+   for(let a=0;a<settings.cells;a++)for(let b=a+1;b<settings.cells;b++){
+     const pair=a+'-'+b;if(pair===previous)continue;
+     const keyMove=truth.has(sim[a])!==truth.has(sim[b]);
+     if(mustKey&&!keyMove)continue;
+     const distance=Math.abs(a%cols-b%cols)+Math.abs(Math.floor(a/cols)-Math.floor(b/cols));
+     const repeatPenalty=repeatedBefore.has(pair)?2.5:0;
+     let weight=1+(keyMove?3:0)+(distance>=2&&distance<=4?1.5:0)-repeatPenalty;
+     if(weight<.15)weight=.15;
+     options.push({a,b,pair,keyMove,weight});
+   }
+   if(!options.length)throw new Error('Нет допустимой перестановки');
+   // Weighted selection prevents mechanical same-slot patterns while retaining minimum key movement.
+   const pool=options.reduce((acc,o)=>acc+o.weight,0);let roll=Math.random()*pool;
+   let chosen=options[options.length-1];for(const opt of options){roll-=opt.weight;if(roll<0){chosen=opt;break;}}
+   if(chosen.keyMove)keyMoves++;
+   [sim[chosen.a],sim[chosen.b]]=[sim[chosen.b],sim[chosen.a]];
+   plan.push([chosen.a,chosen.b]);previous=chosen.pair;repeatedBefore.add(chosen.pair);
+ }
+ planInfo={keyMoves,total:n,pairs:plan.slice()};
+ return plan;
+}
+async function moveBoxes(pairs,duration,token){
+ const els=new Map(allCells().map(c=>[Number(c.dataset.boxid),c]));
+ const moving=[];
+ for(const [a,b] of pairs){
+   const boxA=slotToBox[a],boxB=slotToBox[b];
+   moving.push({element:els.get(boxA),start:els.get(boxA).getBoundingClientRect(),sign:-1});
+   moving.push({element:els.get(boxB),start:els.get(boxB).getBoundingClientRect(),sign:1});
+   [slotToBox[a],slotToBox[b]]=[slotToBox[b],slotToBox[a]];
+ }
+ for(let slot=0;slot<slotToBox.length;slot++)els.get(slotToBox[slot]).style.order=slot+1;
+ animations=[];
+ for(const o of moving){
+   const end=o.element.getBoundingClientRect(),dx=o.start.left-end.left,dy=o.start.top-end.top;
+   const tilt=Math.min(34,Math.max(17,o.start.width*.22))*o.sign;
+   o.element.classList.add('shuffle-box');o.element.style.zIndex=o.sign===-1?'4':'3';
+   const a=o.element.animate([{transform:`translate(${dx}px,${dy}px)`,offset:0},{transform:`translate(${dx/2}px,${dy/2+tilt}px)`,offset:.5},{transform:'translate(0px,0px)',offset:1}],{duration,easing:'ease-in-out',fill:'both'});
+   animations.push(a);
+ }
+ await Promise.all(animations.map(a=>a.finished.catch(()=>{})));
+ if(token!==shuffleToken)return;
+ moving.forEach(o=>{o.element.style.zIndex='';o.element.classList.remove('shuffle-box');});animations=[];
+}
+async function startShuffle(){
+ if(phase!=='swapReady')return;
+ const token=++shuffleToken;
+ currentPlan=makeSmartPlan(seriesLimit());seriesDone=0;
+ phaseSet('shuffling');$('cells').dataset.shuffling='true';allCells().forEach(c=>c.disabled=true);
+ const duration=durations[settings.speed];
+ $('boardHelp').textContent='Каждая коробка физически занимает новую позицию. Ключи внутри не меняются.';
+ $('legend').innerHTML='<span>⇄ Следи за движущимися коробками</span><span>Во время анимации не нажимай</span>';
+ feedback('Начинаются перестановки.');showDots();stats();
+ await sleep(550);
+ for(let step=0;step<currentPlan.length;){
+   if(token!==shuffleToken||phase!=='shuffling')return;
+   const count=settings.simultaneous&&step+1<currentPlan.length?2:1;
+   // The plan may overlap slots; do not run overlapping swaps in parallel.
+   let batch=[currentPlan[step]];
+   if(count===2){const first=new Set(batch[0]);const candidate=currentPlan[step+1];if(!first.has(candidate[0])&&!first.has(candidate[1]))batch.push(candidate);}
+   $('boardHeading').textContent='Перестановка '+(step+1)+(batch.length>1?'–'+(step+2):'')+' из '+currentPlan.length+' · серия '+(seriesIndex+1);
+   feedback('Следи за '+(batch.length===2?'двумя парами':'одной парой')+' коробок.');
+   await moveBoxes(batch,duration,token);
+   if(token!==shuffleToken||phase!=='shuffling')return;
+   step+=batch.length;seriesDone=step;swapsDone+=batch.length;
+   for(const [a,b] of batch)lastPair=Math.min(a,b)+'-'+Math.max(a,b);
+   showDots();stats();
+   if(step<currentPlan.length)await sleep(400);
+ }
+ if(token!==shuffleToken||phase!=='shuffling')return;
+ $('cells').dataset.shuffling='false';
+ if(seriesIndex===0){snapshots.mid=slotToBox.slice();startRecall(settings.mode==='challenge'?'mid':'final');}
+ else {snapshots.final=slotToBox.slice();startRecall('final');}
+}
+function matchingCount(answersSet){return answersSet?[...answersSet].filter(id=>keyBoxes.includes(id)).length:null;}
+function finish(isCompleted){
+ if(phase==='ready'||phase==='finished')return;
+ elapsedMs=startedAt?performance.now()-startedAt:elapsedMs;
+ stopAsync();completed=isCompleted;
+ if(settings.mode==='standard')snapshots.final=snapshots.mid||slotToBox.slice();
+ if(!snapshots.mid)snapshots.mid=slotToBox.slice();
+ if(!snapshots.final)snapshots.final=slotToBox.slice();
+ phaseSet('finished');
+ $('resultHeading').textContent=isCompleted?'Раунд завершён':'Раунд прерван';
+ const base=matchingCount(answers.baseline),after4=matchingCount(settings.mode==='challenge'?answers.mid:answers.final),last=matchingCount(answers.final);
+ $('resultBaseline').textContent=base===null?'—':base+' / '+settings.keys;
+ $('resultMid').textContent=after4===null?'—':after4+' / '+settings.keys;
+ $('resultMidLabel').textContent='После '+settings.swaps+' перестановок';
+ $('resultFinal').textContent=last===null?'—':last+' / '+settings.keys;
+ $('finalMetric').hidden=settings.mode!=='challenge';
+ $('resultTime').textContent=timeText(elapsedMs);$('resultKeys').textContent=found+' / '+settings.keys;
+ $('resultSwaps').textContent=swapsDone+' / '+totalSwaps();$('resultMoves').textContent=opens;$('resultRepeats').textContent=repeats;
+ const note=$('endNote');note.className='end-note'+(isCompleted&&last===settings.keys&&base===settings.keys?' success':'');
+ if(!isCompleted)note.textContent='Досрочно завершено. Незавершённые проверки не оцениваются.';
+ else if(base!==settings.keys)note.textContent='Исходно верно '+base+' из '+settings.keys+'. Поздние ошибки нельзя однозначно отнести к перестановкам.';
+ else if(last===settings.keys)note.textContent='Отлично: исходные позиции запомнены и все ключи найдены после перемещений.';
+ else note.textContent='Исходные позиции запомнены верно. После перемещений найдено '+last+' из '+settings.keys+'.';
+ $('showFinalBtn').classList.toggle('hidden',settings.mode!=='challenge');
+ $('boardHeading').textContent=isCompleted?'Сравни карты и ответы':'Раунд прерван';
+ $('boardHelp').textContent='Показаны правильные места и твои отметки.';
+ feedback('Можно сравнить исходную и последующие карты.');
+ $('legend').innerHTML='<span>Зелёный — верно</span><span>Красный — пропущено</span><span>Оранжевый — лишняя отметка</span>';
+ showDots();stats();toggleMap(settings.mode==='challenge'?'final':'mid');
+}
+function toggleMap(kind){
+ if(phase!=='finished')return;
+ $('boardHeading').textContent=kind==='initial'?'Исходное расположение':kind==='mid'?'После первой серии':'После второй серии';
+ $('boardHelp').textContent='Зелёный — правильно выбранные ключи; красный — пропущенные; оранжевый — лишние.';
+ for(const [id,k] of [['showInitialBtn','initial'],['showMidBtn','mid'],['showFinalBtn','final']])$(id).className='btn '+(kind===k?'btn-alt':'btn-outline')+(id==='showFinalBtn'&&settings.mode!=='challenge'?' hidden':'');
+ renderBoard(kind);
+}
+function reset(){
+ stopAsync();phase='ready';startedAt=0;elapsedMs=0;found=0;opens=0;swapsDone=0;seriesDone=0;
+ updateSettingsPreview();feedback('Настройки готовы. Начни новый раунд.');
+}
+function askFinish(){
+ if(phase==='ready'||phase==='finished')return;
+ lastFocus=document.activeElement;
+ $('confirmText').textContent='Раунд прервётся. Незавершённые ответы останутся без оценки.';
+ $('confirmModal').classList.remove('hidden');$('cancelFinish').focus();
+}
+function closeModal(){$('confirmModal').classList.add('hidden');if(lastFocus&&lastFocus.isConnected)lastFocus.focus();}
+['boxCount','keyCount','swapCount','shuffleSpeed','simultaneous','modeSelect'].forEach(id=>$(id).addEventListener('change',updateSettingsPreview));
+$('startBtn').addEventListener('click',begin);$('againBtn').addEventListener('click',begin);$('settingsBtn').addEventListener('click',reset);
+$('checkRecallBtn').addEventListener('click',checkRecall);$('beginShuffleBtn').addEventListener('click',startShuffle);
+['finishBtn','finishRecallBtn','finishSwapReadyBtn','finishShufflingBtn'].forEach(id=>$(id).addEventListener('click',askFinish));
+$('cancelFinish').addEventListener('click',closeModal);$('confirmFinish').addEventListener('click',()=>{closeModal();finish(false);});
+$('confirmModal').addEventListener('click',e=>{if(e.target===$('confirmModal'))closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('confirmModal').classList.contains('hidden'))closeModal();});
+$('showInitialBtn').addEventListener('click',()=>toggleMap('initial'));$('showMidBtn').addEventListener('click',()=>toggleMap('mid'));$('showFinalBtn').addEventListener('click',()=>toggleMap('final'));
+const themeKey='neurox_theme';try{if(localStorage.getItem(themeKey)==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}
+$('themeBtn').addEventListener('click',()=>{const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem(themeKey,t);}catch(e){}});
+updateSettingsPreview();
+})();
+</script><script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
+<script src="../assets/menu-drawer.js"></script>
+<script src="../shared/new-trainers.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/mobile-new-trainers.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
+</body></html>

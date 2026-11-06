@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script src="../shared/theme.js"></script>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Разбор по составу · тренажёр - NeuroX</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -451,6 +452,9 @@ body.mode-trainer .problem .step-btn{ display:flex; }
 [data-theme="dark"] .tool{ background:#232A3D; }
 </style>
 <link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
 </head>
 <body>
 
@@ -1145,7 +1149,7 @@ const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const LS_PROFILES = 'nx-morph-profiles-v4';
 const LS_CURRENT  = 'nx-morph-current-v4';
-const LS_THEME    = 'nx-theme';
+const LS_THEME    = 'neurox_theme';
 const LS_STUDENTS = 'nx-morph-students-v4';
 const LS_MODE     = 'nx-morph-mode-v4';
 const LS_STATS    = 'nx-morph-stats-v4';
@@ -1966,6 +1970,13 @@ function goBack(){ location.href = 'index.html'; }
 
 
 <script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
 <script src="../assets/menu-drawer.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
 </body>
 </html>

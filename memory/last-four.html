@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script src="../shared/theme.js"></script>
+<script>/* NeuroX: читаем общую настройку до первой отрисовки */
+try {
+  const nxSavedTheme = localStorage.getItem('neurox_theme');
+  const nxTheme = (nxSavedTheme === 'light' || nxSavedTheme === 'dark')
+    ? nxSavedTheme
+    : ((window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
+  document.documentElement.dataset.theme = nxTheme;
+} catch (_) { document.documentElement.dataset.theme = 'light'; }
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Последние четыре · NeuroX v2</title>
+<style>
+:root{--blue:#1e3f8a;--orange:#ff6a00;--ink:#172948;--muted:#687991;--page:#f4f7fc;--paper:#fff;--line:#e0e8f3;--pale:#eaf1fb;--green:#13836b;--green-pale:#e9f8f2;--shadow:0 12px 35px rgba(30,63,138,.07)}
+:root[data-theme="dark"]{--blue:#96b4ff;--orange:#ff8b38;--ink:#f2f6ff;--muted:#aebdd3;--page:#0e182b;--paper:#17263f;--line:#2f4260;--pale:#23385b;--green:#71d9b8;--green-pale:#23483e;--shadow:0 10px 40px rgba(0,0,0,.16)}
+*{box-sizing:border-box}html,body{min-height:100%}body{margin:0;background:var(--page);color:var(--ink);font:15px/1.45 'Segoe UI',Inter,Arial,sans-serif}button,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.46;cursor:default}button:focus-visible,select:focus-visible{outline:3px solid var(--orange);outline-offset:3px}h1,h2,p{margin-top:0}.hidden{display:none!important}
+.wrap{max-width:1390px;padding:24px 24px 32px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:24px}.brand{display:flex;gap:12px;align-items:center}.back{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:var(--paper);color:var(--blue);font-size:23px;text-decoration:none;font-weight:800}.mark{width:44px;height:44px;border-radius:13px;background:#1e3f8a;display:grid;place-items:center;color:#fff}.mark svg{width:29px}.brand-title{font-size:20px;font-weight:850;line-height:1.1}.sub{font-size:11px;font-weight:800;letter-spacing:.13em;color:var(--muted);margin-top:4px}.right-top{display:flex;gap:8px;align-items:center}.small-btn{background:var(--paper);border:1px solid var(--line);padding:10px 13px;border-radius:12px;color:var(--ink);font-size:13px;font-weight:750}.version{font-size:11px;font-weight:700;color:var(--blue);background:var(--pale);padding:9px 12px;border-radius:99px}
+.title{font-size:clamp(29px,3.5vw,42px);font-weight:850;letter-spacing:-1.4px;line-height:1.1;margin-bottom:7px}.lead{color:var(--muted);margin:0 0 22px;max-width:900px}.columns{display:grid;grid-template-columns:minmax(285px,360px) minmax(0,1fr);gap:18px;align-items:stretch}.panel{background:var(--paper);border-radius:23px;border:1px solid var(--line);box-shadow:var(--shadow)}.controls{padding:23px;display:flex;flex-direction:column;gap:19px}.eyebrow{font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);font-weight:850}.controls h2{font-size:22px;line-height:1.14;margin:5px 0 5px;letter-spacing:-.5px}.muted{color:var(--muted);font-size:13px}.modes{display:grid;gap:8px}.mode{display:block;text-align:left;background:var(--paper);color:var(--ink);border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;width:100%;transition:border-color .15s,background .15s}.mode:hover:not(:disabled){border-color:var(--blue)}.mode.active{background:var(--pale);border-color:var(--blue)}.mode strong{font-size:14px;display:block}.mode span{font-size:12px;color:var(--muted);display:block;margin-top:3px}.settings{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field label{display:block;color:var(--muted);font-size:12px;font-weight:800;margin-bottom:6px}.field select{width:100%;padding:11px 9px;border-radius:12px;border:1px solid var(--line);background:var(--paper);color:var(--ink)}.rules{background:var(--page);border-radius:13px;border:1px solid var(--line);padding:13px;color:var(--ink);font-size:13px;line-height:1.55}.rules b{color:var(--blue)}.btn{border:0;border-radius:13px;padding:13px 17px;min-height:48px;font-weight:800;transition:transform .12s}.btn:hover:not(:disabled){transform:translateY(-1px)}.primary{background:var(--orange);color:#fff;box-shadow:0 5px 19px rgba(255,106,0,.18)}.secondary{background:var(--pale);color:var(--blue);border:1px solid var(--line)}.outline{background:var(--paper);color:var(--ink);border:1px solid var(--line)}.actions{display:grid;grid-template-columns:1fr auto;gap:8px}.actions .btn{padding-left:14px;padding-right:14px}.hint{font-size:12px;color:var(--muted);line-height:1.55}
+.play-panel{padding:22px;display:flex;flex-direction:column;gap:15px;min-height:700px}.screen-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.screen-top h2{margin:0 0 4px;font-size:22px;line-height:1.2;letter-spacing:-.5px}.status{font-size:12px;color:var(--muted);margin:0}.stage-pill{border:1px solid var(--line);padding:8px 11px;white-space:nowrap;border-radius:99px;font-size:11px;color:var(--muted);font-weight:850}.stage-pill.live{color:#167d6c;background:#e8faf4;border-color:#a4e5d4}.stage-pill.warn{color:#a44300;background:#fff0e6;border-color:#ffd0ab}.terminal{position:relative;flex:1;min-height:292px;background:linear-gradient(145deg,#111e35 0%,#152d4b 75%,#122c45 100%);border-radius:20px;border:1px solid #294566;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:25px;color:#eaf7ff}.terminal::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 23px,rgba(128,173,213,.055) 24px),repeating-linear-gradient(90deg,transparent,transparent 23px,rgba(128,173,213,.055) 24px);pointer-events:none}.terminal::after{content:"";position:absolute;inset:auto -10% -80px; height:180px;background:radial-gradient(ellipse,rgba(27,179,176,.10),transparent 70%);pointer-events:none}.terminal-top{position:absolute;top:17px;left:20px;right:20px;display:flex;justify-content:space-between;gap:10px;align-items:center;z-index:1;font:750 11px/1.4 Consolas,monospace;letter-spacing:.08em;color:#89a6bd}.live-dot{display:inline-block;background:#46ddbf;border-radius:50%;width:8px;height:8px;box-shadow:0 0 0 4px rgba(70,221,191,.14);margin-right:8px}.terminal.flash .live-dot{background:#ff8b38}.main-icon{position:relative;z-index:1;width:min(31vw,190px);height:min(31vw,190px);min-width:125px;min-height:125px;display:grid;place-items:center;filter:drop-shadow(0 6px 26px rgba(41,216,190,.20));transition:transform .18s}.main-icon svg{height:100%;width:100%}.terminal.flash .main-icon{animation:sigIn .22s ease-out}@keyframes sigIn{from{opacity:.2;transform:scale(.87)}to{opacity:1;transform:scale(1)}}.terminal .main-caption{z-index:1;text-align:center;color:#b3cde0;font-size:13px;margin-top:12px;max-width:510px}.microtag{font:750 12px Consolas,monospace;z-index:1;color:#5ae4c4;margin-bottom:10px}.microtag.noise{color:#ff8c76}.terminal .noise-outline{position:absolute;inset:16px;border:2px dashed #ec826b;border-radius:14px;opacity:0;pointer-events:none}.terminal.noise-state .noise-outline{opacity:1}.signal-bars{position:absolute;bottom:20px;display:flex;align-items:end;gap:5px;opacity:.7}.signal-bars i{display:block;background:#3fd9c3;width:5px;border-radius:8px;animation:wave .95s infinite alternate}.signal-bars i:nth-child(2){animation-delay:.2s;height:13px}.signal-bars i:nth-child(3){animation-delay:.4s;height:22px}.signal-bars i:nth-child(4){animation-delay:.3s;height:10px}.signal-bars i:nth-child(5){animation-delay:.5s;height:18px}@keyframes wave{0%{height:6px;opacity:.4}100%{height:22px;opacity:1}}.terminal.noise-state .signal-bars i{background:#ff967e}.terminal:not(.transmitting) .signal-bars i{animation-play-state:paused}.help-line{min-height:31px;padding:9px 12px;border-radius:12px;background:var(--pale);color:var(--blue);font-size:13px;font-weight:700;text-align:center}
+.answer-area{display:none;flex-direction:column;gap:12px}.answer-area.visible{display:flex}.answer-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.answer-head h3{font-size:17px;letter-spacing:-.3px;margin:0}.answer-head .muted{margin:0}.slots{display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:9px}.slot{border:2px dashed var(--line);background:var(--page);height:76px;border-radius:15px;display:grid;place-items:center;color:var(--muted);font-weight:900;font-size:15px}.slot.filled{border:2px solid var(--blue);background:var(--pale);color:var(--blue);cursor:pointer}.slot svg{width:46px;height:46px}.palette{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:8px}.symbol{background:var(--paper);border:1.5px solid var(--line);border-radius:13px;min-height:78px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;color:var(--ink)}.symbol:hover:not(:disabled){border-color:var(--orange);background:var(--pale)}.symbol svg{height:38px;width:38px}.symbol kbd{font-size:10px;font-family:inherit;color:var(--muted);background:var(--page);border-radius:5px;padding:1px 4px}.answer-actions{display:flex;justify-content:space-between;gap:8px;align-items:center}.answer-actions .left-actions{display:flex;gap:7px}.answer-actions .btn{padding:10px 13px;min-height:43px}.answer-actions #checkBtn{min-width:170px}.answer-empty{color:var(--muted);font-size:12px}.results{display:none;flex-direction:column;gap:12px}.results.visible{display:flex}.result-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.score{background:var(--page);border:1px solid var(--line);border-radius:13px;padding:14px}.score span{display:block;color:var(--muted);font-size:11px;font-weight:750}.score strong{display:block;font-size:28px;line-height:1.2;font-weight:900;color:var(--blue)}.result-list{display:flex;flex-direction:column;gap:10px}.result-item{border:1px solid var(--line);border-radius:13px;padding:12px}.result-item-top{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:800;margin-bottom:9px}.compare{display:flex;flex-direction:column;gap:8px}.compare-row{display:flex;align-items:center;gap:10px}.compare-row label{font-size:11px;font-weight:750;color:var(--muted);width:75px;flex-shrink:0}.compare-icons{display:flex;flex-wrap:wrap;gap:5px}.compare-icons div{height:40px;width:40px;background:var(--page);border:1px solid var(--line);border-radius:9px;display:grid;place-items:center}.compare-icons svg{height:30px;width:30px}.compare-icons .bad{border-color:#eaa298;background:#fff2f0}.compare-icons .good{border-color:#84cfb7;background:#e5f7f1}.result-note{font-size:12px;color:var(--muted);line-height:1.5}.result-tail{display:flex;gap:8px}.result-tail .btn{flex:1}.foot{margin-top:16px;text-align:center;font-size:12px;color:var(--muted)}
+@media(max-width:1030px){.columns{grid-template-columns:1fr}.controls{gap:12px}.modes{grid-template-columns:repeat(3,1fr)}.play-panel{min-height:590px}}@media(max-width:680px){.wrap{padding:13px}.brand-title{font-size:17px}.sub{font-size:10px}.version{display:none}.title{font-size:32px}.columns{gap:12px}.controls,.play-panel{padding:15px}.modes{grid-template-columns:1fr}.play-panel{min-height:550px}.terminal{min-height:240px}.symbol{min-height:62px}.symbol svg{width:29px;height:29px}.symbol kbd{font-size:9px}.palette{grid-template-columns:repeat(5,minmax(0,1fr))}.slot{height:65px}.slot svg{width:35px;height:35px}.result-summary{grid-template-columns:repeat(3,1fr)}.score{padding:9px}.score strong{font-size:22px}.compare-icons div{height:34px;width:34px}.compare-icons svg{height:25px}.answer-actions{flex-wrap:wrap}.answer-actions #checkBtn{width:100%}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+
+/* Настройки педагога, отдельный блок, компактно без загромождения экрана */
+.presets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.preset{border:1.5px solid var(--line);border-radius:13px;background:var(--paper);color:var(--ink);padding:10px 11px;text-align:left;min-height:63px}
+.preset strong{font-size:13px;display:block}.preset span{font-size:11px;color:var(--muted)}
+.preset.active{border-color:var(--orange);background:var(--pale)}
+.setup-summary{padding:10px 12px;color:var(--blue);background:var(--pale);border-radius:11px;font-size:12px;font-weight:700;line-height:1.5}
+.advanced{border:1px solid var(--line);border-radius:14px;background:var(--paper)}
+.advanced summary{cursor:pointer;list-style:none;padding:14px;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:space-between}
+.advanced summary::-webkit-details-marker{display:none}.advanced summary:after{content:'⌄';color:var(--orange);font-size:20px}
+.advanced[open] summary:after{transform:rotate(180deg)}.advanced-inner{padding:0 13px 14px;display:flex;flex-direction:column;gap:13px}
+.field select,.field input[type=number]{width:100%;padding:11px 9px;border-radius:12px;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+.field input[type=range]{width:100%;accent-color:var(--orange);cursor:pointer}
+.field .range-row{display:flex;justify-content:space-between;gap:10px;align-items:center}.field output{color:var(--blue);font-size:13px;font-weight:850}
+.field input:disabled,.field select:disabled{opacity:.5;cursor:default}
+.check-field{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--ink);cursor:pointer}
+.check-field input{accent-color:var(--orange);margin-top:3px}
+.division{height:1px;background:var(--line)}
+.small-link-btn{border:0;background:transparent;color:var(--blue);text-decoration:underline;cursor:pointer;font-weight:700;font-size:12px;align-self:flex-start}
+@media(min-width:1031px){.play-panel{min-height:740px}}@media(max-width:680px){.presets{grid-template-columns:repeat(2,minmax(0,1fr))}.settings{grid-template-columns:1fr 1fr}.controls{gap:13px}}
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/new-trainers.css">
+<link rel="stylesheet" href="../shared/new-trainers-theme.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<link rel="stylesheet" href="../shared/mobile-new-trainers.css">
+</head>
+<body class="nx-added-game nx-game-last-four nx-has-native-dark" data-nx-section="memory">
+<div class="wrap">
+ <header class="top"><div class="brand"><a class="back" href="index.html" aria-label="В меню памяти">←</a><span class="mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M4 8h5v16H4M13 4h6v24h-6M23 12h5v8h-5" stroke="white" stroke-width="2.5" stroke-linejoin="round"/><circle cx="16" cy="16" r="3" fill="#ff6a00"/></svg></span><div><div class="brand-title">NeuroX</div><div class="sub">ПАМЯТЬ / ТРЕНАЖЁР 16</div></div></div><div class="right-top"><span class="version">v2 / ГИБКИЕ НАСТРОЙКИ</span><button class="small-btn" id="themeBtn" type="button">☾ Тема</button></div></header>
+ <h1 class="title">Последние четыре</h1>
+ <p class="lead">Зашифрованная передача может оборваться в любой момент. Удерживай в памяти только последние сигналы, постоянно заменяя старые новыми.</p>
+ <div class="columns">
+  <aside class="panel controls" aria-label="Настройки тренажёра">
+    <div><div class="eyebrow">Режим тренировки</div><h2>Выбери испытание</h2><p class="muted" style="margin:0">Во всех режимах сигналы показываются только зрительно, без озвучки.</p></div>
+    <div class="modes" id="modes">
+      <button class="mode active" type="button" data-mode="clean" aria-pressed="true"><strong>01 · Чистый эфир</strong><span>Восстанови последние символы после обрыва.</span></button>
+      <button class="mode" type="button" data-mode="noise" aria-pressed="false"><strong>02 · Помехи</strong><span>Красные сигналы с меткой «ПОМЕХА» не учитываются.</span></button>
+      <button class="mode" type="button" data-mode="continuous" aria-pressed="false"><strong>03 · Непрерывная запись</strong><span>Несколько проверок по ходу одной передачи, без подсказок.</span></button>
+    </div>
+    <div>
+      <div class="eyebrow" style="margin-bottom:9px">Готовая сложность</div>
+      <div class="presets" id="presets">
+        <button type="button" class="preset active" data-preset="warmup" aria-pressed="true"><strong>Разминка</strong><span>3 сигнала · 2,3 с</span></button>
+        <button type="button" class="preset" data-preset="normal" aria-pressed="false"><strong>Обычный</strong><span>4 сигнала · 1,5 с</span></button>
+        <button type="button" class="preset" data-preset="hard" aria-pressed="false"><strong>Сложный</strong><span>5 сигналов · 1,1 с</span></button>
+        <button type="button" class="preset" data-preset="expert" aria-pressed="false"><strong>Эксперт</strong><span>6 сигналов · 0,8 с</span></button>
+      </div>
+    </div>
+    <div class="setup-summary" id="setupSummary">3 последних · 2,3 с · поток 6–9 · 6 фигур</div>
+    <details class="advanced" id="advanced">
+      <summary>⚙ Точные настройки педагога</summary>
+      <div class="advanced-inner">
+        <div class="settings">
+          <div class="field"><label for="nSel">Последних сигналов</label><select id="nSel"><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></div>
+          <div class="field"><label for="symbolCount">Разных символов</label><select id="symbolCount"><option value="5">5</option><option value="6" selected>6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+        </div>
+        <div class="field"><div class="range-row"><label for="speedRange">Время показа одного символа</label><output id="speedValue" for="speedRange">2,3 с</output></div><input type="range" id="speedRange" min="650" max="3000" step="50" value="2300"></div>
+        <div class="field"><div class="range-row"><label for="gapRange">Пауза между символами</label><output id="gapValue" for="gapRange">0,2 с</output></div><input type="range" id="gapRange" min="0" max="800" step="50" value="200"></div>
+        <div class="division"></div>
+        <div class="field"><label>Длина потока до обрыва (случайно в пределах)</label>
+          <div class="settings"><div class="field"><label for="streamMin">От</label><input type="number" id="streamMin" min="4" max="35" step="1" value="6" inputmode="numeric"></div>
+          <div class="field"><label for="streamMax">До</label><input type="number" id="streamMax" min="5" max="35" step="1" value="9" inputmode="numeric"></div></div>
+        </div>
+        <div class="field"><label for="checksSel">Проверок в непрерывной записи</label><select id="checksSel"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select></div>
+        <div class="check-field" id="continuousNoiseRow"><input type="checkbox" id="continuousNoise"><label for="continuousNoise">Добавить помехи в «Непрерывную запись»</label></div>
+        <div class="field" id="noiseRateRow"><div class="range-row"><label for="noiseRate">Вероятность помехи</label><output id="noiseValue" for="noiseRate">25%</output></div><input type="range" id="noiseRate" min="10" max="50" step="5" value="25"></div>
+        <button type="button" class="small-link-btn" id="resetSettings">↺ Вернуть разминку</button>
+      </div>
+    </details>
+    <div class="rules" id="rules"><b>Как играть:</b> следи за каждым символом. Когда передача оборвётся, нажми на карточки в порядке появления последних четырёх. Количество сигналов заранее неизвестно.</div>
+    <div class="actions"><button class="btn primary" id="startBtn" type="button">▶ Начать</button><button class="btn outline" id="stopBtn" type="button" disabled>Закончить</button></div>
+    <p class="hint" style="margin:0">Настройки сохраняются в этом браузере. Одна карточка выбирается нажатием. До проверки можно исправлять порядок, отменять последний выбор и очищать ответ. На клавиатуре работают 1–9, 0, Backspace и Enter.</p>
+  </aside>
+  <main class="panel play-panel">
+    <div class="screen-top"><div><h2 id="screenTitle">Ожидание передачи</h2><p class="status" id="screenStatus">Параметры выбраны. Можно начинать.</p></div><div class="stage-pill" id="stagePill">ГОТОВНОСТЬ</div></div>
+    <div class="terminal" id="terminal" aria-label="Экран передачи сигнала"><div class="noise-outline" aria-hidden="true"></div><div class="terminal-top"><span><span class="live-dot"></span> NEUROX / КАНАЛ 07</span><span id="terminalStatus">ОЖИДАНИЕ</span></div><div id="microTag" class="microtag">ПОДКЛЮЧЕНИЕ К КАНАЛУ</div><div id="signalDisplay" class="main-icon" aria-live="off"><svg viewBox="0 0 100 100"><polygon points="50,7 93,50 50,93 7,50" fill="none" stroke="#56dcc5" stroke-width="4"/><circle cx="50" cy="50" r="15" fill="#56dcc5"/></svg></div><div class="main-caption" id="mainCaption">Неизвестная длина потока. Отвечать нужно только после обрыва связи.</div><div class="signal-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></div>
+    <div class="help-line" id="helpLine">Готово к началу. Выбери режим и нажми «Начать».</div>
+    <section class="answer-area" id="answerArea" aria-label="Восстановление последних сигналов"><div class="answer-head"><h3 id="answerTitle">Восстанови последние четыре</h3><p class="muted" id="answerCount">Выбрано: 0 из 4</p></div><div class="slots" id="slots" style="--n:4"></div><div class="palette" id="palette"></div><div class="answer-actions"><div class="left-actions"><button type="button" id="undoBtn" class="btn outline">↶ Отменить</button><button type="button" id="clearBtn" class="btn outline">Очистить</button></div><button type="button" id="checkBtn" class="btn primary" disabled>Подтвердить ответ →</button></div><div class="answer-empty">Порядок важен. Один и тот же символ можно выбрать несколько раз.</div></section>
+    <section class="results" id="results"><div class="result-summary" id="resultSummary"></div><div class="result-list" id="resultList"></div><div class="result-note">«Точно на месте» показывает совпадение символа и позиции. «Узнано» учитывает верные символы даже при перепутанном порядке. Эти показатели не являются медицинской диагностикой.</div><div class="result-tail"><button type="button" id="againBtn" class="btn primary">Новый раунд</button></div></section>
+  </main>
+ </div><div class="foot">NeuroX · Зрительная рабочая память · Локальный тренажёр, интернет не требуется</div>
+</div>
+<script>
+'use strict';
+(()=>{
+const ids=['diamond','circle','triangle','square','star','plus','hex','hourglass','ring','arrows'];
+const colors=['#51ddc4','#64baff','#ffad69','#bc9dff','#d5e676','#ff899a','#75e1e3','#f2c979','#94b7fa','#f599c0'];
+const outlines=[
+ '<polygon points="50,7 93,50 50,93 7,50"/>',
+ '<circle cx="50" cy="50" r="37"/>',
+ '<polygon points="50,7 94,88 6,88"/>',
+ '<rect x="13" y="13" width="74" height="74" rx="6"/>',
+ '<polygon points="50,4 62,36 97,36 69,57 80,92 50,71 20,92 31,57 3,36 38,36"/>',
+ '<path d="M36 8H64V36H92V64H64V92H36V64H8V36H36Z"/>',
+ '<polygon points="26,10 74,10 96,50 74,90 26,90 4,50"/>',
+ '<path d="M17 12H83L57 50 83 88H17L43 50Z"/>',
+ '<circle cx="50" cy="50" r="37"/><circle cx="50" cy="50" r="19" fill="#14263f" stroke="#14263f"/>',
+ '<path d="M13 15L48 50 13 85M51 15L86 50 51 85" fill="none" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>'
+];
+function svg(id,size=84){return `<svg aria-hidden="true" viewBox="0 0 100 100" width="${size}" height="${size}" fill="${colors[id]}" stroke="${colors[id]}" stroke-width="3" stroke-linejoin="round">${outlines[id]}</svg>`}
+const $=id=>document.getElementById(id);
+let mode='clean',phase='ready',n=3,duration=2300,gap=200,events=[],index=0,checkpoints=[],checkpointIndex=0,history=[],answers=[],selected=[],timers=[],startedAt=0,activeIds=[0,1,2,3,4,5],noiseEnabled=false,noiseProbability=.25,settingsUsed={};
+const describe={clean:'Следи за каждым символом. После внезапного обрыва восстанови последние сигналы в правильном порядке. Длина потока заранее неизвестна.',noise:'Сигналы с красной меткой «ПОМЕХА» пропускай. Запоминай только последние исправные сигналы. Помехи в ответ не входят.',continuous:'Запоминай последние сигналы и отвечай после каждого обрыва. Правильные ответы между тремя проверками не показываются. После ответа поток продолжается.'};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const presets={
+ warmup:{n:3,speed:2300,gap:200,min:6,max:9,symbols:6,checks:3,noise:25},
+ normal:{n:4,speed:1500,gap:180,min:8,max:12,symbols:8,checks:3,noise:25},
+ hard:{n:5,speed:1100,gap:150,min:12,max:17,symbols:10,checks:3,noise:30},
+ expert:{n:6,speed:800,gap:100,min:17,max:24,symbols:10,checks:4,noise:35}
+};
+const settingIds=['nSel','speedRange','gapRange','streamMin','streamMax','symbolCount','checksSel','continuousNoise','noiseRate'];
+const seconds=ms=>(ms/1000).toFixed(2).replace(/0$/,'').replace(/\.$/,'').replace('.',',')+' с';
+function availableSettings(){return {
+ n:Number($('nSel').value),speed:Number($('speedRange').value),gap:Number($('gapRange').value),
+ min:Number($('streamMin').value),max:Number($('streamMax').value),symbols:Number($('symbolCount').value),
+ checks:Number($('checksSel').value),noise:Number($('noiseRate').value),continuousNoise:$('continuousNoise').checked};}
+function normalizeSettings(){
+ let n=Number($('nSel').value)||3;
+ let min=Math.max(n+2,Math.min(35,Math.round(Number($('streamMin').value)||n+2)));
+ let max=Math.max(min,Math.min(35,Math.round(Number($('streamMax').value)||min)));
+ $('streamMin').value=min;$('streamMax').value=max;
+ $('streamMin').min=n+2;$('streamMax').min=n+2;
+}
+function markPreset(id){document.querySelectorAll('[data-preset]').forEach(b=>{b.classList.toggle('active',b.dataset.preset===id);b.setAttribute('aria-pressed',b.dataset.preset===id?'true':'false')});}
+function syncSettings(){normalizeSettings();const p=availableSettings();
+ $('speedValue').textContent=seconds(p.speed);$('gapValue').textContent=seconds(p.gap);$('noiseValue').textContent=p.noise+'%';
+ $('noiseRateRow').classList.toggle('hidden',mode==='clean'||(mode==='continuous'&&!p.continuousNoise));
+ $('continuousNoiseRow').classList.toggle('hidden',mode!=='continuous');
+ $('checksSel').disabled=phase==='playing'||phase==='recall'||mode!=='continuous';
+ const noiseActive=mode==='noise'||(mode==='continuous'&&p.continuousNoise);
+ $('setupSummary').textContent=`${p.n} последних · ${seconds(p.speed)} · поток ${p.min}–${p.max} · ${p.symbols} фигур${mode==='continuous'?' · '+p.checks+' проверок':''}${noiseActive?' · помехи '+p.noise+'%':''}`;
+ if(phase==='ready'||phase==='results'){try{localStorage.setItem('neurox_last4_settings_v2',JSON.stringify({...p,mode}))}catch(e){}}
+}
+function applyPreset(which){if(phase==='playing'||phase==='recall')return;const p=presets[which];if(!p)return;
+ $('nSel').value=p.n;$('speedRange').value=p.speed;$('gapRange').value=p.gap;
+ $('streamMin').value=p.min;$('streamMax').value=p.max;$('symbolCount').value=p.symbols;
+ $('checksSel').value=p.checks;$('noiseRate').value=p.noise;$('continuousNoise').checked=false;
+ markPreset(which);syncSettings();}
+function customSettings(){if(phase==='playing'||phase==='recall')return;markPreset('');syncSettings();}
+function restoreSettings(){let data=null;try{data=JSON.parse(localStorage.getItem('neurox_last4_settings_v2')||'null')}catch(e){}
+ if(!data||typeof data!=='object'){applyPreset('warmup');return;}
+ // Проверка всех значений: сохранённые настройки не могут сломать генератор.
+ const bounds={n:[3,7],speed:[650,3000],gap:[0,800],min:[5,35],max:[5,35],symbols:[5,10],checks:[2,5],noise:[10,50]};
+ for(const [key,[lo,hi]] of Object.entries(bounds)){const v=Number(data[key]);if(!Number.isFinite(v)||v<lo||v>hi){applyPreset('warmup');return;}}
+ $('nSel').value=data.n;$('speedRange').value=data.speed;$('gapRange').value=data.gap;
+ $('streamMin').value=data.min;$('streamMax').value=data.max;$('symbolCount').value=data.symbols;
+ $('checksSel').value=data.checks;$('noiseRate').value=data.noise;$('continuousNoise').checked=!!data.continuousNoise;
+ markPreset('');mode=['clean','noise','continuous'].includes(data.mode)?data.mode:'clean';
+ syncSettings();
+}
+const delay=(fn,t)=>{const h=setTimeout(fn,t);timers.push(h);return h};
+function stopTimers(){timers.forEach(clearTimeout);timers=[]}
+function setHeader(t,s,tag){$('screenTitle').textContent=t;$('screenStatus').textContent=s;$('stagePill').textContent=tag;$('stagePill').className='stage-pill'+(phase==='playing'?' live':phase==='recall'?' warn':'')}
+function updateControls(){const busy=phase==='playing'||phase==='recall';for(const b of document.querySelectorAll('.mode,[data-preset]'))b.disabled=busy;for(const id of settingIds)$(id).disabled=busy;if(!busy&&mode!=='continuous')$('checksSel').disabled=true;$('resetSettings').disabled=busy;$('stopBtn').disabled=!busy;$('startBtn').disabled=busy;$('startBtn').textContent=phase==='results'?'↻ Новый раунд':'▶ Начать'}
+function setTerminal({id=null,text='',caption='',noise=false,live=false}={}){const el=$('terminal');el.classList.toggle('noise-state',noise);el.classList.toggle('transmitting',live);el.classList.remove('flash');void el.offsetWidth;if(id!==null)el.classList.add('flash');$('microTag').textContent=text;$('microTag').classList.toggle('noise',noise);$('signalDisplay').innerHTML=id===null?`<svg viewBox="0 0 100 100" fill="none" stroke="#50d6c1" stroke-width="3"><path d="M18 50h16m8 0h16m8 0h16"/><circle cx="50" cy="50" r="14"/><path d="M50 10V26M50 74V90"/></svg>`:svg(id,180);$('mainCaption').textContent=caption;$('terminalStatus').textContent=live?'ПЕРЕДАЧА':phase==='recall'?'СВЯЗЬ ПРЕРВАНА':phase==='results'?'ОТЧЁТ':'ОЖИДАНИЕ'}
+function onMode(m){if(phase==='playing'||phase==='recall')return;mode=m;document.querySelectorAll('.mode').forEach(b=>{b.classList.toggle('active',b.dataset.mode===m);b.setAttribute('aria-pressed',b.dataset.mode===m?'true':'false')});$('rules').innerHTML='<b>Как играть:</b> '+describe[m];$('helpLine').textContent='Выбран режим «'+({clean:'Чистый эфир',noise:'Помехи',continuous:'Непрерывная запись'}[m])+'». Нажми «Начать».';syncSettings()}
+function makeEvents(){const out=[],checkpoints=[];let prior=-1;const p=settingsUsed;
+ // В первом отрезке длина случайная и заранее неизвестна. В последующих удерживаем тот же поток памяти.
+ const segments=mode==='continuous'?[rnd(p.min,p.max),...Array.from({length:p.checks-1},()=>rnd(Math.max(3,p.n-1),Math.max(5,p.n+3)))]:[rnd(p.min,p.max)];
+ for(const count of segments){let added=0,noiseCount=0,goodThisSegment=0,noiseStreak=0;
+  while(added<count){let isNoise=noiseEnabled&&goodThisSegment>=2&&Math.random()<noiseProbability&&noiseStreak<2;
+   // Хотя бы одна помеха на отрезок, если педагог включил помехи.
+   if(noiseEnabled&&goodThisSegment>=2&&added===count-1&&noiseCount===0)isNoise=true;
+   const options=activeIds.filter(id=>id!==prior);let id=options[rnd(0,options.length-1)];
+   out.push({id,noise:isNoise});prior=id;
+   if(isNoise){noiseCount++;noiseStreak++;}else{added++;goodThisSegment++;noiseStreak=0;}
+  }
+  checkpoints.push(out.length);
+ }
+ return {out,checkpoints};}
+function start(){stopTimers();phase='playing';syncSettings();settingsUsed=availableSettings();n=settingsUsed.n;duration=settingsUsed.speed;gap=settingsUsed.gap;
+ noiseEnabled=mode==='noise'||(mode==='continuous'&&settingsUsed.continuousNoise);noiseProbability=settingsUsed.noise/100;
+ activeIds=Array.from({length:ids.length},(_,i)=>i).sort(()=>Math.random()-.5).slice(0,settingsUsed.symbols);
+ const created=makeEvents();events=created.out;checkpoints=created.checkpoints;index=0;checkpointIndex=0;history=[];answers=[];selected=[];startedAt=Date.now();
+ $('answerArea').classList.remove('visible');$('results').classList.remove('visible');updateControls();
+ setHeader('Передача началась','Следи за последовательностью. Неизвестно, когда связь оборвётся.','В ЭФИРЕ');
+ $('helpLine').textContent=noiseEnabled?'Красные сигналы с меткой «ПОМЕХА» не запоминай.':'Помни только последние '+n+' сигналов. Старые постепенно заменяй новыми.';
+ setTerminal({text:'УСТАНОВКА СОЕДИНЕНИЯ',caption:'Приготовься. Сигналы появятся по одному.',live:true});delay(nextSignal,900)}
+function nextSignal(){if(phase!=='playing')return;if(index===checkpoints[checkpointIndex]||index>=events.length){recall();return}
+ const e=events[index++];if(!e.noise)history.push(e.id);
+ setTerminal({id:e.id,text:e.noise?'ПОМЕХА · ПРОПУСТИТЬ':'ДАННЫЕ ПРИНЯТЫ',caption:e.noise?'Этот сигнал НЕ входит в последовательность.':'Обновляй последние '+n+' символов в памяти.',noise:e.noise,live:true});
+ delay(()=>{if(phase!=='playing')return;setTerminal({text:'ОЖИДАНИЕ СЛЕДУЮЩЕГО СИГНАЛА',caption:'Продолжай удерживать последние '+n+' символов.',live:true});delay(nextSignal,gap)},duration)}
+function recall(){phase='recall';selected=[];setHeader('Связь прервана','Восстанови последние '+n+' действительных сигналов в правильном порядке.',`ПРОВЕРКА ${checkpointIndex+1}/${checkpoints.length}`);setTerminal({text:'ОБРЫВ КАНАЛА',caption:mode==='continuous'&&checkpointIndex<checkpoints.length-1?'Ответь и продолжай следить за передачей. Подсказок не будет.':'Передача завершена. Восстанови последние сигналы.'});$('helpLine').textContent='Нажимай на символы в том порядке, в котором они появились. Ответ можно исправить.';$('answerArea').classList.add('visible');$('results').classList.remove('visible');$('answerTitle').textContent='Восстанови последние '+n+' '+(n===3||n===4?'сигнала':'сигналов');renderAnswer();updateControls()}
+function renderAnswer(){$('slots').style.setProperty('--n',n);$('slots').innerHTML=Array.from({length:n},(_,i)=>`<button class="slot ${selected[i]!==undefined?'filled':''}" type="button" data-slot="${i}" ${selected[i]===undefined?'disabled':''} aria-label="${selected[i]===undefined?'Пустая позиция '+(i+1):'Убрать символ с позиции '+(i+1)}">${selected[i]===undefined?i+1:svg(selected[i])}</button>`).join('');
+ $('palette').innerHTML=activeIds.map((id,i)=>`<button class="symbol" type="button" data-symbol="${id}" ${selected.length>=n?'disabled':''} title="Символ ${i+1}" aria-label="Выбрать символ ${i+1}">${svg(id,50)}<kbd>${i===9?'0':i+1}</kbd></button>`).join('');
+ $('answerCount').textContent=`Выбрано: ${selected.length} из ${n}`;$('checkBtn').disabled=selected.length!==n;$('undoBtn').disabled=selected.length===0;$('clearBtn').disabled=selected.length===0}
+function choose(id){if(phase!=='recall'||selected.length>=n||!activeIds.includes(id))return;selected.push(id);renderAnswer()}
+function submit(){if(phase!=='recall'||selected.length!==n)return;answers.push({target:history.slice(-n),answer:selected.slice()});checkpointIndex++;$('answerArea').classList.remove('visible');if(checkpointIndex<checkpoints.length){phase='playing';updateControls();setHeader('Передача восстановлена','Верный ответ пока не раскрывается. Следи за новыми сигналами.','В ЭФИРЕ');$('helpLine').textContent=`Проверка ${checkpointIndex} сохранена без подсказок. Начинается продолжение передачи.`;setTerminal({text:'ВОССТАНОВЛЕНИЕ СВЯЗИ',caption:'Новые сигналы появятся через мгновение.',live:true});delay(nextSignal,1050)}else showResults()}
+function bagMatch(a,b){const f=new Map();for(const v of a)f.set(v,(f.get(v)||0)+1);let n=0;for(const v of b){if(f.get(v)>0){n++;f.set(v,f.get(v)-1)}}return n}
+function showResults(){stopTimers();phase='results';updateControls();setHeader('Передача завершена','Результаты восстановления последовательности.','ГОТОВО');setTerminal({text:'ЖУРНАЛ ВОССТАНОВЛЕН',caption:'Результаты проверок доступны ниже.'});$('answerArea').classList.remove('visible');$('results').classList.add('visible');let exact=0,bag=0,perfect=0;const rows=answers.map((x,ix)=>{const hits=x.target.map((v,i)=>v===x.answer[i]);const e=hits.filter(Boolean).length;const b=bagMatch(x.target,x.answer);exact+=e;bag+=b;if(e===n)perfect++;const item=(seq,check)=>seq.map((v,i)=>`<div class="${check?(hits[i]?'good':'bad'):''}">${svg(v,35)}</div>`).join('');return `<div class="result-item"><div class="result-item-top"><span>ПРОВЕРКА ${ix+1}</span><span>По позициям: ${e}/${n} · Узнано: ${b}/${n}</span></div><div class="compare"><div class="compare-row"><label>Нужно</label><div class="compare-icons">${item(x.target,false)}</div></div><div class="compare-row"><label>Твой ответ</label><div class="compare-icons">${item(x.answer,true)}</div></div></div></div>`}).join('');const total=n*answers.length;$('resultSummary').innerHTML=`<div class="score"><span>Точно на месте</span><strong>${exact}/${total}</strong></div><div class="score"><span>Узнано символов</span><strong>${bag}/${total}</strong></div><div class="score"><span>Без ошибок</span><strong>${perfect}/${answers.length}</strong></div>`;$('resultList').innerHTML=`<div class="hint">${mode==='continuous'?'Непрерывная запись':mode==='noise'?'Помехи':'Чистый эфир'} · ${settingsUsed.n} последних · ${seconds(settingsUsed.speed)} · ${settingsUsed.symbols} символов · проверок: ${answers.length}</div>`+rows;$('helpLine').textContent=exact===total?'Все символы и их порядок восстановлены точно.':'Сравни символы и их позиции. Перепутанный порядок тоже считается ошибкой.'}
+function finish(){if(phase==='playing'||phase==='recall'){if(!confirm('Завершить попытку без результата?'))return;stopTimers();phase='ready';updateControls();$('answerArea').classList.remove('visible');$('results').classList.remove('visible');setHeader('Ожидание передачи','Попытка завершена. Можно начать новую.','ГОТОВНОСТЬ');setTerminal({text:'КАНАЛ ЗАКРЫТ',caption:'Нажми «Начать», чтобы запустить новую передачу.'});$('helpLine').textContent='Попытка остановлена, результаты не сохранялись.'}}
+function setTheme(){const html=document.documentElement;const d=html.dataset.theme==='dark'?'light':'dark';html.dataset.theme=d;$('themeBtn').textContent=d==='dark'?'☀ Тема':'☾ Тема';try{localStorage.setItem('neurox_theme',d)}catch(e){}}
+try{const d=localStorage.getItem('neurox_theme');if(d==='dark'){document.documentElement.dataset.theme='dark';$('themeBtn').textContent='☀ Тема'}}catch(e){}
+for(const b of document.querySelectorAll('[data-preset]'))b.addEventListener('click',()=>applyPreset(b.dataset.preset));
+for(const id of settingIds)$(id).addEventListener('input',customSettings);
+for(const id of ['streamMin','streamMax'])$(id).addEventListener('change',customSettings);
+$('resetSettings').addEventListener('click',()=>applyPreset('warmup'));
+for(const b of document.querySelectorAll('.mode'))b.addEventListener('click',()=>onMode(b.dataset.mode));$('startBtn').addEventListener('click',start);$('againBtn').addEventListener('click',start);$('stopBtn').addEventListener('click',finish);$('themeBtn').addEventListener('click',setTheme);$('palette').addEventListener('click',e=>{const b=e.target.closest('[data-symbol]');if(b)choose(Number(b.dataset.symbol))});$('slots').addEventListener('click',e=>{const b=e.target.closest('[data-slot]');if(!b||phase!=='recall')return;selected.splice(Number(b.dataset.slot),1);renderAnswer()});$('undoBtn').addEventListener('click',()=>{if(phase==='recall'){selected.pop();renderAnswer()}});$('clearBtn').addEventListener('click',()=>{if(phase==='recall'){selected=[];renderAnswer()}});$('checkBtn').addEventListener('click',submit);
+document.addEventListener('keydown',e=>{if(phase!=='recall'||e.altKey||e.ctrlKey||e.metaKey)return;const el=e.target;if(el&&['INPUT','TEXTAREA','SELECT'].includes(el.tagName))return;if(/^[0-9]$/.test(e.key)){e.preventDefault();choose(activeIds[e.key==='0'?9:Number(e.key)-1]??-1)}else if(e.key==='Backspace'){e.preventDefault();selected.pop();renderAnswer()}else if(e.key==='Enter'&&selected.length===n){if(e.target&&e.target.tagName==='BUTTON')return;e.preventDefault();submit()}});
+restoreSettings();onMode(mode);updateControls();
+window.__neuroxLast4Debug={getState:()=>({mode,phase,n,index,checkpointIndex,checkpoints:checkpoints.slice(),activeIds:activeIds.slice(),eventCount:events.length,noiseEvents:events.filter(e=>e.noise).length,settingsUsed:{...settingsUsed},history:history.slice(),answers:answers.map(a=>({target:a.target.slice(),answer:a.answer.slice()})),selected:selected.slice()}),setSpeedForTest(ms){duration=ms;gap=1}};
+})();
+</script>
+<script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
+<script src="../assets/menu-drawer.js"></script>
+<script src="../shared/new-trainers.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/mobile-new-trainers.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
+</body></html>

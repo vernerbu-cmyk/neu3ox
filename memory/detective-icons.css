@@ -1,0 +1,39 @@
+/* Detective SVG clues: drawing and frame remain readable in both suite themes.
+   This stylesheet is loaded only by memory/detective.html. */
+.detective-clue {
+ display:block;
+ width:82%;height:82%;min-width:0;min-height:0;
+ object-fit:contain;flex:none;
+ pointer-events:none;user-select:none;-webkit-user-drag:none;
+}
+.scene,.scene-item,.slot {min-width:0}
+.scene-item,.pool-item,.slot,.drag-ghost,.row-cell {overflow:hidden}
+.row-cell {flex:none}
+.btn-main,.score-bar {color:#241b12}
+.score-bar span {color:inherit}
+.btn-main:hover {background:#ff9b5c;color:#241b12}
+.status.warn {color:#99420c}
+
+:root[data-theme="dark"] {
+ --bg:#101929;--text:#e8effc;--text-muted:#b7c5d9;
+ --blue:#739bed;--blue-dark:#bbd1ff;--blue-light:#243b60;
+ --border:#405574;--orange-light:#453021;
+}
+:root[data-theme="dark"] :is(.container>header,.panel) {
+ background:#19273d;color:var(--text);border-color:var(--border);
+}
+:root[data-theme="dark"] .pool-item {background:#19273d}
+:root[data-theme="dark"] .status.warn {color:#ffb47c}
+:root[data-theme="dark"] .row-cell {color:#172b49}
+.pool-item:focus-visible,.slot:focus-visible {outline:3px solid #ff8c42;outline-offset:2px}
+
+@media(max-width:500px) {
+ body {padding:10px}
+ .container>header {padding:12px;gap:8px;margin-bottom:14px}
+ .panel {padding:16px}
+ .game-header {margin-bottom:14px}
+ .status {font-size:15px}
+}
+@media(prefers-reduced-motion:reduce) {
+ .scene-item,.pool-item,.result-screen .big {animation:none}
+}

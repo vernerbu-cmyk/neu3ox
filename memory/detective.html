@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script src="../shared/theme.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Детектив - Мнемо-Арена</title>
@@ -243,6 +244,11 @@
   }
 </style>
 <link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<script src="detective-icons.js"></script>
+<link rel="stylesheet" href="detective-icons.css">
 </head>
 <body>
 <div class="container">
@@ -347,7 +353,8 @@ function onDragMove(e) {
 
     const ghost = document.createElement('div');
     ghost.className = 'drag-ghost';
-    ghost.textContent = drag.item;
+    clueIcons.mount(ghost, drag.item);
+    ghost.setAttribute('aria-hidden', 'true');
     ghost.style.width = drag.width + 'px';
     ghost.style.height = drag.height + 'px';
     ghost.style.left = (e.clientX - drag.offsetX) + 'px';
@@ -401,13 +408,9 @@ function onDragEnd(e) {
 }
 
 /* ============ ДАННЫЕ ============ */
-const DETECTIVE_ITEMS = [
-  '🍎','📕','🔑','☕','🐱','⚽','🎩','🕯️','🎸','🌂',
-  '🗿','🧸','🍕','🕰️','💎','🎲','🖼️','🧩','🎁','🔮',
-  '📷','🍩','🎯','🦉','🧪','🗡️','📻','🛎️','🥁','🍇',
-  '🎈','🎨','🚀','⚓','🌵','🍄','🦋','🐢','🍺','🎺',
-  '🏆','🧦','👑','💡','🐸','🍭','🎪','🥑','🦄','📚'
-];
+const clueIcons = window.NeuroXDetectiveIcons;
+const DETECTIVE_ITEMS = Object.freeze(clueIcons.items.map(item => item.id));
+let detectiveRoundVersion = 0;
 
 let detectiveCfg = { count: 6, showTime: 8 };
 try {
@@ -417,6 +420,7 @@ try {
 
 /* ============ ЭКРАН НАСТРОЕК ============ */
 function startDetective() {
+  detectiveRoundVersion++;
   clearTimeouts();
   drag = null;
   gameEl.innerHTML = `
@@ -453,6 +457,7 @@ function startDetective() {
     try { localStorage.setItem('detectiveCfg', JSON.stringify(detectiveCfg)); } catch(e) {}
     detectiveShow();
   };
+  // Start is available immediately: no preload of 70 images.
 }
 
 /* ============ ФАЗА 1: ПОКАЗ ============ */
@@ -462,6 +467,20 @@ function detectiveShow() {
   const count = detectiveCfg.count;
   const showTime = detectiveCfg.showTime;
   const items = shuffle(DETECTIVE_ITEMS).slice(0, count);
+  const roundVersion = ++detectiveRoundVersion;
+  gameEl.innerHTML = `<div class="panel"><div class="status">Подготавливаем улики…</div></div>`;
+  clueIcons.preload(items).then(() => {
+    if (roundVersion === detectiveRoundVersion) detectiveDisplay(items, showTime);
+  }).catch(err => {
+    console.error('Ошибка подготовки улик', err);
+    if (roundVersion === detectiveRoundVersion) {
+      gameEl.innerHTML = '<div class="panel"><div class="status warn">Не удалось показать улики. Попробуйте ещё раз.</div><button class="btn-main" id="retryLoad">Повторить</button></div>';
+      $('retryLoad').onclick = detectiveShow;
+    }
+  });
+}
+function detectiveDisplay(items, showTime) {
+  const count = items.length;
   const showTimeLabel = Number.isInteger(showTime) ? showTime : showTime.toFixed(1);
 
   // адаптивная сетка и размер иконок
@@ -486,7 +505,7 @@ function detectiveShow() {
     const el = document.createElement('div');
     el.className = 'scene-item' + (sizeClass ? ' ' + sizeClass : '');
     el.style.animationDelay = (i * 0.06) + 's';
-    el.textContent = it;
+    clueIcons.mount(el, it);
     scene.appendChild(el);
     wait(i * 70 + 50, () => beep(500 + i * 30, 0.06));
   });
@@ -568,7 +587,7 @@ function detectivePlace(items) {
     for (let i = 0; i < count; i++) {
       const s = document.createElement('div');
       s.className = 'slot' + (userSlots[i] ? ' filled' : '');
-      s.textContent = userSlots[i] || '';
+      clueIcons.mount(s, userSlots[i]);
       s.dataset.idx = i;
       if (userSlots[i]) {
         attachDrag(s, userSlots[i], 'slot', i, handleDrop);
@@ -583,7 +602,7 @@ function detectivePlace(items) {
       pool.forEach((item, idx) => {
         const p = document.createElement('div');
         p.className = 'pool-item';
-        p.textContent = item;
+        clueIcons.mount(p, item);
         attachDrag(p, item, 'pool', idx, handleDrop);
         poolEl.appendChild(p);
       });
@@ -656,7 +675,7 @@ function detectiveCheck(items, userSlots) {
       if (it === ref[i])                { bg = '#DCFCE7'; br = 'var(--green)'; }
       else if (it && ref.includes(it))  { bg = '#FEF3C7'; br = 'var(--yellow)'; }
       else if (it)                      { bg = '#FEE2E2'; br = 'var(--red)'; }
-      return `<span class="row-cell" style="background:${bg}; border-color:${br};">${it || '·'}</span>`;
+      return `<span class="row-cell" style="background:${bg}; border-color:${br};">${it ? clueIcons.markup(it) : '·'}</span>`;
     }).join('');
   }
 
@@ -692,6 +711,13 @@ startDetective();
 </script>
 
 <script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
 <script src="../assets/menu-drawer.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
 </body>
 </html>

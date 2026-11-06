@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script src="../shared/theme.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Взлом - NeuroX</title>
@@ -674,6 +675,9 @@
   }
 </style>
 <link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
 </head>
 
 <body>
@@ -706,12 +710,12 @@
       <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Сменить тему">
         <svg id="themeIcon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
       </button>
-      <button class="icon-btn" onclick="showAchievements()" aria-label="Достижения">
+      <button class="icon-btn" onclick="showAchievements()" aria-labelledby="achievementsLabel achBadge">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="12" cy="8" r="6"/>
           <path d="M9 14v6l3-2 3 2v-6"/>
         </svg>
-        <span class="badge" id="achBadge" style="display:none;">0</span>
+        <span id="achievementsLabel" hidden>Достижения</span><span class="badge" id="achBadge" style="display:none;">0</span>
       </button>
       <button class="icon-btn" onclick="toggleSettings()" aria-label="Настройки">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -803,14 +807,13 @@ function setThemeIcon(isDark){
   if(icon) icon.innerHTML = isDark ? THEME_ICONS.sun : THEME_ICONS.moon;
 }
 function toggleTheme(){
-  document.body.classList.toggle('dark');
-  const isDark = document.body.classList.contains('dark');
-  try{ localStorage.setItem('vlomTheme', isDark ? 'dark' : 'light'); }catch(e){}
+  const isDark = document.documentElement.dataset.theme !== 'dark';
+  window.NeuroXTheme.set(isDark ? 'dark' : 'light');
   setThemeIcon(isDark);
 }
 function loadTheme(){
   let isDark = false;
-  try{ isDark = localStorage.getItem('vlomTheme') === 'dark'; }catch(e){}
+  try{ isDark = localStorage.getItem('neurox_theme') === 'dark'; }catch(e){}
   if(isDark) document.body.classList.add('dark');
   setThemeIcon(isDark);
 }
@@ -2399,6 +2402,13 @@ renderSelect();
 
 
 <script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
 <script src="../assets/menu-drawer.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
 </body>
 </html>

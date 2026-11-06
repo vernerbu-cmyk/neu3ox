@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-nx-section="memory">
 
 <head>
+<script src="../shared/theme.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -202,10 +203,42 @@
     .card-14 .spark { transition: opacity .3s; }
     .card-14:hover .pick  { animation: pickJiggle .9s ease-in-out infinite; }
     .card-14:hover .spark { animation: sparkFlash .55s ease-in-out infinite; }
+  /* 15–17: анимации в том же стиле, что и у старых 14 карточек. */
+.card-15 :is(.nx-m-key,.nx-m-search),.card-16 :is(.nx-m-col1,.nx-m-col2,.nx-m-col3,.nx-m-beat),.card-17 :is(.nx-m-shape1,.nx-m-shape2,.nx-m-transform){transform-box:fill-box;transform-origin:center}
+@keyframes nxCellFlash{0%,100%{opacity:1;transform:scale(1)}45%{opacity:.3;transform:scale(.7)}}
+@keyframes nxFind{0%,100%{transform:translate(0,0)}50%{transform:translate(3px,-3px)}}
+@keyframes nxSignalBars{0%,100%{transform:scaleY(.75)}50%{transform:scaleY(1.12)}}
+@keyframes nxSignalDot{0%,100%{opacity:.3;transform:translateY(-3px)}50%{opacity:1;transform:translateY(4px)}}
+@keyframes nxFlipA{0%,100%{transform:rotate(0deg)}50%{transform:rotate(90deg)}}
+@keyframes nxFlipB{0%,100%{transform:rotate(90deg)}50%{transform:rotate(0deg)}}
+@keyframes nxArrowMove{0%,100%{opacity:.35;transform:translateX(-3px)}50%{opacity:1;transform:translateX(3px)}}
+:is(.card-15:hover,.card-15:focus-visible) .nx-m-key{animation:nxCellFlash 2.2s ease-in-out infinite}
+:is(.card-15:hover,.card-15:focus-visible) .nx-m-search{animation:nxFind 1.5s ease-in-out infinite}
+:is(.card-16:hover,.card-16:focus-visible) .nx-m-col1{animation:nxSignalBars 1.6s ease-in-out infinite}
+:is(.card-16:hover,.card-16:focus-visible) .nx-m-col2{animation:nxSignalBars 1.6s ease-in-out .25s infinite}
+:is(.card-16:hover,.card-16:focus-visible) .nx-m-col3{animation:nxSignalBars 1.6s ease-in-out .5s infinite}
+:is(.card-16:hover,.card-16:focus-visible) .nx-m-beat{animation:nxSignalDot 1.6s ease-in-out infinite}
+:is(.card-17:hover,.card-17:focus-visible) .nx-m-shape1{animation:nxFlipA 2.7s ease-in-out infinite}
+:is(.card-17:hover,.card-17:focus-visible) .nx-m-shape2{animation:nxFlipB 2.7s ease-in-out infinite}
+:is(.card-17:hover,.card-17:focus-visible) .nx-m-transform{animation:nxArrowMove 2.7s ease-in-out infinite}
+@media(hover:none){.card-15 .nx-m-key,.card-16 .nx-m-beat,.card-17 .nx-m-transform{animation:nxCellFlash 3.5s ease-in-out infinite}}
+@media(prefers-reduced-motion:reduce){.card-15 :is(.nx-m-key,.nx-m-search),.card-16 :is(.nx-m-col1,.nx-m-col2,.nx-m-col3,.nx-m-beat),.card-17 :is(.nx-m-shape1,.nx-m-shape2,.nx-m-transform){animation:none!important;transform:none!important}}
+
+    /* Анимация иконки «Реставратор» в каталоге памяти. */
+    @keyframes nxRestorePiece {0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(-5px,4px) rotate(-12deg)}}
+    @keyframes nxRestoreLine {0%,100%{opacity:.45}50%{opacity:1}}
+    .card-18 .nx-piece {transform-box:fill-box;transform-origin:center}
+    :is(.card-18:hover,.card-18:focus-visible) .nx-piece {animation:nxRestorePiece 1.7s ease-in-out infinite}
+    :is(.card-18:hover,.card-18:focus-visible) .nx-paint {animation:nxRestoreLine 1.7s ease-in-out infinite}
+    @media (prefers-reduced-motion:reduce){.card-18 .nx-piece,.card-18 .nx-paint{animation:none!important}}
+
   </style>
+<link rel="stylesheet" href="../shared/square-grid.css" />
+<link rel="stylesheet" href="../shared/theme.css">
+  <link rel="stylesheet" href="../shared/subsections.css" />
 </head>
 
-<body>
+<body class="nx-grid-view">
 
   <div class="container">
     <div class="cards">
@@ -525,6 +558,42 @@
         <div class="arrow">›</div>
       </div>
 
+      <!-- 15. СЛЕПЫЕ ЯЧЕЙКИ -->
+      <div class="card card-15" role="link" tabindex="0" onclick="openTrainer('keys.html')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openTrainer('keys.html')}">
+        <div class="left">
+          <div class="icon-wrap"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 48 48"><rect height="34" rx="5" width="32" x="8" y="7"></rect><path d="M8 18h32M19 7v34M29 18v23"></path><circle class="nx-m-key" cx="14" cy="12" fill="#FF6A00" r="3" stroke="none"></circle><path class="nx-m-search" d="M24 29a4 4 0 1 1 4 4h-3l-3 3" stroke="#FF6A00" stroke-width="3"></path></svg></div>
+          <div class="card-text"><div class="title">Слепые ячейки</div><div class="desc">Следи за перемещениями и восстанови расположение ключей</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 16. ПОСЛЕДНИЕ ЧЕТЫРЕ -->
+      <div class="card card-16" role="link" tabindex="0" onclick="openTrainer('last-four.html')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openTrainer('last-four.html')}">
+        <div class="left">
+          <div class="icon-wrap"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 48 48"><rect class="nx-m-col1" height="28" rx="2" width="8" x="6" y="10"></rect><rect class="nx-m-col2" height="34" rx="2" width="8" x="18" y="7"></rect><rect class="nx-m-col3" height="21" rx="2" width="10" x="30" y="14"></rect><circle class="nx-m-beat" cx="22" cy="20" fill="#FF6A00" r="3" stroke="none"></circle></svg></div>
+          <div class="card-text"><div class="title">Последние четыре</div><div class="desc">Удерживай в памяти четыре последних сигнала</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 17. ТРАНСФОРМАЦИЯ -->
+      <div class="card card-17" role="link" tabindex="0" onclick="openTrainer('transformation.html')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openTrainer('transformation.html')}">
+        <div class="left">
+          <div class="icon-wrap"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 48 48"><rect class="nx-m-shape1" height="15" rx="2" width="15" x="8" y="8"></rect><rect class="nx-m-shape2" height="15" rx="2" width="15" x="25" y="25"></rect><path d="m10 19 10-8M29 36l8-8" stroke="#FF6A00" stroke-width="3"></path><path class="nx-m-transform" d="m30 7 10 10-10 10" stroke="#FF6A00"></path></svg></div>
+          <div class="card-text"><div class="title">Трансформация</div><div class="desc">Мысленно отражай и поворачивай запомненную фигуру</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <!-- 18. РЕСТАВРАТОР -->
+      <div class="card card-18" role="link" tabindex="0" onclick="openTrainer('restorer.html')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openTrainer('restorer.html')}">
+        <div class="left">
+          <div class="icon-wrap"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 48 48"><rect height="34" rx="3" width="38" x="5" y="7"></rect><path class="nx-paint" d="m9 34 10-12 8 8 6-8 6 9"></path><path class="nx-piece" d="m25 8 6 6-6 6-6-6Z" fill="#FF6A00" stroke="#FF6A00"></path></svg></div>
+          <div class="card-text"><div class="title">Реставратор</div><div class="desc">Запомни изображение и восстанови его детали</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
     </div>
   </div>
 
@@ -544,7 +613,7 @@
         if (h1) h1.textContent = 'Память';
 
         const subtitle = document.getElementById('headerSubtitle');
-        if (subtitle) subtitle.textContent = 'NeuroX · 14 тренажёров';
+        if (subtitle) subtitle.textContent = 'NeuroX · 18 тренажёров';
       }
 
       if (document.readyState === 'loading') {
@@ -586,6 +655,12 @@
     })();
   </script>
 
+<script src="../assets/menu-data.js" defer></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
+  <script src="../shared/subsections.js" defer></script>
 </body>
 
 </html>
