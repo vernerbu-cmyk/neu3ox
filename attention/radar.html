@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script src="../shared/theme.js"></script>
+<script>/* NeuroX: читаем общую настройку до первой отрисовки */
+try {
+  const nxSavedTheme = localStorage.getItem('neurox_theme');
+  const nxTheme = (nxSavedTheme === 'light' || nxSavedTheme === 'dark')
+    ? nxSavedTheme
+    : ((window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
+  document.documentElement.dataset.theme = nxTheme;
+} catch (_) { document.documentElement.dataset.theme = 'light'; }
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E3F8A">
+<title>Радар v6 — NeuroX · Внимание</title>
+<style>
+:root{
+  --blue:#1E3F8A;
+  --blue-hover:#173477;
+  --blue-soft:#ECF2FF;
+  --orange:#FF6A00;
+  --orange-soft:#FFF1E5;
+  --ink:#18243D;
+  --muted:#617087;
+  --bg:#F6F8FC;
+  --line:#DFE5EF;
+  --good:#1FB483;
+  --bad:#D95757;
+  --shadow:0 10px 35px rgba(24,50,101,.07);
+}
+*{box-sizing:border-box}
+html{min-width:320px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Nunito Sans","Segoe UI",Arial,sans-serif}
+button,select,input{font:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #FF9C4C;outline-offset:3px}
+.hidden{display:none!important}
+.page{width:min(1400px,calc(100% - 36px));margin:22px auto 36px}
+header{background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px 22px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.brand{display:flex;gap:14px;align-items:center;min-width:0}
+.logo{width:52px;height:52px;flex:0 0 auto;background:var(--blue);border-radius:17px;display:grid;place-items:center;color:#fff}
+.brand-line{font-size:12px;color:var(--orange);font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weight:900;line-height:1.1}
+.subtitle{margin:0;color:var(--muted);font-size:13px;font-weight:600}
+.header-actions{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+.btn{border:1px solid var(--line);border-radius:13px;padding:11px 16px;font-weight:800;font-size:14px;min-height:44px;background:#fff;color:var(--blue);display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:background .16s,transform .16s,box-shadow .16s,color .16s,border-color .16s}
+.btn:hover:not(:disabled){transform:translateY(-1px);background:var(--blue-soft)}
+.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 4px 12px #1E3F8A25}
+.btn.primary:hover:not(:disabled){background:var(--blue-hover)}
+.btn.orange{background:var(--orange);color:#fff;border-color:var(--orange);box-shadow:0 4px 12px #FF6A0025}
+.btn.orange:hover:not(:disabled){background:#e75f00}
+.btn.reveal{color:#08755D;border-color:#8CDDC7;background:#E9FFF5}
+.btn.reveal:hover:not(:disabled){background:#D5F9E9}
+.btn.danger{color:#A03236;background:#FFF4F4;border-color:#F4CBCE}
+.btn.danger:hover:not(:disabled){background:#FFE5E5}
+.btn.small{padding:9px 13px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:15px 0}
+.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px 17px;box-shadow:0 3px 10px #1E3F8A08}
+.stat-label{display:block;color:var(--muted);font-size:12px;font-weight:700}
+.stat-value{display:block;color:var(--blue);font-size:clamp(17px,1.7vw,23px);font-weight:900;margin-top:3px;font-variant-numeric:tabular-nums}
+.game-panel{border-radius:22px;padding:16px;background:#fff;box-shadow:var(--shadow);border:1px solid var(--line)}
+.game-bar{padding:2px 5px 14px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:center}
+.status{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--blue);font-size:18px}
+.status-dot{width:13px;height:13px;border-radius:50%;display:inline-block;background:#C6CEDB;box-shadow:0 0 0 5px #EEF2F8}
+.status-dot.preview{background:var(--orange);box-shadow:0 0 0 5px #FFF0E2}
+.status-dot.tracking{background:#33A6FF;box-shadow:0 0 0 5px #E2F3FF}
+.status-dot.stopped{background:var(--good);box-shadow:0 0 0 5px #E6FFF7}
+.stage-hint{display:inline-flex;align-items:center;gap:10px;background:var(--orange-soft);color:#A34A00;border:1px solid #FFD8B3;border-radius:999px;padding:10px 14px;font-size:13px;font-weight:800}
+.board{position:relative;height:min(72vh,700px);min-height:380px;border-radius:24px;overflow:hidden;border:1px solid #213760;box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);background:#101E3E}
+#radarCanvas{display:block;width:100%;height:100%}
+.board-gloss{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.05),transparent 18%,transparent 82%,rgba(255,255,255,.03));pointer-events:none}
+.board-top{position:absolute;left:14px;right:14px;top:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;color:#D9EAFE;font-size:12px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;pointer-events:none}
+.timer-pill{border-radius:999px;padding:10px 14px;background:rgba(255,255,255,.09);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.16);font-size:13px;letter-spacing:.08em}
+.overlay{position:absolute;inset:0;display:grid;place-items:center;padding:18px;pointer-events:none}
+.overlay[hidden]{display:none}
+.overlay-card{max-width:520px;text-align:center;background:rgba(8,19,44,.72);border:1px solid rgba(177,221,255,.18);backdrop-filter:blur(10px);color:#fff;border-radius:24px;padding:24px 22px;box-shadow:0 18px 40px rgba(0,0,0,.25)}
+.overlay-icon{width:74px;height:74px;border-radius:20px;margin:0 auto 12px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-weight:900;font-size:34px}
+.overlay-title{font-size:27px;font-weight:900;margin-bottom:8px}
+.overlay-help{font-size:15px;line-height:1.5;color:#DCEAFE}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding-top:16px}
+.control-divider{width:1px;align-self:stretch;background:var(--line);margin:0 2px}
+.note{margin:14px 3px 0;color:var(--muted);font-size:13px;line-height:1.55}
+.selection-line{margin:14px 0 0;padding:12px 14px;border-radius:16px;background:#F7F9FD;border:1px solid var(--line);color:var(--ink);font-weight:700;line-height:1.45}
+.session-summary{margin-top:14px;padding:12px 16px;border-radius:16px;background:#F7FBFF;border:1px solid #CFE2FF;color:#28477F;font-weight:700;line-height:1.45}
+.settings{margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
+.settings-summary{list-style:none;padding:16px 20px;cursor:pointer;font-weight:900;color:var(--blue);font-size:18px}
+.settings-summary::-webkit-details-marker{display:none}
+.settings-content{padding:0 20px 20px}
+.presets{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.preset{border:1px solid #D7E1F2;background:#F8FBFF;color:var(--blue);font-weight:900;border-radius:14px;padding:11px 15px}
+.preset.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.settings-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field label{font-size:13px;font-weight:800;color:#49617F}
+.field select{width:100%;min-height:46px;border-radius:14px;border:1px solid #D6E0EF;background:#fff;padding:10px 12px;color:var(--ink);font-weight:700}
+.settings-note{margin:16px 0 0;color:var(--muted);font-size:13px;line-height:1.55}
+@media (max-width:1080px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .settings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:720px){
+  .page{width:min(100%,calc(100% - 20px));margin:10px auto 24px}
+  header,.game-panel,.settings{border-radius:18px}
+  .board{min-height:340px;height:min(60vh,500px)}
+  .controls{gap:8px}.control-divider{display:none}
+  .controls .btn{flex:1 1 180px}
+  .settings-grid,.stats{grid-template-columns:1fr}
+  .stage-hint{width:100%;justify-content:center}
+}
+
+/* Скорость доступна в любой момент, в том числе во время раунда. */
+.flight-controls{margin-top:14px;padding:13px 17px;display:grid;grid-template-columns:minmax(150px,1fr) minmax(220px,3fr) auto;align-items:center;gap:18px;background:#F3F7FF;border:1px solid #D9E6FA;border-radius:17px}
+.speed-caption{display:flex;flex-direction:column;gap:3px}
+.speed-caption strong{color:var(--blue);font-size:15px}
+.speed-caption span{font-size:12px;color:var(--muted);font-weight:600}
+.speed-slider-row{display:flex;align-items:center;gap:12px;min-width:0}
+.speed-bound{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap}
+#speedInput{display:block;appearance:none;-webkit-appearance:none;width:100%;height:10px;border-radius:999px;border:0;outline-offset:6px;background:linear-gradient(90deg,var(--orange) 0 var(--speed-fill,40%),#C9D9F1 var(--speed-fill,40%) 100%);cursor:pointer;touch-action:pan-y}
+#speedInput::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:25px;height:25px;border:4px solid #fff;border-radius:50%;background:var(--orange);box-shadow:0 2px 11px rgba(30,63,138,.22);cursor:grab}
+#speedInput::-moz-range-thumb{width:18px;height:18px;border:4px solid #fff;border-radius:50%;background:var(--orange);box-shadow:0 2px 11px rgba(30,63,138,.22);cursor:grab}
+.speed-display{min-width:106px;border-radius:13px;background:#fff;border:1px solid #D5E2F5;padding:9px 11px;text-align:center;font-size:18px;color:var(--blue);font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums}
+.speed-display small{display:block;font-size:10px;font-weight:700;color:var(--muted);margin-top:2px}
+@media(max-width:720px){.flight-controls{grid-template-columns:1fr;gap:12px}.speed-display{width:100%}}
+
+/* Семь событий в раунде: учитель управляет включением механик и ручным запуском. */
+.event-panel{margin-top:15px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px 18px;box-shadow:var(--shadow)}
+.event-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:12px}
+.event-head h2{margin:0;color:var(--blue);font-size:19px}
+.event-sub{font-size:12px;color:var(--muted);line-height:1.45}
+.event-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.event-tile{display:flex;align-items:flex-start;gap:9px;border:1px solid #DBE5F3;border-radius:14px;padding:11px;min-height:70px;cursor:pointer;transition:background .15s;background:#fff}
+.event-tile:has(input:checked){background:#F1F6FF;border-color:#A9C8F7}
+.event-tile:focus-within{outline:2px solid #FFAB63;outline-offset:1px}
+.event-tile input{accent-color:#1E3F8A;margin:2px 0 0;flex:0 0 16px}
+.event-tile strong{display:block;color:var(--blue);font-size:13px}
+.event-tile small{display:block;font-size:11px;color:var(--muted);line-height:1.35;margin-top:3px}
+.event-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;align-items:center}
+.event-toolbar select{min-height:39px;border:1px solid #D7E0EE;border-radius:10px;padding:6px 9px;background:#fff;color:var(--ink);font-weight:700}
+.event-manual{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.event-manual .btn{font-size:12px;min-height:38px;padding:8px 11px}
+.event-toast{position:absolute;left:50%;top:68px;transform:translateX(-50%);border:1px solid rgba(255,255,255,.3);border-radius:999px;background:rgba(12,31,62,.84);color:#fff;white-space:nowrap;font-size:14px;font-weight:850;letter-spacing:.02em;padding:10px 18px;z-index:3;pointer-events:none;max-width:95%;text-overflow:ellipsis;overflow:hidden}
+.event-toast[hidden]{display:none}
+.event-note{margin:5px 0 0;font-size:12px;color:var(--muted);line-height:1.5}
+@media(max-width:1000px){.event-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){.event-grid{grid-template-columns:1fr}.event-toast{white-space:normal;text-align:center;top:60px}}
+
+/* Быстрый запуск без длинного перечня параметров */
+.nx-radar-quick{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:14px 0;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);padding:13px 16px;border-radius:18px}
+.nx-radar-quick-title{display:flex;flex-direction:column;gap:2px;min-width:180px;flex:1}
+.nx-radar-quick-title strong{font-size:15px;color:var(--blue)}
+.nx-radar-quick-title span{font-size:12px;font-weight:650;color:var(--muted);line-height:1.3}
+.nx-radar-quick .presets{margin:0;gap:6px}
+.nx-radar-quick .preset{padding:9px 13px;min-width:82px}
+.nx-radar-quick .preset:disabled{opacity:.55;cursor:not-allowed}
+.nx-radar-custom{border:1px solid #C9D8EF;color:var(--blue);background:#F5F8FD;font-size:13px;font-weight:850;padding:10px 14px;border-radius:12px;cursor:pointer}
+.nx-radar-custom:hover{background:#EAF1FC}
+.nx-game-radar .settings .event-panel{margin-top:18px;box-shadow:none}
+@media(max-width:720px){.nx-radar-quick{gap:10px}.nx-radar-quick-title{flex-basis:100%}.nx-radar-quick .presets{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.nx-radar-quick .preset{min-width:0;padding:10px 3px}.nx-radar-custom{width:100%}}
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/new-trainers.css">
+<link rel="stylesheet" href="../shared/new-trainers-theme.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<link rel="stylesheet" href="../shared/mobile-new-trainers.css">
+</head>
+<body class="nx-added-game nx-game-radar" data-nx-section="attention">
+<div class="page" id="page">
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 68 68" width="36" height="36" fill="none">
+          <circle cx="34" cy="34" r="25" stroke="#9ED2FF" stroke-width="3" opacity=".65"/>
+          <circle cx="34" cy="34" r="16" stroke="#FFFFFF" stroke-width="3" opacity=".9"/>
+          <path d="M34 10v10M58 34H48M34 58V48M10 34h10" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+          <path d="M37 21l14 8-11 4-4 11-8-14 9-9z" fill="#FF6A00"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-line">NeuroX · Внимание</div>
+        <h1>Радар</h1>
+        <p class="subtitle">Запомни самолёты-цели, проследи за ними и выбери правильные после остановки</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn small" id="settingsButton" type="button">⚙ Настройки</button>
+      <button class="btn small" id="fullscreenButton" type="button">⛶ На весь экран</button>
+    </div>
+  </header>
+
+  <section class="nx-radar-quick" aria-label="Быстрый выбор сложности">
+    <div class="nx-radar-quick-title"><strong>Уровень задания</strong><span id="radarLevelInfo" aria-live="polite">Выбери уровень и нажми «Начать»</span></div>
+    <div class="presets" aria-label="Готовые уровни сложности">
+      <button type="button" class="preset" data-preset="easy">Легко</button>
+      <button type="button" class="preset" data-preset="normal">Средне</button>
+      <button type="button" class="preset" data-preset="hard">Сложно</button>
+    </div>
+    <button class="nx-radar-custom" type="button" id="radarCustomButton">⚙ Свои настройки</button>
+  </section>
+
+  <section class="stats" aria-label="Статистика занятия">
+    <div class="stat"><span class="stat-label">Раунд</span><span class="stat-value" id="roundStat">0</span></div>
+    <div class="stat"><span class="stat-label">Самолётов / целей</span><span class="stat-value" id="objectsStat">6 / 2</span></div>
+    <div class="stat"><span class="stat-label">До остановки</span><span class="stat-value" id="countStat">6,0 с</span></div>
+    <div class="stat"><span class="stat-label">Время занятия</span><span class="stat-value" id="sessionStat">00:00</span></div>
+  </section>
+
+  <main class="game-panel">
+    <div class="game-bar">
+      <div class="status" role="status" aria-live="polite"><span id="statusDot" class="status-dot"></span><span id="statusText">Готов к запуску</span></div>
+      <span class="stage-hint" id="instruction">Сначала запомни самолётики в оранжевых кольцах</span>
+    </div>
+
+    <div class="board" id="board" role="img" aria-label="Поле радара с самолётиками. После остановки можно выбрать правильные самолётики кликом.">
+      <canvas id="radarCanvas"></canvas>
+      <div class="board-gloss"></div>
+      <div class="board-top"><span>NEUROX / RADAR</span><span class="timer-pill" id="boardTimer">ГОТОВО</span></div>
+      <div class="event-toast" id="eventToast" hidden></div>
+      <div class="overlay" id="overlay">
+        <div class="overlay-card">
+          <div class="overlay-icon" id="overlayIcon">✈</div>
+          <div class="overlay-title" id="overlayTitle">Готов следить?</div>
+          <div class="overlay-help" id="overlayHelp">Нажми «Начать». Сначала нужные самолётики подсветятся, затем все начнут активно перемешиваться.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flight-controls" aria-label="Управление скоростью полёта">
+      <div class="speed-caption"><strong>Скорость полёта</strong><span>Изменяется прямо во время игры</span></div>
+      <div class="speed-slider-row"><span class="speed-bound">Медленно</span><input type="range" id="speedInput" min="80" max="520" step="10" value="260" aria-label="Скорость полёта"><span class="speed-bound">Быстро</span></div>
+      <output class="speed-display" for="speedInput" id="speedValue">260<small>ед./с</small></output>
+    </div>
+    <div class="controls" aria-label="Управление тренажёром">
+      <button type="button" class="btn primary" id="startButton">▶ Начать</button>
+      <button type="button" class="btn" id="pauseButton" disabled>Ⅱ Пауза</button>
+      <button type="button" class="btn danger" id="finishButton" disabled>■ Закончить</button>
+      <div class="control-divider"></div>
+      <button type="button" class="btn" id="repeatButton" disabled>↺ Повторить</button>
+      <button type="button" class="btn" id="nextButton" disabled>➜ Следующий раунд</button>
+      <div class="control-divider"></div>
+      <button type="button" class="btn" id="clearButton" disabled>⌫ Очистить выбор</button>
+      <button type="button" class="btn reveal" id="answerButton" disabled>◉ Показать ответ</button>
+    </div>
+
+    <div class="selection-line" id="selectionInfo">После остановки можно выбрать самолётики кликом по полю.</div>
+    <p class="note">Ползунок скорости работает прямо во время раунда. Самолёты держат дистанцию между манёврами, но могут кратко сближаться при перехватах. После остановки ребёнок показывает ответ, а педагог отмечает самолёты кликами.</p>
+    <div class="session-summary hidden" id="sessionSummary"></div>
+  </main>
+
+
+
+  <details class="settings" id="settings">
+    <summary class="settings-summary">Свои настройки — все параметры и дополнительные события</summary>
+    <div class="settings-content">
+      <div class="settings-grid">
+        <div class="field"><label for="objectsInput">Количество самолётов</label><select id="objectsInput"><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></div>
+        <div class="field"><label for="targetsInput">Сколько отслеживать</label><select id="targetsInput"><option value="1">1 цель</option><option value="2">2 цели</option><option value="3">3 цели</option><option value="4">4 цели</option></select></div>
+        <div class="field"><label for="planeStyleInput">Внешний вид самолётов</label><select id="planeStyleInput"><option value="airliner">Пассажирский лайнер</option><option value="fighter">Реактивный самолёт</option><option value="propeller">Винтовой самолёт</option></select></div>
+        <div class="field"><label for="colorModeInput">Смена цвета в полёте</label><select id="colorModeInput"><option value="off">Выключена: все светлые</option><option value="slow">Перекраска: раз в 2–3 секунды</option><option value="swap">Обмен цветами: при сближении</option><option value="chaos">Хаос: частые смены цветов</option></select></div>
+        <div class="field"><label for="durationInput">Время слежения</label><select id="durationInput"><option value="4">4 секунды</option><option value="6">6 секунд</option><option value="8">8 секунд</option><option value="10">10 секунд</option><option value="12">12 секунд</option><option value="15">15 секунд</option><option value="20">20 секунд</option></select></div>
+        <div class="field"><label for="previewInput">Показать цели перед стартом</label><select id="previewInput"><option value="1.5">1,5 секунды</option><option value="2">2 секунды</option><option value="2.5">2,5 секунды</option><option value="3">3 секунды</option><option value="4">4 секунды</option></select></div>
+        <div class="field"><label for="motionInput">Характер движения</label><select id="motionInput"><option value="straight">Умеренный</option><option value="smooth">Хаотичный</option><option value="active">Напёрстки</option></select></div>
+        <div class="field"><label for="spacingInput">Расстояние между самолётами</label><select id="spacingInput"><option value="wide">Большое (легче)</option><option value="balanced">Среднее</option><option value="tight">Умеренное (сложнее)</option></select></div>
+        <div class="field"><label for="altitudeInput">Полёт выше / ниже</label><select id="altitudeInput"><option value="off">Без изменения размеров</option><option value="soft">Плавно, небольшой перепад</option><option value="strong">Заметная смена высоты</option></select></div>
+      </div>
+      <section class="event-panel" aria-label="Дополнительные режимы">
+    <div class="event-head"><div><h2>Дополнительные события в полёте</h2><span class="event-sub">Включай нужные механики отдельно. Автособытия происходят во время полёта, ручные кнопки работают только в полёте.</span></div></div>
+    <div class="event-grid" id="eventGrid">
+      <label class="event-tile"><input type="checkbox" data-event="squad"><span><strong>Эскадрилья</strong><small>Сближение в строй и разлёт</small></span></label>
+      <label class="event-tile"><input type="checkbox" data-event="blackout"><span><strong>Радиомолчание</strong><small>Краткое исчезновение всех отметок</small></span></label>
+      <label class="event-tile"><input type="checkbox" data-event="reinforcement"><span><strong>Подкрепление</strong><small>Новые самолёты с краёв поля</small></span></label>
+      <label class="event-tile"><input type="checkbox" data-event="blind"><span><strong>Слепая зона</strong><small>Непрозрачный сектор карты</small></span></label>
+      <label class="event-tile"><input type="checkbox" data-event="switch"><span><strong>Смена задания</strong><small>Добавить или исключить цель</small></span></label>
+      <label class="event-tile"><input type="checkbox" data-event="turbulence"><span><strong>Турбулентность</strong><small>Зона виражей и порывов</small></span></label>
+      <label class="event-tile"><input type="checkbox" data-event="decoy"><span><strong>Ложный сигнал</strong><small>Отвлекающий импульс на самолёте</small></span></label>
+    </div>
+    <div class="event-toolbar">
+      <button type="button" class="btn small" id="enableAllEvents">Включить все</button>
+      <button type="button" class="btn small" id="disableAllEvents">Выключить все</button>
+      <label for="eventIntensity" class="field-label" style="font-size:13px;font-weight:800;color:var(--muted)">Интенсивность</label>
+      <select id="eventIntensity"><option value="calm">Редко</option><option value="normal" selected>Обычно</option><option value="chaos">Максимум</option></select>
+      <span class="event-sub" id="eventCount">События: 0/7</span>
+    </div>
+    <div class="event-manual" id="manualEvents">
+      <button type="button" class="btn" data-trigger="squad" disabled>Эскадрилья</button>
+      <button type="button" class="btn" data-trigger="blackout" disabled>Радиомолчание</button>
+      <button type="button" class="btn" data-trigger="reinforcement" disabled>Подкрепление</button>
+      <button type="button" class="btn" data-trigger="blind" disabled>Слепая зона</button>
+      <button type="button" class="btn" data-trigger="switch" disabled>Смена цели</button>
+      <button type="button" class="btn" data-trigger="turbulence" disabled>Турбулентность</button>
+      <button type="button" class="btn" data-trigger="decoy" disabled>Ложный сигнал</button>
+    </div>
+    <p class="event-note">«Смена задания» меняет количество целей: зелёная рамка + знак «+» добавляет, синяя перечёркнутая рамка убирает. Подкрепление не становится целью. Для честного слежения радиомолчание и смена цели не накладываются друг на друга.</p>
+  </section>
+      <p class="settings-note" id="settingsNote">Скорость можно менять в любой момент ползунком под игровым полем. В раунде все самолёты имеют одинаковую форму. В цветных режимах окраска не закрепляется за самолётом: следи за траекторией, а не за цветом.</p>
+    </div>
+  </details>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const C = $('radarCanvas');
+const ctx = C.getContext('2d');
+// Portrait phones get a portrait logical world: the radar fills the phone instead of
+// shrinking a 16:9 scene into a small stripe. Desktop and landscape keep 1080x640.
+const RADAR_PORTRAIT_PHONE = window.matchMedia('(max-width: 720px) and (orientation: portrait)').matches;
+const WORLD = { w: RADAR_PORTRAIT_PHONE ? 600 : 1080,
+                h: RADAR_PORTRAIT_PHONE ? 780 : 640,
+                margin: 44, size: 19 };
+const PRESETS = {
+  easy:   { objects: 4, targets: 1, speed: 140, duration: 6, preview: 2.5, motion: 'straight', spacing: 'wide', altitude: 'soft', planeStyle: 'airliner', colorMode: 'off' },
+  normal: { objects: 6, targets: 2, speed: 260, duration: 8, preview: 2.0, motion: 'active', spacing: 'balanced', altitude: 'strong', planeStyle: 'airliner', colorMode: 'swap' },
+  hard:   { objects: 9, targets: 3, speed: 400, duration: 10, preview: 1.5, motion: 'active', spacing: 'tight', altitude: 'strong', planeStyle: 'airliner', colorMode: 'chaos' }
+};
+// Скорость в условных единицах виртуального игрового поля в секунду.
+const PRESET_EVENTS = {
+  easy: { enabled: [], intensity:'calm' },
+  normal: { enabled: ['squad','turbulence'], intensity:'calm' },
+  hard: { enabled: ['squad','blackout','turbulence','decoy'], intensity:'normal' }
+};
+const SPEED_MIN = 80, SPEED_MAX = 520;
+// Дистанции относятся к центрам самолётов в виртуальном поле 1080 × 640.
+const SPACING = { wide: 205, balanced: 160, tight: 123 };
+const ALTITUDE = { off: [1, 1], soft: [.90, 1.14], strong: [.72, 1.37] };
+// Эти оттенки используются только для окраски корпуса. Маркер правильного ответа остаётся зелёным.
+const PLANE_PALETTE = [
+  {light:'#FFD9B7',mid:'#FFAA65',deep:'#DB6A32',highlight:'#FFF3DF'},
+  {light:'#FFE3A6',mid:'#F3C45A',deep:'#C38B26',highlight:'#FFF7D9'},
+  {light:'#A9F2DA',mid:'#50CFAD',deep:'#229B8A',highlight:'#E2FFF3'},
+  {light:'#B2DFFF',mid:'#69B6F1',deep:'#3184C5',highlight:'#EAF8FF'},
+  {light:'#DCCBFF',mid:'#A997E8',deep:'#7461BD',highlight:'#F5F0FF'},
+  {light:'#FFBBD5',mid:'#F28BB5',deep:'#C45489',highlight:'#FFF0F6'}
+];
+const EVENT_KEYS = ['squad','blackout','reinforcement','blind','switch','turbulence','decoy'];
+const DEFAULT_EVENTS = {squad:true, blackout:false, reinforcement:false, blind:false, switch:false, turbulence:true, decoy:false};
+const PLAIN_PAINT = {light:'#D7EAF8',mid:'#B0D7F1',deep:'#8CBDE4',highlight:'#FFFFFF'};
+const MOTION = {
+  straight: { turn: 2.8, retargetMin: 1.45, retargetMax: 2.35, centerChance: 0.02, oppositeChance: 0.55, jitter: 0.03 },
+  smooth:   { turn: 4.8, retargetMin: 1.00, retargetMax: 1.75, centerChance: 0.08, oppositeChance: 0.67, jitter: 0.07 },
+  active:   { turn: 7.4, retargetMin: .70, retargetMax: 1.35, centerChance: 0.14, oppositeChance: 0.76, jitter: 0.10 }
+};
+const fields = {
+  objects: $('objectsInput'),
+  targets: $('targetsInput'),
+  duration: $('durationInput'),
+  preview: $('previewInput'),
+  motion: $('motionInput'),
+  spacing: $('spacingInput'),
+  altitude: $('altitudeInput'),
+  planeStyle: $('planeStyleInput'),
+  colorMode: $('colorModeInput')
+};
+const presetsEls = [...document.querySelectorAll('.preset')];
+const state = {
+  settings: { ...PRESETS.normal },
+  phase: 'idle',
+  priorPhase: '',
+  planes: [],
+  targets: new Set(),
+  userSelected: new Set(),
+  snapshot: null,
+  round: 0,
+  completed: 0,
+  phaseLeft: 0,
+  lastFrame: 0,
+  sessionLive: false,
+  sessionStart: 0,
+  sessionElapsed: 0,
+  finishMessage: '',
+  maneuver: null, maneuverDelay: 0, flightTime: 0, colorTimer: 0, colorEvents: 0,
+  eventEnabled:{ ...DEFAULT_EVENTS }, eventIntensity:'calm', eventCooldown:2, eventTurn:0,
+  eventCounts:{}, blackoutTime:0, blindZone:null, turbulenceZone:null, decoy:null,
+  squad:null, switchCue:null, toastTime:0, history:[], extrasAdded:0, switchDone:false
+};
+
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+const rand = (a, b) => a + Math.random() * (b - a);
+const nowSeconds = () => performance.now() / 1000;
+const isActive = () => ['preview', 'tracking', 'paused'].includes(state.phase);
+const isPlaying = () => ['preview', 'tracking'].includes(state.phase);
+const canSelect = () => ['stopped', 'revealed'].includes(state.phase);
+const formatClock = seconds => {
+  const s = Math.max(0, Math.floor(seconds));
+  return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+};
+function angleDiff(a, b) {
+  let d = b - a;
+  while (d > Math.PI) d -= Math.PI * 2;
+  while (d < -Math.PI) d += Math.PI * 2;
+  return d;
+}
+function clonePlanes(list) {
+  return list.map(p => ({ ...p }));
+}
+function loadSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('neurox_radar_settings') || 'null');
+    if (saved && typeof saved === 'object') {
+      // Старые настройки могут не содержать новых параметров.
+      const next = { ...PRESETS.normal, ...saved };
+      // Перенос скорости из старого списка «медленно/средне/быстро».
+      if (typeof next.speed === 'string' && ['slow','medium','fast'].includes(next.speed)) {
+        next.speed = { slow:150, medium:220, fast:310 }[next.speed];
+      }
+      const nSpeed = Number(next.speed);
+      next.speed = Number.isFinite(nSpeed) ? Math.round(clamp(nSpeed,SPEED_MIN,SPEED_MAX)/10)*10 : PRESETS.normal.speed;
+      for (const [k, el] of Object.entries(fields)) {
+        if ([...el.options].some(opt => String(opt.value) === String(next[k]))) continue;
+        next[k] = PRESETS.normal[k];
+      }
+      state.settings = next;
+    }
+    const eventSaved = JSON.parse(localStorage.getItem('neurox_radar_events_v6') || 'null');
+    if (eventSaved && typeof eventSaved === 'object') {
+      if (eventSaved.enabled && typeof eventSaved.enabled === 'object') {
+        EVENT_KEYS.forEach(k => { if(typeof eventSaved.enabled[k] === 'boolean') state.eventEnabled[k] = eventSaved.enabled[k]; });
+      }
+      if (['calm','normal','chaos'].includes(eventSaved.intensity)) state.eventIntensity=eventSaved.intensity;
+    }
+  } catch (_) {}
+}
+function saveSettings() {
+  try { localStorage.setItem('neurox_radar_settings', JSON.stringify(state.settings)); } catch (_) {}
+}
+function saveEvents() {
+  try { localStorage.setItem('neurox_radar_events_v6',JSON.stringify({enabled:state.eventEnabled,intensity:state.eventIntensity})); } catch (_) {}
+}
+function currentRadarLevel(){
+  return Object.keys(PRESETS).find(level => {
+    const sameSettings=Object.entries(PRESETS[level]).every(([key,value])=>key==='planeStyle'||String(state.settings[key])===String(value));
+    const spec=PRESET_EVENTS[level];
+    return sameSettings && state.eventIntensity===spec.intensity && EVENT_KEYS.every(key=>!!state.eventEnabled[key]===spec.enabled.includes(key));
+  })||'';
+}
+function refreshRadarLevel(){
+  const active=currentRadarLevel();
+  presetsEls.forEach(btn=>{const on=btn.dataset.preset===active;btn.classList.toggle('active',on);btn.setAttribute('aria-pressed',String(on))});
+  const text=active==='easy'?'4 самолёта · 1 цель · 6 с · без помех':active==='normal'?'6 самолётов · 2 цели · 8 с · 2 события':active==='hard'?'9 самолётов · 3 цели · 10 с · 4 события':'Своя конфигурация · можно изменить параметры вручную';
+  $('radarLevelInfo').textContent=text;
+}
+function syncEvents() {
+  document.querySelectorAll('[data-event]').forEach(el => { el.checked=!!state.eventEnabled[el.dataset.event]; });
+  $('eventIntensity').value=state.eventIntensity;
+  $('eventCount').textContent=`События: ${EVENT_KEYS.filter(k=>state.eventEnabled[k]).length}/7`;
+  refreshRadarLevel();
+  document.querySelectorAll('[data-trigger]').forEach(btn => {
+    const name=btn.dataset.trigger;
+    btn.disabled = state.phase!=='tracking' || !state.eventEnabled[name] || !canTriggerEvent(name);
+  });
+}
+function syncFields() {
+  state.settings.targets = Math.min(+state.settings.targets, +state.settings.objects);
+  Object.entries(fields).forEach(([key, el]) => { el.value = String(state.settings[key]); });
+  syncSpeedSlider();
+  refreshRadarLevel();
+}
+function syncSpeedSlider() {
+  const slider = $('speedInput');
+  slider.value = String(state.settings.speed);
+  slider.style.setProperty('--speed-fill', ((+state.settings.speed-SPEED_MIN)/(SPEED_MAX-SPEED_MIN)*100).toFixed(1)+'%');
+  $('speedValue').innerHTML = `${state.settings.speed}<small>ед./с</small>`;
+}
+function updateSettingsLock() {
+  const lock = isActive();
+  Object.values(fields).forEach(el => el.disabled = lock);
+  presetsEls.forEach(el => el.disabled = lock);
+  $('settingsNote').textContent = lock
+    ? 'Во время активного раунда настройки заблокированы. Скорость полёта по-прежнему можно менять ползунком.'
+    : 'На среднем уровне самолёты обмениваются цветами, на сложном перекрашиваются чаще. Цвет не определяет правильный ответ: следи за самим самолётом.';
+}
+function desiredSpacing() {
+  return SPACING[state.settings.spacing] || SPACING.balanced;
+}
+function randomPosition(planes) {
+  const m = WORLD.margin + 35;
+  let best = null;
+  for (let attempt = 0; attempt < 320; attempt++) {
+    const point = { x: rand(m, WORLD.w - m), y: rand(m, WORLD.h - m) };
+    const nearest = planes.length ? Math.min(...planes.map(p => Math.hypot(p.x - point.x, p.y - point.y))) : 999;
+    if (!best || nearest > best.nearest) best = { ...point, nearest };
+    if (nearest >= desiredSpacing() + 24) return point;
+  }
+  return best ? { x: best.x, y: best.y } : { x: WORLD.w/2, y: WORLD.h/2 };
+}
+function chooseDestination(plane) {
+  const mode = MOTION[state.settings.motion];
+  const m = WORLD.margin + 32;
+  let best = null;
+  const useCenter = Math.random() < mode.centerChance;
+  const useOpposite = Math.random() < mode.oppositeChance;
+  for (let i = 0; i < 12; i++) {
+    let x, y;
+    if (useCenter && i < 3) {
+      x = rand(WORLD.w * .28, WORLD.w * .72);
+      y = rand(WORLD.h * .25, WORLD.h * .75);
+    } else if (useOpposite && i < 6) {
+      x = plane.x < WORLD.w / 2 ? rand(WORLD.w * .56, WORLD.w - m) : rand(m, WORLD.w * .44);
+      y = plane.y < WORLD.h / 2 ? rand(WORLD.h * .54, WORLD.h - m) : rand(m, WORLD.h * .46);
+    } else {
+      x = rand(m, WORLD.w - m);
+      y = rand(m, WORLD.h - m);
+    }
+    // Целимся в свободное пространство, а не отправляем всех в центр.
+    const otherMin = Math.min(999, ...state.planes.filter(p => p.id !== plane.id).map(p => Math.hypot(p.x - x, p.y - y)));
+    const travel = Math.hypot(plane.x - x, plane.y - y);
+    const score = Math.min(otherMin, desiredSpacing() * 1.5) + Math.min(230, travel) * .25;
+    if (!best || score > best.score) best = { x, y, score };
+  }
+  plane.targetX = best.x;
+  plane.targetY = best.y;
+  plane.retargetTimer = rand(mode.retargetMin, mode.retargetMax);
+}
+function resetAltitude(plane) {
+  const [min, max] = ALTITUDE[state.settings.altitude] || ALTITUDE.strong;
+  plane.scale = rand(min, max);
+  plane.altFrom = plane.scale;
+  plane.altTo = plane.scale;
+  plane.altElapsed = 0;
+  plane.altDuration = 0;
+  plane.altDelay = rand(.1, .8);
+}
+function createPlanes() {
+  const planes = [];
+  const n = +state.settings.objects;
+  const baseSpeed = state.settings.speed;
+  for (let i = 0; i < n; i++) {
+    const pos = randomPosition(planes);
+    const angle = rand(0, Math.PI * 2);
+    const speedRatio = rand(.93, 1.08);
+    const speed = baseSpeed * speedRatio;
+    const plane = {
+      id: i, x: pos.x, y: pos.y, angle,
+      vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed,
+      speed, speedRatio, targetX: pos.x, targetY: pos.y,
+      retargetTimer: 0, wobbleSeed: rand(0, Math.PI * 2),
+      boost: 1, boostTarget: 1, boostTime: rand(1.6, 3.3), colorIndex: i % PLANE_PALETTE.length
+    };
+    resetAltitude(plane);
+    planes.push(plane);
+  }
+  // Цвета перемешиваются отдельно от идентификаторов и целевых самолётов.
+  const assigned = [...Array(planes.length)].map((_,i)=>i % PLANE_PALETTE.length);
+  for (let i=assigned.length-1;i>0;i--) {
+    const j=Math.floor(Math.random()*(i+1));
+    [assigned[i],assigned[j]]=[assigned[j],assigned[i]];
+  }
+  planes.forEach((p,i)=>{p.colorIndex=assigned[i];});
+  // Важно: после создания всех самолётов выбираем цели движения с учётом всех соседей.
+  state.planes = planes;
+  for (const plane of planes) chooseDestination(plane);
+  const ids = [...Array(n).keys()];
+  for (let i = ids.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+  }
+  return { planes, targets: ids.slice(0, +state.settings.targets) };
+}
+function beginSession() {
+  if (state.sessionLive) return;
+  state.sessionLive = true;
+  state.sessionStart = nowSeconds();
+  state.sessionElapsed = 0;
+  state.round = 0;
+  state.completed = 0;
+  state.finishMessage = '';
+  $('sessionSummary').classList.add('hidden');
+}
+function startRound(repeat = false) {
+  if (isActive()) return;
+  beginSession();
+  let data;
+  if (repeat && state.snapshot) {
+    data = { planes: clonePlanes(state.snapshot.planes), targets: [...state.snapshot.targets] };
+  } else {
+    data = createPlanes();
+    state.snapshot = { planes: clonePlanes(data.planes), targets: [...data.targets] };
+  }
+  state.planes = data.planes;
+  applyCurrentSpeed();
+  state.targets = new Set(data.targets);
+  state.userSelected = new Set();
+  state.maneuver = null;
+  state.maneuverDelay = state.settings.motion === 'active' ? rand(1.7, 2.3) : rand(3.0, 4.2);
+  state.flightTime = 0;
+  state.colorTimer = initialColorTimer();
+  state.colorEvents = 0;
+  state.blackoutTime=0;state.blindZone=null;state.turbulenceZone=null;state.decoy=null;
+  state.squad=null;state.switchCue=null;state.toastTime=0;state.extrasAdded=0;
+  state.switchDone=false;state.history=[];state.eventCounts={};state.eventTurn=0;
+  state.eventCooldown=nextEventDelay();
+  $('eventToast').hidden=true;
+  state.round += 1;
+  state.phase = 'preview';
+  state.priorPhase = '';
+  state.phaseLeft = +state.settings.preview;
+  state.lastFrame = performance.now();
+  updateUI();
+  render();
+}
+function applyCurrentSpeed() {
+  // Если скорость изменяется в полёте, новое значение применяется ко всем самолётам
+  // без остановки и без пересоздания их траекторий.
+  for (const p of state.planes) p.speed = state.settings.speed * (p.speedRatio || 1);
+}
+function pause() {
+  if (!isPlaying()) return;
+  state.priorPhase = state.phase;
+  state.phase = 'paused';
+  state.sessionElapsed += nowSeconds() - state.sessionStart;
+  state.sessionStart = 0;
+  updateUI();
+  render();
+}
+function resume() {
+  if (state.phase !== 'paused') return;
+  state.phase = state.priorPhase;
+  state.priorPhase = '';
+  state.sessionStart = nowSeconds();
+  state.lastFrame = performance.now();
+  updateUI();
+  render();
+}
+function stopRound(completed) {
+  state.phase = 'stopped';
+  state.phaseLeft = 0;
+  if (completed) state.completed += 1;
+  state.blackoutTime=0;state.decoy=null;state.switchCue=null;
+  state.squad=null;state.blindZone=null;state.turbulenceZone=null;
+  updateUI();
+  render();
+}
+function finishSession() {
+  if (!state.sessionLive) return;
+  if (state.phase !== 'paused') state.sessionElapsed += nowSeconds() - state.sessionStart;
+  state.sessionLive = false;
+  state.sessionStart = 0;
+  if (isActive()) stopRound(false);
+  state.finishMessage = `Занятие завершено. Время: ${formatClock(state.sessionElapsed)}. Полных раундов: ${state.completed}.`;
+  $('sessionSummary').textContent = state.finishMessage;
+  $('sessionSummary').classList.remove('hidden');
+  updateUI();
+  render();
+}
+function clearSelection() {
+  if (!canSelect()) return;
+  state.userSelected = new Set();
+  updateSelectionInfo();
+  render();
+}
+function updateAltitude(plane, dt) {
+  if (state.settings.altitude === 'off') { plane.scale = 1; return; }
+  if (plane.altDelay > 0) { plane.altDelay -= dt; return; }
+  if (plane.altDuration === 0) {
+    const [min, max] = ALTITUDE[state.settings.altitude];
+    plane.altFrom = plane.scale;
+    plane.altTo = rand(min, max);
+    // Полёт вверх-вниз длится несколько секунд, а не скачет каждый кадр.
+    plane.altDuration = rand(1.8, 3.3);
+    plane.altElapsed = 0;
+  }
+  plane.altElapsed = Math.min(plane.altDuration, plane.altElapsed + dt);
+  const t = plane.altElapsed / plane.altDuration;
+  const eased = t*t*(3 - 2*t);
+  plane.scale = plane.altFrom + (plane.altTo - plane.altFrom) * eased;
+  if (t >= 1) {
+    plane.altDuration = 0;
+    plane.altDelay = rand(.1, .55);
+  }
+}
+function updateBoost(plane, dt) {
+  plane.boostTime -= dt;
+  if (plane.boostTime <= 0) {
+    // Короткий форсаж чередуется с нормальной скоростью.
+    const maxBoost = state.settings.motion === 'active' ? 1.58 : 1.27;
+    plane.boostTarget = plane.boostTarget > 1.1 ? 1 : rand(1.15, maxBoost);
+    plane.boostTime = plane.boostTarget === 1 ? rand(.9, 2.1) : rand(.45, 1.0);
+  }
+  plane.boost += (plane.boostTarget - plane.boost) * Math.min(1, dt * 3.6);
+}
+function makeManeuver() {
+  if (state.settings.motion !== 'active' || state.planes.length < 4 || state.squad) return;
+  const all = [...state.planes];
+  const participants = [];
+  const minDist = desiredSpacing() * 1.25;
+  let pair = null;
+  // Приоритет объектам, которые сейчас далеко друг от друга, чтобы самолёты
+  // действительно обменялись местами, а не толклись в одной кучке.
+  for (let i=0;i<all.length;i++) for (let j=i+1;j<all.length;j++) {
+    const dist = Math.hypot(all[i].x-all[j].x, all[i].y-all[j].y);
+    if (dist > minDist && dist < 710 && (!pair || dist > pair.dist)) pair = { a:all[i], b:all[j], dist };
+  }
+  if (!pair) return;
+  participants.push(pair.a, pair.b);
+  const triple = all.length >= 7 && Math.random() < .35;
+  if (triple) {
+    const third = all.filter(p=>p.id !== pair.a.id && p.id !== pair.b.id)
+      .sort((a,b)=> {
+        const minA=Math.min(Math.hypot(a.x-pair.a.x,a.y-pair.a.y), Math.hypot(a.x-pair.b.x,a.y-pair.b.y));
+        const minB=Math.min(Math.hypot(b.x-pair.a.x,b.y-pair.a.y), Math.hypot(b.x-pair.b.x,b.y-pair.b.y));
+        return minB-minA;
+      })[0];
+    if (third) participants.push(third);
+  }
+  const offset = state.settings.spacing === 'wide' ? 70 : state.settings.spacing === 'balanced' ? 48 : 32;
+  const duration = clamp(pair.dist / state.settings.speed * .68, .70, 2.8);
+  const routes = participants.map((p,i)=> {
+    const dest = participants[(i+1)%participants.length];
+    const dx = dest.x-p.x, dy=dest.y-p.y;
+    const len = Math.hypot(dx,dy) || 1;
+    const px = -dy/len, py=dx/len;
+    // Все используют один знак в локальной системе направления,
+    // поэтому встречные пути обходят центр с разных сторон.
+    const arc = offset * (participants.length === 3 ? 1.18 : 1);
+    return {
+      id:p.id, startX:p.x, startY:p.y, endX:dest.x, endY:dest.y,
+      c1x:p.x + dx*.34 + px*arc,
+      c1y:p.y + dy*.34 + py*arc,
+      c2x:p.x + dx*.68 + px*arc,
+      c2y:p.y + dy*.68 + py*arc
+    };
+  });
+  state.maneuver = { elapsed:0, duration, baseSpeed:state.settings.speed, routes, ids:new Set(participants.map(p=>p.id)) };
+}
+function cubic(a,b,c,d,t) {
+  const u = 1-t;
+  return u*u*u*a + 3*u*u*t*b + 3*u*t*t*c + t*t*t*d;
+}
+function cubicDerivative(a,b,c,d,t) {
+  const u=1-t;
+  return 3*u*u*(b-a)+6*u*t*(c-b)+3*t*t*(d-c);
+}
+function initialColorTimer() {
+  switch (state.settings.colorMode) {
+    case 'slow': return rand(1.7, 2.5);
+    case 'swap': return rand(1.0, 1.5);
+    case 'chaos': return rand(.85, 1.25);
+    default: return Infinity;
+  }
+}
+function scheduleColorTimer() {
+  switch(state.settings.colorMode) {
+    case 'slow': return rand(2.1, 3.0);
+    case 'swap': return rand(1.0, 1.6);
+    case 'chaos': return rand(.9, 1.3);
+    default: return Infinity;
+  }
+}
+function randomDistinctColor(usedColor) {
+  let k=Math.floor(Math.random()*(PLANE_PALETTE.length-1));
+  if(k>=usedColor) k++;
+  return k;
+}
+function updateColors(dt) {
+  const mode=state.settings.colorMode;
+  if(mode==='off') return;
+  state.colorTimer-=dt;
+  if(state.colorTimer>0) return;
+  const planes=state.planes;
+  if(planes.length<2) return;
+  if(mode==='swap') {
+    // Предпочитаем обмен цветами близких самолётов. Сами объекты не меняются местами.
+    const candidates=[];
+    for(let i=0;i<planes.length;i++) for(let j=i+1;j<planes.length;j++) {
+      const a=planes[i],b=planes[j];
+      const distance=Math.hypot(a.x-b.x,a.y-b.y);
+      if(a.colorIndex!==b.colorIndex) candidates.push({a,b,distance});
+    }
+    candidates.sort((a,b)=>a.distance-b.distance);
+    if(candidates.length) {
+      const near=candidates.filter(x=>x.distance<desiredSpacing()*1.8);
+      const pool=near.length?near:candidates.slice(0,Math.max(1,Math.ceil(candidates.length*.25)));
+      const {a,b}=pool[Math.floor(Math.random()*pool.length)];
+      [a.colorIndex,b.colorIndex]=[b.colorIndex,a.colorIndex];
+    }
+  } else {
+    const count=mode==='slow'?Math.min(2,planes.length):Math.min(planes.length,Math.max(3,Math.ceil(planes.length*.55)));
+    const picked=planes.slice();
+    for(let i=picked.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[picked[i],picked[j]]=[picked[j],picked[i]];}
+    picked.slice(0,count).forEach(p=>{p.colorIndex=randomDistinctColor(p.colorIndex);});
+  }
+  state.colorEvents++;
+  state.colorTimer=scheduleColorTimer();
+}
+// ========= События раунда (семь независимых механик) =========
+function nextEventDelay() {
+  const t=state.eventIntensity;
+  return t==='chaos'?rand(.95,1.65):t==='calm'?rand(3.8,5.3):rand(2.2,3.4);
+}
+function toast(message,seconds=1.45) {
+  $('eventToast').textContent=message;
+  $('eventToast').hidden=false;
+  state.toastTime=seconds;
+}
+function eventAvailable(name) {
+  const n=state.planes.length, duration=state.settings.duration;
+  if (name==='reinforcement') return state.extrasAdded<2 && n<14;
+  if (name==='switch') return !state.switchDone && !state.switchCue && state.targets.size>0 && n>state.targets.size;
+  if (name==='decoy') return n>state.targets.size && !state.decoy;
+  if (name==='squad') return n>=3 && !state.squad && !state.maneuver;
+  if (name==='blackout') return !state.blackoutTime && !state.switchCue;
+  if (name==='blind') return !state.blindZone;
+  if (name==='turbulence') return !state.turbulenceZone;
+  return false;
+}
+function canTriggerEvent(name) {
+  if (!eventAvailable(name)) return false;
+  if (name==='switch' && (state.blackoutTime>0 || state.phaseLeft<2.3)) return false;
+  return true;
+}
+function pickRandom(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
+function addReinforcement() {
+  const m=WORLD.margin+28, max=state.extrasAdded===0?2:1;
+  const howMany=Math.min(max, 2-state.extrasAdded,14-state.planes.length);
+  if(!howMany)return false;
+  for(let i=0;i<howMany;i++) {
+    const id=Math.max(-1,...state.planes.map(p=>p.id))+1;
+    // Новичок входит непрерывно: появляется у границы, не в центре поля.
+    const side=Math.floor(rand(0,4));
+    const x=side===0?m:side===1?WORLD.w-m:rand(m,WORLD.w-m);
+    const y=side===2?m:side===3?WORLD.h-m:rand(m,WORLD.h-m);
+    const angle=Math.atan2(WORLD.h/2-y,WORLD.w/2-x)+rand(-.32,.32);
+    const ratio=rand(.93,1.08);
+    const p={id,x,y,angle,vx:0,vy:0,speedRatio:ratio,speed:state.settings.speed*ratio,
+      targetX:WORLD.w/2,targetY:WORLD.h/2,retargetTimer:1,wobbleSeed:rand(0,Math.PI*2),
+      boost:1,boostTarget:1,boostTime:rand(1.6,3),colorIndex:Math.floor(rand(0,PLANE_PALETTE.length))};
+    resetAltitude(p);
+    state.planes.push(p);chooseDestination(p);
+  }
+  state.extrasAdded+=howMany;
+  toast(`✈ Подкрепление: +${howMany} самолёта`);
+  return true;
+}
+function makeSquad() {
+  const candidates=state.planes.filter(p=>!state.maneuver?.ids?.has(p.id)).sort(()=>Math.random()-.5);
+  const group=candidates.slice(0,Math.min(candidates.length,3));
+  if(group.length<3)return false;
+  const center={x:rand(270,810),y:rand(190,450)};
+  const heading=rand(0,Math.PI*2);
+  // Все самолёты летят по разным, но параллельным дорожкам. Строй распадается через 1,5 с.
+  const offsets=[-85,0,85];
+  state.squad={elapsed:0,duration:1.8,center,heading,
+    starts:group.map(p=>({id:p.id,x:p.x,y:p.y})),offsets};
+  toast('✈ Эскадрилья: строй и разлёт');
+  return true;
+}
+function makeBlindZone() {
+  const a=rand(-Math.PI,Math.PI);
+  state.blindZone={angle:a, width:rand(.72,1.10),elapsed:0,duration:rand(2.8,4.3),
+    inner:95,outer:465};
+  toast('◕ Слепая зона: следи за выходом');
+  return true;
+}
+function makeTurbulence() {
+  state.turbulenceZone={x:rand(280,800),y:rand(190,450),rx:rand(165,235),ry:rand(115,170),
+    elapsed:0,duration:rand(3.2,4.8),angle:rand(0,Math.PI*2)};
+  toast('≈ Турбулентность');
+  return true;
+}
+function switchTarget() {
+  const canRemove=state.targets.size>1;
+  const available=state.planes.filter(p=>!state.targets.has(p.id) && p.id<state.settings.objects);
+  const add=!!available.length && (!canRemove || Math.random()<.64);
+  const p=add?pickRandom(available):pickRandom(state.planes.filter(p=>state.targets.has(p.id)));
+  if(!p)return false;
+  if(add) state.targets.add(p.id);else state.targets.delete(p.id);
+  state.switchDone=true;
+  state.switchCue={id:p.id,add,elapsed:0,duration:1.55};
+  toast(add?'＋ НОВАЯ ЦЕЛЬ: следи и за этим самолётом':'− ЦЕЛЬ ИСКЛЮЧЕНА: больше не выбирай её',1.55);
+  return true;
+}
+function fakeSignal() {
+  const distractors=state.planes.filter(p=>!state.targets.has(p.id));
+  if(!distractors.length)return false;
+  const p=pickRandom(distractors);
+  state.decoy={id:p.id,elapsed:0,duration:1.10};
+  toast('◇ Ложный сигнал: не меняй цель',1.1);
+  return true;
+}
+function triggerEvent(name,manual=false) {
+  if (state.phase!=='tracking' || !state.eventEnabled[name] || !canTriggerEvent(name))return false;
+  let success=false;
+  if(name==='squad')success=makeSquad();
+  else if(name==='blackout'){
+    state.blackoutTime=rand(.38,.68);
+    toast('◉ Радиомолчание',.9);success=true;
+  }
+  else if(name==='reinforcement')success=addReinforcement();
+  else if(name==='blind')success=makeBlindZone();
+  else if(name==='switch')success=switchTarget();
+  else if(name==='turbulence')success=makeTurbulence();
+  else if(name==='decoy')success=fakeSignal();
+  if (success){
+    state.eventCounts[name]=(state.eventCounts[name]||0)+1;
+    state.history.push({name,at:Math.round(state.flightTime*10)/10,manual});
+    state.eventCooldown=nextEventDelay();
+    updateUI();
+  }
+  return success;
+}
+function updateEvents(dt) {
+  if(state.toastTime>0){
+    state.toastTime=Math.max(0,state.toastTime-dt);
+    if(state.toastTime===0)$('eventToast').hidden=true;
+  }
+  if(state.blackoutTime>0)state.blackoutTime=Math.max(0,state.blackoutTime-dt);
+  for(const k of ['blindZone','turbulenceZone','decoy','switchCue']) {
+    const e=state[k];if(!e)continue;
+    e.elapsed+=dt;if(e.elapsed>=e.duration)state[k]=null;
+  }
+  state.eventCooldown-=dt;
+  if(state.eventCooldown>0)return;
+  const options=EVENT_KEYS.filter(k=>state.eventEnabled[k] && canTriggerEvent(k));
+  if(options.length){
+    // Перебираем доступные события по кругу: при длинных раундах все режимы получают шанс.
+    const ordered=EVENT_KEYS.slice(state.eventTurn).concat(EVENT_KEYS.slice(0,state.eventTurn));
+    const key=ordered.find(k=>options.includes(k));
+    if(key){state.eventTurn=(EVENT_KEYS.indexOf(key)+1)%EVENT_KEYS.length;triggerEvent(key);return;}
+  }
+  state.eventCooldown=nextEventDelay();
+}
+function updateSquad(dt,m) {
+  const s=state.squad;if(!s)return new Set();
+  s.elapsed=Math.min(s.duration,s.elapsed+dt*(state.settings.speed/260));
+  const t=s.elapsed/s.duration;
+  const locked=new Set();
+  const px=-Math.sin(s.heading),py=Math.cos(s.heading);
+  s.starts.forEach((start,index)=>{
+    const p=state.planes.find(q=>q.id===start.id);if(!p)return;
+    locked.add(p.id);
+    const offset=s.offsets[index];
+    // Непрерывная двухфазная траектория: подлёт к строю, затем веерный разлёт.
+    const formX=clamp(s.center.x+px*offset,m,WORLD.w-m);
+    const formY=clamp(s.center.y+py*offset,m,WORLD.h-m);
+    const endAngle=s.heading+(index-1)*.88;
+    const endX=clamp(formX+Math.cos(endAngle)*210,m,WORLD.w-m);
+    const endY=clamp(formY+Math.sin(endAngle)*210,m,WORLD.h-m);
+    let newX,newY;
+    if(t<=.58) {
+      const q=t/.58, ease=q*q*(3-2*q);
+      newX=start.x+(formX-start.x)*ease;
+      newY=start.y+(formY-start.y)*ease;
+    } else {
+      const q=(t-.58)/.42, ease=q*q*(3-2*q);
+      newX=formX+(endX-formX)*ease;
+      newY=formY+(endY-formY)*ease;
+    }
+    const oldX=p.x,oldY=p.y;
+    p.x=clamp(newX,m,WORLD.w-m);
+    p.y=clamp(newY,m,WORLD.h-m);
+    p.vx=(p.x-oldX)/Math.max(dt,.001);p.vy=(p.y-oldY)/Math.max(dt,.001);
+    if(Math.hypot(p.vx,p.vy)>1)p.angle=Math.atan2(p.vy,p.vx);
+  });
+  if(t>=1){
+    state.squad=null;
+    for(const start of s.starts){const p=state.planes.find(q=>q.id===start.id);if(p)chooseDestination(p);}
+  }
+  return locked;
+}
+function inBlindZone(p) {
+  const z=state.blindZone;if(!z)return false;
+  const dx=p.x-WORLD.w/2,dy=p.y-WORLD.h/2;
+  const r=Math.hypot(dx,dy),a=Math.atan2(dy,dx);
+  return r>=z.inner && r<=z.outer && Math.abs(angleDiff(z.angle,a))<=z.width/2;
+}
+function inTurbulence(p) {
+  const z=state.turbulenceZone;if(!z)return false;
+  const dx=p.x-z.x,dy=p.y-z.y;
+  const cs=Math.cos(z.angle),sn=Math.sin(z.angle);
+  const u=dx*cs+dy*sn,v=-dx*sn+dy*cs;
+  return u*u/(z.rx*z.rx)+v*v/(z.ry*z.ry)<1;
+}
+function drawEventZones() {
+  if(state.blindZone){
+    const z=state.blindZone;
+    ctx.save();ctx.translate(WORLD.w/2,WORLD.h/2);
+    ctx.beginPath();ctx.arc(0,0,z.outer,z.angle-z.width/2,z.angle+z.width/2);
+    ctx.arc(0,0,z.inner,z.angle+z.width/2,z.angle-z.width/2,true);
+    ctx.closePath();ctx.fillStyle='rgba(12,26,43,.79)';ctx.fill();
+    ctx.strokeStyle='rgba(166,202,228,.47)';ctx.lineWidth=2;ctx.setLineDash([10,8]);ctx.stroke();ctx.restore();
+  }
+  if(state.turbulenceZone){
+    const z=state.turbulenceZone;ctx.save();ctx.translate(z.x,z.y);
+    ctx.rotate(z.angle);ctx.setLineDash([12,9]);ctx.lineWidth=2;
+    ctx.strokeStyle='rgba(255,181,103,.75)';ctx.fillStyle='rgba(255,154,70,.055)';
+    ctx.beginPath();ctx.ellipse(0,0,z.rx,z.ry,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.restore();
+  }
+}
+
+function movePlanes(dt) {
+  updateEvents(dt);
+  updateColors(dt);
+  const mode = MOTION[state.settings.motion];
+  const minGap = desiredSpacing();
+  const m = WORLD.margin + 18;
+  state.flightTime += dt;
+  state.maneuverDelay -= dt;
+  if (!state.maneuver && state.maneuverDelay <= 0) {
+    makeManeuver();
+    state.maneuverDelay = state.settings.motion === 'active' ? rand(2.4, 3.4) : rand(3.5, 5.1);
+  }
+  for (const p of state.planes) {
+    updateAltitude(p,dt);
+    updateBoost(p,dt);
+  }
+  const squadLocked=updateSquad(dt,m);
+  const locked = new Set([...(state.maneuver ? state.maneuver.ids : []),...squadLocked]);
+  // Каждый свободный самолёт старается занять собственную часть поля.
+  for (const p of state.planes) {
+    if (locked.has(p.id)) continue;
+    p.retargetTimer -= dt;
+    let dx = p.targetX - p.x, dy = p.targetY - p.y;
+    if (p.retargetTimer <= 0 || Math.hypot(dx,dy) < 55) {
+      chooseDestination(p);
+      dx = p.targetX-p.x; dy=p.targetY-p.y;
+    }
+    const destLength = Math.hypot(dx,dy)||1;
+    let steerX = dx/destLength, steerY=dy/destLength;
+    let repelX=0, repelY=0;
+    for (const q of state.planes) {
+      if (q.id===p.id) continue;
+      let vx=p.x-q.x, vy=p.y-q.y;
+      let dist=Math.hypot(vx,vy);
+      if (dist<1) { vx=Math.cos(p.id*2); vy=Math.sin(p.id*2); dist=1; }
+      const range = minGap * 1.65;
+      if (dist < range) {
+        const strength = (range-dist)/range;
+        repelX += vx/dist * strength*strength;
+        repelY += vy/dist * strength*strength;
+      }
+    }
+    // На лёгком уровне избегание сближений сильнее, в сложном можно пролететь ближе.
+    const pressure = state.settings.spacing === 'wide' ? 4.4 : 3.5;
+    steerX += repelX * pressure;
+    steerY += repelY * pressure;
+    let desiredAngle = Math.atan2(steerY, steerX);
+    const turbulence=inTurbulence(p);
+    if(turbulence)desiredAngle += Math.sin(state.flightTime*12+p.wobbleSeed)*.55;
+    p.angle += clamp(angleDiff(p.angle,desiredAngle), -mode.turn*dt, mode.turn*dt);
+    const jitter = 1+Math.sin(state.flightTime*2.7+p.wobbleSeed)*mode.jitter;
+    const speed = p.speed*jitter*p.boost*(inTurbulence(p)?(1+.28*Math.sin(state.flightTime*9+p.wobbleSeed)):1);
+    p.vx=Math.cos(p.angle)*speed;
+    p.vy=Math.sin(p.angle)*speed;
+    p.x += p.vx*dt;
+    p.y += p.vy*dt;
+    if (p.x<m) {p.x=m; p.angle=Math.PI-p.angle; chooseDestination(p);}
+    if (p.x>WORLD.w-m) {p.x=WORLD.w-m; p.angle=Math.PI-p.angle; chooseDestination(p);}
+    if (p.y<m) {p.y=m; p.angle=-p.angle; chooseDestination(p);}
+    if (p.y>WORLD.h-m) {p.y=WORLD.h-m; p.angle=-p.angle; chooseDestination(p);}
+  }
+  // Специальные перестановки: две или три непрерывные кривые, без телепортации.
+  if (state.maneuver) {
+    const event = state.maneuver;
+    // Ползунок влияет даже на постановочную перестановку, а не только на свободный полёт.
+    const speedFactor = state.settings.speed / event.baseSpeed;
+    event.elapsed = Math.min(event.duration,event.elapsed + dt*speedFactor);
+    const t=event.elapsed/event.duration;
+    for (const route of event.routes) {
+      const p=state.planes.find(p=>p.id===route.id);
+      const x=cubic(route.startX,route.c1x,route.c2x,route.endX,t);
+      const y=cubic(route.startY,route.c1y,route.c2y,route.endY,t);
+      const vx=cubicDerivative(route.startX,route.c1x,route.c2x,route.endX,t)/event.duration*speedFactor;
+      const vy=cubicDerivative(route.startY,route.c1y,route.c2y,route.endY,t)/event.duration*speedFactor;
+      p.x=clamp(x,m,WORLD.w-m);
+      p.y=clamp(y,m,WORLD.h-m);
+      p.vx=vx; p.vy=vy;
+      if(Math.hypot(vx,vy)>2) p.angle=Math.atan2(vy,vx);
+    }
+    if (t>=1) {
+      const finished=state.maneuver;
+      state.maneuver=null;
+      for (const route of finished.routes) {
+        const p=state.planes.find(p=>p.id===route.id);
+        chooseDestination(p);
+      }
+    }
+  }
+  // Финальное мягкое разведение. Исключение: пары, которые сейчас участвуют
+  // в одной постановочной перестановке. Они вправе ненадолго сблизиться.
+  const scripted = new Set([...(state.maneuver?.ids || []),...(state.squad?.starts.map(p=>p.id)||[])]);
+  for (let pass=0;pass<2;pass++) {
+    for (let i=0;i<state.planes.length;i++) for(let j=i+1;j<state.planes.length;j++) {
+      const a=state.planes[i],b=state.planes[j];
+      if (scripted.has(a.id) && scripted.has(b.id)) continue;
+      let dx=b.x-a.x,dy=b.y-a.y,dist=Math.hypot(dx,dy);
+      if (dist<.01){dx=1;dy=0;dist=1;}
+      if(dist>=minGap) continue;
+      const push=Math.min(10,(minGap-dist)*.27);
+      const ux=dx/dist,uy=dy/dist;
+      const aLocked=scripted.has(a.id), bLocked=scripted.has(b.id);
+      const aPart=aLocked?0:bLocked?1:.5;
+      const bPart=bLocked?0:aLocked?1:.5;
+      a.x=clamp(a.x-ux*push*aPart,m,WORLD.w-m);
+      a.y=clamp(a.y-uy*push*aPart,m,WORLD.h-m);
+      b.x=clamp(b.x+ux*push*bPart,m,WORLD.w-m);
+      b.y=clamp(b.y+uy*push*bPart,m,WORLD.h-m);
+    }
+  }
+}
+function updateCounters() {
+  const phase = state.phase;
+  const activeTime = state.sessionLive && phase !== 'paused' ? nowSeconds() - state.sessionStart : 0;
+  $('sessionStat').textContent = formatClock(state.sessionElapsed + activeTime);
+  if (phase === 'preview' || (phase === 'paused' && state.priorPhase === 'preview')) {
+    $('countStat').textContent = (+state.settings.preview).toFixed(1).replace('.', ',') + ' с';
+    $('boardTimer').textContent = 'ЦЕЛИ • ' + Math.ceil(state.phaseLeft) + ' С';
+  } else if (phase === 'tracking' || (phase === 'paused' && state.priorPhase === 'tracking')) {
+    $('countStat').textContent = Math.max(0, state.phaseLeft).toFixed(1).replace('.', ',') + ' с';
+    $('boardTimer').textContent = Math.ceil(state.phaseLeft) + ' С';
+  } else if (phase === 'revealed') {
+    $('countStat').textContent = '0,0 с';
+    $('boardTimer').textContent = 'ПРОВЕРКА';
+  } else if (phase === 'stopped') {
+    $('countStat').textContent = '0,0 с';
+    $('boardTimer').textContent = 'ВЫБОР';
+  } else {
+    $('countStat').textContent = (+state.settings.duration).toFixed(1).replace('.', ',') + ' с';
+    $('boardTimer').textContent = 'ГОТОВО';
+  }
+}
+function updateSelectionInfo() {
+  const count = state.userSelected.size;
+  const targetCount = state.targets.size;
+  const info = $('selectionInfo');
+  if (state.phase === 'idle') {
+    info.textContent = 'После остановки можно выбрать самолётики кликом по полю.';
+    return;
+  }
+  if (state.phase === 'preview') {
+    info.textContent = 'Запомни самолётики в оранжевых кольцах.';
+    return;
+  }
+  if (state.phase === 'tracking' || (state.phase === 'paused' && state.priorPhase === 'tracking')) {
+    info.textContent = state.switchCue ? (state.switchCue.add?'Появилась новая цель: следи и за ней!':'Один самолёт исключён из целей.') : 'Следи за целями, а не за цветом. Дополнительные события могут менять условия раунда.';
+    return;
+  }
+  if (state.phase === 'paused' && state.priorPhase === 'preview') {
+    info.textContent = 'Пауза на этапе запоминания целей.';
+    return;
+  }
+  if (state.phase === 'stopped') {
+    info.textContent = `Выбрано: ${count} из ${targetCount}. Нажимай по самолётикам на поле, затем проверь ответ.`;
+    return;
+  }
+  if (state.phase === 'revealed') {
+    const selected = [...state.userSelected];
+    const correct = selected.filter(id => state.targets.has(id)).length;
+    const wrong = selected.filter(id => !state.targets.has(id)).length;
+    const missed = [...state.targets].filter(id => !state.userSelected.has(id)).length;
+    info.textContent = `Верно: ${correct}. Лишних: ${wrong}. Пропущено: ${missed}. Зелёным отмечены правильные самолёты.`;
+  }
+}
+function showOverlay() {
+  const overlay = $('overlay');
+  const title = $('overlayTitle');
+  const help = $('overlayHelp');
+  const icon = $('overlayIcon');
+  if (state.phase === 'idle') {
+    overlay.hidden = false;
+    icon.textContent = '✈';
+    title.textContent = 'Готов следить?';
+    help.textContent = 'Нажми «Начать». Сначала нужные самолётики подсветятся, затем все начнут активно перемешиваться.';
+  } else if (state.phase === 'paused') {
+    overlay.hidden = false;
+    icon.textContent = 'Ⅱ';
+    title.textContent = 'Пауза';
+    help.textContent = 'Самолёты замерли. Нажми «Продолжить», чтобы закончить раунд.';
+  } else {
+    overlay.hidden = true;
+  }
+}
+function updateUI() {
+  const phase = state.phase;
+  const labels = {
+    idle: ['Готов к запуску', 'Сначала запомни самолётики в оранжевых кольцах'],
+    preview: ['Запомни цели', 'Запомни самолётики в оранжевых кольцах'],
+    tracking: ['Следи за самолётами', 'Следи за целями. События в полёте могут изменить задание!'],
+    paused: ['Пауза', 'Можно продолжить с того же места'],
+    stopped: ['Выбери ответ', 'Кликай по самолётикам, которые были целями'],
+    revealed: ['Ответ показан', 'Зелёные кольца — правильные цели, красные метки — ошибки выбора']
+  };
+  $('statusText').textContent = labels[phase][0];
+  $('instruction').textContent = labels[phase][1];
+  $('statusDot').className = 'status-dot ' + (phase === 'preview' ? 'preview' : phase === 'tracking' ? 'tracking' : phase === 'stopped' || phase === 'revealed' ? 'stopped' : '');
+  $('roundStat').textContent = state.round;
+  $('objectsStat').textContent = state.planes.length ? `${state.planes.length} / ${state.targets.size}` : `${state.settings.objects} / ${state.settings.targets}`;
+  $('startButton').textContent = phase === 'paused' ? '▶ Продолжить' : '▶ Начать';
+  $('startButton').disabled = isPlaying() || phase === 'revealed' || phase === 'stopped';
+  $('pauseButton').disabled = !isPlaying();
+  $('finishButton').disabled = !state.sessionLive;
+  $('repeatButton').disabled = !state.snapshot || isActive();
+  $('nextButton').disabled = state.phase === 'idle' || isActive();
+  $('answerButton').disabled = !canSelect();
+  $('answerButton').textContent = phase === 'revealed' ? '◉ Скрыть ответ' : '◉ Показать ответ';
+  $('clearButton').disabled = !canSelect() || state.userSelected.size === 0;
+  syncSpeedSlider();
+  updateSettingsLock();
+  showOverlay();
+  updateCounters();
+  updateSelectionInfo();
+  syncEvents();
+}
+function resizeCanvas() {
+  const rect = C.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+  const width = Math.max(1, Math.round(rect.width * dpr));
+  const height = Math.max(1, Math.round(rect.height * dpr));
+  if (C.width !== width || C.height !== height) {
+    C.width = width;
+    C.height = height;
+  }
+  render();
+}
+function worldTransform() {
+  const w = C.width, h = C.height;
+  const scale = Math.min(w / WORLD.w, h / WORLD.h);
+  const offsetX = (w - WORLD.w * scale) / 2;
+  const offsetY = (h - WORLD.h * scale) / 2;
+  return { scale, offsetX, offsetY };
+}
+function toWorld(clientX, clientY) {
+  const rect = C.getBoundingClientRect();
+  const px = (clientX - rect.left) * (C.width / rect.width);
+  const py = (clientY - rect.top) * (C.height / rect.height);
+  const { scale, offsetX, offsetY } = worldTransform();
+  return { x: (px - offsetX) / scale, y: (py - offsetY) / scale };
+}
+function hitPlane(x, y) {
+  for (let i = state.planes.length - 1; i >= 0; i--) {
+    const p = state.planes[i];
+    if (Math.hypot(x - p.x, y - p.y) <= Math.max(31, 39*(p.scale || 1))) return p;
+  }
+  return null;
+}
+// Все модели видны сверху, направлены вправо, имеют одинаковую окраску.
+// За счёт этого тип самолёта не служит подсказкой к правильному ответу.
+function drawAirliner(paint) {
+  const wing = ctx.createLinearGradient(-16,-29,17,29);
+  wing.addColorStop(0,paint.light);wing.addColorStop(.46,paint.highlight);wing.addColorStop(1,paint.deep);
+  ctx.fillStyle=wing;
+  ctx.beginPath();
+  ctx.moveTo(8,-4);ctx.lineTo(-11,-29);ctx.quadraticCurveTo(-14,-32,-19,-30);
+  ctx.lineTo(-20,-26);ctx.lineTo(-13,-5);ctx.lineTo(-13,5);ctx.lineTo(-20,26);
+  ctx.lineTo(-19,30);ctx.quadraticCurveTo(-14,32,-11,29);ctx.lineTo(8,4);ctx.closePath();
+  ctx.fill();ctx.stroke();
+  ctx.fillStyle=paint.mid;
+  ctx.beginPath();ctx.moveTo(-21,-2);ctx.lineTo(-31,-14);ctx.lineTo(-36,-14);ctx.lineTo(-32,-2);
+  ctx.lineTo(-32,2);ctx.lineTo(-36,14);ctx.lineTo(-31,14);ctx.lineTo(-21,2);ctx.closePath();ctx.fill();ctx.stroke();
+  const hull=ctx.createLinearGradient(0,-6,0,6);
+  hull.addColorStop(0,paint.mid);hull.addColorStop(.46,paint.highlight);hull.addColorStop(1,paint.mid);
+  ctx.fillStyle=hull;
+  ctx.beginPath();ctx.moveTo(35,0);ctx.bezierCurveTo(33,-5,27,-5,20,-5);
+  ctx.lineTo(-28,-3.4);ctx.quadraticCurveTo(-38,0,-28,3.4);
+  ctx.lineTo(20,5);ctx.bezierCurveTo(27,5,33,5,35,0);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle='#28629B';ctx.beginPath();ctx.ellipse(22,0,6.6,2.6,0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='rgba(52,114,174,.45)';ctx.lineWidth=1.2;
+  ctx.beginPath();ctx.moveTo(-23,0);ctx.lineTo(12,0);ctx.stroke();
+}
+function drawFighter(paint) {
+  const wing=ctx.createLinearGradient(-18,-28,18,25);
+  wing.addColorStop(0,paint.light);wing.addColorStop(.58,paint.highlight);wing.addColorStop(1,paint.deep);
+  ctx.fillStyle=wing;
+  ctx.beginPath();ctx.moveTo(33,0);ctx.lineTo(11,-5);ctx.lineTo(-10,-27);ctx.lineTo(-25,-28);
+  ctx.lineTo(-14,-7);ctx.lineTo(-32,-14);ctx.lineTo(-35,-9);ctx.lineTo(-27,0);
+  ctx.lineTo(-35,9);ctx.lineTo(-32,14);ctx.lineTo(-14,7);
+  ctx.lineTo(-25,28);ctx.lineTo(-10,27);ctx.lineTo(11,5);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle=paint.mid;ctx.beginPath();
+  ctx.moveTo(33,0);ctx.lineTo(16,-3);ctx.lineTo(-24,-4);ctx.lineTo(-31,0);
+  ctx.lineTo(-24,4);ctx.lineTo(16,3);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#2B6597';ctx.beginPath();ctx.ellipse(13,0,10,3.2,0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='rgba(25,84,139,.60)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(-2,-4);ctx.lineTo(-15,-19);ctx.moveTo(-2,4);ctx.lineTo(-15,19);ctx.stroke();
+  ctx.fillStyle='#FFB36E';ctx.beginPath();ctx.moveTo(-31,-3);ctx.lineTo(-37,-1);ctx.lineTo(-37,1);ctx.lineTo(-31,3);ctx.closePath();ctx.fill();
+}
+function drawPropeller(paint) {
+  const wing=ctx.createLinearGradient(-3,-27,6,27);
+  wing.addColorStop(0,paint.light);wing.addColorStop(.5,paint.highlight);wing.addColorStop(1,paint.deep);
+  ctx.fillStyle=wing;
+  ctx.beginPath();ctx.moveTo(10,-7);ctx.lineTo(7,-28);ctx.quadraticCurveTo(0,-32,-5,-27);
+  ctx.lineTo(-6,-7);ctx.lineTo(-6,7);ctx.lineTo(-5,27);
+  ctx.quadraticCurveTo(0,32,7,28);ctx.lineTo(10,7);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle=paint.mid;ctx.beginPath();
+  ctx.moveTo(-22,-3);ctx.lineTo(-30,-15);ctx.lineTo(-36,-13);ctx.lineTo(-31,-2);
+  ctx.lineTo(-31,2);ctx.lineTo(-36,13);ctx.lineTo(-30,15);ctx.lineTo(-22,3);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle=paint.highlight;ctx.beginPath();ctx.moveTo(29,0);ctx.quadraticCurveTo(27,-5,20,-5);
+  ctx.lineTo(-28,-4);ctx.quadraticCurveTo(-36,0,-28,4);
+  ctx.lineTo(20,5);ctx.quadraticCurveTo(27,5,29,0);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle='#3776A4';ctx.beginPath();ctx.ellipse(14,0,6.5,2.7,0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#C6E8FD';ctx.lineWidth=3.8;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(31,-13);ctx.lineTo(31,13);ctx.stroke();
+  ctx.fillStyle='#FFB265';ctx.beginPath();ctx.arc(31,0,2.7,0,Math.PI*2);ctx.fill();
+}
+function drawPlane(p) {
+  const scale=p.scale||1;
+  ctx.save();ctx.translate(p.x,p.y);
+  ctx.rotate(p.angle);ctx.scale(scale,scale);
+  const isTarget=state.targets.has(p.id);
+  const preview=state.phase==='preview'||(state.phase==='paused'&&state.priorPhase==='preview');
+  const reveal=state.phase==='revealed';
+  // Кольца и метки рисуются ПОД самолётом, а не поверх него.
+  if (state.userSelected.has(p.id)) {
+    ctx.strokeStyle='#FF9A45';ctx.lineWidth=3.5;
+    ctx.shadowColor='#FF9A45';ctx.shadowBlur=14;
+    ctx.beginPath();ctx.arc(0,0,38,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;
+  }
+  if ((preview||reveal)&&isTarget) {
+    const color=reveal?'#52E9B3':'#FF9A45';
+    ctx.strokeStyle=color;ctx.lineWidth=4.2;ctx.shadowColor=color;ctx.shadowBlur=16;
+    ctx.beginPath();ctx.arc(0,0,39,0,Math.PI*2);ctx.stroke();
+    ctx.shadowBlur=0;ctx.strokeStyle=reveal?'#B8FFE5':'#FFD9B3';ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.arc(0,0,46,0,Math.PI*2);ctx.stroke();
+  }
+  if (reveal&&state.userSelected.has(p.id)&&!isTarget) {
+    ctx.strokeStyle='#FF6C6C';ctx.lineWidth=3.5;
+    ctx.beginPath();ctx.moveTo(-31,-31);ctx.lineTo(31,31);ctx.moveTo(31,-31);ctx.lineTo(-31,31);ctx.stroke();
+  }
+  if(state.switchCue && state.switchCue.id===p.id && state.phase==='tracking'){
+    const cue=state.switchCue;
+    const col=cue.add?'#5EF0AC':'#7CCBFF';
+    ctx.strokeStyle=col;ctx.lineWidth=4.6;ctx.setLineDash([9,5]);
+    ctx.beginPath();ctx.arc(0,0,48,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+    ctx.font='bold 26px Segoe UI,Arial';ctx.textAlign='center';ctx.fillStyle=col;
+    ctx.fillText(cue.add?'+':'−',0,-54);
+  }
+  if(state.decoy && state.decoy.id===p.id && state.phase==='tracking'){
+    ctx.strokeStyle='#D7A5FF';ctx.lineWidth=3;ctx.setLineDash([2,7]);
+    ctx.beginPath();ctx.arc(0,0,47+5*Math.sin(state.decoy.elapsed*16),0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+  }
+  const paint=state.settings.colorMode==='off' ? PLAIN_PAINT : PLANE_PALETTE[p.colorIndex];
+  ctx.save();ctx.shadowColor='rgba(120,210,255,.28)';ctx.shadowBlur=12;
+  ctx.strokeStyle=paint.deep;ctx.lineWidth=1.15;ctx.lineJoin='round';
+  if (state.settings.planeStyle==='fighter') drawFighter(paint);
+  else if(state.settings.planeStyle==='propeller') drawPropeller(paint);
+  else drawAirliner(paint);
+  ctx.restore();ctx.restore();
+  // Номера видны только при первоначальном показе и после остановки.
+  // ID остаётся привязанным к самолёту даже при манёврах и смене цвета.
+  
+const showNumber = state.phase === 'stopped' || state.phase === 'revealed';
+
+  if (showNumber) {
+    const markerX = Math.max(RADAR_PORTRAIT_PHONE ? 26 : 18,
+                             Math.min(WORLD.w - (RADAR_PORTRAIT_PHONE ? 26 : 18), p.x));
+    let markerY = p.y - 57 * scale;
+    // Keep numbers clear of the timer overlay in the top-right on phones.
+    if (RADAR_PORTRAIT_PHONE && markerY < 100 && p.x > WORLD.w * .65) {
+      markerY = p.y + 65 * scale;
+    } else if (RADAR_PORTRAIT_PHONE && markerY < 28) {
+      markerY = p.y + 65 * scale;
+    }
+    markerY = Math.max(RADAR_PORTRAIT_PHONE ? 26 : 18,
+                       Math.min(WORLD.h - (RADAR_PORTRAIT_PHONE ? 26 : 18), markerY));
+    ctx.save();
+    ctx.beginPath();ctx.arc(markerX, markerY, RADAR_PORTRAIT_PHONE ? 23 : 17, 0, Math.PI * 2);
+    ctx.fillStyle = '#132951';ctx.fill();
+    ctx.strokeStyle = '#FF9A45';ctx.lineWidth = 2.5;ctx.stroke();
+    ctx.fillStyle = '#FFFFFF';ctx.font = RADAR_PORTRAIT_PHONE ? '800 26px Arial, sans-serif' : '800 19px Arial, sans-serif';
+    ctx.textAlign = 'center';ctx.textBaseline = 'middle';
+    ctx.fillText(String(p.id + 1), markerX, markerY + 1);
+    ctx.restore();
+  }
+}
+
+function render() {
+  if (!ctx) return;
+  const w = C.width, h = C.height;
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,w,h);
+  const { scale, offsetX, offsetY } = worldTransform();
+  ctx.fillStyle = '#101E3E';
+  ctx.fillRect(0,0,w,h);
+  ctx.setTransform(scale,0,0,scale,offsetX,offsetY);
+  const bg = ctx.createRadialGradient(WORLD.w*0.52, WORLD.h*0.42, 60, WORLD.w*0.5, WORLD.h*0.48, WORLD.w*0.62);
+  bg.addColorStop(0, '#17365C');
+  bg.addColorStop(1, '#0A1633');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,WORLD.w,WORLD.h);
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = 'rgba(108,164,200,.10)';
+  for (let x = 0; x <= WORLD.w; x += 60) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,WORLD.h); ctx.stroke(); }
+  for (let y = 0; y <= WORLD.h; y += 60) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(WORLD.w,y); ctx.stroke(); }
+  ctx.strokeStyle = 'rgba(111,195,215,.16)';
+  [90, 180, 270, 360].forEach(r => { ctx.beginPath(); ctx.arc(WORLD.w/2, WORLD.h/2, r, 0, Math.PI*2); ctx.stroke(); });
+  ctx.beginPath();
+  ctx.moveTo(WORLD.w/2,0); ctx.lineTo(WORLD.w/2,WORLD.h);
+  ctx.moveTo(0,WORLD.h/2); ctx.lineTo(WORLD.w,WORLD.h/2);
+  ctx.stroke();
+  const phase = state.phase;
+  if (phase === 'tracking' || (phase === 'paused' && state.priorPhase === 'tracking')) {
+    const sweep = (performance.now() / 1300) % (Math.PI * 2);
+    const grad = ctx.createRadialGradient(WORLD.w/2, WORLD.h/2, 0, WORLD.w/2, WORLD.h/2, WORLD.w * 0.62);
+    grad.addColorStop(0, 'rgba(56,255,174,.03)');
+    grad.addColorStop(1, 'rgba(56,255,174,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(WORLD.w/2, WORLD.h/2);
+    ctx.arc(WORLD.w/2, WORLD.h/2, WORLD.w * 0.62, sweep - 0.12, sweep + 0.12);
+    ctx.closePath();
+    ctx.fill();
+  }
+  if(state.blackoutTime<=0){
+    state.planes.forEach(p=>{if(!inBlindZone(p))drawPlane(p);});
+    drawEventZones();
+  } else {
+    ctx.save();ctx.fillStyle='rgba(5,17,37,.86)';ctx.fillRect(0,0,WORLD.w,WORLD.h);
+    ctx.fillStyle='rgba(182,211,237,.36)';ctx.font='bold 32px Segoe UI,Arial';ctx.textAlign='center';ctx.fillText('СИГНАЛ ПОТЕРЯН',WORLD.w/2,WORLD.h/2);ctx.restore();
+  }
+  ctx.setTransform(1,0,0,1,0,0);
+}
+function tick(timestamp) {
+  let dt = Math.min((timestamp - state.lastFrame) / 1000, 0.05);
+  if (!Number.isFinite(dt) || dt < 0) dt = 0;
+  state.lastFrame = timestamp;
+  if (state.phase === 'preview') {
+    state.phaseLeft = Math.max(0, state.phaseLeft - dt);
+    if (state.phaseLeft <= 0) {
+      state.phase = 'tracking';
+      state.phaseLeft = +state.settings.duration;
+      updateUI();
+    }
+  } else if (state.phase === 'tracking') {
+    const allowed = Math.min(dt, state.phaseLeft);
+    movePlanes(allowed);
+    state.phaseLeft = Math.max(0, state.phaseLeft - dt);
+    if (state.phaseLeft <= 0) stopRound(true);
+  }
+  render();
+  updateCounters();
+  requestAnimationFrame(tick);
+}
+Object.entries(fields).forEach(([key, el]) => {
+  el.addEventListener('change', () => {
+    state.settings[key] = ['motion','spacing','altitude','planeStyle','colorMode'].includes(key) ? el.value : +el.value;
+    state.settings.targets = Math.min(+state.settings.targets, +state.settings.objects);
+    syncFields();
+    saveSettings();
+    updateUI();
+  });
+});
+$('speedInput').addEventListener('input', event => {
+  state.settings.speed = Math.round(clamp(+event.target.value, SPEED_MIN, SPEED_MAX) / 10) * 10;
+  applyCurrentSpeed();
+  syncSpeedSlider();
+  // В движении обновлять только скорость, не переписывая состояние раунда.
+  refreshRadarLevel();
+});
+$('speedInput').addEventListener('change', saveSettings);
+presetsEls.forEach(btn => btn.addEventListener('click', () => {
+  const currentStyle = state.settings.planeStyle;
+  const level=btn.dataset.preset;
+  state.settings = { ...PRESETS[level], planeStyle: currentStyle };
+  const eventPreset=PRESET_EVENTS[level];
+  EVENT_KEYS.forEach(k=>{state.eventEnabled[k]=eventPreset.enabled.includes(k)});
+  state.eventIntensity=eventPreset.intensity;
+  syncFields();syncEvents();
+  saveSettings();saveEvents();
+  updateUI();
+}));
+$('startButton').addEventListener('click', () => {
+  if (state.phase === 'paused') resume();
+  else if (!isActive() && state.phase !== 'stopped' && state.phase !== 'revealed') startRound(false);
+});
+$('pauseButton').addEventListener('click', pause);
+$('finishButton').addEventListener('click', finishSession);
+$('repeatButton').addEventListener('click', () => startRound(true));
+$('nextButton').addEventListener('click', () => startRound(false));
+$('clearButton').addEventListener('click', clearSelection);
+$('answerButton').addEventListener('click', () => {
+  if (state.phase === 'stopped') state.phase = 'revealed';
+  else if (state.phase === 'revealed') state.phase = 'stopped';
+  else return;
+  updateUI();
+  render();
+});
+$('radarCustomButton').addEventListener('click', () => { $('settings').open=true; $('settings').scrollIntoView({block:'nearest',behavior:'smooth'}); });
+$('settingsButton').addEventListener('click', () => {
+  const el = $('settings');
+  el.open = !el.open;
+  if (el.open) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+});
+$('fullscreenButton').addEventListener('click', async () => {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else if ($('page').requestFullscreen) await $('page').requestFullscreen();
+  } catch (_) {}
+});
+document.addEventListener('fullscreenchange', () => {
+  $('fullscreenButton').textContent = document.fullscreenElement ? '⛶ Свернуть экран' : '⛶ На весь экран';
+  requestAnimationFrame(resizeCanvas);
+});
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && isPlaying()) pause();
+});
+C.addEventListener('click', event => {
+  if (!canSelect()) return;
+  const pos = toWorld(event.clientX, event.clientY);
+  const hit = hitPlane(pos.x, pos.y);
+  if (!hit) return;
+  if (state.userSelected.has(hit.id)) state.userSelected.delete(hit.id);
+  else state.userSelected.add(hit.id);
+  updateUI();
+  render();
+});
+window.addEventListener('keydown', event => {
+  if (event.code === 'Space' && !/^(INPUT|BUTTON|SELECT|TEXTAREA|SUMMARY)$/.test(document.activeElement?.tagName || '')) {
+    event.preventDefault();
+    if (state.phase === 'paused') resume(); else if (isPlaying()) pause();
+  }
+  if (event.key.toLowerCase() === 'r' && !isActive() && state.snapshot) startRound(true);
+});
+document.querySelectorAll('[data-event]').forEach(el=>el.addEventListener('change',()=>{
+  state.eventEnabled[el.dataset.event]=el.checked;saveEvents();syncEvents();
+}));
+$('enableAllEvents').addEventListener('click',()=>{
+  EVENT_KEYS.forEach(k=>state.eventEnabled[k]=true);saveEvents();syncEvents();
+});
+$('disableAllEvents').addEventListener('click',()=>{
+  EVENT_KEYS.forEach(k=>state.eventEnabled[k]=false);saveEvents();syncEvents();
+});
+$('eventIntensity').addEventListener('change',e=>{
+  state.eventIntensity=e.target.value;state.eventCooldown=Math.min(state.eventCooldown,nextEventDelay());saveEvents();syncEvents();
+});
+document.querySelectorAll('[data-trigger]').forEach(el=>el.addEventListener('click',()=>triggerEvent(el.dataset.trigger,true)));
+window.addEventListener('resize', resizeCanvas);
+if (typeof ResizeObserver !== 'undefined') new ResizeObserver(resizeCanvas).observe($('board'));
+loadSettings();
+syncFields();
+syncEvents();
+updateUI();
+resizeCanvas();
+state.lastFrame = performance.now();
+requestAnimationFrame(tick);
+})();
+</script>
+<script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
+<script src="../assets/menu-drawer.js"></script>
+<script src="../shared/new-trainers.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/mobile-new-trainers.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
+</body>
+</html>

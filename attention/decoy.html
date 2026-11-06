@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script src="../shared/theme.js"></script>
+<script>/* NeuroX: читаем общую настройку до первой отрисовки */
+try {
+  const nxSavedTheme = localStorage.getItem('neurox_theme');
+  const nxTheme = (nxSavedTheme === 'light' || nxSavedTheme === 'dark')
+    ? nxSavedTheme
+    : ((window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
+  document.documentElement.dataset.theme = nxTheme;
+} catch (_) { document.documentElement.dataset.theme = 'light'; }
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NeuroX · Приманка Beta 3 · Поле без прокрутки</title>
+<style>
+:root{--blue:#1e3f8a;--orange:#ff6a00;--navy:#0d2345;--ink:#162b49;--muted:#6a7d92;--edge:#dbe5f1}
+*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:var(--ink);font:14px/1.45 'Segoe UI',Arial,sans-serif}button,select,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.48;cursor:default}button:focus-visible,input:focus-visible{outline:3px solid #ffa45d;outline-offset:2px}
+.wrap{max-width:1500px;margin:0 auto;padding:17px 20px 30px}.heading{display:flex;gap:14px;align-items:center;justify-content:space-between;margin:0 0 15px}.heading h1{font-size:31px;margin:1px 0}.heading small{color:var(--muted)}.brand{font-size:11px;color:var(--orange);font-weight:900;letter-spacing:1.4px}.heading .stats{display:flex;gap:7px}.stat{background:#fff;border:1px solid var(--edge);border-radius:11px;text-align:center;padding:7px 11px;min-width:78px}.stat b{font-size:23px;display:block}.stat span{font-size:10px;color:var(--muted)}
+.layout{display:grid;grid-template-columns:285px minmax(0,1fr);gap:15px;align-items:start}.settings{border-radius:16px;border:1px solid var(--edge);background:white;overflow:hidden}.group{padding:14px 16px;border-bottom:1px solid var(--edge)}.group:last-child{border:0}.group h2{font-size:13px;margin:0 0 10px}.group p{color:var(--muted);font-size:12px;line-height:1.5;margin:9px 0 0}.choices{display:flex;flex-wrap:wrap;gap:6px}.choice{background:#f2f6fc;border:1px solid #d7e4f3;border-radius:9px;color:#355679;padding:9px 11px;font-weight:800;font-size:12px}.choice.on{background:var(--blue);color:white;border-color:var(--blue)}.kv{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:750;margin:12px 0 4px;gap:6px}.kv b{color:#b4580c}.group input[type=range]{width:100%;accent-color:var(--orange)}.toggle{display:flex;gap:8px;align-items:center;font-size:12px;font-weight:700;margin-top:12px}.toggle input{accent-color:var(--blue)}
+.main{min-width:0}.screen{background:var(--navy);border-radius:17px;color:#fff;padding:15px;position:relative;box-shadow:0 15px 30px #17345422}.screenhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:11px}.screenhead strong{font-size:13px;letter-spacing:.7px}.screenhead small{font-size:11px;color:#b8d3f2;display:block}.timer{font-size:23px;font-weight:900;letter-spacing:.4px;border:1px solid #466895;background:#1d3d6a;border-radius:10px;padding:6px 10px;font-variant-numeric:tabular-nums}.sampleRow{display:flex;gap:12px;align-items:center;background:#17355f;border:1px solid #496993;border-radius:12px;padding:9px 12px;margin-bottom:12px}.sample{width:84px;height:84px;flex:0 0 84px;background:#1c416c;border:1px solid #7197be;display:grid;place-items:center;border-radius:9px}.sample svg{width:76px;height:76px}.sampleRow strong{font-size:15px}.sampleRow p{font-size:12px;color:#c4d6ed;margin:4px 0 0}.fieldframe{max-width:100%;overflow:visible;padding-bottom:2px;display:flex;justify-content:center}.field{margin:0 auto}.field{--cols:8;display:grid;grid-template-columns:repeat(var(--cols),var(--cell,52px));gap:var(--cell-gap,4px);width:max-content;max-width:100%;min-width:0}.tile{position:relative;min-width:0;width:var(--cell,52px);height:var(--cell,52px);aspect-ratio:1/1;border:2px solid #395f8b;border-radius:9px;background:#1b3b66;display:grid;place-items:center;padding:3px;color:white;transition:background-color .15s,border-color .15s,box-shadow .15s}.tile:disabled{opacity:1}.tile:hover:not(:disabled){border-color:#b8d8fa}.tile svg{width:95%;height:95%;max-width:112px}.tile .index{position:absolute;left:4px;top:2px;font-size:9px;font-weight:800;color:#adc9ea;pointer-events:none}.tile.pick{border-color:#ffb36f;background:#66462f;box-shadow:0 0 0 1px #ffb36f inset}.tile.right{border-color:#4fe2a8;background:#1c604c}.tile.wrong{border-color:#ff8f9d;background:#633a49}.tile.lure{background:#674e31;border-color:#ffb56d;box-shadow:0 0 15px #ffc17488}.tile.lure.move{transform:scale(1.025)}.tile.replayLure:not(.right):not(.wrong)::after{content:'';position:absolute;inset:3px;border:1px dashed #f2ad71;border-radius:5px;pointer-events:none}.progress{height:6px;background:#304d75;margin-top:12px;border-radius:20px;overflow:hidden}.progress>div{height:100%;background:var(--orange)}.hint{text-align:center;min-height:21px;font-size:11px;color:#c4dbf6;margin-top:8px}.cover{position:absolute;inset:0;z-index:4;background:#081a38f4;border-radius:17px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:18px}.cover[hidden]{display:none}.cover strong{font-size:25px}.cover p{font-size:13px;line-height:1.6;color:#d0e2fa;max-width:370px;margin:0}.cover .spark{font-size:35px;color:#ffa95b}
+.controls{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}.button{padding:10px 14px;background:white;border:1px solid #d8e5f1;border-radius:9px;font-size:12px;color:#315778;font-weight:850}.button.primary{background:var(--blue);border-color:var(--blue);color:white}.button.accent{background:#fff0e2;border-color:#ffd1ac;color:#9c4a00}.feedback{background:white;border:1px solid var(--edge);border-radius:12px;min-height:53px;padding:12px 14px;font-weight:700}.foot{font-size:12px;color:var(--muted);line-height:1.6;margin-top:10px}.main:fullscreen{background:#f3f6fa;overflow:auto;padding:15px}.main:fullscreen .screen{max-width:1450px;margin:auto}.main:fullscreen .tile{max-height:none}
+/* Компактная компоновка оставляет всё поле над нижними кнопками. */
+.heading{margin-bottom:7px}.heading h1{font-size:25px;margin:0}.heading small{font-size:11px}.heading .stats{gap:4px}.stat{min-width:60px;padding:4px 8px}.stat b{font-size:17px}
+.wrap{padding:9px 13px 15px}.layout{gap:9px}.screen{padding:10px}.screenhead{margin-bottom:6px}
+.sampleRow{padding:5px 9px;margin-bottom:7px}.sample{width:59px;height:59px;flex-basis:59px}.sample svg{width:53px;height:53px}
+.sampleRow p{margin:2px 0 0}.progress{margin-top:6px}.hint{margin-top:5px;min-height:15px}
+.controls{margin:6px 0;gap:5px}.controls .button{padding:7px 10px}.feedback{min-height:40px;padding:7px 10px}.foot{margin-top:6px}
+.wrap.focused .settings{display:none}.wrap.focused .layout{grid-template-columns:1fr}
+.wrap.focused .heading{display:none}.wrap.focused .foot{display:none}
+.wrap.focused .main{width:100%;max-width:1250px;margin:auto}
+.wrap.focused .screen{padding:8px}.wrap.focused .sampleRow{padding:4px 8px}
+@media(max-width:840px){.layout{grid-template-columns:1fr}.settings{display:grid;grid-template-columns:1fr 1fr}.group{border-right:1px solid var(--edge)}}
+@media(max-width:600px){.wrap{padding:9px}.heading{align-items:flex-start}.heading h1{font-size:25px}.heading .stat{min-width:50px;padding:5px}.heading .stat b{font-size:18px}.settings{display:block;order:2}.main{order:1}.screen{padding:9px}.sample{width:64px;height:64px;flex-basis:64px}.sample svg{width:58px;height:58px}.sampleRow p{font-size:11px}.field{gap:4px;min-width:0}.tile .index{font-size:8px}.timer{font-size:19px}.screenhead strong{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.tile{transition:none}}
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/new-trainers.css">
+<link rel="stylesheet" href="../shared/new-trainers-theme.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<link rel="stylesheet" href="../shared/mobile-new-trainers.css">
+</head>
+<body class="nx-added-game nx-game-decoy" data-nx-section="attention">
+<div id="primanka2" class="wrap">
+<header class="heading"><div><div class="brand">NEUROX · ЗРИТЕЛЬНОЕ ВНИМАНИЕ</div><h1>Приманка <small style="font-size:14px;font-weight:750">Beta 3 · Поле целиком</small></h1><small>64 похожих знака. Один точный ответ. Помехи, которые пытаются сбить поиск.</small></div><div class="stats"><div class="stat"><b id="wins">0</b><span>Верно</span></div><div class="stat"><b id="fails">0</b><span>Ошибки</span></div></div></header>
+<div class="layout">
+<aside class="settings" id="settings">
+<div class="group"><h2>Количество похожих знаков</h2><div class="choices" id="sizes"><button type="button" class="choice" data-size="36">36</button><button type="button" class="choice on" data-size="64">64</button><button type="button" class="choice" data-size="100">100</button></div><p>Для 12 лет начинаем с 64. Все знаки одного семейства, без случайных кругов и треугольников.</p></div>
+<div class="group"><h2>Близость вариантов</h2><div class="choices" id="similarities"><button type="button" class="choice" data-sim="normal">Разные</button><button type="button" class="choice on" data-sim="close">Похожие</button><button type="button" class="choice" data-sim="twins">Близнецы</button></div><p>В «Близнецах» выбираются знаки, наиболее близкие к образцу по сочетанию деталей. Но полных дублей нет.</p></div>
+<div class="group"><h2>Отвлекающие помехи</h2><div class="choices" id="traps"><button type="button" class="choice" data-trap="none">Без помех</button><button type="button" class="choice" data-trap="flash">Вспышки</button><button type="button" class="choice" data-trap="move">Движение</button><button type="button" class="choice on" data-trap="mixed">Смешанные</button></div><div class="kv"><label for="baitStrength">Сила помех</label><b id="strengthOut">3 / 5</b></div><input id="baitStrength" type="range" min="1" max="5" value="3"><div class="kv"><label for="baitInterval">Интервал помех</label><b id="intervalOut">3,5 с</b></div><input id="baitInterval" type="range" min="2" max="8" step="0.5" value="3.5"></div>
+<div class="group"><h2>Время и управление</h2><div class="kv"><label for="duration">Время поиска</label><b id="timeOut">50 с</b></div><input id="duration" type="range" min="15" max="120" step="5" value="50"><label class="toggle"><input id="numbers" type="checkbox" checked> Показывать номера клеток</label><label class="toggle"><input id="hideTime" type="checkbox"> Скрывать таймер от ребёнка</label><p>Педагог нажимает по ответу ребёнка. Скорость реакции педагога не измеряется.</p></div>
+</aside>
+<main class="main" id="game">
+<section class="screen">
+ <div class="screenhead"><div><strong>НАЙДИ ПОЛНОЕ СОВПАДЕНИЕ</strong><small id="stageLabel">Ожидание</small></div><div class="timer" id="timer">00:50</div></div>
+ <div class="sampleRow"><div class="sample" id="sample"></div><div><strong>Образец</strong><p>Сравни три детали: <b>насечку на контуре</b>, <b>наклон штриха</b> и <b>положение точки</b>. У правильного знака совпадают все три.</p></div></div>
+ <div class="fieldframe"><div class="field" id="field"></div></div>
+ <div class="progress"><div id="progressBar"></div></div>
+ <div class="hint" id="hint">Яркий знак может выглядеть убедительно, но это ещё не значит, что он правильный.</div>
+ <div class="cover" id="cover"><div class="spark">✦</div><strong id="coverTitle">64 почти одинаковых знака</strong><p id="coverText">Найди тот, который совпадает с образцом по всем трём деталям. Не спеши за вспышками.</p><button type="button" class="button primary" id="coverStart">▶ Начать</button></div>
+</section>
+<div class="controls"><button class="button primary" id="start">▶ Начать</button><button class="button" id="pause" disabled>Пауза</button><button class="button accent" id="check" disabled>Проверить</button><button class="button" id="end" disabled>Закончить</button><button class="button" id="next" disabled>Новый раунд</button><button class="button" id="focusMode">▣ Только поле</button><button class="button" id="full">⛶ На весь экран</button></div>
+<div class="feedback" id="feedback" aria-live="polite">На поле всегда один правильный ответ. Выбери знак, затем нажми «Проверить».</div>
+<div class="foot">Рекомендуемый старт: 64 знака, «Похожие», смешанные отвлечения и 50 секунд. Для сравнения попробуй те же настройки «Без помех». Поле автоматически подстраивается под окно и показывает все клетки без внутренней прокрутки. На маленьком дисплее знаки будут мельче; для занятий лучше использовать большой экран.</div>
+</main>
+</div>
+</div>
+<script>
+(()=>{'use strict';
+const root=document.getElementById('primanka2');if(!root||root.dataset.loaded)return;root.dataset.loaded='1';
+const $=s=>root.querySelector(s), random=n=>Math.floor(Math.random()*n), shuffled=xs=>{const a=[...xs];for(let i=a.length-1;i>0;i--){let j=random(i+1);[a[i],a[j]]=[a[j],a[i]]}return a;};
+// The navigation bar moves these nodes outside the game root.
+const winsLabel=$('#wins'), failsLabel=$('#fails');
+const notchPositions=[[50,8,50,20],[77,18,69,28],[91,55,79,55],[50,93,50,81],[9,55,21,55]];
+const dots=[[32,34],[68,34],[32,67],[68,67],[50,28]];
+const angles=[-38,-19,0,19,38];
+const all=[];for(let a=0;a<5;a++)for(let b=0;b<5;b++)for(let c=0;c<5;c++)all.push({a,b,c});
+const sig=x=>`${x.a}/${x.b}/${x.c}`;
+function svg(x){const n=notchPositions[x.a],d=dots[x.c];return `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M28 9 L72 9 L90 27 L90 73 L72 91 L28 91 L10 73 L10 27 Z" fill="none" stroke="#ACD2F9" stroke-width="4" stroke-linejoin="round"/><path d="M${n[0]} ${n[1]} L${n[2]} ${n[3]}" stroke="#FFA75E" stroke-width="5" stroke-linecap="round"/><g transform="rotate(${angles[x.b]} 50 51)"><path d="M32 51 H68" stroke="#E8F3FF" stroke-width="5" stroke-linecap="round"/></g><circle cx="${d[0]}" cy="${d[1]}" r="5.5" fill="#FFCC8D" stroke="#FFE8CB" stroke-width="1"/></svg>`}
+function distance(x,y){const dotDist=Math.hypot(dots[x.c][0]-dots[y.c][0],dots[x.c][1]-dots[y.c][1])/24;const notchDist=Math.hypot(notchPositions[x.a][0]-notchPositions[y.a][0],notchPositions[x.a][1]-notchPositions[y.a][1])/40;return Math.abs(x.b-y.b)*.85+dotDist*.7+notchDist*.7;}
+const opts={size:64,sim:'close',trap:'mixed',strength:3,interval:3.5,duration:50,numbers:true,hideTime:false};
+let state='idle',elapsed=0,last=0,round=0,wins=0,fails=0,target=null,targetIndex=-1,selected=-1,items=[],tiles=[],lureLog=new Set(),events=[],eventIndex=-1;
+const fmt=x=>{const n=Math.max(0,Math.ceil(x));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')};
+function generate(){
+ target={...all[random(all.length)]};
+ let pool=all.filter(x=>sig(x)!==sig(target));
+ if(opts.sim!=='normal'){
+   pool=pool.map(x=>({...x,score:distance(x,target)+(Math.random()-.5)*(opts.sim==='twins'?.12:1.15)})).sort((a,b)=>a.score-b.score).slice(0,opts.size-1);
+ }else pool=shuffled(pool).slice(0,opts.size-1);
+ items=shuffled([target,...pool]);targetIndex=items.findIndex(x=>sig(x)===sig(target));selected=-1;lureLog.clear();
+ $('#sample').innerHTML=svg(target);const f=$('#field');f.style.setProperty('--cols',Math.sqrt(opts.size));f.replaceChildren();tiles=[];
+ for(let i=0;i<items.length;i++){
+  const b=document.createElement('button');b.type='button';b.className='tile';b.setAttribute('aria-label','Клетка '+(i+1));b.innerHTML=`<span class="index">${i+1}</span>${svg(items[i])}`;
+  b.addEventListener('click',()=>{if(state!=='play')return;selected=selected===i?-1:i;update()});f.appendChild(b);tiles.push(b);
+ }
+ fitField();root.style.setProperty('--lureLift',(-1.5-opts.strength*.7)+'px');root.style.setProperty('--lureScale',String(1+opts.strength*.018));
+ events=[];eventIndex=-1;
+ if(opts.trap!=='none')for(let t=2.5;t<opts.duration-1.5;t+=opts.interval){events.push({time:t+(Math.random()-.5)*.45,duration:.22+opts.strength*.10,i:-1,kind:opts.trap==='mixed'?(Math.random()<.5?'flash':'move'):opts.trap});}
+}
+function chooseLure(){const ranked=items.map((x,i)=>({i,d:distance(x,target)})).filter(x=>x.i!==targetIndex).sort((a,b)=>a.d-b.d);return ranked[random(Math.max(1,Math.min(16,ranked.length)))].i;}
+function clearLures(){for(const t of tiles)t.classList.remove('lure','move');}
+function animateLures(){let current=-1;for(let i=0;i<events.length;i++){const e=events[i];if(elapsed>=e.time&&elapsed<e.time+e.duration){current=i;break;}}if(current===eventIndex)return;clearLures();eventIndex=current;if(current>=0){const e=events[current];if(e.i<0)e.i=chooseLure();tiles[e.i].classList.add('lure');if(e.kind==='move')tiles[e.i].classList.add('move');lureLog.add(e.i);}}
+function begin(){round++;state='play';elapsed=0;generate();$('#feedback').textContent='Раунд '+round+': ищи три совпадающие детали. Неправильные знаки могут привлекать внимание.';$('#hint').textContent='Подсветка не является подсказкой. Сравни форму знака с образцом.';update();}
+function finish(reason){if(state!=='play'&&state!=='paused')return;const good=reason==='check'&&selected===targetIndex;if(reason==='check'){if(good)wins++;else fails++;}state='done';clearLures();let msg=reason==='stop'?'Раунд остановлен без оценки.':reason==='time'?'Время закончилось, без оценки.':good?'Правильно! Все три детали совпали.':'Неверно: один или несколько признаков отличаются.';msg+=' Правильная клетка №'+(targetIndex+1)+'.';if(reason==='check'&&!good&&lureLog.has(selected))msg+=' Выбранный знак был приманкой.';$('#feedback').textContent=msg;$('#hint').textContent='Зелёный: точное совпадение. Красный: ошибочный выбор. Пунктир: подсвечивавшиеся приманки.';update();}
+function update(){const play=state==='play',paused=state==='paused',done=state==='done';
+ $('#cover').hidden=play||done;$('#coverTitle').textContent=paused?'Пауза':'64 почти одинаковых знака';$('#coverText').textContent=paused?'Поле скрыто, время остановлено.':'На поле только одно точное совпадение по насечке, линии и точке.';$('#coverStart').textContent=paused?'▶ Продолжить':'▶ Начать';
+ $('#stageLabel').textContent=play?'Поиск':paused?'Пауза':done?'Разбор':'Ожидание';$('#timer').textContent=opts.hideTime&&play?'••:••':fmt(opts.duration-elapsed);$('#progressBar').style.width=Math.max(0,100*(1-elapsed/opts.duration))+'%';
+ $('#start').disabled=state!=='idle';$('#pause').disabled=!play&&!paused;$('#pause').textContent=paused?'Продолжить':'Пауза';$('#check').disabled=!play||selected<0;$('#end').disabled=!play&&!paused;$('#next').disabled=!done;
+ winsLabel.textContent=wins;failsLabel.textContent=fails;
+ root.querySelectorAll('#settings button,#settings input').forEach(x=>{x.disabled=play||paused});
+ root.querySelectorAll('[data-size]').forEach(x=>x.classList.toggle('on',+x.dataset.size===opts.size));root.querySelectorAll('[data-sim]').forEach(x=>x.classList.toggle('on',x.dataset.sim===opts.sim));root.querySelectorAll('[data-trap]').forEach(x=>x.classList.toggle('on',x.dataset.trap===opts.trap));
+ tiles.forEach((b,i)=>{b.disabled=!play;b.classList.toggle('pick',play&&selected===i);b.classList.toggle('right',done&&i===targetIndex);b.classList.toggle('wrong',done&&i===selected&&i!==targetIndex);b.classList.toggle('replayLure',done&&lureLog.has(i));b.querySelector('.index').hidden=!opts.numbers;});
+}
+function fitField(){
+ const f=$('#field'),frame=root.querySelector('.fieldframe');if(!f||!frame)return;
+ const cols=Math.round(Math.sqrt(opts.size)),gap=window.innerWidth<=600?3:4;
+ const availableWidth=Math.max(100,frame.clientWidth-1);
+ const oldBottom=f.getBoundingClientRect().bottom;
+ const bottomEl=$('#feedback');
+ const under=Math.max(75,bottomEl.getBoundingClientRect().bottom-oldBottom);
+ const usableHeight=Math.max(175,window.innerHeight-f.getBoundingClientRect().top-under-7);
+ const cellWidth=(availableWidth-gap*(cols-1))/cols;
+ const cellHeight=(usableHeight-gap*(cols-1))/cols;
+ const cell=Math.max(20,Math.floor(Math.min(cellWidth,cellHeight,105)));
+ f.style.setProperty('--cell-gap',gap+'px');f.style.setProperty('--cell',cell+'px');
+ root.dataset.cellSize=String(cell);
+}
+let resizeTask=0;
+window.addEventListener('resize',()=>{if(resizeTask)cancelAnimationFrame(resizeTask);resizeTask=requestAnimationFrame(()=>{fitField();resizeTask=0})});
+$('#focusMode').addEventListener('click',()=>{root.classList.toggle('focused');$('#focusMode').textContent=root.classList.contains('focused')?'▣ Показать настройки':'▣ Только поле';requestAnimationFrame(fitField)});
+function resetIdle(){state='idle';elapsed=0;generate();$('#hint').textContent='На поле только одна точная копия образца.';update();requestAnimationFrame(fitField);}
+function run(){if(state==='paused'){state='play';eventIndex=-1;update();}else if(state==='idle')begin();}
+$('#start').addEventListener('click',run);$('#coverStart').addEventListener('click',run);
+$('#pause').addEventListener('click',()=>{if(state==='play'){state='paused';clearLures();}else if(state==='paused'){state='play';eventIndex=-1;}update()});
+$('#check').addEventListener('click',()=>{if(state==='play'&&selected>=0)finish('check')});$('#end').addEventListener('click',()=>finish('stop'));$('#next').addEventListener('click',begin);
+root.querySelectorAll('[data-size]').forEach(b=>b.addEventListener('click',()=>{if(['play','paused'].includes(state))return;opts.size=+b.dataset.size;resetIdle()}));
+root.querySelectorAll('[data-sim]').forEach(b=>b.addEventListener('click',()=>{if(['play','paused'].includes(state))return;opts.sim=b.dataset.sim;resetIdle()}));
+root.querySelectorAll('[data-trap]').forEach(b=>b.addEventListener('click',()=>{if(['play','paused'].includes(state))return;opts.trap=b.dataset.trap;resetIdle()}));
+$('#baitStrength').addEventListener('input',e=>{opts.strength=+e.target.value;$('#strengthOut').textContent=opts.strength+' / 5';if(state!=='play'&&state!=='paused')resetIdle()});
+$('#baitInterval').addEventListener('input',e=>{opts.interval=+e.target.value;$('#intervalOut').textContent=String(opts.interval).replace('.',',')+' с';if(state!=='play'&&state!=='paused')resetIdle()});
+$('#duration').addEventListener('input',e=>{opts.duration=+e.target.value;$('#timeOut').textContent=opts.duration+' с';if(state!=='play'&&state!=='paused')resetIdle()});
+$('#numbers').addEventListener('change',e=>{opts.numbers=e.target.checked;update()});$('#hideTime').addEventListener('change',e=>{opts.hideTime=e.target.checked;update()});
+$('#full').addEventListener('click',()=>{if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}else if($('#game').requestFullscreen)$('#game').requestFullscreen().catch(()=>{root.classList.add('focused');requestAnimationFrame(fitField)});else {root.classList.add('focused');requestAnimationFrame(fitField)}});document.addEventListener('fullscreenchange',()=>requestAnimationFrame(fitField));
+function frame(now){if(!last)last=now;const dt=Math.max(0,Math.min(.085,(now-last)/1000));last=now;if(state==='play'){elapsed+=dt;if(elapsed>=opts.duration){elapsed=opts.duration;finish('time')}else{animateLures();$('#timer').textContent=opts.hideTime?'••:••':fmt(opts.duration-elapsed);$('#progressBar').style.width=Math.max(0,100*(1-elapsed/opts.duration))+'%';}}requestAnimationFrame(frame)}
+resetIdle();requestAnimationFrame(frame);
+window.__primankaDebug={getState:()=>({state,opts:{...opts},targetIndex,selected,uniqueCount:new Set(items.map(sig)).size,count:items.length,cell:root.dataset.cellSize,fieldWidth:$('#field').offsetWidth,events:events.length,tiles:tiles.length}),sampleAt:(index)=>items[index]};
+})();
+</script>
+<script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
+<script src="../assets/menu-drawer.js"></script>
+<script src="../shared/new-trainers.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/mobile-new-trainers.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
+</body>
+</html>

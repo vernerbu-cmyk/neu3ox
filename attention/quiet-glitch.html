@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<script src="../shared/theme.js"></script>
+<script>/* NeuroX: читаем общую настройку до первой отрисовки */
+try {
+  const nxSavedTheme = localStorage.getItem('neurox_theme');
+  const nxTheme = (nxSavedTheme === 'light' || nxSavedTheme === 'dark')
+    ? nxSavedTheme
+    : ((window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
+  document.documentElement.dataset.theme = nxTheme;
+} catch (_) { document.documentElement.dataset.theme = 'light'; }
+</script>
+
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NeuroX · Тихий сбой 6.0</title>
+<style>
+:root{--blue:#1e3f8a;--orange:#ff6a00;--ink:#162b49;--muted:#60758d;--line:#dce6f2;--pale:#f4f7fb;--navy:#0e2346}
+*{box-sizing:border-box}body{margin:0;background:#f2f5fa;color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.48;cursor:default}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #ffa457;outline-offset:2px}
+.app{max-width:1280px;margin:0 auto;padding:16px 18px 45px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:15px}.eyebrow{font-size:11px;letter-spacing:1.5px;color:var(--orange);font-weight:900}.top h1{font-size:clamp(27px,3.2vw,39px);margin:1px 0 2px;line-height:1.2}.subtitle{font-size:12px;color:var(--muted);max-width:760px}.counts{display:flex;gap:7px}.count{border-radius:12px;min-width:73px;padding:8px 11px;text-align:center;background:white;border:1px solid var(--line)}.count strong{display:block;font-size:20px;line-height:1.1}.count span{font-size:10px;color:var(--muted)}
+.layout{display:grid;grid-template-columns:minmax(290px,325px) minmax(0,1fr);gap:16px;align-items:start}.settings{background:white;border:1px solid var(--line);border-radius:17px;overflow:hidden}.settings-head{padding:15px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.settings-head strong{font-size:16px}.settings-head small{font-size:11px;color:var(--muted)}.setting-sect{padding:12px 16px;border-bottom:1px solid var(--line)}.setting-sect:last-child{border:0}.section-title{font-size:11px;color:#58708f;letter-spacing:.7px;font-weight:850;text-transform:uppercase;margin-bottom:9px}.seg{display:flex;flex-wrap:wrap;gap:5px}.seg button{font-size:12px;font-weight:800;color:#35567d;border:1px solid #dce6f3;background:#f5f8fc;padding:8px 10px;border-radius:9px}.seg button.active{background:var(--blue);color:white;border-color:var(--blue)}.seg.cols2{display:grid;grid-template-columns:1fr 1fr}.seg.cols3{display:grid;grid-template-columns:repeat(3,1fr)}.seg button{text-align:center}
+.setting-line{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:11px 0 4px}.setting-line label{font-size:12px;font-weight:700}.setting-line output{font-size:12px;color:#d35f06;font-weight:850;white-space:nowrap}.settings input[type=range]{width:100%;accent-color:var(--orange)}.setting-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.smallnote{font-size:11px;color:var(--muted);line-height:1.55}.setting-sect select{width:100%;padding:8px 7px;border:1px solid #dbe5f0;border-radius:9px;color:#294564;background:white;font-size:12px}.fault-row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:7px 0}.fault-row label{font-size:12px;font-weight:700;min-width:85px}.fault-row select{min-width:0;flex:1}.type-toggle{display:flex;align-items:center;gap:8px;font-size:12px;margin:7px 0;padding:5px 0;cursor:pointer}.type-toggle input{accent-color:var(--blue);width:16px;height:16px}.type-toggle span{font-weight:750}.advanced{padding:0}.advanced summary{padding:13px 16px;cursor:pointer;font-weight:850;font-size:13px;list-style:none;display:flex;justify-content:space-between}.advanced summary:after{content:'⌄';color:#8296ac}.advanced[open] summary:after{content:'⌃'}.advanced-body{padding:0 16px 16px}.switchline{display:flex;align-items:flex-start;gap:8px;margin:11px 0;font-size:12px;cursor:pointer}.switchline input{accent-color:var(--blue);margin-top:3px}.reset{width:100%;border:1px solid #dce5ef;color:#59718b;padding:9px;background:#f8fafc;border-radius:9px;font-size:12px;font-weight:800}
+.game-column{min-width:0}.game-column:fullscreen{overflow:auto;background:#f2f5fa;padding:18px}.game-column:fullscreen .monitor{max-width:1600px;margin:auto}.monitor{background:#0e2346;color:#e9f3ff;border-radius:18px;box-shadow:0 15px 38px #102d5d1b;padding:15px;position:relative;overflow:hidden}.monitor-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.monitor-title{font-size:12px;font-weight:900;letter-spacing:.7px}.monitor-summary{color:#a9c6e9;font-size:11px}.timer{border:1px solid #496a94;background:#1b3a66;border-radius:10px;padding:5px 13px;font-size:21px;font-weight:850;font-variant-numeric:tabular-nums}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.grid.c5{grid-template-columns:repeat(5,minmax(0,1fr))}.grid.c3{grid-template-columns:repeat(3,minmax(0,1fr))}.unit{height:clamp(100px,11.3vw,150px);min-width:0;background:#1b3b66;border:2px solid #446690;border-radius:11px;color:#fff;padding:5px;position:relative;display:grid;place-items:center;transition:background .12s,border-color .12s}.unit svg{width:87%;height:85%;max-height:110px;max-width:115px;overflow:visible}.unit .number{position:absolute;top:4px;left:6px;font-size:11px;color:#c6ddf9;font-weight:900}.unit .kindname{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:9px;color:#afcbed;font-weight:800}.unit .mark{position:absolute;right:6px;top:4px;font-weight:850;color:#ffc48d}.unit:hover:not(:disabled){border-color:#c9e6ff}.unit.selected{background:#65462e;border-color:#ffad62}.unit.correct{background:#205a4c;border-color:#50e1ae}.unit.wrong{background:#673b4a;border-color:#fc8595}.monitor-track{background:#385273;border-radius:99px;height:6px;margin:12px 0 7px;overflow:hidden}.monitor-track div{height:100%;width:100%;background:var(--orange)}.monitor-note{font-size:11px;color:#bed6f6;text-align:center;min-height:20px}.cover{position:absolute;inset:0;background:#071832f3;z-index:5;display:flex;align-items:center;justify-content:center;text-align:center;padding:25px}.cover[hidden]{display:none}.cover-inner{max-width:420px}.cover .glyph{font-size:39px;color:#ffad69}.cover strong{display:block;font-size:24px;margin:5px 0}.cover p{font-size:13px;color:#c4d8f0;line-height:1.65;margin:4px 0 15px}.cover button{font-size:14px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.action{border:1px solid #d6e1f0;background:white;color:#214877;border-radius:10px;padding:10px 15px;font-size:13px;font-weight:850}.action.primary{background:var(--blue);color:white;border-color:var(--blue)}.action.warn{background:#fff0e4;border-color:#ffc79f;color:#b9580c}.result{background:white;border:1px solid var(--line);border-radius:12px;margin-top:12px;padding:13px 15px;min-height:52px;font-size:13px;font-weight:700;color:#284667;line-height:1.6}.meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.meta span{font-size:11px;color:#5d7590;background:#fff;border:1px solid var(--line);padding:5px 9px;border-radius:9px}.help{font-size:12px;color:#6d8299;margin-top:12px;line-height:1.65}.error{font-size:12px;color:#b14d0b;padding:8px;border:1px solid #ffdbc1;background:#fff4ea;border-radius:8px;margin-top:8px;display:none}
+@media(max-width:930px){.layout{grid-template-columns:1fr}.settings .setting-sect{padding:12px 16px}.unit{height:clamp(100px,17vw,146px)}}
+@media(max-width:560px){.app{padding:9px 8px 30px}.top{align-items:flex-start}.counts{gap:3px}.count{min-width:48px;padding:6px}.count strong{font-size:17px}.count span{font-size:9px}.monitor{padding:8px;border-radius:13px}.monitor-title{font-size:10px}.monitor-summary{font-size:9px}.timer{font-size:16px;padding:4px 7px}.grid,.grid.c5,.grid.c3{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.unit{height:clamp(87px,29vw,118px);padding:2px}.unit .kindname{font-size:8px}.unit .number{font-size:10px}.action{padding:9px 10px;font-size:12px}.cover{padding:12px}.cover strong{font-size:21px}}
+
+/* Уровень впереди ручных параметров */
+.nx-quiet-more{border-bottom:1px solid var(--line);margin:0}
+.nx-quiet-more>summary{font-size:14px;color:var(--blue);background:#F4F7FC}
+.nx-quiet-more-body>.setting-sect{padding:12px 16px}
+.nx-quiet-more-body>.advanced{border-top:1px solid var(--line)}
+#presets button{padding:11px 4px;font-size:13px;min-height:43px}
+#preset-info{font-weight:650}
+</style><link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/new-trainers.css">
+<link rel="stylesheet" href="../shared/new-trainers-theme.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<link rel="stylesheet" href="../shared/mobile-new-trainers.css">
+</head>
+<body class="nx-added-game nx-game-quiet-glitch" data-nx-section="attention"><div class="app" id="neurox">
+<header class="top"><div><div class="eyebrow">NEUROX · ЗРИТЕЛЬНОЕ ВНИМАНИЕ</div><h1>Тихий сбой <span style="font-size:15px;color:#8ca0b9">6.0</span></h1><div class="subtitle">Найди одно неисправное устройство. Пять отдельных типов и смешанный режим. Один понятный принцип, гибкая сложность, разбор после ответа.</div></div><div class="counts"><div class="count"><strong id="correct">0</strong><span>Верно</span></div><div class="count"><strong id="wrong">0</strong><span>Ошибки</span></div><div class="count"><strong id="missed">0</strong><span>Пропуски</span></div></div></header>
+<div class="layout"><aside class="settings" id="settings">
+ <div class="settings-head"><strong>Настройки тренажёра</strong><small id="setting-lock">Можно менять до запуска</small></div>
+ <section class="setting-sect"><div class="section-title">Сложность</div><div class="seg cols3" id="presets"><button data-preset="easy">Легко</button><button data-preset="balanced">Средне</button><button data-preset="expert">Сложно</button></div><div style="margin-top:8px" class="smallnote" id="preset-info">Ручные изменения сохраняются для следующих раундов.</div></section>
+ <section class="setting-sect"><div class="section-title">Режим наблюдения</div><div class="seg cols2" id="kindbuttons"><button type="button" data-kind="fan">Вентиляторы</button><button type="button" data-kind="dial">Стрелки</button><button type="button" data-kind="lamp">Лампы</button><button type="button" data-kind="slider">Ползунки</button><button type="button" data-kind="pendulum">Маятники</button><button type="button" data-kind="mixed">✦ Смешанные</button></div></section>
+ <details class="advanced nx-quiet-more" id="quietMore"><summary>⚙ Свои настройки</summary><div class="nx-quiet-more-body">
+ <section class="setting-sect"><div class="section-title">Поле и время</div><div class="setting-line"><label for="countRange">Количество устройств</label><output id="countOut">15</output></div><input type="range" id="countRange" min="5" max="25" step="1" value="15"><div class="setting-row"><div><div class="setting-line"><label for="baselineRange">Знакомство, с</label><output id="baselineOut">4</output></div><input id="baselineRange" type="range" min="2" max="10" step="0.5" value="4"></div><div><div class="setting-line"><label for="searchRange">Поиск, с</label><output id="searchOut">24</output></div><input id="searchRange" type="range" min="12" max="65" step="1" value="24"></div></div></section>
+ <section class="setting-sect"><div class="section-title">Нарушение</div><div class="setting-line"><label for="repeatRange">Повторов у одного устройства</label><output id="repeatOut">2</output></div><input id="repeatRange" type="range" min="1" max="4" step="1" value="2"><div class="setting-line"><label for="durationRange">Длительность, с <small style="font-weight:400">(кроме ламп)</small></label><output id="durationOut">1,00</output></div><input id="durationRange" type="range" min="0.3" max="2" step="0.05" value="1"><div class="setting-line"><label for="strengthRange">Сила сбоя</label><output id="strengthOut">3 / 5</output></div><input id="strengthRange" type="range" min="1" max="5" step="1" value="3"><div class="setting-line"><label for="speedRange">Общий темп</label><output id="speedOut">1,0×</output></div><input id="speedRange" type="range" min="0.6" max="1.8" step="0.1" value="1"></section>
+ <section class="setting-sect" id="faultSection"><div class="section-title">Тип неисправности для каждого механизма</div><div id="faultOptions"></div><div class="smallnote" id="faultHelp">«Случайно» выбирает допустимый вид сбоя для выбранного типа устройства.</div></section>
+ <details class="advanced" id="advanced"><summary>Дополнительные настройки</summary><div class="advanced-body">
+ <div id="mixedControls"><div class="section-title">Виды устройств в смешанном поле</div><div id="typeToggles"></div><div class="smallnote">Каждый выбранный вид появится хотя бы один раз. Устройства разных видов работают по собственным правилам, но одинаковые виды синхронны.</div></div>
+ <div class="setting-line"><label for="fanOffset">Разброс положения лопастей</label><output id="fanOffsetOut">90°</output></div><input id="fanOffset" type="range" min="0" max="180" step="10" value="90">
+ <div class="setting-line"><label for="lampPeriod">Интервал вспышек ламп</label><output id="lampPeriodOut">1,65 с</output></div><input id="lampPeriod" type="range" min="1.1" max="2.6" step="0.05" value="1.65">
+ <div class="setting-line"><label for="lampDuty">Доля времени свечения</label><output id="lampDutyOut">52%</output></div><input id="lampDuty" type="range" min="35" max="70" step="1" value="52">
+ <label class="switchline"><input type="checkbox" id="quickCheck" checked><span>Разрешить проверку после первого завершённого сбоя</span></label>
+ <label class="switchline"><input type="checkbox" id="showTimer" checked><span>Показывать таймер ребёнку</span></label>
+ <label class="switchline"><input type="checkbox" id="remember" checked><span>Запоминать настройки на этом устройстве</span></label>
+ <button class="reset" id="resetSettings" type="button">Вернуть настройки по умолчанию</button><button class="reset" id="resetResults" type="button" style="margin-top:7px">Обнулить результаты сессии</button>
+ </div></details>
+ </div></details>
+ <div class="setting-sect"><div class="smallnote" id="settingHint">Педагог нажимает по указанию ребёнка. Нет обязательной реакции на скорость клика.</div><div id="settingError" class="error" role="alert"></div></div>
+ </aside>
+ <main class="game-column"><section class="monitor" id="monitor"><div class="monitor-top"><div><div class="monitor-title" id="status">СИСТЕМА ГОТОВА</div><div class="monitor-summary" id="monitor-summary">Один неисправный механизм · два нарушения</div></div><div class="timer" id="clock">00:24</div></div><div id="grid" class="grid" aria-label="Поле механизмов"></div><div class="monitor-track"><div id="progress"></div></div><div class="monitor-note" id="monitorNote">Следи за обычной работой механизмов, затем ищи отклонение.</div><div class="cover" id="cover"><div class="cover-inner"><div class="glyph">◎</div><strong id="coverTitle">Найди тихий сбой</strong><p id="coverText">В одном устройстве кратковременно появится неисправность. Можно проверить ответ после первого эпизода.</p><button class="action primary" id="coverStart">▶ Начать наблюдение</button></div></div></section>
+ <div class="actions"><button class="action primary" id="start">▶ Начать</button><button class="action" id="pause" disabled>Пауза</button><button class="action warn" id="check" disabled>Проверить ответ</button><button class="action" id="stop" disabled>Закончить</button><button class="action" id="replay" disabled>↺ Повтор ×0,5</button><button class="action" id="next" disabled>Новый раунд</button><button class="action" id="fullscreen">⛶ Полный экран</button></div><div class="result" id="result" role="status" aria-live="polite">Выбери тип механизмов, настрой сложность и нажми «Начать».</div><div class="meta"><span id="modeBadge">Режим: смешанные</span><span id="countBadge">15 устройств</span><span id="repeatBadge">2 сбоя</span><span id="choiceBadge">Ответ не выбран</span></div><div class="help">После запуска сначала показывается нормальная работа. Во время поиска один и тот же механизм нарушает её 1–4 раза. Выбор ответа не останавливает показ. «Проверить» доступно после первого эпизода либо после всех, если так настроено. «Закончить» прерывает раунд без оценки. В разборе можно посмотреть только уже произошедшие сбои.</div></main></div></div>
+<script>
+(()=>{'use strict';
+const root=document.getElementById('neurox');if(!root||root.dataset.ready)return;root.dataset.ready='1';
+const $=id=>document.getElementById(id);const keys=['fan','dial','lamp','slider','pendulum'];
+const names={fan:'ВЕНТИЛЯТОР',dial:'СТРЕЛКА',lamp:'ЛАМПА',slider:'ПОЛЗУНОК',pendulum:'МАЯТНИК'};
+const labels={fan:'Вентиляторы',dial:'Стрелки',lamp:'Лампы',slider:'Ползунки',pendulum:'Маятники',mixed:'Смешанные'};
+const faultDefs={fan:[['random','Случайно'],['slow','Замедление'],['surge','Ускорение'],['pause','Короткая пауза']],dial:[['random','Случайно'],['slow','Меньше размах'],['surge','Больше размах'],['pause','Почти замирание']],slider:[['random','Случайно'],['slow','Меньше размах'],['surge','Больше размах'],['pause','Почти замирание']],pendulum:[['random','Случайно'],['slow','Меньше размах'],['surge','Больше размах'],['pause','Почти замирание']],lamp:[['random','Случайно'],['pause','Микромерцание'],['slow','Тусклый импульс'],['surge','Неровное свечение']]};
+const svg={
+fan:`<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="49" fill="#0E274A" stroke="#7597C5" stroke-width="5"/><circle cx="60" cy="60" r="42" fill="none" stroke="#416590" stroke-width="2" stroke-dasharray="3 10"/><g class="moving" style="transform-origin:60px 60px"><g fill="#86CFF8" stroke="#DFEFFF" stroke-width="1.4"><path d="M60 53 C65 25 79 19 86 21 C91 40 80 56 64 62Z"/><path d="M67 60 C95 65 101 79 99 86 C80 91 64 80 58 64Z"/><path d="M60 67 C55 95 41 101 34 99 C29 80 40 64 56 58Z"/><path d="M53 60 C25 55 19 41 21 34 C40 29 56 40 62 56Z"/></g><circle cx="75" cy="33" r="4.6" fill="#FF9E50" stroke="#FFF1DE" stroke-width="1.2"/><circle cx="60" cy="60" r="8" fill="#E3F5FF" stroke="#527EAF" stroke-width="3"/></g></svg>`,
+dial:`<svg viewBox="0 0 120 120"><path d="M13 89 A53 53 0 0 1 107 89" fill="none" stroke="#7395BE" stroke-width="9" stroke-linecap="round"/><path d="M25 87 A40 40 0 0 1 95 87" stroke="#D7E9FF" stroke-width="2" stroke-dasharray="3 7" fill="none"/><g class="moving" style="transform-origin:60px 87px"><path d="M60 87 L55 31 Q60 18 65 31 Z" fill="#FFA45D"/></g><circle cx="60" cy="87" r="8" fill="#EAF6FF" stroke="#5178A2" stroke-width="3"/></svg>`,
+lamp:`<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="49" fill="#10294B" stroke="#7397C0" stroke-width="5"/><circle class="glow" cx="60" cy="60" r="41" fill="#FFB664" opacity=".09"/><circle class="bulb" cx="60" cy="60" r="28" fill="#FFAE54" opacity=".14"/><circle cx="60" cy="60" r="33" fill="none" stroke="#F0C38D" stroke-width="2"/></svg>`,
+slider:`<svg viewBox="0 0 120 120"><rect x="11" y="38" width="98" height="44" rx="13" fill="#102A4D" stroke="#7299C5" stroke-width="4"/><path d="M23 60 H97" stroke="#C6DCF1" stroke-width="5" stroke-linecap="round"/><g class="moving"><rect x="49" y="43" width="22" height="34" rx="7" fill="#FFAD65" stroke="#FDE8D1" stroke-width="2"/></g></svg>`,
+pendulum:`<svg viewBox="0 0 120 120"><path d="M34 20 H86" stroke="#7299C5" stroke-width="7" stroke-linecap="round"/><g class="moving" style="transform-origin:60px 25px"><line x1="60" y1="25" x2="60" y2="93" stroke="#D4E8FF" stroke-width="5" stroke-linecap="round"/><circle cx="60" cy="94" r="16" fill="#FFAE65" stroke="#FFE3CB" stroke-width="3"/></g><circle cx="60" cy="25" r="6" fill="#C2DDF8"/></svg>`};
+const defaults={kind:'mixed',preset:'balanced',count:15,baseline:4,search:24,repeats:2,duration:1,strength:3,speed:1,fanOffset:90,lampPeriod:1.65,lampDuty:52,quickCheck:true,showTimer:true,remember:true,selectedKinds:[...keys],faultModes:{fan:'random',dial:'random',lamp:'random',slider:'random',pendulum:'random'}};
+let S=structuredClone(defaults);
+const storageKey='neurox-quiet-sboy-v6-settings';
+try{const data=JSON.parse(localStorage.getItem(storageKey)||'null');if(data&&typeof data==='object'){
+  for(const k of Object.keys(defaults)){if(k==='selectedKinds'&&Array.isArray(data[k]))S[k]=data[k].filter(x=>keys.includes(x));else if(k==='faultModes'&&data[k]&&typeof data[k]==='object'){for(const type of keys)if(faultDefs[type].some(o=>o[0]===data[k][type]))S.faultModes[type]=data[k][type]}else if(k!=='selectedKinds'&&k!=='faultModes'&&typeof data[k]===typeof defaults[k])S[k]=data[k]}
+}}catch(e){}
+function clamp(v,min,max){return Math.min(max,Math.max(min,v))}
+for(const [k,a,b] of [['count',5,25],['baseline',2,10],['search',12,65],['repeats',1,4],['duration',.3,2],['strength',1,5],['speed',.6,1.8],['fanOffset',0,180],['lampPeriod',1.1,2.6],['lampDuty',35,70]]) S[k]=clamp(Number(S[k])||defaults[k],a,b);
+if(!labels[S.kind])S.kind='mixed';if(!['easy','balanced','expert','custom'].includes(S.preset))S.preset='custom';if(!S.selectedKinds.length)S.selectedKinds=[...keys];
+const fmt=(x,dec=2)=>Number(x).toFixed(dec).replace(/0+$/,'').replace(/\.$/,'').replace('.',',');
+const clock=v=>{const n=Math.max(0,Math.ceil(v));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')};
+const R=(a,b)=>a+Math.random()*(b-a),RI=n=>Math.floor(Math.random()*n);const smooth=t=>{const x=clamp(t,0,1);return x*x*(3-2*x)};
+let phase='idle',prior='observe',elapsed=0,last=0,round=0,correct=0,wrong=0,missed=0,selected=-1,target=-1,units=[],incidents=[],resultKind='',resultMode='',replayTime=0,replayEnd=0,replaySegments=[],replayIndex=0,lastRender=0;
+function save(){if(!S.remember)return;try{localStorage.setItem(storageKey,JSON.stringify(S))}catch(e){}}
+function isRunning(){return ['observe','search','paused','replay'].includes(phase)}
+function setError(s){$('settingError').textContent=s;$('settingError').style.display=s?'block':'none'}
+function updateRanges(){const displays={count:S.count,baseline:fmt(S.baseline),search:S.search,repeats:S.repeats,duration:fmt(S.duration),strength:S.strength+' / 5',speed:fmt(S.speed,1)+'×',fanOffset:S.fanOffset+'°',lampPeriod:fmt(S.lampPeriod)+' с',lampDuty:S.lampDuty+'%'};
+for(const id of Object.keys(displays)){$(id==='count'?'countOut':id==='repeats'?'repeatOut':id+'Out').textContent=displays[id];const el=$(id==='count'?'countRange':id==='baseline'?'baselineRange':id==='search'?'searchRange':id==='repeats'?'repeatRange':id==='duration'?'durationRange':id==='strength'?'strengthRange':id==='speed'?'speedRange':id);if(el)el.value=S[id]}
+$('quickCheck').checked=S.quickCheck;$('showTimer').checked=S.showTimer;$('remember').checked=S.remember;
+}
+function buildSettings(){
+$('faultOptions').replaceChildren();
+const types=S.kind==='mixed'?S.selectedKinds:[S.kind];
+for(const k of types){const row=document.createElement('div');row.className='fault-row';const lbl=document.createElement('label');lbl.textContent=labels[k];lbl.htmlFor='fault-'+k;const select=document.createElement('select');select.id='fault-'+k;for(const [value,label] of faultDefs[k]){const o=document.createElement('option');o.value=value;o.textContent=label;select.appendChild(o)}select.value=S.faultModes[k];select.disabled=isRunning();select.addEventListener('change',()=>{S.faultModes[k]=select.value;S.preset='custom';save();buildSettings()});row.append(lbl,select);$('faultOptions').appendChild(row)}
+$('typeToggles').replaceChildren();for(const k of keys){const label=document.createElement('label');label.className='type-toggle';const cb=document.createElement('input');cb.type='checkbox';cb.checked=S.selectedKinds.includes(k);cb.disabled=isRunning();cb.addEventListener('change',()=>{if(cb.checked){S.selectedKinds.push(k)}else{if(S.selectedKinds.length<=2){cb.checked=true;setError('Для смешанного режима оставь как минимум два типа устройств.');return}S.selectedKinds=S.selectedKinds.filter(x=>x!==k)}S.count=Math.max(S.count,S.selectedKinds.length);S.preset='custom';setError('');save();buildSettings();updateRanges();resetIdle()});const span=document.createElement('span');span.textContent=labels[k];label.append(cb,span);$('typeToggles').append(label)}
+$('mixedControls').style.display=S.kind==='mixed'?'':'none';
+const min=S.kind==='mixed'?Math.max(5,S.selectedKinds.length):5;$('countRange').min=min;S.count=Math.max(S.count,min);
+$('durationRange').disabled=isRunning()||S.kind==='lamp';
+$('durationRange').title=S.kind==='lamp'?'Для ламп сбой занимает одну обычную вспышку':'Время одного эпизода';
+root.querySelectorAll('[data-kind]').forEach(b=>{b.classList.toggle('active',b.dataset.kind===S.kind);b.disabled=isRunning()});root.querySelectorAll('[data-preset]').forEach(b=>{b.disabled=isRunning();b.classList.toggle('active',b.dataset.preset===S.preset)});
+const locked=isRunning();$('setting-lock').textContent=locked?'Настройки заблокированы на время раунда':'Настраиваются перед раундом';
+root.querySelectorAll('.settings input,.settings select,.settings #resetSettings,.settings #resetResults').forEach(b=>{if(b.id==='durationRange'&&S.kind==='lamp')return;b.disabled=locked});
+$('settingHint').textContent=S.kind==='mixed'?'Смешанный режим: у каждого вида механизмов свой нормальный ритм. Сбой случится только у одного устройства одного типа.':'Все устройства одного вида работают в общем ритме. Исключение: разные начальные углы лопастей вентиляторов.';
+$('preset-info').textContent=S.preset==='custom'
+  ?'Свои параметры · '+S.count+' устройств · '+S.repeats+' эпизод(а)'
+  :S.count+' устройств · '+S.repeats+' эпизод(а) · '+S.search+' с поиска';
+updateRanges();
+}
+function distribute(){if(S.kind!=='mixed')return Array.from({length:S.count},()=>S.kind);
+const types=[...S.selectedKinds],arr=[...types];while(arr.length<S.count)arr.push(types[(arr.length-types.length)%types.length]);
+for(let i=arr.length-1;i>0;i--){const j=RI(i+1);[arr[i],arr[j]]=[arr[j],arr[i]]}return arr;
+}
+function buildGrid(){const g=$('grid');g.replaceChildren();units=[];
+const entries=distribute();g.className='grid '+(S.count>=15?'c5':S.count<=9?'c3':'');
+for(let i=0;i<entries.length;i++){const k=entries[i],b=document.createElement('button');b.type='button';b.className='unit';b.setAttribute('aria-label',names[k]+' №'+(i+1));b.innerHTML='<span class="number">'+String(i+1).padStart(2,'0')+'</span>'+svg[k]+'<span class="kindname">'+names[k]+'</span><span class="mark"></span>';
+b.addEventListener('click',()=>{if(phase!=='search')return;selected=selected===i?-1:i;update()});
+g.appendChild(b);const angle=k==='fan'?R(-S.fanOffset,S.fanOffset):0;units.push({kind:k,button:b,moving:b.querySelector('.moving'),bulb:b.querySelector('.bulb'),glow:b.querySelector('.glow'),angle})}
+}
+function getFaultMode(k){const selection=S.faultModes[k];return selection==='random'?['pause','slow','surge'][RI(3)]:selection}
+function generateIncidents(){target=RI(units.length);const kind=units[target].kind;resultKind=kind;resultMode=getFaultMode(kind);incidents=[];
+const startLimit=S.baseline+1.8, endLimit=S.baseline+S.search-1.1;
+if(kind==='lamp'){
+const p=S.lampPeriod/S.speed,on=p*S.lampDuty/100;
+const first=Math.max(1,Math.ceil((S.baseline+.3)/p));const last=Math.floor((fullTime()-on-.4)/p);
+const cycles=[];for(let i=first;i<=last;i++)cycles.push(i);
+// Distinct flash cycles, at least one off cycle between incidents when possible.
+let picks=[];const n=Math.min(S.repeats,cycles.length);
+for(let j=0;j<n;j++){const idx=Math.round((j+.38)*(cycles.length)/(n+.45));let chosen=cycles[clamp(idx,0,cycles.length-1)];while(picks.includes(chosen)&&chosen<last)chosen++;picks.push(chosen)}
+picks.sort((a,b)=>a-b);for(const cycle of picks)incidents.push({start:cycle*p,end:cycle*p+on,mode:resultMode,cycle});
+}else{
+ const span=S.duration;
+ const firstBase=S.baseline+clamp(S.search*.17,1.25,3.4);
+ const lastStart=fullTime()-span-.35;
+ const minimumGap=span+.17;
+ const first=Math.max(S.baseline+.6,Math.min(firstBase,lastStart-(S.repeats-1)*minimumGap));
+ const space=S.repeats===1?0:Math.min(Math.max(minimumGap,S.search/(S.repeats+1)),6.5,(lastStart-first)/(S.repeats-1));
+ for(let j=0;j<S.repeats;j++){
+  const base=first+j*space;
+  const jitter=j===0?R(-.25,.25):R(-.12,.12);
+  const start=clamp(base+jitter,S.baseline+.4,lastStart);
+  incidents.push({start,end:start+span,mode:resultMode});
+ }
+
+ }
+ incidents.sort((a,b)=>a.start-b.start);
+}
+function replayRemaining(){if(!replaySegments.length)return 0;return replaySegments.slice(replayIndex).reduce((sum,seg,i)=>sum+(i===0?Math.max(0,seg.end-replayTime):seg.end-seg.start),0)}
+function readyAfter(){if(!incidents.length)return false;const index=S.quickCheck?0:incidents.length-1;return elapsed>=incidents[index].end-1e-5}
+function fullTime(){return S.baseline+S.search}
+function remaining(){return Math.max(0,S.search-Math.max(0,elapsed-S.baseline))}
+function update(){
+const playing=phase==='observe'||phase==='search',inRound=playing||phase==='paused';
+$('cover').hidden=!['idle','paused'].includes(phase);
+$('coverTitle').textContent=phase==='paused'?'Пауза':'Тихий сбой';
+$('coverText').textContent=phase==='paused'?'Поле полностью скрыто, время остановлено.':'Следи за устройствами. Одно из них ненадолго нарушит работу. Проверить ответ можно после '+(S.quickCheck?'первого':'последнего')+' сбоя.';
+$('coverStart').textContent=phase==='paused'?'▶ Продолжить':'▶ Начать';
+$('start').disabled=phase!=='idle';$('pause').disabled=!inRound;$('pause').textContent=phase==='paused'?'Продолжить':'Пауза';
+$('check').disabled=phase!=='search'||selected<0||!readyAfter();$('stop').disabled=!inRound;
+$('replay').disabled=phase!=='done'||!incidents.length||elapsed<incidents[0].end;
+$('next').disabled=phase!=='done';
+$('status').textContent=phase==='idle'?'СИСТЕМА ГОТОВА':phase==='observe'?'ЗАПОМИНАЙ ОБЫЧНУЮ РАБОТУ':phase==='search'?'ИЩИ НЕИСПРАВНОСТЬ':phase==='paused'?'ПАУЗА':phase==='replay'?'РАЗБОР · ×0,5':'РАУНД ЗАВЕРШЁН';
+$('clock').textContent=clock(phase==='idle'?S.search:phase==='replay'?2*replayRemaining():remaining());
+$('clock').style.visibility=S.showTimer?'visible':'hidden';
+$('progress').style.width=(phase==='idle'?100:phase==='observe'?100:100*remaining()/S.search)+'%';
+$('monitor-summary').textContent=(S.kind==='mixed'?'Смешанное поле':labels[S.kind])+' · '+(phase==='idle'?S.repeats:incidents.length)+' '+(incidents.length===1?'сбой':'сбоя')+' · одна неисправность';
+$('modeBadge').textContent='Режим: '+labels[S.kind];$('countBadge').textContent=units.length+' устройств';$('repeatBadge').textContent=(phase==='idle'?S.repeats:incidents.length)+' эпизод(а)';$('choiceBadge').textContent=selected<0?'Ответ не выбран':'Выбран №'+(selected+1);
+$('correct').textContent=correct;$('wrong').textContent=wrong;$('missed').textContent=missed;
+const reviewing=phase==='done'||phase==='replay';
+units.forEach((u,i)=>{const b=u.button;b.disabled=phase!=='search';b.classList.toggle('selected',phase==='search'&&selected===i);b.classList.toggle('correct',reviewing&&elapsed>=incidents[0]?.end&&i===target);b.classList.toggle('wrong',reviewing&&selected===i&&i!==target);b.querySelector('.mark').textContent=phase==='search'&&selected===i?'●':reviewing&&elapsed>=incidents[0]?.end&&i===target?'✓':reviewing&&selected===i&&i!==target?'×':''});
+buildSettings();
+}
+function resetIdle(){phase='idle';elapsed=0;selected=-1;target=-1;incidents=[];buildGrid();render(0);update();$('result').textContent='Настройки готовы. Нажми «Начать», чтобы показать ребёнку работу механизмов.';}
+function startRound(){round++;elapsed=0;lastRender=0;selected=-1;phase='observe';buildGrid();generateIncidents();
+$('monitorNote').textContent='Сначала изучи нормальную работу устройств.';
+$('result').textContent='Раунд '+round+'. Наблюдай. Педагог отмечает ответ по указанию ребёнка.'+(incidents.length<S.repeats?' В этих настройках успевают пройти '+incidents.length+' из '+S.repeats+' эпизодов. Для полного числа увеличь поиск или темп ламп.':'');render(0);update()}
+function finish(reason){if(!['observe','search','paused'].includes(phase))return;
+const completed=incidents.some(x=>elapsed>=x.end-1e-4);
+if(reason==='check'){
+ if(selected<0||!readyAfter()||phase!=='search')return;
+ if(selected===target){correct++;$('result').textContent='Верно! Неисправным было устройство №'+(target+1)+' ('+labels[resultKind]+'). '+describeFault(resultKind,resultMode)+'.'}
+ else {wrong++;$('result').textContent='Ответ не совпал. Неисправным было устройство №'+(target+1)+' ('+labels[resultKind]+'). '+describeFault(resultKind,resultMode)+'.'}
+}else if(reason==='timeout'){
+ missed++;$('result').textContent='Время вышло. Неисправным было устройство №'+(target+1)+' ('+labels[resultKind]+').';
+}else $('result').textContent=completed?'Показ остановлен без оценки. Неисправным было устройство №'+(target+1)+'.':'Показ остановлен до первого сбоя, без оценки. Непроизошедшие события не раскрываются.';
+phase='done';update()}
+function describeFault(k,mode){if(k==='lamp')return {pause:'Микромерцание',slow:'Тусклый импульс',surge:'Неровное свечение'}[mode];if(k==='fan')return {pause:'Короткое замирание',slow:'Замедление',surge:'Ускорение'}[mode];return {pause:'Почти замирание',slow:'Уменьшение размаха',surge:'Увеличение размаха'}[mode]}
+function movementExtra(t){let sum=0;const st=[0,.27,.40,.58,.75,.92][S.strength];
+for(const ev of incidents){const d=clamp(t-ev.start,0,ev.end-ev.start);if(d<=0)continue;const span=ev.end-ev.start;
+if(ev.mode==='pause'){sum-=Math.min(d,Math.min(.18,span*(.16+.018*S.strength)));continue;}
+const ramp=Math.min(.09,span*.18);
+let v;
+if(d<ramp)v=d*d/(2*ramp);else if(d<=span-ramp)v=d-ramp/2;else{const q=d-(span-ramp);v=span-1.5*ramp+q-q*q/(2*ramp)}
+sum+=v*st*(ev.mode==='surge'?1:-1);
+}return sum}
+function amplitude(t){const st=[0,.27,.40,.58,.75,.92][S.strength];for(const ev of incidents){if(t<ev.start||t>=ev.end)continue;const v=Math.pow(Math.sin(Math.PI*(t-ev.start)/(ev.end-ev.start)),2);
+if(ev.mode==='pause')return 1-.98*v;if(ev.mode==='slow')return 1-st*v;return 1+st*.85*v}return 1}
+function lampBrightness(t){const period=S.lampPeriod/S.speed,on=period*S.lampDuty/100;
+const pos=((t%period)+period)%period,edge=on*.18;const std=pos<on?smooth(pos/edge)*smooth((on-pos)/edge):0;
+let changed=std;
+const ev=incidents.find(e=>t>=e.start&&t<e.end);
+if(ev&&std>0){const phase=(t-ev.start)/(ev.end-ev.start),depth=[0,.17,.235,.30,.37,.44][S.strength];
+if(ev.mode==='slow')changed*=1-depth*Math.pow(Math.sin(Math.PI*phase),2);
+else if(ev.mode==='pause'){const a=Math.exp(-Math.pow((phase-.34)/.075,2));const b=Math.exp(-Math.pow((phase-.64)/.075,2));changed*=1-depth*Math.max(a,b);}
+else {const envelope=Math.pow(Math.sin(Math.PI*phase),2);changed*=1-depth*.65*envelope*(.5+.5*Math.sin(phase*9*Math.PI));}}
+return {std,changed}}
+function render(t){if(!units.length)return;const normal=t*S.speed,extra=movementExtra(t),amp=amplitude(t);const lamps=lampBrightness(t);
+units.forEach((u,i)=>{const k=u.kind,isTarget=i===target;
+ if(k==='fan')u.moving.style.transform='rotate('+((normal+(isTarget?extra*S.speed:0))*184+u.angle).toFixed(2)+'deg';
+ else if(k==='dial')u.moving.style.transform='rotate('+(Math.sin(normal*2.15)*34*(isTarget?amp:1)).toFixed(2)+'deg';
+ else if(k==='slider')u.moving.style.transform='translateX('+(Math.sin(normal*2.05)*32*(isTarget?amp:1)).toFixed(2)+'px)';
+ else if(k==='pendulum')u.moving.style.transform='rotate('+(Math.sin(normal*1.75)*35*(isTarget?amp:1)).toFixed(2)+'deg';
+ else{const light=isTarget?lamps.changed:lamps.std;u.bulb.setAttribute('opacity',(0.13+light*.87).toFixed(3));u.glow.setAttribute('opacity',(0.07+light*.48).toFixed(3));}
+});lastRender=t;}
+function replay(){if(phase!=='done'||!incidents.some(e=>e.end<=elapsed))return;
+const shown=incidents.filter(e=>e.end<=elapsed+1e-4);
+replaySegments=shown.map(ev=>({start:Math.max(0,ev.start-1),end:Math.min(elapsed,ev.end+1)}));
+replayIndex=0;replayTime=replaySegments[0].start;replayEnd=replaySegments.reduce((sum,e)=>sum+e.end-e.start,0);
+phase='replay';$('result').textContent='Замедленный разбор только уже произошедших эпизодов. Зелёным выделен неисправный механизм.';update();render(replayTime)}
+function runOrResume(){if(phase==='paused'){phase=prior;update()}else if(phase==='idle')startRound()}
+function pause(){if(phase==='paused')phase=prior;else if(phase==='observe'||phase==='search'){prior=phase;phase='paused'}update()}
+function applyPreset(p){const value={easy:{count:S.kind==='mixed'?10:9,baseline:3,search:20,repeats:1,duration:1.3,strength:4,speed:.9},balanced:{count:S.kind==='mixed'?15:12,baseline:4,search:24,repeats:2,duration:1,strength:3,speed:1},expert:{count:S.kind==='mixed'?20:16,baseline:5,search:32,repeats:3,duration:.65,strength:2,speed:1.15}}[p];Object.assign(S,value);S.preset=p;S.count=Math.max(S.count,S.selectedKinds.length);save();updateRanges();resetIdle()}
+root.querySelectorAll('[data-kind]').forEach(b=>b.addEventListener('click',()=>{if(isRunning())return;S.kind=b.dataset.kind;S.count=S.kind==='mixed'?Math.max(15,S.selectedKinds.length):12;S.preset='custom';save();setError('');resetIdle()}));
+root.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{if(!isRunning())applyPreset(b.dataset.preset)}));
+const rangeMap={countRange:'count',baselineRange:'baseline',searchRange:'search',repeatRange:'repeats',durationRange:'duration',strengthRange:'strength',speedRange:'speed',fanOffset:'fanOffset',lampPeriod:'lampPeriod',lampDuty:'lampDuty'};
+for(const [id,key] of Object.entries(rangeMap))$(id).addEventListener('input',e=>{if(isRunning())return;S[key]=+e.target.value;S.preset='custom';save();buildSettings();updateRanges();if(['count','fanOffset'].includes(key))resetIdle();else update()});
+for(const id of ['quickCheck','showTimer','remember'])$(id).addEventListener('change',e=>{S[id]=e.target.checked;if(id!=='remember')S.preset='custom';if(id==='remember'&&!S.remember){try{localStorage.removeItem(storageKey)}catch(e){}}else save();update()});
+$('resetResults').addEventListener('click',()=>{if(isRunning())return;correct=0;wrong=0;missed=0;update();$('result').textContent='Результаты сессии обнулены. Настройки сохранены.'});
+$('resetSettings').addEventListener('click',()=>{if(isRunning())return;S=structuredClone(defaults);try{localStorage.removeItem(storageKey)}catch(e){}save();setError('');resetIdle()});
+$('start').addEventListener('click',runOrResume);$('coverStart').addEventListener('click',runOrResume);$('pause').addEventListener('click',pause);
+$('check').addEventListener('click',()=>finish('check'));$('stop').addEventListener('click',()=>finish('stop'));
+$('next').addEventListener('click',startRound);$('replay').addEventListener('click',replay);
+$('fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.querySelector('.game-column').requestFullscreen()}catch(e){$('result').textContent='Полноэкранный режим недоступен в этом браузере.'}});
+document.addEventListener('fullscreenchange',()=>{$('fullscreen').textContent=document.fullscreenElement?'↙ Выйти из полного экрана':'⛶ Полный экран'});
+function tick(now){if(!last)last=now;const dt=clamp((now-last)/1000,0,.085);last=now;
+if(phase==='observe'||phase==='search'){
+elapsed+=dt;
+if(phase==='observe'&&elapsed>=S.baseline){phase='search';$('monitorNote').textContent='Ищи кратковременное отклонение. Нормальные механизмы одного типа работают одинаково.';update()}
+if(phase==='search'&&elapsed>=fullTime()){elapsed=fullTime();finish('timeout')}
+if(phase==='observe'||phase==='search'){render(elapsed);$('clock').textContent=clock(remaining());$('progress').style.width=(100*remaining()/S.search)+'%';if(phase==='search'&&selected>=0&&readyAfter()&&$('check').disabled)update()}
+}else if(phase==='replay'){
+const seg=replaySegments[replayIndex];if(seg){replayTime+=dt*.5;render(Math.min(replayTime,seg.end));$('clock').textContent=clock(2*replayRemaining());if(replayTime>=seg.end){replayIndex++;if(replayIndex<replaySegments.length)replayTime=replaySegments[replayIndex].start;else{phase='done';render(elapsed);update()}}}
+}
+requestAnimationFrame(tick)}
+resetIdle();requestAnimationFrame(tick);
+// Test visibility; no network or analytics. All game logic works offline.
+window.__neuroxQuietTest={getState:()=>({phase,round,target,selected,elapsed,incidents:incidents.map(x=>({...x})),devices:units.map(x=>x.kind),settings:{...S}}),renderAt:render};
+})();
+</script><script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
+<script src="../assets/menu-drawer.js"></script>
+<script src="../shared/new-trainers.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/mobile-new-trainers.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
+</body></html>

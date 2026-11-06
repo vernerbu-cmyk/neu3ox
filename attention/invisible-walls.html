@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<script src="../shared/theme.js"></script>
+<script>/* NeuroX: читаем общую настройку до первой отрисовки */
+try {
+  const nxSavedTheme = localStorage.getItem('neurox_theme');
+  const nxTheme = (nxSavedTheme === 'light' || nxSavedTheme === 'dark')
+    ? nxSavedTheme
+    : ((window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
+  document.documentElement.dataset.theme = nxTheme;
+} catch (_) { document.documentElement.dataset.theme = 'light'; }
+</script>
+
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NeuroX · Невидимые стены 2.1</title>
+<style>
+:root{--navy:#1E3F8A;--orange:#FF6A00;--ink:#182943;--muted:#63738c;--line:#dae5f5;--sky:#f3f7fe;--card:#fff;--good:#16815c;--bad:#d04f55}
+*{box-sizing:border-box}body{margin:0;background:#edf3fb;color:var(--ink);font:15px/1.45 Inter,Segoe UI,Arial,sans-serif}button,select,input{font:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.45}.app{max-width:1610px;margin:auto;padding:17px}.brand{display:flex;align-items:center;gap:12px;margin-bottom:15px}.logo{width:46px;height:46px;border-radius:15px;background:var(--navy);display:grid;place-items:center;box-shadow:0 5px 16px #1e3f8a29}.logo svg{width:32px;height:32px}.brand h1{font-size:25px;line-height:1.12;margin:0;color:var(--navy)}.brand p{margin:4px 0 0;color:var(--muted);font-size:13px}.shell{display:grid;grid-template-columns:292px minmax(0,1fr);gap:16px;align-items:start}.sidebar,.play{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:0 7px 32px #2947700b}.sidebar{padding:17px;display:flex;flex-direction:column;gap:15px}.sidehead{display:flex;align-items:center;justify-content:space-between}.sidehead strong{color:var(--navy);font-size:16px}.sideicon{color:#8799b1;font-size:13px}.field{display:grid;gap:6px}.field label{font-size:13px;font-weight:700;color:#53647d}.field select{width:100%;border:1px solid #ccd9ee;color:var(--ink);background:white;border-radius:10px;padding:10px 12px;min-height:42px}.rangehead{display:flex;justify-content:space-between;gap:8px}.rangehead span{font-weight:800;color:var(--navy)}input[type=range]{accent-color:var(--navy);width:100%;cursor:pointer}.toggle{display:flex;gap:10px;align-items:start;font-size:13px;font-weight:650;color:#4f6078}.toggle input{accent-color:var(--navy);width:17px;height:17px;flex:none;margin:2px 0}.divider{height:1px;background:var(--line)}.sidefoot{border-radius:12px;background:#f2f7ff;padding:11px 12px;font-size:12px;color:#61738d}.play{padding:17px;min-width:0}.topline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.topline .tagline{font-weight:800;color:var(--navy);font-size:17px}.pills{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.pill{background:#eff4fb;border-radius:99px;padding:6px 10px;font-size:12px;font-weight:750;color:#5a718e}.pill.accent{background:#fff0e6;color:#bb580a}.screen{position:relative;padding:7px;background:#f5f9ff;border:1px solid #d9e5f5;border-radius:18px;overflow:hidden}.screen canvas{display:block;width:100%;height:auto;aspect-ratio:1120/630;border-radius:12px;touch-action:none;cursor:crosshair;background:#e7f0fc}.screen .hud{position:absolute;top:16px;left:17px;pointer-events:none;background:#ffffffeb;border:1px solid #e1ebf8;padding:7px 11px;border-radius:11px;box-shadow:0 2px 7px #45617b11;display:flex;gap:10px;align-items:center;font-size:12px;font-weight:800;color:var(--navy)}.hud span:nth-child(2){font-variant-numeric:tabular-nums}.track{height:6px;border-radius:99px;background:#e7edf8;margin:10px 3px 12px;overflow:hidden}.track>div{height:100%;width:0%;background:linear-gradient(90deg,var(--navy),#4c83ed);border-radius:99px;transition:width .05s linear}.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:13px}.btn{padding:10px 13px;border-radius:11px;border:1px solid #d4e2fa;background:#f1f6ff;color:var(--navy);font-weight:800;min-height:42px}.btn.main{background:var(--navy);border-color:var(--navy);color:#fff}.btn.check{background:var(--orange);border-color:var(--orange);color:#fff}.btn:hover:not(:disabled){filter:brightness(.97)}.quest{background:#f5f8fe;border:1px solid #dce6f7;border-radius:14px;padding:12px 14px;margin-bottom:13px;font-size:14px;font-weight:650}.quest b{color:var(--navy)}.answerHeader{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}.answerHeader h2{font-size:15px;margin:0;color:var(--navy)}.answerHeader small{color:var(--muted);font-size:12px}.answers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.choice{border:2px solid #d9e3f5;border-radius:14px;background:#fbfdff;padding:8px 9px 9px;color:var(--ink);display:grid;gap:4px;text-align:left;transition:border .15s,background .15s}.choice .choiceName{font-weight:800;color:#526583;font-size:12px}.choice canvas{display:block;width:100%;height:auto;aspect-ratio:290/154}.choice.selected{border-color:var(--navy);background:#edf3ff}.choice.correct{border-color:var(--good);background:#ecfaf4}.choice.wrong{border-color:var(--bad);background:#fff1f1}.choice:hover:not(:disabled){border-color:#7f9cdc}.drawControls{display:none;gap:9px;flex-wrap:wrap;align-items:center}.drawControls p{margin:3px 0 0;font-size:13px;color:#53647d}.drawControls .hint{border-radius:9px;background:#f2f6ff;padding:7px 10px;color:var(--navy);font-size:13px}.drawControls button{padding:8px 10px}.bottom{margin-top:13px;display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{border:1px solid var(--line);border-radius:13px;padding:11px 13px;min-height:73px}.stat .title{font-size:11px;letter-spacing:.04em;color:#6a7b95;text-transform:uppercase;font-weight:800}.stat .value{font-size:14px;font-weight:750;margin-top:5px}.note{margin-top:11px;color:#728198;font-size:12px}.goodText{color:var(--good)}.badText{color:var(--bad)}@media(max-width:1120px){.shell{grid-template-columns:255px minmax(0,1fr)}.app{padding:10px}.sidebar{padding:13px}.play{padding:12px}.btn{padding:9px 10px}}@media(max-width:850px){.shell{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end;gap:12px}.sidehead,.sidefoot,.sidebar .divider{grid-column:1/-1}.topline{align-items:flex-start}.brand h1{font-size:22px}}@media(max-width:560px){.sidebar{grid-template-columns:1fr}.topline{flex-wrap:wrap}.bottom{grid-template-columns:1fr}.answers{grid-template-columns:1fr}.choice{grid-template-columns:85px 1fr;align-items:center}.choice canvas{order:-1;aspect-ratio:2/1}.brand p{font-size:12px}}
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/new-trainers.css">
+<link rel="stylesheet" href="../shared/new-trainers-theme.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<link rel="stylesheet" href="../shared/mobile-new-trainers.css">
+</head>
+<body class="nx-added-game nx-game-invisible-walls" data-nx-section="attention"><div class="app">
+  <header class="brand"><div class="logo"><svg viewBox="0 0 32 32" fill="none"><rect x="2" y="3" width="28" height="26" rx="6" stroke="white" opacity=".75"/><path d="M7 9h9m4 0h5M7 23h5m4 0h9" stroke="#FFAC65" stroke-width="2.7" stroke-linecap="round"/><circle cx="14" cy="16" r="3" fill="white"/><circle cx="23" cy="17" r="2" fill="#FF6A00"/></svg></div><div><h1>Невидимые стены <span style="font-size:12px;vertical-align:middle;color:#7185a2">2.1</span></h1><p>NeuroX · обнаружь скрытые преграды по движению шариков</p></div></header>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Настройки"><div class="sidehead"><strong>⚙ Настройки</strong><span class="sideicon">Офлайн</span></div>
+      <div class="field"><label for="mode">Режим</label><select id="mode"><option value="one">Одна преграда</option><option value="maze" selected>Тайная конструкция</option><option value="decoy">Ложные следы</option><option value="draw">Нарисуй невидимое</option></select></div>
+      <div class="field"><label for="shapeKind">Геометрия стен</label><select id="shapeKind"><option value="all" selected>Все семь форм</option><option value="new">Только новые формы</option><option value="straight">Прямые и диагонали</option><option value="h">Горизонтальная</option><option value="v">Вертикальная</option><option value="diag">Диагональная</option><option value="corner">Угол</option><option value="zigzag">Зигзаг</option><option value="u">П-образная</option><option value="gap">С разрывом</option></select></div>
+      <div class="field"><label for="difficulty">Сложность</label><select id="difficulty"><option value="learn">Обучение</option><option value="normal" selected>Обычная</option><option value="hard">Сложная</option><option value="expert">Эксперт</option></select></div>
+      <div class="field"><div class="rangehead"><label for="ballCount">Количество шариков</label><span id="ballCountVal">16</span></div><input type="range" id="ballCount" min="10" max="48" step="1" value="16"><small id="ballHelp" style="font-size:11px;color:#687c99">Выбери количество, отпусти ползунок: новая схема создастся автоматически.</small></div>
+      <div class="field"><div class="rangehead"><label for="duration">Наблюдение</label><span id="durationVal">14 сек</span></div><input type="range" id="duration" min="8" max="24" step="1" value="14"></div>
+      <div class="field"><label for="playback">Скорость воспроизведения</label><select id="playback"><option value="0.65">Медленно · 0,65×</option><option value="1" selected>Обычная · 1×</option><option value="1.35">Быстро · 1,35×</option></select></div>
+      <div class="divider"></div><div class="sidehead"><strong>Помощь</strong></div>
+      <label class="toggle"><input type="checkbox" id="trails" checked><span>Короткие шлейфы движения</span></label>
+      <label class="toggle"><input type="checkbox" id="arrows"><span>Стрелки направления у шариков</span></label>
+      <label class="toggle"><input type="checkbox" id="slowReveal" checked><span>Замедлять повтор при проверке</span></label>
+      <div class="sidefoot">При изменении режима и сложности создаётся новое задание. Количество шариков применяется сразу после отпускания ползунка и создаёт новый раунд. Время наблюдения применяется после кнопки «Новая схема».</div>
+      <div class="sidefoot">В библиотеке семь форм без дуг: горизонталь, вертикаль, диагональ, угол, зигзаг, П и разрыв. Каждая сторона подтверждается заранее спланированными подлётами и реальными отскоками.<br><br>Это демонстрационное упражнение: ребёнок наблюдает и объясняет, педагог выбирает ответ. В смешанном режиме ложные схемы различаются формой, а не только сдвигом. Для каждой сгенерированной схемы траектории рассчитываются заново. Каждый неверный вариант опровергается реальными отскоками. После наблюдения их можно примерить прямо на поле. Скорость клика не оценивается.</div>
+    </aside>
+    <main class="play">
+      <div class="topline"><div class="tagline">Пост наблюдения</div><div class="pills"><span id="modeTag" class="pill">Тайная конструкция</span><span id="difficultyTag" class="pill accent">Обычная</span><span id="roundTag" class="pill">Задание №1</span><span id="sessionTag" class="pill">Занятие: 0:00</span></div></div>
+      <div class="screen"><canvas id="world" width="1120" height="630" aria-label="Анимация движущихся шариков"></canvas><div class="hud"><span id="phase">Готово к запуску</span><span id="timer">00:00</span></div></div>
+      <div class="track"><div id="progress"></div></div>
+      <div class="toolbar"><button class="btn main" id="start">▶ Начать</button><button class="btn" id="pause" disabled>Ⅱ Пауза</button><button class="btn" id="end">■ Закончить</button><button class="btn" id="repeat">↺ Повтор</button><button class="btn" id="new">＋ Новая схема</button><button class="btn check" id="check">Проверить</button><button class="btn" id="reveal">Показать ответ</button><button class="btn" id="clue" disabled>◉ Разобрать отскоки</button><button class="btn" id="hypothesis" disabled>◈ Наложение: вкл.</button></div>
+      <div id="clueBar" style="display:none;background:#eaf2ff;border:1px solid #cfdef7;border-radius:13px;padding:11px 12px;margin-bottom:12px;gap:8px;align-items:center;flex-wrap:wrap"><b style="color:#1E3F8A">Разбор движения</b><button class="btn" id="prevClue">← Отскок</button><span id="clueInfo" style="font-size:13px;color:#45607f;font-weight:750">Эпизод 1</span><button class="btn" id="nextClue">Отскок →</button><button class="btn" id="closeClue">Закрыть разбор</button><span style="font-size:12px;color:#5d7291">Синяя траектория — до удара, фиолетовая — после. Стены не подсвечиваются.</span></div>
+      <div class="quest" id="task">Наблюдай, где шарики отражаются от невидимых преград. После остановки выбирай гипотезы и сверяй их с отскоками.</div>
+      <div id="optionsPanel"><div class="answerHeader"><h2>Как расположены невидимые стены?</h2><small>Выбери схему, затем сравни её с отскоками на большом поле</small></div><div id="answers" class="answers"></div><p id="hypothesisHelp" style="font-size:13px;color:#536a87;margin:8px 0 0">После наблюдения нажми на вариант: голубые линии появятся в игровом поле как твоя гипотеза. Это НЕ подсказка о правильном ответе. Можно переключать схемы и листать отскоки.</p></div>
+      <div class="drawControls" id="drawControls"><span class="hint">Нарисуй все прямые участки преград, включая диагонали. Для стены с разрывом нужны две отдельные линии.</span><button class="btn" id="undo">↶ Удалить последнюю</button><button class="btn" id="clear">Очистить рисунок</button><p>После наблюдения нарисуй предполагаемые преграды. Проверка сравнит каждый отрезок. Углы и зигзаги рисуются несколькими линиями; разрыв нужно оставить пустым.</p></div>
+      <div class="bottom"><div class="stat"><div class="title">Состояние</div><div class="value" id="status">Траектории рассчитаны для этой конструкции. Можно начинать.</div></div><div class="stat"><div class="title">Результат</div><div class="value" id="result">Ответ ещё не проверен.</div></div></div>
+      <div class="note">Невидимые стены не двигаются. После наблюдения можно наложить любой выбранный вариант на большое поле и открыть «Разбор отскоков» с траекторией до и после удара. Свободный конец стены не даёт искусственного «углового» отскока: шарик либо отражается от её прямой поверхности, либо обходит край. Шарики отражаются также от краёв поля; в режиме «Ложные следы» они могут сталкиваться между собой. При проверке настоящие стены окрашиваются оранжевым.</div>
+    </main>
+  </div>
+</div>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const W=1120,H=630, BOUNDS={l:38,r:1082,t:84,b:592},DT=1/60;
+const WORLD=$('world'),ctx=WORLD.getContext('2d');
+const MODES={one:'Одна преграда',maze:'Тайная конструкция',decoy:'Ложные следы',draw:'Нарисуй невидимое'};
+const LEVELS={learn:'Обучение',normal:'Обычная',hard:'Сложная',expert:'Эксперт'};
+const COLORS=['#1E3F8A','#FF6A00','#148c9c','#8f69c6','#3a79cf','#d1666f','#279979'];
+let round=null,roundNo=0,selected=null,marked=[],isDrawing=false,drawStart=null,drawHover=null;
+let elapsed=0,playing=false,done=false,revealed=false,checked=false,replayReveal=false,lastTick=0,frameId=0,runStartedAt=0;
+let sessionActive=false,sessionElapsed=0,sessionStart=0,sessionEnded=false;
+let clueActive=false,clueIndex=0,clueEvents=[],hypothesisVisible=true;
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));const rnd=(a,b)=>a+Math.random()*(b-a);const ri=(a,b)=>Math.floor(rnd(a,b+1));
+const dist=(x,y,a,b)=>Math.hypot(x-a,y-b);
+
+function getCount(){return +$('ballCount').value}function getDuration(){return +$('duration').value}
+// Каждая фигура — группа прямых отрезков. Дуг нет.
+const SHAPES={h:'Горизонталь',v:'Вертикаль',diag:'Диагональ',corner:'Угол',zigzag:'Зигзаг',u:'П-образная',gap:'С разрывом'};
+const SHAPE_KINDS=Object.keys(SHAPES);
+function shapeKinds(){const k=$('shapeKind').value;return k==='all'?SHAPE_KINDS:k==='new'?['diag','corner','zigzag','u','gap']:k==='straight'?['h','v','diag']:[k]}
+function segment(x1,y1,x2,y2){return {x1,y1,x2,y2}}
+function segLen(q){return Math.hypot(q.x2-q.x1,q.y2-q.y1)}
+function segCenter(q){return {x:(q.x1+q.x2)/2,y:(q.y1+q.y2)/2}}
+function shape(type,cx,cy,scale=1,orientation=0){
+ let paths;
+ switch(type){
+  case 'h':paths=[[[-150,0],[150,0]]];break;
+  case 'v':paths=[[[0,-145],[0,145]]];break;
+  case 'diag':paths=[[[-147,-105],[147,105]]];break;
+  case 'corner':paths=[[[-130,-100],[-130,100]], [[-130,100],[120,100]]];break;
+  case 'zigzag':paths=[[[-155,-90],[-52,82]],[[-52,82],[52,-78]],[[52,-78],[155,83]]];break;
+  case 'u':paths=[[[-125,100],[-125,-100]],[[-125,-100],[125,-100]],[[125,-100],[125,100]]];break;
+  case 'gap':paths=[[[-164,0],[-52,0]],[[52,0],[164,0]]];break;
+  default:throw Error('Неизвестная форма '+type);
+ }
+ // Изменение направления возможно только дискретными поворотами: сохраняются ясные углы.
+ const angle=orientation*Math.PI/2,ca=Math.cos(angle),sa=Math.sin(angle);
+ const point=p=>({x:cx+(p[0]*ca-p[1]*sa)*scale,y:cy+(p[0]*sa+p[1]*ca)*scale});
+ const parts=paths.map(path=>{const a=point(path[0]),b=point(path[1]);return segment(a.x,a.y,b.x,b.y)});
+ return {type,cx,cy,scale,orientation,parts};
+}
+function allSegments(ws){return ws.flatMap((w,i)=>w.parts.map((seg,j)=>({seg,i,j}))) }
+function copyWall(w){return {...w,parts:w.parts.map(q=>({...q}))}}
+function wallCenter(w){const coords=w.parts.flatMap(q=>[segCenter(q)]);return {x:coords.reduce((s,p)=>s+p.x,0)/coords.length,y:coords.reduce((s,p)=>s+p.y,0)/coords.length}}
+function wallLen(w){return (w.parts||[w]).reduce((s,p)=>s+segLen(p),0)}
+function wallFits(w){return w.parts.every(q=>Math.min(q.x1,q.x2)>BOUNDS.l+38&&Math.max(q.x1,q.x2)<BOUNDS.r-38&&Math.min(q.y1,q.y2)>BOUNDS.t+38&&Math.max(q.y1,q.y2)<BOUNDS.b-38)}
+function pointSegment(px,py,q){const dx=q.x2-q.x1,dy=q.y2-q.y1;const t=clamp(((px-q.x1)*dx+(py-q.y1)*dy)/(dx*dx+dy*dy),0,1);return {x:q.x1+t*dx,y:q.y1+t*dy,t}}
+function pointSegDist(px,py,w){return Math.min(...(w.parts||[w]).map(q=>{const p=pointSegment(px,py,q);return dist(px,py,p.x,p.y)}))}
+function segIntersect(a,b){const dx=a.x2-a.x1,dy=a.y2-a.y1,ex=b.x2-b.x1,ey=b.y2-b.y1;const den=dx*ey-dy*ex;if(Math.abs(den)<1e-7)return false;const vx=b.x1-a.x1,vy=b.y1-a.y1;const t=(vx*ey-vy*ex)/den,u=(vx*dy-vy*dx)/den;return t>=0&&t<=1&&u>=0&&u<=1}
+function segPairDistance(a,b){if(segIntersect(a,b))return 0;return Math.min(pointSegDist(a.x1,a.y1,b),pointSegDist(a.x2,a.y2,b),pointSegDist(b.x1,b.y1,a),pointSegDist(b.x2,b.y2,a))}
+function wallsFarEnough(a,b){return a.parts.every(p=>b.parts.every(q=>segPairDistance(p,q)>74))}
+function makeWalls(mode,level){
+ const count=wallCountFor(mode,level),kinds=shapeKinds(),out=[];
+ // В смешанном режиме новые формы должны встречаться регулярно.
+ let pool=kinds.slice();
+ for(let i=0;i<count;i++){
+  let chosen=null;
+  for(let k=0;k<260;k++){
+   let allowed=pool.length?pool.slice():kinds.slice();
+   const compound=new Set(['corner','zigzag','u','gap']);
+   // На обычной сложности — не две составные стенки одновременно: визуально и без того достаточно сложно.
+   if(level!=='expert' && out.some(w=>compound.has(w.type)) && kinds.length>1){
+     const simpler=allowed.filter(t=>!compound.has(t));
+     if(simpler.length)allowed=simpler;
+   }
+   const type=allowed.length===1?allowed[0]:allowed[ri(0,allowed.length-1)];
+   const a=type==='h'||type==='v'?0:ri(0,3);
+   const scale=rnd(.80,1.02);
+   const w=shape(type,rnd(270,850),rnd(225,440),scale,a);
+   if(wallFits(w)&&out.every(q=>wallsFarEnough(w,q))){chosen=w;break;}
+  }
+  if(!chosen)return null;
+  chosen.id='w'+i;out.push(chosen);
+  pool=pool.filter(t=>t!==chosen.type);
+ }
+ return out;
+}
+function newBall(x,y,vx,vy,id){return {x,y,vx,vy,r:ri(7,10),c:COLORS[id%COLORS.length],id,lastContacts:{}}}
+function acceptableSpawn(x,y,existing,walls){return x>BOUNDS.l+25&&x<BOUNDS.r-25&&y>BOUNDS.t+25&&y<BOUNDS.b-25&&existing.every(b=>dist(x,y,b.x,b.y)>26)&&walls.every(w=>pointSegDist(x,y,w)>23)}
+function wallCountFor(mode,level){
+ if(mode==='one')return 1;
+ if(mode==='draw')return level==='learn'?1:2;
+ // Три крупные П-образные фигуры на одном поле могут заслонять друг друга.
+ // Вместо нечестных заданий для такой геометрии ограничиваем число фигур двумя.
+ if(level==='expert' && ['u','zigzag'].includes($('shapeKind').value))return 2;
+ return level==='expert'?3:2;
+}
+function minBallsFor(mode,level){
+ const n=wallCountFor(mode,level),base=n===1?10:n===2?16:24;
+ // Когда выбран один тип составной стены, заранее учитываем ВСЕ её стороны.
+ // Один участок требует три разных шарика; разрыв ещё одного пролёта.
+ const kinds=shapeKinds();
+ if(kinds.length===1){
+  const type=kinds[0];
+  const segments={h:1,v:1,diag:1,corner:2,zigzag:3,u:3,gap:2}[type];
+  const exact=n*segments*3+(type==='gap'?n:0)+(mode==='decoy'?4:0);
+  return Math.max(base,exact);
+ }
+ return base;
+}
+function syncBallMinimum(){
+ const el=$('ballCount'),min=minBallsFor($('mode').value,$('difficulty').value);
+ el.min=String(min);if(+el.value<min)el.value=String(min);
+ $('ballCountVal').textContent=el.value;
+ const actual=round?round.actualBalls:null;
+ $('ballHelp').textContent=`Минимум для этого режима: ${min}. ${actual===null?'':`Сейчас на поле: ${actual}. `}Отпусти ползунок, чтобы создать раунд ровно с выбранным количеством.`;
+}
+function clearApproach(from,to,otherWalls,rad){
+ const steps=Math.max(6,Math.ceil(dist(from.x,from.y,to.x,to.y)/12));
+ for(let i=1;i<=steps;i++){const t=i/steps,x=from.x+(to.x-from.x)*t,y=from.y+(to.y-from.y)*t;
+  if(otherWalls.some(q=>pointSegDist(x,y,q)<rad+5))return false;
+ }
+ return true;
+}
+// Траектории строятся под готовую геометрию. У каждого участка есть три
+// запланированных подлёта к трём различным точкам, с разным временем удара.
+// Никаких телепортаций: все шарики существуют на поле с первого кадра.
+function maxLaunchDistance(hit,nx,ny){
+ let limit=550;
+ if(nx>1e-7)limit=Math.min(limit,(BOUNDS.r-26-hit.x)/nx);
+ if(nx< -1e-7)limit=Math.min(limit,(BOUNDS.l+26-hit.x)/nx);
+ if(ny>1e-7)limit=Math.min(limit,(BOUNDS.b-26-hit.y)/ny);
+ if(ny< -1e-7)limit=Math.min(limit,(BOUNDS.t+26-hit.y)/ny);
+ return Math.max(0,limit);
+}
+function createBalls(walls,mode,level,n){
+ const bs=[],pieces=allSegments(walls);
+ const positions=[.18,.50,.82];
+ for(const {seg,i,j} of pieces){
+  const len=segLen(seg),tx=(seg.x2-seg.x1)/len,ty=(seg.y2-seg.y1)/len,nx=-ty,ny=tx;
+  const others=pieces.filter(q=>!(q.i===i&&q.j===j)).map(q=>q.seg);
+  for(let z=0;z<positions.length;z++){
+   let placed=false;
+   for(let attempt=0;attempt<250;attempt++){
+    const t=clamp(positions[z]+rnd(-.035,.035),.10,.90);
+    const hit={x:seg.x1+tx*len*t,y:seg.y1+ty*len*t};
+    // Время первого удара распределяем, а не сваливаем все 20 ударов в начало.
+    const desiredTime=[1.00,2.15,3.40][z]+rnd(-.24,.24);
+    const side=(attempt%2)?1:-1;
+    const rayDist=maxLaunchDistance(hit,nx*side,ny*side);
+    if(rayDist<78)continue;
+    const speed=rnd(70,132);
+    const d=Math.min(rayDist-5,desiredTime*speed+9);
+    if(d<74)continue;
+    const x=hit.x+nx*side*d,y=hit.y+ny*side*d;
+    // Без касаний чужих стен на пути к назначенному месту удара.
+    if(!acceptableSpawn(x,y,bs,walls))continue;
+    if(!clearApproach({x,y},hit,others,10))continue;
+    // Подлёт почти перпендикулярный, чтобы место удара было предсказуемым.
+    const drift=rnd(-.006,.006);
+    bs.push(newBall(x,y,(-nx*side+tx*drift)*speed,(-ny*side+ty*drift)*speed,bs.length));
+    placed=true;break;
+   }
+   if(!placed)return null;
+  }
+ }
+ // Для стены с разрывом показываем также движение СКВОЗЬ пустое место.
+ // Иначе две отдельные половины легко спутать с цельной преградой.
+ for(const wall of walls.filter(w=>w.type==='gap')){
+  const q=wall.parts[0],len=segLen(q),nx=-(q.y2-q.y1)/len,ny=(q.x2-q.x1)/len;
+  for(let attempt=0;attempt<100;attempt++){
+   const side=attempt%2?1:-1,d=rnd(85,150),speed=rnd(75,110);
+   const x=wall.cx+side*nx*d,y=wall.cy+side*ny*d;
+   const target={x:wall.cx-side*nx*70,y:wall.cy-side*ny*70};
+   if(!acceptableSpawn(x,y,bs,walls))continue;
+   if(!clearApproach({x,y},target,allSegments(walls).map(q=>q.seg),10))continue;
+   bs.push({...newBall(x,y,-side*nx*speed,-side*ny*speed,bs.length),purpose:'gap-cross'});
+   break;
+  }
+ }
+ if(mode==='decoy'){
+  for(let j=0;j<2&&bs.length+2<=n;j++){
+   let paired=false;
+   for(let k=0;k<130;k++){
+    const cx=rnd(300,810),cy=rnd(175,475),dy=rnd(-5,5),x1=cx-55,x2=cx+55;
+    if(acceptableSpawn(x1,cy,bs,walls)&&acceptableSpawn(x2,cy+dy,bs,walls)&&
+    clearApproach({x:x1,y:cy},{x:cx,y:cy},walls,9)&&clearApproach({x:x2,y:cy+dy},{x:cx,y:cy+dy},walls,9)){
+      bs.push(newBall(x1,cy,100,0,bs.length));bs.push(newBall(x2,cy+dy,-100,0,bs.length));paired=true;break;
+    }
+   }
+   if(!paired)return null;
+  }
+ }
+ // Если запланированных шариков оказалось больше, задание невозможно выполнить в выбранном бюджете.
+ if(bs.length>n)return null;
+ let k=0;
+ while(bs.length<n&&k++<2200){
+  const x=rnd(BOUNDS.l+27,BOUNDS.r-27),y=rnd(BOUNDS.t+27,BOUNDS.b-27);
+  if(!acceptableSpawn(x,y,bs,walls))continue;
+  const a=rnd(-Math.PI,Math.PI),speed=rnd(70,135);
+  bs.push(newBall(x,y,Math.cos(a)*speed,Math.sin(a)*speed,bs.length));
+ }
+ if(bs.length<n)return null;
+ for(let i=bs.length-1;i>0;i--){const j=ri(0,i);[bs[i],bs[j]]=[bs[j],bs[i]]}
+ bs.forEach((b,id)=>{b.id=id;b.c=COLORS[id%COLORS.length]});
+ return bs;
+}
+// Physics 2.1: continuous collision against the FLAT SIDES of a segment.
+// A pedagogical simplification: free ends have no circular collision caps.
+// A ball approaching along the extension of a segment can pass its free end;
+// a ball reaching the wall face reflects using the wall's single normal.
+// This eliminates strange radial corner-like bounces at visually open ends.
+// The contact is still resolved at exact swept time, never after penetration.
+const PHYS={halfWall:3.5,epsilon:0.00007,maxEvents:56,timeEpsilon:1e-8};
+function sweptCircleSegment(b,q,maxT){
+ const dx=q.x2-q.x1,dy=q.y2-q.y1,L=Math.hypot(dx,dy);
+ if(L<1e-9)return null;
+ const ux=dx/L,uy=dy/L,nx=-uy,ny=ux,relX=b.x-q.x1,relY=b.y-q.y1;
+ const signed=relX*nx+relY*ny,vn=b.vx*nx+b.vy*ny;
+ const R=b.r+PHYS.halfWall;
+ let best=null;
+ if(Math.abs(vn)<=1e-9)return null;
+ for(const side of [-1,1]){
+   // The object must approach the wall's flat face, not an imaginary end cap.
+   if(vn*side>=-1e-8)continue;
+   const rawT=(side*R-signed)/vn;
+   if(rawT< -PHYS.timeEpsilon||rawT>maxT+PHYS.timeEpsilon)continue;
+   const t=Math.max(0,rawT);
+   const px=b.x+b.vx*t,py=b.y+b.vy*t;
+   const proj=(px-q.x1)*ux+(py-q.y1)*uy;
+   // Open endpoints. At the tip we use the same perpendicular response;
+   // outside the segment there is no phantom curved surface to bounce from.
+   if(proj< -1e-6||proj>L+1e-6)continue;
+   const cx=q.x1+ux*clamp(proj,0,L),cy=q.y1+uy*clamp(proj,0,L);
+   if(!best||t<best.time){best={time:t,nx:nx*side,ny:ny*side,cx,cy};}
+ }
+ return best;
+}
+function sweptBallPair(a,b,maxT){
+ const dx=b.x-a.x,dy=b.y-a.y,vx=b.vx-a.vx,vy=b.vy-a.vy,R=a.r+b.r;
+ const A=vx*vx+vy*vy,B=2*(dx*vx+dy*vy),C=dx*dx+dy*dy-R*R;
+ if(A<1e-9||B>=-1e-7)return null;
+ const det=B*B-4*A*C;
+ if(det<0)return null;
+ const t=(-B-Math.sqrt(Math.max(0,det)))/(2*A);
+ if(t< -PHYS.timeEpsilon||t>maxT+PHYS.timeEpsilon)return null;
+ const rx=dx+vx*Math.max(0,t),ry=dy+vy*Math.max(0,t),d=Math.hypot(rx,ry);
+ if(d<1e-9)return null;
+ const nx=rx/d,ny=ry/d;
+ if(vx*nx+vy*ny>=-1e-7)return null;
+ return {time:Math.max(0,t),nx,ny};
+}
+function sweptFieldEdge(b,maxT){
+ let best=null;
+ function test(t,nx,ny){
+  if(t< -PHYS.timeEpsilon||t>maxT+PHYS.timeEpsilon)return;
+  if(b.vx*nx+b.vy*ny>=-1e-8)return;
+  if(!best||t<best.time)best={time:Math.max(0,t),nx,ny};
+ }
+ if(b.vx< -1e-8)test((BOUNDS.l+b.r-b.x)/b.vx,1,0);
+ if(b.vx> 1e-8)test((BOUNDS.r-b.r-b.x)/b.vx,-1,0);
+ if(b.vy< -1e-8)test((BOUNDS.t+b.r-b.y)/b.vy,0,1);
+ if(b.vy> 1e-8)test((BOUNDS.b-b.r-b.y)/b.vy,0,-1);
+ return best;
+}
+function simulate(walls,balls,duration,doPairs){
+ const steps=Math.ceil(duration/DT),frames=[],events=[];
+ const paths=balls.map(b=>[{t:0,x:b.x,y:b.y,vx:b.vx,vy:b.vy}]);
+ const counts=Array.from({length:walls.length},()=>new Set());
+ const pieces=allSegments(walls),MAX=PHYS.maxEvents;
+ let collisions=0;
+ const moveAll=dt=>{if(dt>0)for(const b of balls){b.x+=b.vx*dt;b.y+=b.vy*dt}};
+ const record=(b,t)=>paths[b.id].push({t,x:b.x,y:b.y,vx:b.vx,vy:b.vy});
+ for(let s=0;s<=steps;s++){
+  frames.push(balls.map(b=>({x:b.x,y:b.y,vx:b.vx,vy:b.vy})));
+  if(s===steps)break;
+  let remaining=DT,offset=0,processed=0;
+  while(remaining>PHYS.timeEpsilon){
+   let first=null;
+   const offer=hit=>{if(hit&&(!first||hit.time<first.time-1e-10))first=hit};
+   for(let k=0;k<balls.length;k++){
+    const b=balls[k];
+    const edge=sweptFieldEdge(b,remaining);
+    if(edge)offer({...edge,type:'edge',k});
+    for(const {seg,i,j} of pieces){
+     const hit=sweptCircleSegment(b,seg,remaining);
+     if(hit)offer({...hit,type:'wall',k,i,j});
+    }
+   }
+   if(doPairs){
+    for(let k=0;k<balls.length;k++)for(let h=k+1;h<balls.length;h++){
+     const pair=sweptBallPair(balls[k],balls[h],remaining);
+     if(pair)offer({...pair,type:'pair',k,h});
+    }
+   }
+   if(!first){moveAll(remaining);offset+=remaining;remaining=0;break;}
+   if(++processed>MAX){
+     // Fail closed: never silently advance a ball through a solid obstacle.
+     return {invalid:true,reason:'collision iteration guard'};
+   }
+   const dt=clamp(first.time,0,remaining);
+   moveAll(dt);remaining-=dt;offset+=dt;
+   const clock=s*DT+offset;
+   if(first.type==='pair'){
+    const a=balls[first.k],b=balls[first.h];
+    const relative=(b.vx-a.vx)*first.nx+(b.vy-a.vy)*first.ny;
+    if(relative<0){
+     // Equal-mass perfectly elastic collision, no change in tangential velocity.
+     a.vx+=relative*first.nx;a.vy+=relative*first.ny;
+     b.vx-=relative*first.nx;b.vy-=relative*first.ny;
+     a.x-=first.nx*PHYS.epsilon/2;a.y-=first.ny*PHYS.epsilon/2;
+     b.x+=first.nx*PHYS.epsilon/2;b.y+=first.ny*PHYS.epsilon/2;
+     events.push({type:'pair',t:clock,x:(a.x+b.x)/2,y:(a.y+b.y)/2,ballA:a.id,ballB:b.id});collisions++;
+     record(a,clock);record(b,clock);
+    }
+   }else{
+    const b=balls[first.k],dot=b.vx*first.nx+b.vy*first.ny;
+    if(dot<0){
+     b.vx-=2*dot*first.nx;b.vy-=2*dot*first.ny;
+     b.x+=first.nx*PHYS.epsilon;b.y+=first.ny*PHYS.epsilon;
+     if(first.type==='wall'){
+      const key=first.i+':'+first.j,last=b.lastContacts[key]??-100;
+      if(clock-last>.17){
+       b.lastContacts[key]=clock;counts[first.i].add(b.id);
+       events.push({type:'wall',i:first.i,j:first.j,t:clock,x:first.cx,y:first.cy,ballId:b.id});
+      }
+     }
+     record(b,clock);
+    }
+   }
+  }
+ }
+ return {frames,paths,events,counts:counts.map(x=>x.size),pairCount:collisions};
+}
+// Never publish a round in which the *center* of a ball crosses a solid wall.
+// This protects the pedagogical open-end rule from creating a misleading
+// corner shortcut at a very oblique angle.
+function crossesSolidWall(paths,walls){
+ const lines=allSegments(walls).map(o=>o.seg);
+ for(const path of paths){
+  for(let k=1;k<path.length;k++){
+   const a=path[k-1],b=path[k];
+   if(b.t-a.t<1e-7)continue;
+   const track=segment(a.x,a.y,b.x,b.y);
+   for(const q of lines){if(segIntersect(track,q))return true;}
+  }
+ }
+ return false;
+}
+function translated(w,dx,dy){return {...w,cx:w.cx+dx,cy:w.cy+dy,parts:w.parts.map(q=>segment(q.x1+dx,q.y1+dy,q.x2+dx,q.y2+dy))}}
+function optionSignature(ws){return ws.map(w=>w.type+':'+w.parts.map(q=>[q.x1,q.y1,q.x2,q.y2].map(v=>Math.round(v)).join(',')).join(';')).join('|')}
+function visualOrientation(w){
+ // A half-turn produces the same line for symmetrical shapes. Don't count it as a new silhouette.
+ const o=w.orientation%4;
+ return ['h','v'].includes(w.type)?0:['diag','gap'].includes(w.type)?o%2:o;
+}
+function geometrySignature(ws){return ws.map(w=>w.type+':'+visualOrientation(w)).join('|')}
+function optionContradictsObserved(candidate,balls,duration,doPairs,actualFrames,events,changedWall){
+ // Не принимаем неверную схему, пока реальные наблюдения не опровергают её.
+ const early=events.filter(e=>e.type==='wall' && e.i===changedWall && e.t<=duration*.70);
+ const altered=candidate[changedWall];
+ const unsupported=early.filter(e=>pointSegDist(e.x,e.y,altered)>=58);
+ if(new Set(unsupported.map(e=>e.ballId)).size<3)return false;
+ let spread=false;
+ for(let i=0;i<unsupported.length&&!spread;i++)for(let j=i+1;j<unsupported.length;j++){
+  if(dist(unsupported[i].x,unsupported[i].y,unsupported[j].x,unsupported[j].y)>90){spread=true;break}
+ }
+ if(!spread)return false;
+ const sim=simulate(candidate,balls.map(b=>({...b,lastContacts:{}})),duration,doPairs);
+ if(sim.invalid)return false;
+ const contradicted=new Set();
+ for(const e of unsupported){
+  const f=Math.min(actualFrames.length-1,Math.floor((e.t+.45)/DT));
+  const p=actualFrames[f][e.ballId],q=sim.frames[f][e.ballId];
+  if(dist(p.x,p.y,q.x,q.y)>55)contradicted.add(e.ballId);
+ }
+ return contradicted.size>=3;
+}
+function shapeDistance(a,b){
+ const sample=w=>w.parts.flatMap(q=>[{x:q.x1,y:q.y1},segCenter(q),{x:q.x2,y:q.y2}]);
+ const one=(a,b)=>sample(a).reduce((z,p)=>z+pointSegDist(p.x,p.y,b),0)/sample(a).length;
+ return Math.max(one(a,b),one(b,a));
+}
+function optionDistinct(a,b){return a.some((w,i)=>shapeDistance(w,b[i])>70)}
+function makeOptions(walls,balls,duration,doPairs,actualFrames,events){
+ const base=walls.map(copyWall);
+ const options=[base], signatures=new Set([optionSignature(base)]), structSigs=new Set([geometrySignature(base)]);
+ const fixed=shapeKinds().length===1;
+ const pool=shapeKinds();
+ // Replacements with similar complexity make distractors plausible but visibly different.
+ const analogues={h:['v','diag'],v:['h','diag'],diag:['h','v'],corner:['gap','zigzag','u'],gap:['corner','zigzag','u'],u:['zigzag','corner','gap'],zigzag:['u','corner','gap']};
+ for(let i=0;i<2;i++){
+  let proposal=null;
+  for(let k=0;k<600;k++){
+   const ws=walls.map(copyWall), idx=ri(0,ws.length-1),old=ws[idx];
+   let next=null;
+   if(!fixed){
+    // MIXED MODE: different topology/orientation, never a mere shift of the same drawing.
+    const swap=analogues[old.type].filter(t=>pool.includes(t) && t!==old.type);
+    const kinds=swap.length?swap:pool.filter(t=>t!==old.type);
+    if(kinds.length){
+      const type=kinds[ri(0,kinds.length-1)];
+      const rotation=ri(0,3);
+      // Keep center approximately fixed: what changes is the obstacle, not a tiny coordinate.
+      next=shape(type,old.cx+rnd(-25,25),old.cy+rnd(-20,20),old.scale*rnd(.88,1.05),rotation);
+    }else{
+      // The filtered list may contain just one shape kind: use a large rotation.
+      const turns=[1,2,3],turn=turns[ri(0,2)];
+      next=shape(old.type,old.cx,old.cy,old.scale,(old.orientation+turn)%4);
+    }
+   }else{
+    // SINGLE TYPE: keep chosen geometric class. Require a meaningful change of direction or position.
+    if(['h','v'].includes(old.type)){
+      // Simple walls can only differ in location. Move them widely, perpendicular to their direction.
+      const delta=old.type==='h' ? {x:rnd(-35,35),y:(Math.random()<.5?-1:1)*rnd(145,255)} : {x:(Math.random()<.5?-1:1)*rnd(190,300),y:rnd(-25,25)};
+      next=translated(old,delta.x,delta.y);
+    }else{
+      if(k%3===0){
+        const angle=rnd(0,Math.PI*2),move=rnd(170,265);
+        next=translated(old,Math.cos(angle)*move,Math.sin(angle)*move);
+      }else{
+        const turns=[1,2,3],turn=turns[ri(0,2)];
+        next=shape(old.type,old.cx+rnd(-75,75),old.cy+rnd(-65,65),old.scale,(old.orientation+turn)%4);
+      }
+    }
+   }
+   if(!next)continue;
+   ws[idx]=next;
+   if(!ws.every(w=>wallFits(w)))continue;
+   if(!ws.every((w,n)=>ws.every((z,m)=>n===m||wallsFarEnough(w,z))))continue;
+   const sign=optionSignature(ws);
+   if(signatures.has(sign) || !options.every(q=>optionDistinct(q,ws)))continue;
+   const sig=geometrySignature(ws);
+   // In mixed mode all three cards MUST have different silhouettes/segment arrangements.
+   if(!fixed && structSigs.has(sig))continue;
+   if(!optionContradictsObserved(ws,balls,duration,doPairs,actualFrames,events,idx))continue;
+   proposal=ws;signatures.add(sign);structSigs.add(sig);break;
+  }
+  if(!proposal)return null;
+  options.push(proposal);
+ }
+ const keys=[0,1,2];for(let i=keys.length-1;i>0;i--){const j=ri(0,i);[keys[i],keys[j]]=[keys[j],keys[i]]}
+ return {options:keys.map(k=>options[k]),correct:keys.indexOf(0)};
+}
+function evaluateCoverage(walls,sim,duration){
+ const proof=[];
+ for(let i=0;i<walls.length;i++)for(let j=0;j<walls[i].parts.length;j++){
+  const q=walls[i].parts[j],len=segLen(q),events=sim.events.filter(e=>e.type==='wall'&&e.i===i&&e.j===j&&e.t<=duration*.75),ids=new Set(events.map(e=>e.ballId));
+  const axis=(e)=>((e.x-q.x1)*(q.x2-q.x1)+(e.y-q.y1)*(q.y2-q.y1))/(len*len);
+  const ts=events.map(axis),sectors=new Set(ts.map(t=>clamp(Math.floor(t*3),0,2)));
+  const span=ts.length?Math.max(...ts)-Math.min(...ts):0;
+  const times=events.map(e=>e.t),timeSpan=times.length?Math.max(...times)-Math.min(...times):0;
+  const okay=ids.size>=3&&span>=.49&&sectors.size===3&&timeSpan>=.55;
+  proof.push({wall:i,part:j,contacts:events.length,balls:ids.size,span:Math.round(span*100),sectors:sectors.size,timeSpan:+timeSpan.toFixed(2),okay});
+ }
+ return {okay:proof.every(p=>p.okay),proof};
+}
+function generateRound(){
+ const mode=$('mode').value,level=$('difficulty').value,duration=getDuration();
+ const requested=getCount(),need=minBallsFor(mode,level);
+ let best=null;
+ for(let attempt=0;attempt<180;attempt++){
+   const walls=makeWalls(mode,level);if(!walls)continue;
+   // Не изменяем выбор педагога. Вместо этого отбрасываем слишком сложную геометрию.
+   const required=allSegments(walls).length*3+walls.filter(w=>w.type==='gap').length+(mode==='decoy'?4:0);
+   if(requested<need || required>requested)continue;
+   const n=requested;
+   const balls=createBalls(walls,mode,level,n);if(!balls)continue;
+   const sim=simulate(walls,balls.map(b=>({...b,lastContacts:{}})),duration,mode==='decoy');
+   if(sim.invalid || crossesSolidWall(sim.paths,walls))continue;
+   const coverage=evaluateCoverage(walls,sim,duration);
+   if(!coverage.okay)continue;
+   if(mode==='decoy' && sim.pairCount<2)continue;
+   const variants=mode==='draw'
+     ? {options:[walls.map(copyWall)],correct:0}
+     : makeOptions(walls,balls,duration,mode==='decoy',sim.frames,sim.events);
+   if(!variants)continue;
+   best={mode,level,duration,walls,balls,frames:sim.frames,paths:sim.paths,events:sim.events,counts:sim.counts,pairCount:sim.pairCount,actualBalls:n,proof:coverage.proof,options:variants.options,correctIndex:variants.correct};break;
+ }
+ return best;
+}
+function resetPlayback(){hypothesisVisible=true;closeClue();elapsed=0;playing=false;done=false;revealed=false;checked=false;replayReveal=false;selected=null;marked=[];drawStart=null;drawHover=null;isDrawing=false;lastTick=0;cancelAnimationFrame(frameId);frameId=0;}
+function newRound(){
+ resetPlayback();syncBallMinimum();round=generateRound();roundNo++;
+ if(!round){
+  $('status').textContent='Не удалось построить проверяемую схему с '+getCount()+' шариками. Увеличь количество, время наблюдения или выбери более простую геометрию.';
+  $('ballHelp').textContent='Не удалось создать раунд с выбранным количеством шариков. Увеличь число или упрости стены.';
+  return;
+ }
+ buildOptions();refresh();draw();
+}
+function buildOptions(){
+  const isDraw=round.mode==='draw';$('optionsPanel').style.display=isDraw?'none':'block';$('drawControls').style.display=isDraw?'flex':'none';
+  const root=$('answers');root.replaceChildren();
+  if(isDraw)return;
+  round.options.forEach((walls,i)=>{
+    const b=document.createElement('button');b.className='choice';b.type='button';
+    const name=document.createElement('span');name.className='choiceName';name.textContent='Схема '+['А','Б','В'][i];
+    const canvas=document.createElement('canvas');canvas.width=290;canvas.height=154;
+    b.append(name,canvas);b.addEventListener('click',()=>{if(!done||checked||revealed)return;selected=i;refresh();draw();});root.append(b);paintOption(canvas,walls);
+  });
+}
+ function paintOption(c,walls){
+  const cc=c.getContext('2d'),PW=c.width,PH=c.height;cc.clearRect(0,0,PW,PH);cc.fillStyle='#eef4fb';cc.fillRect(0,0,PW,PH);
+  cc.strokeStyle='#dae5f1';cc.lineWidth=1;for(let x=11;x<PW;x+=22){cc.beginPath();cc.moveTo(x,0);cc.lineTo(x,PH);cc.stroke()}for(let y=8;y<PH;y+=22){cc.beginPath();cc.moveTo(0,y);cc.lineTo(PW,y);cc.stroke()}
+  // Preserve the original field proportions: false 'slanted' schemes must not arise from stretching.
+  const scale=Math.min((PW-26)/(BOUNDS.r-BOUNDS.l),(PH-24)/(BOUNDS.b-BOUNDS.t));
+  const ox=(PW-(BOUNDS.r-BOUNDS.l)*scale)/2,oy=(PH-(BOUNDS.b-BOUNDS.t)*scale)/2;
+  const sx=x=>ox+(x-BOUNDS.l)*scale,sy=y=>oy+(y-BOUNDS.t)*scale;
+  cc.strokeStyle='#1E3F8A';cc.lineWidth=7;cc.lineCap='round';walls.forEach(w=>w.parts.forEach(q=>{cc.beginPath();cc.moveTo(sx(q.x1),sy(q.y1));cc.lineTo(sx(q.x2),sy(q.y2));cc.stroke()}));
+ }
+function startPlayback(isReplay=false){
+ if(!round)return;
+ closeClue();
+ if(!isReplay&&done){elapsed=0;done=false;revealed=false;checked=false;replayReveal=false;selected=null;marked=[];buildOptions();}
+ if(isReplay){elapsed=0;done=false;playing=false;}
+ playing=true;lastTick=performance.now();if(!isReplay)replayReveal=false;
+ if(!sessionActive){if(sessionEnded){sessionElapsed=0;sessionEnded=false;}sessionActive=true;sessionStart=performance.now();}
+ frameId=requestAnimationFrame(tick);refresh();
+}
+function tick(now){if(!playing)return;const dt=clamp((now-lastTick)/1000,0,.08);lastTick=now;elapsed+=dt*Number($('playback').value)*(replayReveal&&$('slowReveal').checked?.62:1);
+ if(elapsed>=round.duration){elapsed=round.duration;playing=false;done=true;replayReveal=false;}
+ draw();refresh();if(playing)frameId=requestAnimationFrame(tick);
+}
+function stopPlayback(){if(!round)return;playing=false;done=true;elapsed=round.duration;cancelAnimationFrame(frameId);refresh();draw();}
+function finishSessionAndPlayback(){
+  // Stopping early must NOT fabricate the remaining observations.
+  if(playing)pausePlayback();
+  if(sessionActive){sessionElapsed+=performance.now()-sessionStart;sessionActive=false;sessionEnded=true;}
+  refresh();
+  if(!done && round){$('status').textContent='Наблюдение прервано. Досмотри раунд или нажми «Повтор», иначе не все стены можно обнаружить.';}
+}
+function pausePlayback(){if(!round||!playing)return;playing=false;cancelAnimationFrame(frameId);refresh();draw();}
+function resumePlayback(){if(!round||done)return;if(playing){pausePlayback();return;}playing=true;lastTick=performance.now();frameId=requestAnimationFrame(tick);refresh();}
+function showAnswer(){if(!round)return;closeClue();playing=false;done=true;revealed=true;checked=true;replayReveal=false;cancelAnimationFrame(frameId);refresh();draw();}
+function matchDrawn(){
+ const actual=allSegments(round.walls).map(o=>o.seg),entries=marked.filter(q=>segLen(q)>=38),pairs=[];
+ for(let ai=0;ai<actual.length;ai++)for(let pi=0;pi<entries.length;pi++){
+  const a=actual[ai],p=entries[pi],la=segLen(a),lp=segLen(p);
+  const dot=Math.abs(((a.x2-a.x1)*(p.x2-p.x1)+(a.y2-a.y1)*(p.y2-p.y1))/(la*lp));
+  if(dot<.94||lp/la<.70||lp/la>1.34)continue;
+  const ca=segCenter(a),cp=segCenter(p),centerDist=dist(ca.x,ca.y,cp.x,cp.y);
+  if(centerDist>48)continue;
+  const d=Math.max(pointSegDist(a.x1,a.y1,p),pointSegDist(a.x2,a.y2,p));
+  if(d>70)continue;
+  pairs.push({ai,pi,cost:centerDist+Math.abs(lp-la)*.6});
+ }
+ pairs.sort((a,b)=>a.cost-b.cost);const seenA=new Set(),seenP=new Set();
+ for(const pair of pairs){if(seenA.has(pair.ai)||seenP.has(pair.pi))continue;seenA.add(pair.ai);seenP.add(pair.pi)}
+ return {matched:seenA.size,total:actual.length,extra:entries.length-seenP.size,success:seenA.size===actual.length&&entries.length===actual.length};
+}
+function check(){
+ if(!round||!done)return;
+ closeClue();
+ if(round.mode!=='draw'&&selected===null){$('result').textContent='Сначала выбери схему.';return;}
+ checked=true;revealed=true;
+ const right=round.mode==='draw'?matchDrawn().success:selected===round.correctIndex;
+ $('result').textContent=right?'Верно! Все скрытые преграды восстановлены.':round.mode==='draw'?(()=>{const a=matchDrawn();return 'Совпало стен: '+a.matched+' из '+a.total+'. Лишних линий: '+a.extra+'.';})():'Не совпало. Настоящая схема показана оранжевым.';
+ refresh();draw();
+}
+function refresh(){
+ if(!round)return;
+ $('clue').disabled=!done||revealed;
+ $('hypothesis').disabled=!done||round.mode==='draw'||selected===null||revealed;
+ $('hypothesis').textContent=hypothesisVisible?'◈ Наложение: вкл.':'◈ Наложение: выкл.';
+ $('clue').textContent=clueActive?'◉ Разбор открыт':'◉ Разобрать отскоки';
+ $('modeTag').textContent=MODES[round.mode];$('ballCountVal').textContent=getCount();$('difficultyTag').textContent=LEVELS[round.level];$('roundTag').textContent='Задание №'+roundNo;
+ const ms=sessionElapsed+(sessionActive?performance.now()-sessionStart:0);$('sessionTag').textContent='Занятие: '+Math.floor(ms/60000)+':'+String(Math.floor(ms/1000)%60).padStart(2,'0');
+ const shown=clueActive?'Разбор отскока':playing?'Наблюдение':done?'Наблюдение завершено':elapsed>0?'Пауза':'Готово к запуску';$('phase').textContent=shown;
+ $('timer').textContent=Math.max(0,round.duration-elapsed).toFixed(1)+' с';$('progress').style.width=(clueActive?100:100*elapsed/round.duration)+'%';
+ $('start').disabled=playing;$('start').textContent=done?'▶ Смотреть заново':elapsed>0?'▶ Продолжить':'▶ Начать';
+ $('pause').disabled=!playing;$('end').disabled=done||(!playing&&elapsed===0);$('check').disabled=!done||checked;$('reveal').disabled=revealed;
+ $('status').textContent=checked?'Схема раскрыта. Все '+round.proof.length+' участков подтверждены реальными отскоками.' :playing?'Шарики движутся. Следи за отражениями.':done?'Выбери ответ и нажми «Проверить».':elapsed>0?'Анимация остановлена. Можно продолжить.':'Траектории рассчитаны для этой конструкции. Можно начинать.';
+ $('task').innerHTML=round.mode==='draw'?'<b>Задание:</b> найди скрытые преграды по отскокам шариков. После остановки нарисуй их прямо на поле.':'<b>Задание:</b> наблюдай за отскоками шариков и выбери схему, которая объясняет их движение.';
+ if(!checked)$('result').textContent=selected===null?(round.mode==='draw'?marked.length+' линий нарисовано.':'Ответ ещё не проверен.'):'Выбрана схема '+['А','Б','В'][selected]+'.';
+ document.querySelectorAll('.choice').forEach((el,i)=>{el.classList.toggle('selected',selected===i&&!revealed);el.classList.toggle('correct',revealed&&i===round.correctIndex);el.classList.toggle('wrong',checked&&i===selected&&i!==round.correctIndex);el.disabled=!done||checked});
+ $('undo').disabled=!done||checked||marked.length===0;$('clear').disabled=!done||checked||marked.length===0;
+}
+function makeClues(){
+ const out=[];
+ // По два-три эпизода с каждого отрезка: ребёнок видит свидетельства и о нижней стенке, и о верхней.
+ for(let i=0;i<round.walls.length;i++)for(let j=0;j<round.walls[i].parts.length;j++){
+  const w=round.walls[i].parts[j],len=segLen(w);
+  const e=round.events.filter(v=>v.type==='wall'&&v.i===i&&v.j===j&&v.t<round.duration*.75);
+  const sorted=e.slice().sort((a,b)=>((a.x-b.x)*(w.x2-w.x1)+(a.y-b.y)*(w.y2-w.y1))/len);
+  for(const ix of [.12,.5,.88]){
+    const v=sorted[Math.min(sorted.length-1,Math.floor(sorted.length*ix))];
+    if(v&&!out.some(q=>q.ballId===v.ballId&&Math.abs(q.t-v.t)<.5))out.push(v);
+  }
+ }
+ out.sort((a,b)=>a.t-b.t);
+ return out;
+}
+function openClue(){
+ if(!round||!done||revealed)return;
+ clueEvents=makeClues();if(!clueEvents.length)return;
+ clueActive=true;clueIndex=0;playing=false;
+ $('clueBar').style.display='flex';updateClue();
+}
+function closeClue(){clueActive=false;clueEvents=[];$('clueBar').style.display='none';}
+function updateClue(){
+ if(!clueActive||!clueEvents.length)return;
+ const e=clueEvents[clueIndex];
+ elapsed=e.t;
+ $('clueInfo').textContent=`Эпизод ${clueIndex+1} из ${clueEvents.length}`;
+ $('prevClue').disabled=clueIndex===0;$('nextClue').disabled=clueIndex===clueEvents.length-1;
+ refresh();draw();
+}
+$('clue').onclick=()=>clueActive?closeClue():openClue();
+$('hypothesis').onclick=()=>{if(!round||!done||selected===null||revealed)return;hypothesisVisible=!hypothesisVisible;refresh();draw()};
+$('prevClue').onclick=()=>{if(clueIndex>0){clueIndex--;updateClue()}};
+$('nextClue').onclick=()=>{if(clueIndex+1<clueEvents.length){clueIndex++;updateClue()}};
+$('closeClue').onclick=()=>{closeClue();refresh();draw()};
+function lerp(a,b,t){return a+(b-a)*t}
+function getSnapshot(t){
+ // Physical position is evaluated on the piecewise-linear path between true
+ // impact instants. Interpolating frames would draw false shortcuts at bounces.
+ if(round.paths){
+  t=clamp(t,0,round.duration);
+  return round.paths.map(path=>{
+   let lo=0,hi=path.length-1;
+   while(lo<hi){const m=Math.ceil((lo+hi)/2);if(path[m].t<=t+1e-10)lo=m;else hi=m-1}
+   const p=path[lo],dt=Math.max(0,t-p.t);
+   return {x:p.x+p.vx*dt,y:p.y+p.vy*dt,vx:p.vx,vy:p.vy};
+  });
+ }
+ const q=clamp(t/DT,0,round.frames.length-1),i=Math.floor(q),f=q-i;
+ const a=round.frames[i],b=round.frames[Math.min(i+1,round.frames.length-1)];
+ return a.map((p,k)=>({x:lerp(p.x,b[k].x,f),y:lerp(p.y,b[k].y,f),vx:p.vx,vy:p.vy}));
+}
+function traceActualPath(ballId,from,to,step){
+ const t0=clamp(from,0,round.duration),t1=clamp(to,0,round.duration);
+ const path=round.paths&&round.paths[ballId];
+ const samples=[t0,t1];
+ if(path)for(const p of path){if(p.t>t0+1e-8&&p.t<t1-1e-8)samples.push(p.t)}
+ else for(let t=t0+step;t<t1;t+=step)samples.push(t);
+ samples.sort((a,b)=>a-b);
+ ctx.beginPath();for(let i=0;i<samples.length;i++){
+  const p=samplePath(ballId,samples[i]);
+  if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);
+ }
+}
+function samplePath(ballId,t){
+ const path=round.paths&&round.paths[ballId];
+ if(!path)return getSnapshot(t)[ballId];
+ let lo=0,hi=path.length-1;
+ while(lo<hi){const m=Math.ceil((lo+hi)/2);if(path[m].t<=t+1e-10)lo=m;else hi=m-1}
+ const p=path[lo],dt=Math.max(0,t-p.t);
+ return {x:p.x+p.vx*dt,y:p.y+p.vy*dt,vx:p.vx,vy:p.vy};
+}
+function drawWall(w,color='#FF6A00',width=7,dashed=false){ctx.save();ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineCap='round';if(dashed)ctx.setLineDash([13,9]);for(const p of (w.parts||[w])){ctx.beginPath();ctx.moveTo(p.x1,p.y1);ctx.lineTo(p.x2,p.y2);ctx.stroke()}ctx.restore();}
+function draw(){if(!round)return;
+ const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#e7f1fd');g.addColorStop(1,'#f8fbff');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ ctx.lineWidth=1;ctx.strokeStyle='#d9e5f3';ctx.beginPath();for(let x=BOUNDS.l;x<=BOUNDS.r;x+=44){ctx.moveTo(x,BOUNDS.t);ctx.lineTo(x,BOUNDS.b)}for(let y=BOUNDS.t;y<=BOUNDS.b;y+=44){ctx.moveTo(BOUNDS.l,y);ctx.lineTo(BOUNDS.r,y)}ctx.stroke();
+ ctx.fillStyle='#ffffffa3';ctx.fillRect(BOUNDS.l,BOUNDS.t,BOUNDS.r-BOUNDS.l,BOUNDS.b-BOUNDS.t);
+ ctx.strokeStyle='#8da7c8';ctx.lineWidth=3;ctx.strokeRect(BOUNDS.l,BOUNDS.t,BOUNDS.r-BOUNDS.l,BOUNDS.b-BOUNDS.t);
+ if(!revealed && done && selected!==null && round.mode!=='draw' && hypothesisVisible){
+  // Примерка гипотезы точно в масштабе БОЛЬШОГО поля, не оценка правильности.
+  const proposed=round.options[selected];
+  for(const wall of proposed){drawWall(wall,'#ffffffb8',12,true);drawWall(wall,'#268ecb93',5,true)}
+  ctx.save();ctx.fillStyle='#1E3F8A';ctx.font='700 15px Segoe UI,Arial';
+  ctx.fillText('Гипотеза: схема '+['А','Б','В'][selected]+' (голубые штрихи). Сравни с траекториями.',55,BOUNDS.t-18);ctx.restore();
+ }
+ if(revealed){
+  for(const w of round.walls){drawWall(w,'#ff6a0060',14);drawWall(w,'#ff6a00',6)}
+  const hits=round.events.filter(e=>e.type==='wall');ctx.fillStyle='#ff6a00';for(const e of hits){ctx.beginPath();ctx.arc(e.x,e.y,5,0,Math.PI*2);ctx.fill()}
+ }
+ if(round.mode==='draw'&&done){marked.forEach(w=>drawWall(w,checked?'#1E3F8A':'#246ac7',5,true));if(isDrawing&&drawStart&&drawHover)drawWall(normalizedDraw(drawStart,drawHover),'#5289e1',4,true)}
+ const snap=getSnapshot(elapsed);
+ if($('trails').checked){
+   ctx.save();ctx.lineWidth=2;ctx.globalAlpha=.24;
+   for(let i=0;i<round.balls.length;i++){
+     ctx.strokeStyle=round.balls[i].c;
+     traceActualPath(i,Math.max(0,elapsed-.63),elapsed,DT*3);ctx.stroke();
+   }
+   ctx.restore();
+ }
+ if(clueActive&&clueEvents.length){
+    const e=clueEvents[clueIndex],bid=e.ballId;
+    // Freeze one observed collision as an unmistakable before/after trajectory.
+    const from=Math.max(0,Math.floor((e.t-.65)/DT)),to=Math.min(round.frames.length-1,Math.floor((e.t+.65)/DT));
+    ctx.save();ctx.lineWidth=5;ctx.lineCap='round';ctx.lineJoin='round';
+    const split=Math.min(to,Math.max(from,Math.floor(e.t/DT)));
+    for(const [a,z,color] of [[Math.max(0,e.t-.65),e.t,'#1E3F8A'],[e.t,Math.min(round.duration,e.t+.65),'#8a52ce']]){
+      ctx.strokeStyle=color;traceActualPath(bid,a,z,DT*2);ctx.stroke();
+    }
+    // Indicate direction, but never draw a wall or mark its coordinates.
+    for(const f of [from,to]){const v=round.frames[f][bid],len=Math.hypot(v.vx,v.vy)||1;
+      ctx.strokeStyle=f===from?'#1E3F8A':'#8a52ce';ctx.lineWidth=3;
+      ctx.beginPath();ctx.moveTo(v.x,v.y);ctx.lineTo(v.x+v.vx/len*28,v.y+v.vy/len*28);ctx.stroke();}
+    ctx.restore();
+ }
+ for(let i=0;i<round.balls.length;i++){
+    const b=round.balls[i],p=snap[i],r=b.r;
+    ctx.globalAlpha=clueActive&&clueEvents.length&&i!==clueEvents[clueIndex].ballId?.23:1;
+    ctx.shadowColor=b.c+'35';ctx.shadowBlur=10;ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fillStyle=b.c;ctx.fill();ctx.shadowBlur=0;
+    ctx.beginPath();ctx.arc(p.x-r*.25,p.y-r*.25,2,0,Math.PI*2);ctx.fillStyle='#ffffffc8';ctx.fill();
+    if($('arrows').checked){const d=Math.hypot(p.vx,p.vy)||1;ctx.strokeStyle=b.c;ctx.lineWidth=1.7;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+p.vx/d*23,p.y+p.vy/d*23);ctx.stroke()}
+ }
+ ctx.globalAlpha=1;
+ if(revealed){ctx.fillStyle='#1e3f8a';ctx.font='700 16px Segoe UI,Arial';ctx.fillText('Оранжевые линии — настоящие стены; точки — места реальных ударов',55,BOUNDS.b+24)}
+ else{ctx.fillStyle='#7389aa';ctx.font='600 15px Segoe UI,Arial';ctx.fillText('Невидимые преграды не отмечены на поле',55,BOUNDS.b+23)}
+}
+function normalizedDraw(p,q){return segment(clamp(p.x,BOUNDS.l+8,BOUNDS.r-8),clamp(p.y,BOUNDS.t+8,BOUNDS.b-8),clamp(q.x,BOUNDS.l+8,BOUNDS.r-8),clamp(q.y,BOUNDS.t+8,BOUNDS.b-8));}
+function pointerPos(e){const rect=WORLD.getBoundingClientRect();return {x:(e.clientX-rect.left)*W/rect.width,y:(e.clientY-rect.top)*H/rect.height}}
+WORLD.addEventListener('pointerdown',e=>{if(!round||round.mode!=='draw'||!done||checked)return;isDrawing=true;drawStart=pointerPos(e);drawHover=drawStart;WORLD.setPointerCapture(e.pointerId);draw()});
+WORLD.addEventListener('pointermove',e=>{if(!isDrawing)return;drawHover=pointerPos(e);draw()});
+WORLD.addEventListener('pointerup',e=>{if(!isDrawing)return;isDrawing=false;drawHover=pointerPos(e);const w=normalizedDraw(drawStart,drawHover);if(wallLen(w)>40){marked.push(w)}drawStart=null;drawHover=null;refresh();draw()});
+WORLD.addEventListener('pointercancel',()=>{isDrawing=false;drawStart=null;drawHover=null;draw()});
+$('start').onclick=()=>{if(!round)return;if(done){startPlayback(false)}else if(!playing)resumePlayback()};
+$('pause').onclick=pausePlayback;$('end').onclick=finishSessionAndPlayback;
+$('repeat').onclick=()=>{if(!round)return;closeClue();const keepWalls=revealed;selected=null;checked=keepWalls;marked=[];revealed=keepWalls;buildOptions();elapsed=0;done=false;playing=false;cancelAnimationFrame(frameId);replayReveal=keepWalls;startPlayback(true);if(keepWalls){revealed=true;checked=true;}refresh()};
+$('new').onclick=newRound;$('check').onclick=check;$('reveal').onclick=()=>{if(!done)stopPlayback();showAnswer()};
+$('undo').onclick=()=>{marked.pop();refresh();draw()};$('clear').onclick=()=>{marked=[];refresh();draw()};
+$('mode').onchange=newRound;$('difficulty').onchange=newRound;$('shapeKind').onchange=newRound;
+$('ballCount').addEventListener('input',syncBallMinimum);
+$('ballCount').addEventListener('change',newRound);
+$('duration').addEventListener('input',()=>{$('durationVal').textContent=getDuration()+' сек'});
+for(const id of ['trails','arrows'])$(id).onchange=draw;
+$('playback').onchange=refresh;
+syncBallMinimum();newRound();
+</script>
+<script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
+<script src="../assets/menu-drawer.js"></script>
+<script src="../shared/new-trainers.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/mobile-new-trainers.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
+</body></html>

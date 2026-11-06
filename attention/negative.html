@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<script src="../shared/theme.js"></script>
+<script>/* NeuroX: читаем общую настройку до первой отрисовки */
+try {
+  const nxSavedTheme = localStorage.getItem('neurox_theme');
+  const nxTheme = (nxSavedTheme === 'light' || nxSavedTheme === 'dark')
+    ? nxSavedTheme
+    : ((window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
+  document.documentElement.dataset.theme = nxTheme;
+} catch (_) { document.documentElement.dataset.theme = 'light'; }
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NeuroX · Негатив 2.0</title>
+<style>
+:root{--navy:#1E3F8A;--orange:#FF6A00;--ink:#172943;--muted:#617089;--line:#d7e2f2;--bg:#f2f6fc;--white:#fff;--ok:#16845b;--bad:#c44850}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:Arial,'Segoe UI',sans-serif}
+button,select,input{font:inherit}button{cursor:pointer;border:0;border-radius:11px;padding:10px 15px;font-weight:750;transition:filter .15s,transform .12s}button:hover:not(:disabled){filter:brightness(.94)}button:active:not(:disabled){transform:translateY(1px)}button:disabled{opacity:.43;cursor:not-allowed}
+button:focus-visible,select:focus-visible,input:focus-visible,canvas:focus-visible{outline:3px solid #ff9f54;outline-offset:2px}
+.btn-primary{background:var(--navy);color:#fff}.btn-accent{background:var(--orange);color:#fff}.btn-soft{background:#edf3ff;color:var(--navy)}.btn-quiet{background:#f7f8fc;color:#415778;border:1px solid var(--line)}
+.app{max-width:1740px;margin:auto;padding:12px 15px 22px}.mast{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:12px 17px;border-radius:19px;background:#fff;border:1px solid var(--line);margin-bottom:12px}.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;color:white;background:var(--orange);font-size:26px;font-weight:900}.brand h1{margin:0;font-size:24px;color:var(--navy)}.brand p{font-size:12px;color:var(--muted);margin:2px 0 0}.head-actions{display:flex;gap:8px;align-items:center}.head-actions span{font-size:12px;color:var(--muted)}
+.layout{display:grid;grid-template-columns:310px minmax(0,1fr);gap:13px;align-items:start}.work{grid-column:2;grid-row:1;min-width:0}.sidebar{grid-column:1;grid-row:1;min-width:0}.studio,.sidebar,.foot{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 5px 20px #203a6208}.studio{padding:12px}.toolbar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}.toolbar button{font-size:13.5px;padding:10px 13px}
+.assignment{display:flex;align-items:center;gap:12px;background:#edf3ff;border:1px solid #e0e9fa;border-radius:14px;padding:10px 13px;margin-bottom:10px;min-height:119px}.sampleBox{height:112px;width:184px;flex-shrink:0;background:white;border:1px solid #d2ddf0;border-radius:11px;position:relative;overflow:hidden}.sampleBox canvas{width:100%;height:100%;display:block}.sampleBox .hide-cover{position:absolute;inset:0;background:#e9eff9;display:none;align-items:center;justify-content:center;color:var(--navy);font-size:13px;text-align:center;padding:10px;font-weight:700}.sampleBox.hidden .hide-cover{display:flex}.instructions{font-size:15px;line-height:1.45;min-width:0;flex:1}.instructions strong{color:var(--navy)}.instructions .details{display:block;margin-top:6px;font-size:12.5px;color:var(--muted)}.sampleActions{display:flex;flex-direction:column;gap:5px}.sampleActions button{font-size:12px;padding:7px 9px}
+#board{display:block;width:100%;aspect-ratio:1180/740;border-radius:14px;background:#ecf3fb;cursor:pointer;touch-action:manipulation}.foot{margin-top:9px;padding:12px 14px;display:flex;flex-wrap:wrap;gap:12px 22px;align-items:center;font-size:13px;color:#586780}.foot strong{color:var(--navy)}#status{flex:1;font-weight:650}
+.sidebar{padding:15px;position:sticky;top:12px}.sidebar h2{font-size:15px;margin:0 0 12px;color:var(--navy)}.field{margin:12px 0}.field label{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);font-weight:750;margin-bottom:6px}select{appearance:auto;width:100%;border:1px solid #ccd9ee;background:white;border-radius:10px;padding:10px 9px;color:var(--ink);font-size:14px;min-height:40px}
+input[type=range]{width:100%;accent-color:var(--navy)}.row-check{display:flex;gap:9px;align-items:center;margin:9px 0;font-size:13px;cursor:pointer}.row-check input{width:17px;height:17px;accent-color:var(--navy);flex:0 0 auto}.separator{border-top:1px solid var(--line);margin:15px 0}.micro{font-size:12px;color:var(--muted);line-height:1.5}.answer{font-size:13px;line-height:1.5;padding:11px;border-radius:12px;background:#edf3ff;min-height:51px}.answer.good{background:#edf8f2;color:#166644}.answer.bad{background:#fff0ef;color:#a43c44}.stats{display:flex;gap:7px;flex-wrap:wrap}.chip{padding:6px 9px;font-size:12px;color:#3c577a;background:#edf3ff;border-radius:9px}
+.hidden-by-user{display:none!important}.layout.noside{grid-template-columns:minmax(0,1fr)}.layout.noside .sidebar{display:none}.layout.noside .work{grid-column:1}
+summary{font-size:13px;color:var(--navy);font-weight:800;cursor:pointer;padding:6px 0}details{margin-top:8px}
+@media(max-width:1000px){.layout{grid-template-columns:260px minmax(0,1fr)}.sidebar{padding:11px}}
+@media(max-width:780px){.layout{grid-template-columns:minmax(0,1fr)}.sidebar{position:static;grid-column:1;grid-row:1}.work{grid-column:1;grid-row:2}.layout.noside .work{grid-column:1;grid-row:1}.mast{padding:10px}.brand h1{font-size:19px}.head-actions span{display:none}}
+@media(max-width:570px){.app{padding:8px}.assignment{flex-wrap:wrap}.sampleBox{width:128px;height:90px}.sampleActions{flex-direction:row}.toolbar button{flex:1 1 auto}.instructions{font-size:13px}.brand p{display:none}.foot{gap:6px 12px}}
+:fullscreen .app{max-width:100%;padding:10px}:fullscreen .studio{padding:10px}
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/new-trainers.css">
+<link rel="stylesheet" href="../shared/new-trainers-theme.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<link rel="stylesheet" href="../shared/mobile-new-trainers.css">
+</head>
+<body class="nx-added-game nx-game-negative" data-nx-section="attention">
+<div class="app" id="app">
+<header class="mast"><div class="brand"><div class="logo">◩</div><div><h1>Негатив <span style="font-size:13px;color:#687b9a">2.0</span></h1><p>NeuroX · фигура и фон · офлайн-тренажёр</p></div></div><div class="head-actions"><span>Педагог управляет, ребёнок наблюдает и отвечает</span><button id="settingsToggle" class="btn-soft" type="button">⚙ Настройки</button><button id="fullscreen" class="btn-soft" type="button">⛶ Во весь экран</button></div></header>
+<div class="layout" id="layout">
+<main class="work"><section class="studio">
+<div class="toolbar"><button id="start" class="btn-primary">Начать</button><button id="finish" class="btn-soft">Закончить</button><button id="next" class="btn-primary">Новый раунд</button><button id="again" class="btn-soft">Повторить</button><button id="check" class="btn-accent">Проверить</button><button id="show" class="btn-soft">Показать ответ</button><button id="compare" class="btn-soft">Сравнить контуры</button><button id="clear" class="btn-quiet">Сброс</button></div>
+<div class="assignment"><div class="sampleBox" id="sampleBox"><canvas id="sample" width="340" height="220" aria-label="Образец контура пустоты"></canvas><div class="hide-cover" id="sampleCover">Образец скрыт</div></div><div class="instructions"><strong id="taskHeading">Найди совпадающий просвет</strong><div id="taskDescription">Ищи форму ПУСТОТЫ между тёмными частями, а не форму самих деталей.</div><span class="details" id="taskDetail">Выбери вариант на поле и проверь ответ.</span></div><div class="sampleActions"><button id="peek" class="btn-soft" type="button">Показать образец</button><button id="hideSample" class="btn-quiet" type="button">Скрыть</button></div></div>
+<canvas id="board" width="1180" height="740" tabindex="0" aria-label="Выбор негативных силуэтов"></canvas>
+</section><div class="foot"><span>Раунд: <strong id="roundCount">1</strong></span><span>Выбрано: <strong id="chosen">ничего</strong></span><span>Время занятия: <strong id="timer">00:00</strong></span><span>Результаты: <strong id="score">0/0</strong></span><span id="status" role="status">Выбери ответ, затем нажми «Проверить».</span></div></main>
+<aside class="sidebar" id="sidebar"><h2>Настройки тренажёра</h2>
+<div class="field"><label for="mode">Режим</label><select id="mode"><option value="match">Найди точный просвет</option><option value="multi">Несколько совпадений</option><option value="odd">Лишний просвет</option></select></div>
+<div class="field"><label for="preset">Возрастная настройка</label><select id="preset"><option value="young">5–7 лет · знакомство</option><option value="middle">8–10 лет · основной</option><option value="teen" selected>11–13 лет · сложный</option><option value="older">14+ · эксперт</option><option value="custom">Своя настройка</option></select></div>
+<div class="field"><label for="formKind">Тип силуэтов</label><select id="formKind"><option value="recognizable">Знакомые формы</option><option value="abstract" selected>Абстрактные контуры</option><option value="mixed">Смешанные</option></select></div>
+<details id="customDetails"><summary>Тонкая настройка сложности</summary>
+<div class="field"><label for="count">Вариантов на поле <b id="countValue">6</b></label><input id="count" type="range" min="3" max="8" step="1" value="6"></div>
+<div class="field"><label for="similarity">Сходство вариантов <b id="similarityValue">4 / 5</b></label><input id="similarity" type="range" min="1" max="5" value="4"></div>
+<div class="field"><label for="noise">Визуальные помехи <b id="noiseValue">2 / 4</b></label><input id="noise" type="range" min="0" max="4" value="2"></div>
+<div class="field"><label for="multiCount">Совпадений в режиме «Несколько» <b id="multiCountValue">2</b></label><input id="multiCount" type="range" min="2" max="3" value="2"></div>
+<label class="row-check"><input type="checkbox" id="rotation" checked>Разрешить повороты</label>
+<label class="row-check"><input type="checkbox" id="mirror" checked>Зеркальные ловушки</label>
+<div class="micro">Изменение параметров не подсказывает ответ. Для нового задания нажми «Новый раунд».</div></details>
+<div class="separator"></div><h2>Помощь и показ</h2>
+<label class="row-check"><input type="checkbox" id="quiet">Убрать декоративный шум</label>
+<label class="row-check"><input type="checkbox" id="outlines">Обвести все просветы</label>
+<label class="row-check"><input type="checkbox" id="mono">Чёрно-белый режим</label>
+<div class="field"><label for="sampleTime">Показ образца</label><select id="sampleTime"><option value="always">Постоянно</option><option value="8">8 секунд</option><option value="5">5 секунд</option><option value="3">3 секунды</option></select></div>
+<div class="field"><label for="texture">Оформление пластин</label><select id="texture"><option value="plates">Пластины</option><option value="shards">Осколки</option><option value="ink">Чернила</option></select></div>
+<div class="separator"></div><h2>Проверка</h2><div class="answer" id="explain">Программа знает правильные просветы. После ответа их можно раскрыть и сравнить контуры.</div>
+<div class="separator"></div><div class="stats"><span class="chip">3 режима</span><span class="chip">3–8 карточек</span><span class="chip">Повтор задания</span><span class="chip">Без сети</span></div>
+<p class="micro">Упражнения на различение фигуры и фона, зрительный анализ и избирательное внимание. Не являются диагностикой и не гарантируют переноса навыка на другие задачи.</p>
+</aside></div></div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const board=$('board'),ctx=board.getContext('2d'),sample=$('sample'),sc=sample.getContext('2d');
+const W=1180,H=740;
+const PRESETS={
+ young:{count:3,similarity:1,noise:0,multiCount:2,rotation:false,mirror:false,formKind:'recognizable'},
+ middle:{count:4,similarity:2,noise:1,multiCount:2,rotation:false,mirror:true,formKind:'mixed'},
+ teen:{count:6,similarity:4,noise:2,multiCount:2,rotation:true,mirror:true,formKind:'abstract'},
+ older:{count:8,similarity:5,noise:3,multiCount:3,rotation:true,mirror:true,formKind:'abstract'}
+};
+const settingsNames=['mode','preset','formKind','count','similarity','noise','multiCount','rotation','mirror','quiet','outlines','mono','sampleTime','texture'];
+let round=null,number=0,choice=new Set(),answerVisible=false,graded=false,compare=false,sessionStart=null,sessionElapsed=0,tickId=null;
+let attempts=0,correctAttempts=0,drawRAF=0,hideTimer=null,flashTimer=null,sampleHidden=false,answerStart=0,correctPositionHistory=[];
+const RAD=Math.PI/180;
+function rand(seed){let a=seed>>>0;return ()=>{a+=0x6D2B79F5;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296}}
+function pick(r,a){return a[Math.floor(r()*a.length)]}
+function shuffle(r,a){let b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function readSettings(){return{mode:$('mode').value,count:+$('count').value,similarity:+$('similarity').value,noise:+$('noise').value,multiCount:+$('multiCount').value,rotation:$('rotation').checked,mirror:$('mirror').checked,formKind:$('formKind').value}}
+function clone(x){return JSON.parse(JSON.stringify(x))}
+function savePrefs(){try{let x={};for(const id of settingsNames){const el=$(id);x[id]=el.type==='checkbox'?el.checked:el.value}localStorage.setItem('neurox-negativ-v2',JSON.stringify(x))}catch(e){}}
+function loadPrefs(){try{let data=JSON.parse(localStorage.getItem('neurox-negativ-v2')||'null');if(data){for(const id of settingsNames){const el=$(id);if(!(id in data))continue;if(el.type==='checkbox')el.checked=!!data[id];else if(el.tagName==='SELECT'){if([...el.options].some(o=>o.value===String(data[id])))el.value=data[id]}else el.value=data[id]}}}catch(e){}}
+function syncRangeLabels(){$('countValue').textContent=$('count').value;$('similarityValue').textContent=$('similarity').value+' / 5';$('noiseValue').textContent=$('noise').value+' / 4';$('multiCountValue').textContent=$('multiCount').value}
+function applyPreset(v){let p=PRESETS[v];if(!p)return;for(const [id,value] of Object.entries(p)){const el=$(id);if(el.type==='checkbox')el.checked=value;else el.value=value}syncRangeLabels();savePrefs()}
+function modeText(m){return{match:'Найди точный просвет',multi:'Несколько совпадений',odd:'Лишний просвет'}[m]}
+// Polygon coordinates are the exact ground-truth geometry, not guesses about the rendered image.
+const ICONS={
+ house:[[-85,88],[-85,-15],[-14,-82],[13,-82],[85,-15],[85,88]],
+ arrow:[[-91,-26],[-9,-26],[-9,-72],[91,0],[-9,72],[-9,26],[-91,26]],
+ crown:[[-85,83],[-85,-53],[-43,-18],[-14,-88],[18,-18],[55,-70],[87,-42],[87,83]],
+ stairs:[[-94,85],[-94,28],[-47,28],[-47,-12],[-1,-12],[-1,-52],[45,-52],[45,-91],[91,-91],[91,85]],
+ castle:[[-86,87],[-86,-65],[-57,-65],[-57,-92],[-23,-92],[-23,-55],[25,-55],[25,-85],[65,-85],[65,-55],[86,-55],[86,87],[21,87],[21,21],[-20,21],[-20,87]],
+ notched:[[-85,78],[-85,-74],[-18,-74],[-18,-31],[28,-31],[28,-79],[85,-79],[85,78],[36,78],[36,41],[-32,41],[-32,78]]
+};
+function makeBase(r,opt){
+ let type=opt.formKind==='mixed'?(r()<.5?'recognizable':'abstract'):opt.formKind;
+ if(type==='recognizable'){
+  const nm=pick(r,Object.keys(ICONS));let pts=ICONS[nm].map(([x,y])=>({x,y}));
+  // vary proportions slightly per round while retaining a recognizable silhouette
+  const sx=.91+r()*.18,sy=.91+r()*.18;
+  return{points:pts.map(p=>({x:Math.round(p.x*sx),y:Math.round(p.y*sy)})),kind:nm};
+ }
+ const n=opt.similarity>=4?17:opt.similarity===3?15:13;
+ const radii=[];let prev=75;
+ for(let i=0;i<n;i++){const big=60+r()*42;prev=clamp(big*.83+prev*.17,54,107);radii.push(prev)}
+ // Uneven radial silhouette with 2–3 recognizable indentations, no fixed symmetry.
+ for(let j=0;j<2;j++){const k=Math.floor(r()*n);radii[k]=clamp(radii[k]-20,43,108)}
+ const points=radii.map((rr,i)=>{let a=2*Math.PI*i/n-Math.PI/2;return{x:Math.round(Math.cos(a)*rr),y:Math.round(Math.sin(a)*rr)}});
+ return{points,kind:'abstract'};
+}
+function mutate(base,r,opt){
+ let res=base.map(p=>({x:p.x,y:p.y}));
+ const n=res.length;
+ const sim=opt.similarity;
+ // A larger similarity number means a SMALLER visible error.
+ const sizes={1:[34,52],2:[27,40],3:[19,31],4:[13,23],5:[10,17]};
+ let start=Math.floor(r()*n),length=sim<=2?2:1;
+ for(let q=0;q<length;q++){
+  let i=(start+q)%n;
+  let a=Math.atan2(res[i].y,res[i].x);
+  let delta=(sizes[sim][0]+r()*(sizes[sim][1]-sizes[sim][0]))*(r()<.5?-1:1);
+  // Inward/outward and lateral movements both change the actual contour.
+  let lateral=(r()-.5)*(sim>=4?10:16);
+  res[i].x=Math.round(res[i].x+Math.cos(a)*delta-Math.sin(a)*lateral);
+  res[i].y=Math.round(res[i].y+Math.sin(a)*delta+Math.cos(a)*lateral);
+ }
+ return res;
+}
+function pointDifference(a,b){let d=0;for(let i=0;i<a.length;i++)d+=Math.hypot(a[i].x-b[i].x,a[i].y-b[i].y);return d}
+function makeRound(seed,options,previousCorrect=-1){
+ const r=rand(seed),N=options.count,mode=options.mode;
+ let k=mode==='multi'?Math.min(options.multiCount,N-1):mode==='odd'?N-1:1;
+ let base=makeBase(r,options),cards=[],correct=[];
+ const candidatePositions=shuffle(r,Array.from({length:N},(_,i)=>i));
+ if(mode==='match' && candidatePositions.length>1 && previousCorrect>=0){const idx=candidatePositions.indexOf(previousCorrect);if(idx===0)[candidatePositions[0],candidatePositions[1]]=[candidatePositions[1],candidatePositions[0]]}
+ let correctIndices=candidatePositions.slice(0,k).sort((a,b)=>a-b);
+ for(let i=0;i<N;i++){
+  const ok=correctIndices.includes(i);
+  let points=ok?clone(base.points):null,mirror=false;
+  if(!ok){
+   if(options.mirror && base.kind==='abstract' && r()<.27){points=clone(base.points);mirror=true}
+   else {
+    for(let attempt=0;attempt<40;attempt++){
+     points=mutate(base.points,r,options);
+     if(pointDifference(points,base.points)>6)break;
+    }
+   }
+  }
+  const rotation=options.rotation ? ((Math.round((r()*140-70)/10))*10)*RAD:0;
+  cards.push({id:i,points,rotation,mirror,ok,textureSeed:Math.floor(r()*4294967295)});
+ }
+ return{seed,options,base,cards,correctIndices,mode,count:N};
+}
+function getBoxes(){const n=round.count,cols=n<=3?3:n<=4?2:n<=6?3:4,rows=Math.ceil(n/cols);
+ const gap=14,margin=18,width=(W-margin*2-gap*(cols-1))/cols,height=rows===1?530:(H-44-gap*(rows-1))/rows;
+ const offsetY=rows===1?(H-height)/2:22;
+ return Array.from({length:n},(_,i)=>({x:margin+(i%cols)*(width+gap),y:offsetY+Math.floor(i/cols)*(height+gap),w:width,h:height}));
+}
+function polygonPath(c,points){c.beginPath();points.forEach((p,i)=>{if(!i)c.moveTo(p.x,p.y);else c.lineTo(p.x,p.y)});c.closePath()}
+function roundrect(c,x,y,w,h,rad){c.beginPath();c.roundRect(x,y,w,h,rad)}
+function drawPaper(){ctx.fillStyle='#eef4fb';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#e1e9f4';ctx.lineWidth=1;for(let x=20;x<W;x+=43){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=10;y<H;y+=43){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}}
+function drawTextureCanvas(card){
+ const width=286,height=260;
+ let c=document.createElement('canvas');c.width=width*2;c.height=height*2;
+ let a=c.getContext('2d');a.scale(2,2);let r=rand(card.textureSeed);
+ const style=$('texture').value,quiet=$('quiet').checked,mono=$('mono').checked;
+ a.save();a.beginPath();
+ if(style==='ink'){
+  a.moveTo(13,28);a.bezierCurveTo(50,-12,97,18,145,12);a.bezierCurveTo(205,8,280,14,269,70);a.bezierCurveTo(287,132,260,167,270,217);a.bezierCurveTo(243,263,180,243,134,250);a.bezierCurveTo(84,264,14,244,14,200);a.bezierCurveTo(-7,152,18,97,13,28);
+ } else {
+  a.moveTo(13,24);a.lineTo(66,14);a.lineTo(126,19);a.lineTo(182,11);a.lineTo(272,23);a.lineTo(268,84);a.lineTo(276,135);a.lineTo(267,200);a.lineTo(272,245);a.lineTo(189,251);a.lineTo(127,243);a.lineTo(70,250);a.lineTo(12,240);a.lineTo(20,182);a.lineTo(8,118);a.closePath();
+ }
+ a.clip();a.fillStyle=mono?'#293746':'#16385b';a.fillRect(0,0,width,height);
+ // Glints deliberately stay on the material, never inside the cutout.
+ if(!quiet){
+  const nn=round.options.noise;
+  for(let i=0;i<10+nn*11;i++){
+   a.save();a.translate(r()*width,r()*height);a.rotate(r()*6.28);let l=8+r()*(nn>=2?50:35);
+   a.strokeStyle=mono?'rgba(255,255,255,.13)':'rgba(126,203,240,.21)';a.lineWidth=style==='ink'?2.8:1.6;
+   a.beginPath();a.moveTo(-l/2,0);if(style==='shards'){a.lineTo(0,r()*16-8);a.lineTo(l/2,0)}else if(style==='ink'){a.quadraticCurveTo(0,r()*12-6,l/2,0)}else a.lineTo(l/2,0);a.stroke();a.restore();
+  }
+  if(round.options.noise>=2){for(let i=0;i<round.options.noise*6;i++){a.fillStyle='rgba(235,246,255,.11)';a.beginPath();a.arc(r()*width,r()*height,2+r()*5,0,Math.PI*2);a.fill()}}
+ }
+ a.save();a.translate(width/2,height/2);a.rotate(card.rotation);a.scale(card.mirror?-1:1,1);a.globalCompositeOperation='destination-out';polygonPath(a,card.points);a.fillStyle='#000';a.fill();a.restore();a.restore();
+ return c;
+}
+function renderSample(){if(!round)return;sc.clearRect(0,0,340,220);sc.fillStyle='#f1f5fc';sc.fillRect(0,0,340,220);sc.save();sc.translate(170,110);sc.scale(.98,.98);polygonPath(sc,round.base.points);sc.fillStyle='#1E3F8A';sc.fill();sc.restore();}
+function stampShape(card,b,color,alpha=1,outline=false){
+ const width=286,height=260;
+ const scale=Math.min((b.w-30)/width,(b.h-56)/height,1.9);
+ const dx=b.x+(b.w-width*scale)/2,dy=b.y+(b.h-39-height*scale)/2+4;
+ ctx.save();ctx.globalAlpha=alpha;ctx.translate(dx+width/2*scale,dy+height/2*scale);ctx.rotate(card.rotation);ctx.scale(scale*(card.mirror?-1:1),scale);
+ polygonPath(ctx,card.points);if(outline){ctx.strokeStyle=color;ctx.lineWidth=2.8/scale;ctx.stroke()}else{ctx.fillStyle=color;ctx.fill()}ctx.restore();
+}
+function drawBoard(){if(!round)return;drawPaper();let boxes=getBoxes();const t=answerVisible?Math.min(1,(performance.now()-answerStart)/530):0;
+ for(let i=0;i<round.count;i++){
+  let b=boxes[i],card=round.cards[i],selected=choice.has(i);
+  ctx.save();ctx.shadowColor='rgba(28,60,112,.08)';ctx.shadowBlur=12;ctx.shadowOffsetY=4;ctx.fillStyle='#fff';roundrect(ctx,b.x,b.y,b.w,b.h,16);ctx.fill();ctx.restore();
+  ctx.lineWidth=selected?4:1.5;ctx.strokeStyle=selected?'#1E3F8A':'#d6e0ee';roundrect(ctx,b.x,b.y,b.w,b.h,16);ctx.stroke();
+  const cw=286,ch=260,scale=Math.min((b.w-30)/cw,(b.h-56)/ch,1.9),dx=b.x+(b.w-cw*scale)/2,dy=b.y+(b.h-39-ch*scale)/2+4;
+  let cached=card.imageCache;if(!cached||card.cacheStyle!==renderKey()){cached=card.imageCache=drawTextureCanvas(card);card.cacheStyle=renderKey()}
+  ctx.drawImage(cached,dx,dy,cw*scale,ch*scale);
+  if($('outlines').checked)stampShape(card,b,'rgba(255,106,0,.85)',1,true);
+  if(compare){const plain={points:round.base.points,rotation:card.rotation,mirror:false};stampShape(plain,b,'rgba(255,106,0,.95)',1,true)}
+  if(answerVisible&&expectedIndices().includes(i)){stampShape(card,b,$('mono').checked?'#63748b':'#ffab56',t*.9,false);stampShape(card,b,'#ff6a00',t,true)}
+  ctx.fillStyle='#eaf1fb';ctx.beginPath();ctx.arc(b.x+28,b.y+b.h-24,16,0,2*Math.PI);ctx.fill();ctx.fillStyle='#1E3F8A';ctx.font='bold 16px Arial';ctx.textAlign='center';ctx.fillText(String(i+1),b.x+28,b.y+b.h-19);
+  if(selected&&!answerVisible){ctx.fillStyle='#1E3F8A';ctx.font='bold 13px Arial';ctx.fillText('ВЫБРАНО',b.x+b.w/2,b.y+b.h-19)}
+  if(answerVisible){
+   if(expectedIndices().includes(i)){ctx.lineWidth=5;ctx.strokeStyle='#16845b';roundrect(ctx,b.x+3,b.y+3,b.w-6,b.h-6,14);ctx.stroke();ctx.fillStyle='#16845b';ctx.font='bold 13px Arial';ctx.fillText(round.mode==='odd'?'ЛИШНИЙ ПРОСВЕТ':'ПРАВИЛЬНО',b.x+b.w/2,b.y+b.h-19)}
+   if(selected&&!expectedIndices().includes(i)){ctx.lineWidth=4;ctx.strokeStyle='#d04e50';roundrect(ctx,b.x+4,b.y+4,b.w-8,b.h-8,14);ctx.stroke();ctx.fillStyle='#c44850';ctx.font='bold 13px Arial';ctx.fillText('ЛИШНИЙ ВЫБОР',b.x+b.w/2,b.y+b.h-19)}
+  }
+ }
+ if(answerVisible&&t<1){cancelAnimationFrame(drawRAF);drawRAF=requestAnimationFrame(drawBoard)}
+}
+function renderKey(){return $('texture').value+'|'+$('quiet').checked+'|'+$('mono').checked}
+function getModeTask(){if(round.mode==='multi')return ['Найди все точные совпадения','Совпадающих просветов несколько. Выбери все, которые точно соответствуют образцу.'];if(round.mode==='odd')return ['Найди чужой просвет','Почти все просветы совпадают с образцом. Один изменён. Найди единственный отличающийся.'];return ['Найди точный просвет','Только один просвет соответствует образцу. Следи за углами, выступами и выемками.']}
+function syncTask(){const [h,detail]=getModeTask();$('taskHeading').textContent=h;$('taskDescription').textContent=detail;$('taskDetail').textContent=round.options.rotation?'Фигуры могут быть повёрнуты. Зеркальное отражение не считается совпадением.':'Нужно сравнивать форму пустоты, а не тёмные пластины.'}
+function displayChoice(){$('chosen').textContent=choice.size?[...choice].sort((a,b)=>a-b).map(x=>'№'+(x+1)).join(', '):'ничего'}
+function setExplanation(s,k=''){$('explain').textContent=s;$('explain').className='answer'+(k?' '+k:'')}
+function resetVisual(){choice.clear();answerVisible=false;graded=false;compare=false;$('compare').textContent='Сравнить контуры';displayChoice();$('status').textContent='Выбери ответ, затем нажми «Проверить».';setExplanation('Силуэты образованы пустотами между тёмными деталями. Ответ можно проверить или раскрыть.')}
+function clearRevealTimers(){clearTimeout(hideTimer);clearTimeout(flashTimer);hideTimer=null;flashTimer=null}
+function updateSampleVisibility(hide){sampleHidden=hide;$('sampleBox').classList.toggle('hidden',hide)}
+function scheduleSample(){clearRevealTimers();updateSampleVisibility(false);let val=$('sampleTime').value;if(val!=='always'){hideTimer=setTimeout(()=>updateSampleVisibility(true),Number(val)*1000)}}
+function newRound(replay=false){
+ if(!replay){
+  let previous=correctPositionHistory.length?correctPositionHistory[correctPositionHistory.length-1]:-1;
+  const seed=Math.floor(Math.random()*4294967296);round=makeRound(seed,readSettings(),previous);number++;
+  if(round.mode==='match'){correctPositionHistory.push(round.correctIndices[0]);if(correctPositionHistory.length>4)correctPositionHistory.shift()}
+ }
+ resetVisual();$('roundCount').textContent=String(number);syncTask();renderSample();scheduleSample();drawBoard();savePrefs();
+}
+function setChoice(idx){if(answerVisible||!round)return;const single=round.mode!=='multi';if(single){if(choice.has(idx))choice.clear();else{choice.clear();choice.add(idx)}}else{if(choice.has(idx))choice.delete(idx);else choice.add(idx)}displayChoice();drawBoard()}
+function boardClick(e){const rect=board.getBoundingClientRect(),x=(e.clientX-rect.left)*W/rect.width,y=(e.clientY-rect.top)*H/rect.height;let boxes=getBoxes();let idx=boxes.findIndex(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);if(idx>=0)setChoice(idx)}
+function expectedIndices(){return round.mode==='odd'?round.cards.filter(c=>!c.ok).map(c=>c.id):round.correctIndices.slice()}
+function check(){if(!round)return;if(!choice.size){$('status').textContent='Сначала выбери один или несколько вариантов.';return}if(graded)return;const expected=new Set(expectedIndices());const success=choice.size===expected.size&&[...expected].every(x=>choice.has(x));attempts++;if(success)correctAttempts++;graded=true;answerVisible=true;answerStart=performance.now();$('score').textContent=correctAttempts+'/'+attempts;$('status').textContent=success?'Верно!':'Есть неточность, посмотри на контуры.';setExplanation(success?'Отлично: все выбранные просветы совпали с заданием.':'Правильные варианты: '+[...expected].map(i=>'№'+(i+1)).join(', ')+'. Оранжевым контуром можно сравнить образец с каждым просветом.',success?'good':'bad');drawBoard()}
+function show(){if(!round)return;answerVisible=true;graded=true;answerStart=performance.now();$('status').textContent='Ответ открыт.';setExplanation('Правильные варианты: '+expectedIndices().map(i=>'№'+(i+1)).join(', ')+'. В режиме «Лишний просвет» выбери отличающийся, а не совпадающие.','good');drawBoard()}
+function updateTimer(){let elapsed=sessionElapsed+(sessionStart===null?0:performance.now()-sessionStart),s=Math.floor(elapsed/1000);$('timer').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function startSession(){if(sessionStart===null){sessionStart=performance.now();updateTimer();tickId=setInterval(updateTimer,250);$('status').textContent='Занятие начато.'}}
+function finishSession(){if(sessionStart!==null){sessionElapsed+=performance.now()-sessionStart;sessionStart=null;clearInterval(tickId);updateTimer();$('status').textContent='Занятие завершено. Раунды можно продолжать.'}}
+function updateWithoutNew(){syncRangeLabels();savePrefs();drawBoard()}
+board.addEventListener('click',boardClick);board.addEventListener('keydown',e=>{if(e.key>='1'&&e.key<='8'){const i=Number(e.key)-1;if(round&&i<round.count){e.preventDefault();setChoice(i)}}else if(e.key==='Enter'){e.preventDefault();check()}});
+$('start').onclick=startSession;$('finish').onclick=finishSession;$('next').onclick=()=>newRound();$('again').onclick=()=>newRound(true);$('clear').onclick=()=>{resetVisual();drawBoard()};$('check').onclick=check;$('show').onclick=show;
+$('compare').onclick=()=>{compare=!compare;$('compare').textContent=compare?'Убрать сравнение':'Сравнить контуры';drawBoard()};
+$('settingsToggle').onclick=()=>{$('layout').classList.toggle('noside');$('settingsToggle').textContent=$('layout').classList.contains('noside')?'⚙ Показать настройки':'⚙ Настройки'};
+$('fullscreen').onclick=async()=>{try{if(!document.fullscreenElement)await $('app').requestFullscreen();else await document.exitFullscreen()}catch(e){$('status').textContent='Не удалось включить полноэкранный режим.'}};
+$('peek').onclick=()=>{clearRevealTimers();updateSampleVisibility(false);if($('sampleTime').value!=='always')flashTimer=setTimeout(()=>updateSampleVisibility(true),2000)};
+$('hideSample').onclick=()=>{clearRevealTimers();updateSampleVisibility(true)};
+$('mode').addEventListener('change',()=>newRound());
+$('preset').addEventListener('change',()=>{if($('preset').value!=='custom')applyPreset($('preset').value);newRound()});
+$('formKind').addEventListener('change',()=>{$('preset').value='custom';newRound()});
+for(const id of ['count','similarity','noise','multiCount','rotation','mirror'])$(id).addEventListener('change',()=>{$('preset').value='custom';syncRangeLabels();savePrefs();newRound()});
+for(const id of ['quiet','mono','texture','outlines'])$(id).addEventListener('change',updateWithoutNew);
+$('sampleTime').addEventListener('change',()=>{savePrefs();scheduleSample()});
+loadPrefs();syncRangeLabels();newRound();updateTimer();
+</script>
+<script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
+<script src="../assets/menu-drawer.js"></script>
+<script src="../shared/new-trainers.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/mobile-new-trainers.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
+</body>
+</html>

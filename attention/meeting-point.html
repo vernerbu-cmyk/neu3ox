@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<script src="../shared/theme.js"></script>
+<script>/* NeuroX: читаем общую настройку до первой отрисовки */
+try {
+  const nxSavedTheme = localStorage.getItem('neurox_theme');
+  const nxTheme = (nxSavedTheme === 'light' || nxSavedTheme === 'dark')
+    ? nxSavedTheme
+    : ((window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
+  document.documentElement.dataset.theme = nxTheme;
+} catch (_) { document.documentElement.dataset.theme = 'light'; }
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NeuroX • Точка встречи — настройки сбоку</title>
+<style>
+:root{--navy:#1e3f8a;--orange:#ff6a00;--ink:#1b2b47;--muted:#64738e;--line:#dce5f3;--soft:#f1f6ff;--green:#13815f;--red:#a83942}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(130deg,#f6faff,#eaf2ff);color:var(--ink);font:15px/1.45 system-ui,'Segoe UI',Arial,sans-serif}
+.shell{max-width:1560px;margin:0 auto;padding:18px 20px 26px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:15px}.brand{display:flex;align-items:center;gap:12px}.mark{width:53px;height:53px;border-radius:16px;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:26px;box-shadow:0 10px 25px #1e3f8a27}.eyebrow{font-size:12px;color:var(--muted);font-weight:700}h1{font-size:27px;color:var(--navy);margin:0;line-height:1.2}header .version{border:1px solid #ffddbb;color:#b85c17;background:#fff6e8;padding:7px 12px;border-radius:30px;font-size:12px;font-weight:750}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 338px;gap:16px;align-items:start}.panel,.sidebar{background:#fff;border:1px solid var(--line);border-radius:21px;box-shadow:0 12px 35px #1e3f8a0e}.panel{padding:13px}.sidebar{padding:17px;max-height:calc(100vh - 38px);overflow:auto;position:sticky;top:18px}.line{display:flex;align-items:center;justify-content:space-between;gap:12px}.section-head{padding:3px 4px 11px}.section-head b{font-size:17px}.status{border-radius:40px;color:#315f9e;background:#eff5ff;border:1px solid #dce9fa;font-size:12px;padding:6px 10px;font-weight:800}
+.stage{position:relative;border:1px solid #d9e5f5;border-radius:17px;overflow:hidden;background:#eef5ff}.stage canvas{display:block;width:100%;height:auto;aspect-ratio:1200/650;touch-action:manipulation}.stage.clickable canvas{cursor:crosshair}.overlay{position:absolute;top:13px;left:13px;right:13px;display:flex;justify-content:space-between;gap:12px;pointer-events:none;align-items:flex-start}.bubble,.timer{background:#fffffff2;border:1px solid #dae5f4;backdrop-filter:blur(5px);border-radius:12px;padding:8px 12px;color:#395674;font-weight:750;font-size:12px;max-width:75%}.timer{color:var(--navy);font-size:20px;font-variant-numeric:tabular-nums;min-width:83px;text-align:center}
+button{font:inherit;cursor:pointer;border-radius:11px;padding:10px 13px;font-size:14px;font-weight:750;border:1px solid transparent;transition:transform .12s,background .12s}button:hover:not(:disabled){transform:translateY(-1px)}button:disabled{cursor:not-allowed;opacity:.45}.primary{background:var(--navy);color:#fff}.orange{background:var(--orange);color:#fff}.soft{background:#eff4fc;color:var(--navy)}.outline{background:#fff;color:var(--navy);border-color:var(--line)}.danger{color:#ad4831;background:#fff1eb}.controls{display:flex;flex-wrap:wrap;gap:8px;margin:12px 2px 9px}.answer{border:1px solid var(--line);border-radius:14px;background:#f7faff;padding:11px 13px;margin-top:9px;display:flex;flex-wrap:wrap;align-items:center;gap:9px;min-height:56px}.answer strong{color:var(--navy)}.chipset{display:flex;flex-wrap:wrap;gap:5px}.chip{width:35px;height:35px;padding:0;border-radius:50%;border:2px solid #d5dfec;color:var(--navy);background:white;font-size:14px;font-weight:850}.chip.on{color:#b24d00;border-color:var(--orange);background:#fff0df}.chip:disabled{opacity:.7}.answer .msg{flex:1;min-width:200px;font-size:14px}.answer .msg.good{color:var(--green);font-weight:750}.answer .msg.bad{color:var(--red);font-weight:750}.pairtag{border:1px solid #ffce9f;background:#fff2e6;color:#a84b08;border-radius:10px;padding:6px 8px;font-size:12px;font-weight:750}.pairtag button{padding:0 0 0 6px;background:none;color:inherit;border:0}.actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.choice{display:none;gap:8px;flex-wrap:wrap}.choice.visible{display:flex}.choice button.selected{background:var(--navy);color:#fff}.fieldhint{font-size:13px;color:var(--muted);margin-top:11px;padding:1px 3px}.block{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:14px}.block:last-child{border-bottom:0;padding-bottom:0;margin-bottom:0}h2{color:var(--navy);font-size:17px;margin:0 0 9px}h3{color:var(--navy);font-size:13px;text-transform:uppercase;letter-spacing:.06em;margin:0 0 10px}.callout{background:var(--soft);border-radius:12px;padding:12px;color:#38506e;font-size:13px;line-height:1.5}.settings{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px}.setting.wide{grid-column:1/-1}.setting label,.switch label{display:block;font-size:12px;font-weight:780;color:#52637d;margin-bottom:6px}.setting select{width:100%;height:40px;border:1px solid #d4e0f0;border-radius:10px;padding:0 9px;background:white;color:var(--ink);font:inherit;font-size:13px}.switches{display:grid;gap:8px}.switch{display:flex;gap:8px;align-items:center;font-size:13px;color:#354a68;cursor:pointer}.switch input{accent-color:var(--navy);width:16px;height:16px;margin:0;flex-shrink:0}.switch span{line-height:1.25}.tiny{color:var(--muted);font-size:12px;line-height:1.5}.subbar{margin-top:7px;display:flex;flex-wrap:wrap;align-items:center;gap:7px}.subbar button{font-size:12px;padding:7px 10px}.pill{font-size:11px;border:1px solid #d9e5f5;border-radius:40px;background:#fff;padding:5px 9px;color:#546c8e}.footer{font-size:12px;color:#8290a6;margin-top:14px}
+@media(max-width:1080px){.main{grid-template-columns:1fr}.sidebar{position:static;max-height:none;display:grid;grid-template-columns:1fr 1fr;gap:14px}.sidebar .block{border:0;margin:0;padding:0}.sidebar .block:first-child{grid-column:1/-1}}
+@media(max-width:680px){.shell{padding:10px}.sidebar{display:block}.sidebar .block{border-bottom:1px solid var(--line);padding-bottom:13px;margin-bottom:13px}h1{font-size:21px}.mark{width:42px;height:42px}.version{display:none}.timer{font-size:14px;padding:6px;min-width:auto}.bubble{font-size:10px;padding:6px 8px}.controls button{flex:1 1 120px}.stage{border-radius:12px}.panel{padding:9px}.chip{width:32px;height:32px}}
+
+/* Компактная боковая панель: настройки не занимают место над или под игровым полем. */
+.header-actions{display:flex;align-items:center;gap:10px}
+.settings-trigger{display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap;background:#fff;border:1px solid #d8e3f5;color:var(--navy);box-shadow:0 5px 16px #1e3f8a14}
+.settings-trigger:hover{background:#edf4ff}
+.main{grid-template-columns:minmax(0,1fr) 330px;align-items:start;transition:grid-template-columns .18s ease}
+.sidebar{max-height:calc(100dvh - 30px);top:15px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#b5c5e4 transparent}
+.side-top{display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:-17px;background:#fff;z-index:3;padding:6px 0 13px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.side-top b{font-size:16px;color:var(--navy)}
+.side-close{background:#eef4ff;color:var(--navy);padding:7px 10px;min-width:35px}
+.settingsBackdrop{display:none}
+.main.settings-collapsed{grid-template-columns:minmax(0,1fr)}
+.main.settings-collapsed .sidebar{display:none}
+@media (min-width:901px) and (max-width:1180px){.main{grid-template-columns:minmax(0,1fr) 295px}.sidebar{padding:13px}.side-top{top:-13px}.settings{gap:10px 8px}.controls{gap:6px}.controls button{font-size:13px;padding:9px 10px}}
+@media (max-width:900px){
+ .main,.main.settings-collapsed{display:block}
+ .sidebar,.main.settings-collapsed .sidebar{display:block;position:fixed;z-index:1001;top:0;right:0;bottom:0;width:min(350px,92vw);max-height:none;overflow-y:auto;border-radius:20px 0 0 20px;padding:18px;transform:translateX(110%);visibility:hidden;transition:transform .2s ease,visibility .2s;box-shadow:-20px 0 50px #142f5a22}
+ body.settings-open .sidebar{transform:translateX(0);visibility:visible}
+ .settingsBackdrop{position:fixed;display:block;inset:0;background:#0e254a81;z-index:1000;opacity:0;pointer-events:none;transition:opacity .2s}
+ body.settings-open .settingsBackdrop{opacity:1;pointer-events:auto}
+ body.settings-open{overflow:hidden}
+ .side-top{top:-18px}
+}
+@media(max-width:680px){.header-actions .version{display:none}.settings-trigger{padding:9px 11px;font-size:13px}.sidebar .block{border-bottom:1px solid var(--line);padding-bottom:13px;margin-bottom:13px}.controls button{flex:1 1 130px}}
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/new-trainers.css">
+<link rel="stylesheet" href="../shared/new-trainers-theme.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<link rel="stylesheet" href="../shared/mobile-new-trainers.css">
+</head>
+<body class="nx-added-game nx-game-meeting-point" data-nx-section="attention">
+<div class="shell">
+ <header><div class="brand"><div class="mark">◎</div><div><div class="eyebrow">NEUROX · демонстрационные тренажёры</div><h1>Точка встречи</h1></div></div><div class="header-actions"><span class="version">Расширенная версия · 5 режимов</span><button type="button" class="settings-trigger" id="toggleSettings" aria-controls="settingsSidebar" aria-expanded="true">⚙ Настройки</button></div></header>
+ <div class="main">
+  <section class="panel">
+   <div class="line section-head"><b id="modeTitle">Найди пару</b><span class="status" id="status">Готово к запуску</span></div>
+   <div class="stage" id="stage"><canvas width="1200" height="650" id="field" aria-label="Поле для прогнозирования движения"></canvas><div class="overlay"><div class="bubble" id="instruction">Наблюдай за движением объектов и прогнозируй встречу.</div><div class="timer" id="clock">0,0 c</div></div></div>
+   <div class="controls">
+    <button class="primary" id="start">▶ Начать</button><button class="soft" id="pause" disabled>Ⅱ Пауза</button><button class="outline" id="finish" disabled>■ Закончить</button><button class="orange" id="verify" disabled>Проверить прогноз</button><button class="outline" id="repeat">↺ Повторить</button><button class="soft" id="next">＋ Новый раунд</button>
+   </div>
+   <div class="answer" id="answerPanel"><strong id="answerLabel">Твой прогноз:</strong><div class="chipset" id="chips"></div><div class="actions" id="pairActions"><button class="soft" id="addPair" disabled>+ Добавить пару</button><button class="outline" id="clear">Сбросить</button></div><div class="choice" id="yesNo"><button class="outline" id="yes">Будет</button><button class="outline" id="no">Не будет</button></div><div class="actions" id="pairList"></div></div>
+   <div class="answer"><div class="msg" id="message">Выбери режим и запусти движение.</div></div>
+   <div class="subbar"><button class="soft" id="hint" disabled>Подсказка: направление</button><button class="soft" id="slowVerify">Проверка ×0,5</button><span class="pill" id="roundCount">Раунд 1</span><span class="pill" id="scenarioInfo">Один будущий контакт</span></div>
+   <div class="fieldhint">Педагог отмечает ответ ребёнка. Время нажатия не считается реакцией ребёнка. Пунктир при проверке показывает настоящие траектории.</div>
+  </section>
+  <aside class="sidebar" id="settingsSidebar" aria-label="Настройки тренажёра"><div class="side-top"><b>⚙ Настройки</b><button type="button" class="side-close" id="settingsClose" aria-label="Закрыть панель настроек">✕</button></div>
+   <div class="block"><h2>Режим игры</h2><div class="setting wide"><label for="mode">Что нужно предсказать</label><select id="mode">
+    <option value="single">Найди пару · одно столкновение</option>
+    <option value="first">Кто первым? · два столкновения</option>
+    <option value="yesno">Будет или нет? · иногда никто</option>
+    <option value="all">Все встречи · от 0 до 2</option>
+    <option value="where">Место встречи · укажи точку</option>
+   </select></div><div class="callout" style="margin-top:10px" id="modeHelp">Следи за движением. После остановки назови пару, которая столкнётся.</div></div>
+   <div class="block"><h3>Основные настройки</h3><div class="settings">
+    <div class="setting wide"><label for="preset">Готовый уровень</label><select id="preset"><option value="easy">Обучение</option><option value="normal" selected>Обычный</option><option value="hard">Сложный</option><option value="expert">Эксперт</option><option value="custom">Свои настройки</option></select></div>
+    <div class="setting"><label for="count">Число фигур</label><select id="count"><option value="4">4</option><option value="6" selected>6</option><option value="8">8</option><option value="10">10</option><option value="12">12</option></select></div>
+    <div class="setting"><label for="watch">Время наблюдения</label><select id="watch"><option value="3">3 сек</option><option value="5" selected>5 сек</option><option value="7">7 сек</option><option value="9">9 сек</option></select></div>
+    <div class="setting"><label for="horizon">До будущих событий</label><select id="horizon"><option value="4" selected>4 сек</option><option value="5">5 сек</option><option value="6">6 сек</option></select></div>
+    <div class="setting"><label for="tempo">Темп анимации</label><select id="tempo"><option value="0.6">×0,6</option><option value="0.8">×0,8</option><option value="1" selected>×1</option><option value="1.25">×1,25</option><option value="1.5">×1,5</option></select></div>
+    <div class="setting"><label for="near">Близкие промахи</label><select id="near"><option value="0">Без обманок</option><option value="1" selected>1 пара</option><option value="2">2 пары</option><option value="3">3 пары</option></select></div>
+    <div class="setting"><label for="speed">Скорость фигур</label><select id="speed"><option value="slow">Медленная</option><option value="normal" selected>Средняя</option><option value="fast">Быстрая</option></select></div>
+    <div class="setting"><label for="empty">Пустые раунды*</label><select id="empty"><option value="0">0%</option><option value="20">20%</option><option value="40" selected>40%</option><option value="60">60%</option></select></div>
+   </div><div class="tiny" style="margin-top:9px">* Вероятность отсутствия столкновений используется в режиме «Все встречи». В режиме «Будет или нет?» вероятность 50%.</div></div>
+   <div class="block"><h3>Облегчение и подсказки</h3><div class="switches">
+    <label class="switch"><input type="checkbox" id="trails" checked><span>Показывать след движения</span></label>
+    <label class="switch"><input type="checkbox" id="arrows"><span>Стрелки направления</span></label>
+    <label class="switch"><input type="checkbox" id="future"><span>Короткий прогноз (1,2 сек)</span></label>
+    <label class="switch"><input type="checkbox" id="grid" checked><span>Координатная сетка</span></label>
+    <label class="switch"><input type="checkbox" id="numbers" checked><span>Номера на фигурах</span></label>
+   </div><p class="tiny" style="margin:9px 0 0">Помощь можно включать даже после остановки. Короткий прогноз показывает только ближайшее направление, а не готовую точку столкновения.</p></div>
+   <div class="block"><h3>Как усложняется</h3><p class="tiny" style="margin:0">Увеличь число фигур, добавь близкие промахи и отключи шлейфы или стрелки. «Кто первым?» заставляет сравнивать время двух реальных столкновений, а «Все встречи» добавляет риск пропустить вторую пару или ошибочно выбрать лишнюю.</p></div>
+  </aside>
+ </div><div class="settingsBackdrop" id="settingsBackdrop"></div><div class="footer">NeuroX · офлайн HTML / Canvas. Генератор просчитывает контакты математически; до ответа не показывает будущие траектории. Экспериментальный педагогический тренажёр, не диагностика.</div>
+</div>
+<script>
+(()=>{
+'use strict';
+const cvs=document.getElementById('field'),cx=cvs.getContext('2d'),$=id=>document.getElementById(id);
+const W=1200,H=650,R=18,CONTACT=2*(R+3),EDGE=76;
+const colors=['#277bb8','#e27a45','#29a198','#946bb8','#cc6382','#5386ba','#bd913c','#627bc3','#42a26e','#c66a9c','#876cbd','#417d92'];
+const helps=['trails','arrows','future','grid','numbers'];
+let objects=[],collisions=[],chosen=[],savedPairs=[],yn=null,where=null,phase='idle',sim=0,lastTime=0,raf=0,roundNo=0,seed=0,history=[],settings={},special=null,revealSlow=false,message='',lastFail=false;
+let rng=Math.random,replyMode='single',showHint=false;
+const random=(a,b)=>a+rng()*(b-a),randInt=n=>Math.floor(rng()*n),limit=(x,a,b)=>Math.min(b,Math.max(a,x));
+function seeded(n){return function(){let t=n+=0x6D2B79F5;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;}}
+function speedRange(){return settings.speed==='slow'?[18,28]:settings.speed==='fast'?[32,51]:[24,40]}
+function vel(){const [min,max]=speedRange(),angle=random(0,Math.PI*2),sp=random(min,max);return{xv:Math.cos(angle)*sp,yv:Math.sin(angle)*sp};}
+function point(o,t){return{x:o.x+o.xv*t,y:o.y+o.yv*t}}
+function dist(a,b,t){const p=point(a,t),q=point(b,t);return Math.hypot(p.x-q.x,p.y-q.y)}
+function close(a,b,lo,hi){const dx=a.x-b.x,dy=a.y-b.y,vx=a.xv-b.xv,vy=a.yv-b.yv,den=vx*vx+vy*vy;const t=den?limit(-(dx*vx+dy*vy)/den,lo,hi):lo;return{t,d:Math.hypot(dx+vx*t,dy+vy*t)}}
+function contactTime(a,b){const dx=a.x-b.x,dy=a.y-b.y,vx=a.xv-b.xv,vy=a.yv-b.yv;const A=vx*vx+vy*vy,B=2*(dx*vx+dy*vy),C=dx*dx+dy*dy-CONTACT*CONTACT;if(C<=0)return 0;if(A<1e-9)return Infinity;const disc=B*B-4*A*C;if(disc<0)return Infinity;let t=(-B-Math.sqrt(disc))/(2*A);return t>=0&&t<=settings.total+0.02?t:Infinity;}
+function inside(o){return[0,settings.total].every(t=>{const p=point(o,t);return p.x>EDGE&&p.x<W-EDGE&&p.y>EDGE+6&&p.y<H-EDGE;});}
+function collisionCandidate(at){for(let tryN=0;tryN<450;tryN++){
+ const center={x:random(280,920),y:random(190,470)},a=vel(),b=vel();const dot=(a.xv*b.xv+a.yv*b.yv)/Math.hypot(a.xv,a.yv)/Math.hypot(b.xv,b.yv);if(dot>0.42||dot<-.93)continue;
+ const x={x:center.x-a.xv*at,y:center.y-a.yv*at,...a},y={x:center.x-b.xv*at,y:center.y-b.yv*at,...b};
+ if(inside(x)&&inside(y)&&contactTime(x,y)>settings.watch+1.15)return[x,y];
+ }return null;
+}
+function decoyCandidate(){for(let t=0;t<550;t++){
+ const center={x:random(260,940),y:random(180,470)},a=vel(),b=vel(),dx=a.xv-b.xv,dy=a.yv-b.yv,len=Math.hypot(dx,dy);if(len<24)continue;
+ const near=random(settings.nearGap[0],settings.nearGap[1]),crossT=random(settings.watch+.8,settings.total-.65),sign=rng()<.5?1:-1;
+ const nx=(-dy/len)*near*sign,ny=(dx/len)*near*sign;
+ const x={x:center.x-a.xv*crossT,y:center.y-a.yv*crossT,...a};
+ const y={x:center.x-b.xv*crossT+nx,y:center.y-b.yv*crossT+ny,...b};
+ if(inside(x)&&inside(y)&&close(x,y,0,settings.total).d>=CONTACT+6&&close(x,y,settings.watch,settings.total).d<115)return[x,y];
+ }return null;
+}
+function bystander(){for(let i=0;i<450;i++){
+ const v=vel(),a={x:random(150,1050),y:random(140,510),...v};if(inside(a))return a;
+ }return null;
+}
+function accepted(list,group,paired){if(!group||group.some(x=>!inside(x)))return false;
+ for(const p of group)for(const q of list){if(close(p,q,0,settings.total).d<CONTACT+9)return false;}
+ if(!paired&&group.length===2&&close(group[0],group[1],0,settings.total).d<CONTACT+9)return false;
+ return true;}
+function validate(list,intended){if(list.length!==settings.count)return null;
+ let observed=[];
+ for(let i=0;i<list.length;i++)for(let j=i+1;j<list.length;j++){
+   const t=contactTime(list[i],list[j]);if(Number.isFinite(t))observed.push({i,j,t});
+ }
+ observed.sort((a,b)=>a.t-b.t);
+ if(observed.length!==intended)return null;
+ if(observed.some(x=>x.t<settings.watch+1.1||x.t>settings.total-.25))return null;
+ if(observed.length===2 && observed[1].t-observed[0].t<1.0)return null;
+ return observed;
+}
+function calculateSettings(){
+ settings={mode:$('mode').value,count:Number($('count').value),watch:Number($('watch').value),horizon:Number($('horizon').value),tempo:Number($('tempo').value),near:Number($('near').value),speed:$('speed').value,empty:Number($('empty').value)};
+ settings.total=settings.watch+settings.horizon;
+ settings.nearGap=settings.near===0?[75,130]:settings.speed==='fast'?[51,82]:[53,93];
+}
+function needHits(mode){if(mode==='single'||mode==='where')return 1;if(mode==='first')return 2;if(mode==='yesno')return rng()<.5?0:1;
+ return rng()<settings.empty/100?0:(rng()<.35?2:1);
+}
+function build(needed){
+ const list=[];
+ const firstT=settings.watch+random(2.2,settings.horizon-.45);
+ if(needed>0){const a=collisionCandidate(firstT);if(!accepted(list,a,true))return null;list.push(...a);}
+ if(needed===2){let b=null;
+ for(let i=0;i<120&&!b;i++){
+   const secondT=firstT+random(1.15,1.75);
+   const t=secondT<settings.total-.35?secondT:firstT-random(1.15,1.65);
+   if(t<settings.watch+2.1)continue;
+   const cand=collisionCandidate(t);
+   if(accepted(list,cand,true))b=cand;
+ }
+ if(!b)return null;list.push(...b);
+ }
+ const maxNear=Math.min(settings.near,Math.floor((settings.count-list.length)/2));
+ let nearUsed=0;
+ for(let j=0;j<maxNear;j++){
+   let cand=null;for(let z=0;z<130&&!cand;z++){const p=decoyCandidate();if(accepted(list,p,false))cand=p;}
+   if(!cand){if(j===0&&settings.near>0)return null;break;}list.push(...cand);nearUsed++;
+ }
+ while(list.length<settings.count){let pick=null;
+  for(let i=0;i<400&&!pick;i++){const c=bystander();if(c&&accepted(list,[c],false))pick=c;}
+  if(!pick)return null;list.push(pick);
+ }
+ const observed=validate(list,needed);if(!observed)return null;
+ return {list,observed,nearUsed};
+}
+function choosePairsHistory(list,contacts){
+ for(let i=list.length-1;i>0;i--){const j=randInt(i+1);[list[i],list[j]]=[list[j],list[i]];}
+ const ids=list.map((o,i)=>({...o,id:i+1,color:colors[i%colors.length]}));
+ const sorted=[];
+ for(const c of contacts){const a=ids.find(x=>x===list[c.i]),b=ids.find(x=>x===list[c.j]); /* replaced below */}
+ return ids;
+}
+function newRound(){cancelAnimationFrame(raf);calculateSettings();replyMode=settings.mode;lastFail=false;
+ const baseSeed=(Date.now()>>>0)+Math.floor(Math.random()*1e9)+roundNo*7919;
+ let found=null,chosenSeed=0,hitCt=0;
+ // Fix the requested number of real collisions before retrying layouts. Otherwise
+ // layouts with no collisions would be overrepresented simply because they are easier to generate.
+ hitCt=replyMode==='single'||replyMode==='where'?1:replyMode==='first'?2:replyMode==='yesno'?(Math.random()<.5?0:1):(Math.random()<settings.empty/100?0:(Math.random()<.35?2:1));
+ for(let attempt=0;attempt<310&&!found;attempt++){ 
+  chosenSeed=(baseSeed+attempt*100003)>>>0;
+  rng=seeded(chosenSeed);
+  if(hitCt===2&&settings.count<4)hitCt=1;
+  const made=build(hitCt);if(!made)continue;
+  const reordered=made.list.map((o,i)=>({...o,initialIndex:i}));
+  for(let i=reordered.length-1;i>0;i--){const j=randInt(i+1);[reordered[i],reordered[j]]=[reordered[j],reordered[i]];}
+  const current=reordered.map((o,i)=>({...o,id:i+1,color:colors[i%colors.length]}));
+  const contacts=[];
+  for(let i=0;i<current.length;i++)for(let j=i+1;j<current.length;j++){
+   const t=contactTime(current[i],current[j]);if(Number.isFinite(t))contacts.push({ids:[i+1,j+1],t,point:point(current[i],t)});
+  }
+  contacts.sort((a,b)=>a.t-b.t);
+  const key=contacts.length?contacts[0].ids.join('-'):null;
+  if(key&&history.filter(h=>h.count===settings.count).slice(-5).some(h=>h.key===key))continue;
+  found={objects:current,contacts,nearUsed:made.nearUsed};
+ }
+ if(!found){lastFail=true;phase='idle';objects=[];collisions=[];$('message').className='msg bad';$('message').textContent='Не удалось собрать корректный раунд с этими настройками. Уменьши число фигур или близких промахов и нажми «Новый раунд».';updateUI();draw();return;}
+ seed=chosenSeed;objects=found.objects;collisions=found.contacts;
+ if(collisions.length)history.push({count:settings.count,key:collisions[0].ids.join('-')});if(history.length>35)history=history.slice(-35);
+ roundNo++;chosen=[];savedPairs=[];yn=null;where=null;phase='idle';sim=0;showHint=false;revealSlow=false;
+ $('message').className='msg';$('message').textContent='Нажми «Начать», затем наблюдай за движением. После остановки сделай прогноз.';
+ $('roundCount').textContent='Раунд '+roundNo;
+ $('scenarioInfo').textContent=found.nearUsed?`Близких промахов в генерации: ${found.nearUsed}`:'Без специальных промахов';
+ $('slowVerify').textContent='Проверка ×0,5';updateUI();draw();
+}
+function configChanged(){saveSettings();newRound();}
+function updateUI(){
+ const states={idle:'Готово к запуску',observe:'Наблюдение',pause:'Пауза',choose:'Твой прогноз',reveal:'Проверка',done:'Результат'};
+ $('status').textContent=states[phase];
+ const titles={single:'Найди пару',first:'Кто столкнётся первым?',yesno:'Будет ли столкновение?',all:'Найди все встречи',where:'Где встретятся?'};
+ const helps={single:'Назови два номера, которые столкнутся.',first:'Здесь будут две встречи. Определи, какая пара столкнётся первой.',yesno:'Определи, будет ли хоть одно столкновение. Иногда все разминутся.',all:'Найди все столкновения (от нуля до двух). Укажи пары, либо выбери «Никто».',where:'Найди точку будущего столкновения и нажми на неё после остановки.'};
+ $('modeTitle').textContent=titles[replyMode];$('modeHelp').textContent=helps[replyMode];
+ const texts={idle:'Нажми «Начать». Сначала внимательно наблюдай.',observe:'Следи за направлением и скоростью фигур.',pause:'На паузе можно рассмотреть расположение фигур.',choose:helps[replyMode],reveal:'Смотрим, что произошло на самом деле.',done:'Проверка завершена. Можно повторить этот раунд.'};
+ $('instruction').textContent=texts[phase];
+ const active=['observe','pause'].includes(phase);
+ $('clock').textContent=(active?Math.max(0,settings.watch-sim):phase==='reveal'?Math.max(0,settings.total-sim):phase==='idle'?settings.watch:0).toFixed(1)+' c';
+ $('start').disabled=!objects.length||!['idle','done'].includes(phase);
+ $('pause').disabled=!['observe','pause'].includes(phase);$('pause').textContent=phase==='pause'?'▶ Продолжить':'Ⅱ Пауза';
+ $('finish').disabled=!['observe','pause'].includes(phase);
+ $('repeat').disabled=!objects.length;$('verify').disabled=phase!=='choose'||!validSelection();
+ $('hint').disabled=phase!=='choose';$('hint').textContent=showHint?'Скрыть подсказку':'Подсказка: направление';
+ $('slowVerify').disabled=phase==='reveal';
+ $('field').closest('.stage').classList.toggle('clickable',phase==='choose'&&replyMode!=='yesno');
+ ['mode','preset','count','watch','horizon','near','speed','empty'].forEach(id=>$(id).disabled=['observe','pause','reveal'].includes(phase));
+ $('yesNo').classList.toggle('visible',replyMode==='yesno'||replyMode==='all');$('pairActions').style.display=replyMode==='all'?'flex':'none';
+ $('chips').style.display=replyMode==='yesno'||replyMode==='where'?'none':'flex';$('answerLabel').textContent=replyMode==='yesno'?'Будет ли встреча?':replyMode==='where'?'Место встречи:':'Твой прогноз:';
+ $('yes').textContent=replyMode==='all'?'Никто не столкнётся':'Будет';$('no').style.display=replyMode==='yesno'?'':'none';
+ $('yes').classList.toggle('selected',replyMode==='all'?yn===false:yn===true);
+ $('no').classList.toggle('selected',yn===false);
+ $('addPair').disabled=phase!=='choose'||chosen.length!==2;$('clear').disabled=phase!=='choose';$('yes').disabled=phase!=='choose';$('no').disabled=phase!=='choose';
+ const chipBox=$('chips');chipBox.replaceChildren();objects.forEach(o=>{
+  const b=document.createElement('button');b.className='chip'+(chosen.includes(o.id)?' on':'');b.textContent=o.id;b.disabled=phase!=='choose';b.title='Фигура '+o.id;b.onclick=()=>choose(o.id);chipBox.appendChild(b);
+ });
+ const p=$('pairList');p.replaceChildren();if(replyMode==='all')savedPairs.forEach(pair=>{const wrap=document.createElement('span');wrap.className='pairtag';wrap.textContent=`№${pair[0]} + №${pair[1]} `;const del=document.createElement('button');del.textContent='×';del.title='Убрать пару';del.disabled=phase!=='choose';del.onclick=()=>{savedPairs=savedPairs.filter(a=>a!==pair);updateUI();draw()};wrap.appendChild(del);p.appendChild(wrap)});
+ if(replyMode==='where'){$('answerLabel').textContent=where?`Точка: ${Math.round(where.x)}, ${Math.round(where.y)}`:'Выбери место на поле:';}
+}
+function validSelection(){if(replyMode==='yesno')return yn!==null;if(replyMode==='where')return !!where;if(replyMode==='all')return yn===false||savedPairs.length>0;if(replyMode==='single'||replyMode==='first')return chosen.length===2;return false;}
+function choose(id){if(phase!=='choose'||replyMode==='where'||replyMode==='yesno')return;
+ if(chosen.includes(id))chosen=chosen.filter(x=>x!==id);
+ else if(chosen.length<2)chosen.push(id);
+ else chosen=[chosen[1],id];
+ if(replyMode==='all'){yn=null;}
+ say(chosen.length===2?`Выбраны фигуры ${chosen.join(' и ')}.`:'Выбери два номера.');updateUI();draw();
+}
+function say(txt,style=''){const el=$('message');el.textContent=txt;el.className='msg'+(style?' '+style:'');}
+function setYesNo(value){if(phase!=='choose')return;yn=value;if(replyMode==='all'){savedPairs=[];chosen=[];}say(value===false?'Прогноз: никто не столкнётся.':'Прогноз: столкновение будет.');updateUI();draw();}
+function addPair(){if(replyMode!=='all'||phase!=='choose'||chosen.length!==2)return;
+ const sorted=[...chosen].sort((a,b)=>a-b);
+ if(savedPairs.some(p=>p.join('-')===sorted.join('-'))){say('Эта пара уже добавлена.');return;}
+ if(savedPairs.length>=2){say('В этом режиме максимум две пары.');return;}
+ if(savedPairs.some(p=>p.some(id=>sorted.includes(id)))){say('Одна фигура не может входить в две пары в этом раунде.');return;}
+ savedPairs.push(sorted);chosen=[];yn=null;say(`Добавлено пар: ${savedPairs.length}.`);updateUI();draw();}
+function start(){if(!objects.length)return;cancelAnimationFrame(raf);phase='observe';sim=0;chosen=[];savedPairs=[];where=null;yn=null;showHint=false;lastTime=performance.now();say('Наблюдай. Важны скорость, направление и расстояние.');updateUI();raf=requestAnimationFrame(tick);}
+function freeze(){cancelAnimationFrame(raf);if(!['observe','pause'].includes(phase))return;phase='choose';sim=Math.min(sim,settings.watch);say('Движение остановлено. Выбери ответ. Можно включить подсказку направления.');updateUI();draw();}
+function pause(){if(phase==='observe'){cancelAnimationFrame(raf);phase='pause';}else if(phase==='pause'){phase='observe';lastTime=performance.now();raf=requestAnimationFrame(tick);}updateUI();draw();}
+function tick(ts){if(!['observe','reveal'].includes(phase))return;const dt=Math.min(.08,(ts-lastTime)/1000);lastTime=ts;const tempo=phase==='reveal'&&revealSlow?.5:settings.tempo;sim+=dt*tempo;
+ if(phase==='observe'&&sim>=settings.watch){sim=settings.watch;freeze();return;}
+ if(phase==='reveal'&&sim>=settings.total){sim=settings.total;done();return;}
+ updateClock();draw();raf=requestAnimationFrame(tick);}
+function updateClock(){$('clock').textContent=(phase==='observe'?Math.max(0,settings.watch-sim):phase==='reveal'?Math.max(0,settings.total-sim):0).toFixed(1)+' c';}
+function verify(){if(phase!=='choose'||!validSelection())return;phase='reveal';lastTime=performance.now();say('Смотрим будущее движение.');updateUI();raf=requestAnimationFrame(tick);}
+function samePair(a,b){return a.length===b.length&&a.every(x=>b.includes(x));}
+function evaluate(){
+ const truth=collisions.map(c=>c.ids),first=collisions[0]?.ids||null;let correct=false,note='';
+ if(replyMode==='single'||replyMode==='first'){
+  correct=!!first&&samePair(chosen,first);note=`Правильная пара: №${first?.join(' и №')}.`;
+ }else if(replyMode==='yesno'){
+  correct=yn===(collisions.length>0);note=collisions.length?`Столкновение произошло: №${first.join(' и №')}.`:'Никто не столкнулся.';
+ }else if(replyMode==='all'){
+  if(yn===false){correct=collisions.length===0;}
+  else {correct=savedPairs.length===truth.length&&savedPairs.every(p=>truth.some(q=>samePair(p,q)));}
+  note=truth.length?`Встречи: ${truth.map(p=>'№'+p.join(' и №')).join('; ')}.`:'Столкновений не было.';
+ }else if(replyMode==='where'){
+  if(collisions.length){const hit=collisions[0].point;const dist=Math.hypot(hit.x-where.x,hit.y-where.y);correct=dist<=60;note=`Ошибка прогноза: ${Math.round(dist)} пикс. (попадание в радиус 60 пикс. считается верным).`;}
+ }
+ return{correct,note};
+}
+function done(){cancelAnimationFrame(raf);phase='done';const ev=evaluate();say((ev.correct?'Верно! ':'Не совпало. ')+ev.note,ev.correct?'good':'bad');updateUI();draw();}
+function drawArrow(x,y,vx,vy,scale=1,alpha=1){const d=Math.hypot(vx,vy);if(d<1)return;const ex=x+vx/d*scale,ey=y+vy/d*scale;cx.globalAlpha=alpha;cx.beginPath();cx.moveTo(x,y);cx.lineTo(ex,ey);cx.stroke();const a=Math.atan2(vy,vx);cx.beginPath();cx.moveTo(ex,ey);cx.lineTo(ex-9*Math.cos(a-.46),ey-9*Math.sin(a-.46));cx.moveTo(ex,ey);cx.lineTo(ex-9*Math.cos(a+.46),ey-9*Math.sin(a+.46));cx.stroke();cx.globalAlpha=1;}
+function draw(){
+ cx.clearRect(0,0,W,H);const g=cx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#f8fbff');g.addColorStop(1,'#edf5ff');cx.fillStyle=g;cx.fillRect(0,0,W,H);
+ if($('grid').checked){cx.strokeStyle='#7eabc914';cx.lineWidth=1;for(let x=0;x<W;x+=50){cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,H);cx.stroke()}for(let y=0;y<H;y+=50){cx.beginPath();cx.moveTo(0,y);cx.lineTo(W,y);cx.stroke()}}
+ cx.strokeStyle='#d6e4f5';cx.lineWidth=2;cx.strokeRect(25,28,W-50,H-56);cx.fillStyle='#8ca1bf';cx.font='700 12px system-ui';cx.fillText('ПОЛЕ ПРОГНОЗИРОВАНИЯ',44,H-22);
+ if(!objects.length)return;
+ if(phase==='idle'){cx.fillStyle='#2e629533';cx.textAlign='center';cx.font='800 30px system-ui';cx.fillText('Нажми «Начать»',W/2,H/2-8);cx.textAlign='left';}
+ if(phase==='done'){
+  objects.forEach(o=>{cx.save();cx.setLineDash([7,8]);cx.strokeStyle='#7189a142';cx.lineWidth=2;cx.beginPath();cx.moveTo(o.x,o.y);const e=point(o,settings.total);cx.lineTo(e.x,e.y);cx.stroke();cx.restore();});
+  collisions.forEach((c,i)=>{const p=c.point;cx.strokeStyle='#ff6a00';cx.lineWidth=4;cx.beginPath();cx.arc(p.x,p.y,43,0,Math.PI*2);cx.stroke();cx.font='800 17px system-ui';cx.fillStyle='#e35c14';cx.textAlign='center';cx.fillText(collisions.length>1?(i===0?'ПЕРВАЯ ВСТРЕЧА':'ВТОРАЯ ВСТРЕЧА'):'МЕСТО ВСТРЕЧИ',p.x,p.y-62);cx.textAlign='left';});
+  if(replyMode==='where'&&where){cx.strokeStyle='#b057a4';cx.lineWidth=3;cx.beginPath();cx.moveTo(where.x-15,where.y);cx.lineTo(where.x+15,where.y);cx.moveTo(where.x,where.y-15);cx.lineTo(where.x,where.y+15);cx.stroke();}
+ }
+ for(const o of objects){const p=point(o,sim);const trailSec=(phase!=='idle'&&$('trails').checked)?Math.min(sim,1.65):0;
+  if(trailSec){const a=point(o,sim-trailSec);cx.strokeStyle=o.color+'66';cx.lineWidth=7;cx.lineCap='round';cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(p.x,p.y);cx.stroke();cx.lineCap='butt';}
+  if((showHint||$('arrows').checked)&&phase!=='idle'&&phase!=='done'){
+   cx.strokeStyle=o.color;cx.lineWidth=3;drawArrow(p.x,p.y,o.xv,o.yv,64,.9);
+  }
+  if($('future').checked&&phase!=='idle'&&phase!=='done'){
+   const q=point(o,sim+1.2);cx.save();cx.setLineDash([5,7]);cx.strokeStyle=o.color+'a9';cx.lineWidth=2;cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(q.x,q.y);cx.stroke();cx.restore();
+  }
+  cx.save();cx.shadowColor=o.color+'64';cx.shadowBlur=14;cx.beginPath();cx.arc(p.x,p.y,R+3,0,Math.PI*2);cx.fillStyle=o.color;cx.fill();cx.restore();
+  if($('numbers').checked){cx.fillStyle='#fff';cx.font='800 19px system-ui';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(o.id,p.x,p.y+1);cx.textBaseline='alphabetic';cx.textAlign='left';}
+  if(chosen.includes(o.id)&&phase==='choose'){cx.strokeStyle='#ff6a00';cx.lineWidth=4;cx.beginPath();cx.arc(p.x,p.y,R+10,0,Math.PI*2);cx.stroke();}
+ }
+ // Mark actual contact only at or after its time, never before.
+ if(phase==='reveal'||phase==='done')collisions.forEach(c=>{if(sim>=c.t-.03){cx.strokeStyle='#ff6a00';cx.lineWidth=4;cx.beginPath();cx.arc(c.point.x,c.point.y,31,0,Math.PI*2);cx.stroke();}});
+ if(where&&phase==='choose'){cx.strokeStyle='#b057a4';cx.lineWidth=4;cx.beginPath();cx.moveTo(where.x-14,where.y);cx.lineTo(where.x+14,where.y);cx.moveTo(where.x,where.y-14);cx.lineTo(where.x,where.y+14);cx.stroke();}
+}
+function applyPreset(id){const presets={easy:{count:'4',watch:'7',horizon:'5',tempo:'0.8',near:'0',speed:'slow',trails:true,arrows:true,future:false},normal:{count:'6',watch:'5',horizon:'4',tempo:'1',near:'1',speed:'normal',trails:true,arrows:false,future:false},hard:{count:'8',watch:'5',horizon:'5',tempo:'1.25',near:'2',speed:'normal',trails:false,arrows:false,future:false},expert:{count:'10',watch:'3',horizon:'6',tempo:'1.5',near:'2',speed:'fast',trails:false,arrows:false,future:false}};
+ if(!presets[id])return;
+ const p=presets[id];for(const k of ['count','watch','horizon','tempo','near','speed'])$(k).value=p[k];for(const k of ['trails','arrows','future'])$(k).checked=p[k];}
+function saveSettings(){const data={};for(const id of ['mode','preset','count','watch','horizon','tempo','near','speed','empty',...helps])data[id]=$(id).type==='checkbox'?$(id).checked:$(id).value;try{localStorage.setItem('neurox-meeting-settings-v2',JSON.stringify(data))}catch{}}
+function loadSettings(){try{const data=JSON.parse(localStorage.getItem('neurox-meeting-settings-v2')||'{}');for(const [id,v]of Object.entries(data)){const el=$(id);if(!el)continue;if(el.type==='checkbox')el.checked=!!v;else if([...el.options].some(o=>o.value===String(v)))el.value=v;}}catch{}}
+$('start').onclick=start;$('pause').onclick=pause;$('finish').onclick=freeze;$('verify').onclick=verify;
+$('next').onclick=newRound;$('repeat').onclick=start;
+$('addPair').onclick=addPair;$('clear').onclick=()=>{chosen=[];savedPairs=[];where=null;yn=null;say('Выбери ответ заново.');updateUI();draw()};
+$('yes').onclick=()=>setYesNo(replyMode==='all'?false:true);$('no').onclick=()=>setYesNo(false);
+$('hint').onclick=()=>{showHint=!showHint;updateUI();draw()};$('slowVerify').onclick=()=>{revealSlow=!revealSlow;$('slowVerify').textContent=revealSlow?'Проверка ×0,5 ✓':'Проверка ×0,5';};
+cvs.addEventListener('click',ev=>{if(phase!=='choose'||replyMode==='yesno')return;const rc=cvs.getBoundingClientRect(),x=(ev.clientX-rc.left)*W/rc.width,y=(ev.clientY-rc.top)*H/rc.height;
+ if(replyMode==='where'){where={x,y};say('Место отмечено. Нажми «Проверить прогноз».');updateUI();draw();return;}
+ let best=null,dmin=42;objects.forEach(o=>{const p=point(o,sim),d=Math.hypot(x-p.x,y-p.y);if(d<dmin){dmin=d;best=o.id;}});if(best)choose(best);
+});
+$('preset').onchange=()=>{applyPreset($('preset').value);configChanged()};
+for(const id of ['mode','count','watch','horizon','near','speed','empty'])$(id).onchange=()=>{if(id!=='mode')$('preset').value='custom';configChanged()};
+$('tempo').onchange=()=>{if($('preset').value!=='custom')$('preset').value='custom';settings.tempo=Number($('tempo').value);saveSettings()};
+for(const id of helps)$(id).onchange=()=>{saveSettings();draw()};
+loadSettings();calculateSettings();newRound();
+window.__neuroxDebug=()=>({phase,mode:replyMode,seed,roundNo,objects:objects.map(o=>({...o})),collisions:collisions.map(c=>({...c})),selected:[...chosen],savedPairs:savedPairs.map(p=>[...p]),yn,where,sim,settings:{...settings},history:[...history],lastFail});
+})();
+</script>
+
+<script>
+(() => {
+ const main=document.querySelector('.main');
+ const openButton=document.getElementById('toggleSettings');
+ const closeButton=document.getElementById('settingsClose');
+ const backdrop=document.getElementById('settingsBackdrop');
+ const mobile=()=>window.matchMedia('(max-width: 900px)').matches;
+ let desktopVisible=true;
+ function paint(){
+   if(mobile()){
+     main.classList.remove('settings-collapsed');
+     openButton.setAttribute('aria-expanded',String(document.body.classList.contains('settings-open')));
+     openButton.textContent='⚙ Настройки';
+   }else{
+     document.body.classList.remove('settings-open');
+     main.classList.toggle('settings-collapsed',!desktopVisible);
+     openButton.setAttribute('aria-expanded',String(desktopVisible));
+     openButton.textContent=desktopVisible?'⚙ Скрыть настройки':'⚙ Настройки';
+   }
+ }
+ function toggle(){
+   if(mobile()) document.body.classList.toggle('settings-open');
+   else desktopVisible=!desktopVisible;
+   paint();
+ }
+ function close(){
+   if(mobile())document.body.classList.remove('settings-open');
+   else desktopVisible=false;
+   paint();
+ }
+ openButton.addEventListener('click',toggle);
+ closeButton.addEventListener('click',close);
+ backdrop.addEventListener('click',close);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&mobile()&&document.body.classList.contains('settings-open'))close();});
+ window.addEventListener('resize',paint);
+ paint();
+})();
+</script>
+<script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
+<script src="../assets/menu-drawer.js"></script>
+<script src="../shared/new-trainers.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/mobile-new-trainers.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
+</body>
+</html>

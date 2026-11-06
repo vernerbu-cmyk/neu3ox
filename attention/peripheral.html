@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<script src="../shared/theme.js"></script>
+<script>/* NeuroX: читаем общую настройку до первой отрисовки */
+try {
+  const nxSavedTheme = localStorage.getItem('neurox_theme');
+  const nxTheme = (nxSavedTheme === 'light' || nxSavedTheme === 'dark')
+    ? nxSavedTheme
+    : ((window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
+  document.documentElement.dataset.theme = nxTheme;
+} catch (_) { document.documentElement.dataset.theme = 'light'; }
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NeuroX · Краем глаза · Beta 2.1</title>
+<style>
+:root{--navy:#193d85;--navy2:#102955;--orange:#ff771c;--paper:#f0f5fc;--ink:#20324e;--muted:#72819b;--line:#dae5f5;--good:#14855c;--bad:#d94c55}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 'Segoe UI',Inter,Arial,sans-serif}button,select,input{font:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.5}
+.app{max-width:1510px;margin:0 auto;padding:18px}.header{display:flex;align-items:center;gap:13px;margin-bottom:17px}.brandIcon{height:49px;width:49px;background:var(--navy);border-radius:15px;display:grid;place-items:center;color:white;font-size:27px;font-weight:900;box-shadow:0 8px 20px #1e3f8a24}.header h1{font-size:26px;line-height:1.15;margin:0;color:var(--navy)}.header p{font-size:13px;color:#7585a0;margin:4px 0 0}.beta{background:#e4ecfb;color:#456399;font-weight:800;font-size:11px;border-radius:999px;padding:4px 8px;vertical-align:middle}
+.shell{display:grid;grid-template-columns:286px minmax(0,1fr);gap:16px;align-items:start}.side,.main{background:#fff;border:1px solid var(--line);border-radius:21px;box-shadow:0 7px 28px #31507b0a}.side{padding:18px;display:flex;flex-direction:column;gap:16px}.side h2{margin:0;font-size:17px;color:var(--navy)}.ctrl{display:flex;flex-direction:column;gap:6px}.ctrl label{font-size:13px;font-weight:750;color:#50617d}.ctrl select{min-height:41px;width:100%;padding:9px 10px;border:1px solid #d4e0ef;border-radius:10px;color:#263f66;background:#fff}.ctrl input[type=range]{width:100%;accent-color:var(--navy)}.rangeHead{display:flex;justify-content:space-between;align-items:center}.rangeHead b{color:var(--navy)}.checkline{display:flex;gap:9px;align-items:flex-start;color:#526681;font-size:13px;font-weight:650}.checkline input{accent-color:var(--navy);width:17px;height:17px;flex:none;margin-top:2px}.tip{background:#f0f6ff;border-radius:13px;padding:13px;color:#4c6488;font-size:13px}.tip strong{color:var(--navy)}.tip p{margin:6px 0 0}.asidefoot{font-size:12px;color:#8793a8;border-top:1px solid var(--line);padding-top:13px}
+.main{padding:17px;min-width:0}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:11px}.top strong{color:var(--navy);font-size:16px}.pills{display:flex;gap:7px;flex-wrap:wrap}.pill{background:#f0f4fb;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:750;color:#657995}.pill.em{background:#fff0e6;color:#b05a1a}.view{position:relative;overflow:hidden;background:#e9f0fc;padding:6px;border:1px solid #d7e2f5;border-radius:17px}.view canvas{width:100%;height:auto;aspect-ratio:1100/620;display:block;border-radius:12px;touch-action:manipulation;cursor:default}.view.canClick canvas{cursor:pointer}.hud{position:absolute;top:16px;left:15px;pointer-events:none;background:#ffffffeb;border-radius:10px;border:1px solid #e4eaf8;padding:6px 10px;color:var(--navy);font-size:12px;font-weight:850;display:flex;gap:8px}.progress{height:6px;background:#e4ecf8;border-radius:999px;overflow:hidden;margin:11px 2px 14px}.progress span{height:100%;width:0;display:block;background:var(--navy);transition:width .13s linear}.actions{display:flex;flex-wrap:wrap;gap:8px}.btn{border:1px solid #ccdaef;border-radius:11px;background:#f2f6ff;color:var(--navy);font-weight:800;padding:10px 13px;min-height:42px}.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}.btn.orange{background:var(--orange);border-color:var(--orange);color:white}.btn:hover:not(:disabled){filter:brightness(.97)}.instruction{margin-top:12px;background:#f5f8ff;border:1px solid #e1e9f8;border-radius:13px;padding:11px 13px;color:#4c607e;font-size:13px;min-height:54px}.instruction strong{color:var(--navy)}.results{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}.report{border:1px solid #dce6f4;border-radius:13px;padding:11px 13px;min-height:79px}.report small{font-size:11px;font-weight:800;letter-spacing:.055em;color:#8090a7;text-transform:uppercase}.report div{font-size:14px;margin-top:6px;font-weight:700;color:#52637b}.report .good{color:var(--good)}.report .bad{color:var(--bad)}.footer{margin-top:10px;font-size:12px;color:#8492a5}
+@media(max-width:1050px){.shell{grid-template-columns:245px minmax(0,1fr)}.app{padding:10px}.side,.main{padding:12px}}@media(max-width:800px){.shell{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.side h2,.tip,.asidefoot{grid-column:1/-1}.header h1{font-size:22px}}@media(max-width:550px){.side{grid-template-columns:1fr}.results{grid-template-columns:1fr}.header h1{font-size:19px}.main{padding:9px}.btn{padding:8px 9px}}
+
+/* Beta 2: обособленные группы параметров */
+.settingGroup{border:1px solid #dce7f7;border-radius:13px;padding:0 11px;background:#fbfdff}
+.settingGroup>summary{cursor:pointer;color:var(--navy);font-size:14px;font-weight:850;padding:11px 2px;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.settingGroup>summary::-webkit-details-marker{display:none}
+.settingGroup>summary:after{content:'⌄';font-size:19px;color:#7e96bb;transform:rotate(-90deg);transition:transform .15s}
+.settingGroup[open]>summary:after{transform:rotate(0)}
+.settingBody{display:flex;flex-direction:column;gap:12px;padding:2px 0 13px}
+.settingHint{font-size:11.5px;color:#71849f;line-height:1.35}
+.side .ctrl label{line-height:1.3}.side .ctrl select{padding:9px}
+.side .tip{padding:12px}.side{gap:12px}
+.statusHint{font-size:12px;color:#637a9d;background:#edf4ff;border:1px solid #dce7fa;border-radius:11px;padding:9px 11px}
+@media(max-width:800px){.settingGroup{grid-column:1/-1}}
+</style>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/new-trainers.css">
+<link rel="stylesheet" href="../shared/new-trainers-theme.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<link rel="stylesheet" href="../shared/mobile-new-trainers.css">
+</head>
+<body class="nx-added-game nx-game-peripheral" data-nx-section="attention">
+<div class="app">
+<header class="header"><div class="brandIcon">◉</div><div><h1>Краем глаза <span class="beta">BETA 2.1</span></h1><p>NeuroX · зрительное внимание · центральная задача и периферические сигналы</p></div></header>
+<div class="shell">
+<aside class="side">
+<h2>Настройки</h2>
+<div class="ctrl"><label for="level">Набор настроек</label><select id="level"><option value="easy">Начальный</option><option value="medium" selected>Основной</option><option value="hard">Сложный</option><option value="custom">Свой вариант</option></select></div>
+<details class="settingGroup" open><summary>Центральная задача</summary><div class="settingBody">
+ <div class="ctrl"><label for="centerNodes">Точек на маршруте</label><select id="centerNodes"><option value="4">4 точки</option><option value="6" selected>6 точек</option><option value="8">8 точек</option></select></div>
+ <div class="ctrl"><div class="rangeHead"><label for="moveInterval">Время между перемещениями</label><b id="moveIntervalValue">1.00 с</b></div><input id="moveInterval" type="range" min="0.55" max="2.00" step="0.05" value="1.00"><div class="settingHint">Меньше время = чаще меняется положение точки.</div></div>
+ <div class="ctrl"><label for="stepMode">Длина перемещения</label><select id="stepMode"><option value="one">На соседнюю точку</option><option value="mixed" selected>Соседняя или через одну</option><option value="two">Всегда через одну</option></select></div>
+ <div class="ctrl"><div class="rangeHead"><label for="reversePct">Смена направления</label><b id="reversePctValue">35%</b></div><input id="reversePct" type="range" min="0" max="100" step="5" value="35"></div>
+ <div class="ctrl"><div class="rangeHead"><label for="fadeLead">Скрыть точку за</label><b id="fadeLeadValue">1.0 с</b></div><input id="fadeLead" type="range" min="0.5" max="2.5" step="0.25" value="1"></div>
+</div></details>
+<details class="settingGroup" open><summary>Периферические сигналы</summary><div class="settingBody">
+ <div class="ctrl"><label for="sectors">Число зон</label><select id="sectors"><option value="4">4 зоны</option><option value="6">6 зон</option><option value="8" selected>8 зон</option></select></div>
+ <div class="ctrl"><label for="zonesDistance">Расположение зон</label><select id="zonesDistance"><option value="near">Ближе к центру</option><option value="far" selected>По краям поля</option></select></div>
+ <div class="ctrl"><label for="targetKind">Что нужно замечать</label><select id="targetKind"><option value="diamond" selected>Оранжевые ромбы</option><option value="ring">Голубые кольца</option></select></div>
+ <div class="ctrl"><div class="rangeHead"><label for="targetCount">Важных вспышек</label><b id="targetCountValue">2</b></div><input id="targetCount" type="range" min="1" max="4" step="1" value="2"></div>
+ <div class="ctrl"><div class="rangeHead"><label for="decoyCount">Отвлекающих вспышек</label><b id="decoyCountValue">3</b></div><input id="decoyCount" type="range" min="0" max="8" step="1" value="3"></div>
+ <div class="ctrl"><div class="rangeHead"><label for="targetFlash">Показ важного сигнала</label><b id="targetFlashValue">0.85 с</b></div><input id="targetFlash" type="range" min="0.25" max="1.60" step="0.05" value="0.85"></div>
+ <div class="ctrl"><div class="rangeHead"><label for="decoyFlash">Показ отвлекающего</label><b id="decoyFlashValue">0.70 с</b></div><input id="decoyFlash" type="range" min="0.20" max="1.50" step="0.05" value="0.70"></div>
+ <div class="ctrl"><label for="flashRhythm">Время появления</label><select id="flashRhythm"><option value="even">Равномерно</option><option value="random" selected>Непредсказуемо</option></select></div>
+</div></details>
+<details class="settingGroup" open><summary>Общие параметры</summary><div class="settingBody">
+ <div class="ctrl"><div class="rangeHead"><label for="duration">Длительность раунда</label><b id="durationValue">14 сек</b></div><input id="duration" type="range" min="8" max="30" step="1" value="14"></div>
+ <label class="checkline"><input id="guides" type="checkbox" checked><span>Фоновые ориентиры на поле</span></label>
+</div></details>
+<div id="loadNote" class="statusHint">Настройки применяются к новому раунду.</div>
+<div class="tip"><strong>Как играть</strong><p id="playExplanation">Следи за точкой в центре. Считай ромбы.</p><p>После показа ребёнок показывает последнюю позицию точки и места появления сигналов. Педагог отмечает ответы.</p></div>
+<div class="asidefoot">Изменение настройки создаёт новый раунд. Во время наблюдения параметры заблокированы. Без отслеживания взгляда нельзя подтвердить, что ребёнок всё время смотрел в центр.</div>
+</aside>
+<section class="main">
+<div class="top"><strong>Двойной пост наблюдения</strong><div class="pills"><span id="roundPill" class="pill">Раунд 1</span><span id="stagePill" class="pill em">Подготовка</span></div></div>
+<div id="view" class="view"><canvas id="scene" width="1100" height="620" aria-label="Игровое поле с круговым маршрутом в центре и сигналами по краям"></canvas><div class="hud"><span id="hudPhase">Готово к запуску</span><span id="hudClock">14.0 с</span></div></div>
+<div class="progress"><span id="fill"></span></div>
+<div class="actions"><button id="startBtn" class="btn primary">▶ Начать наблюдение</button><button id="replayBtn" class="btn">↻ Повторить</button><button id="newBtn" class="btn">Новое задание</button><button id="checkBtn" class="btn orange" disabled>Проверить ответы</button></div>
+<div class="instruction" id="instruction"><strong>Перед стартом:</strong> внимание на центральном круге. После показа будет две задачи: последняя позиция точки и места появления сигналов. Можно отвечать вслух, а педагог отметит кликами.</div>
+<div class="results"><div class="report"><small>Центральная задача</small><div id="centerResult">Ответ появится после наблюдения.</div></div><div class="report"><small>Периферические сигналы</small><div id="outerResult">Не оцениваем скорость реакции.</div></div></div>
+<div class="footer">Beta 2 · Настраиваем отдельно центральную задачу и сигналы по краям. Скорость ответа не оценивается.</div>
+</section>
+</div>
+</div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const canvas=$('scene'),ctx=canvas.getContext('2d');
+const W=1100,H=620,CX=550,CY=310,R=112;
+const TAU=Math.PI*2;
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const TWO=(n)=>String(n).padStart(2,'0');
+const rand=(n)=>Math.floor(Math.random()*n);
+const choose=a=>a[rand(a.length)];
+const polar=(i,r,ox=CX,oy=CY,n=6)=>({x:ox+Math.cos(-Math.PI/2+i*TAU/n)*r,y:oy+Math.sin(-Math.PI/2+i*TAU/n)*r});
+const PERIPH={
+ 4:[{x:125,y:110},{x:975,y:110},{x:975,y:510},{x:125,y:510}],
+ 6:[{x:175,y:95},{x:925,y:95},{x:1005,y:310},{x:925,y:525},{x:175,y:525},{x:95,y:310}],
+ 8:[{x:145,y:105},{x:550,y:70},{x:955,y:105},{x:1010,y:310},{x:955,y:515},{x:550,y:550},{x:145,y:515},{x:90,y:310}]
+};
+const PRESETS={
+ easy:{centerNodes:4,moveInterval:1.45,stepMode:'one',reversePct:20,fadeLead:.75,sectors:4,zonesDistance:'far',targetKind:'diamond',targetCount:1,decoyCount:1,targetFlash:1.15,decoyFlash:1,flashRhythm:'even',duration:12,guides:true},
+ medium:{centerNodes:6,moveInterval:1,stepMode:'mixed',reversePct:35,fadeLead:1,sectors:8,zonesDistance:'far',targetKind:'diamond',targetCount:2,decoyCount:3,targetFlash:.85,decoyFlash:.7,flashRhythm:'random',duration:14,guides:true},
+ hard:{centerNodes:8,moveInterval:.7,stepMode:'mixed',reversePct:60,fadeLead:1.5,sectors:8,zonesDistance:'far',targetKind:'diamond',targetCount:3,decoyCount:6,targetFlash:.5,decoyFlash:.45,flashRhythm:'random',duration:19,guides:false}
+};
+const SETTING_IDS=['centerNodes','moveInterval','stepMode','reversePct','fadeLead','sectors','zonesDistance','targetKind','targetCount','decoyCount','targetFlash','decoyFlash','flashRhythm','duration','guides'];
+let round=null,phase='ready',counter=0,selectedCenter=null,selectedOuter=new Set();
+let elapsed=0,raf=0,lastTs=0,settingPreset=false;
+function settings(){return {
+ centerNodes:+$('centerNodes').value,moveInterval:+$('moveInterval').value,stepMode:$('stepMode').value,reversePct:+$('reversePct').value,fadeLead:+$('fadeLead').value,
+ sectors:+$('sectors').value,zonesDistance:$('zonesDistance').value,targetKind:$('targetKind').value,targets:+$('targetCount').value,decoyCount:+$('decoyCount').value,
+ targetFlash:+$('targetFlash').value,decoyFlash:+$('decoyFlash').value,flashRhythm:$('flashRhythm').value,duration:+$('duration').value,guides:$('guides').checked};}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=rand(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function wantedLabel(s){return s.targetKind==='ring'?'голубых колец':'оранжевых ромбов'}
+function countInstruction(s){return s.targetKind==='ring'?'Считай кольца.':'Считай ромбы.'}
+function targetNominative(s){return s.targetKind==='ring'?'голубые кольца':'оранжевые ромбы'}
+function timeText(v){return Number(v).toFixed(v%1===0?1:2).replace(/0$/,'').replace(/\.$/,'')+' с'}
+function refreshLabels(){
+ const limit=Math.min(4,+$('sectors').value-1);$('targetCount').max=limit;if(+$('targetCount').value>limit)$('targetCount').value=limit;
+ for(const [id,fn] of Object.entries({moveInterval:()=>Number($('moveInterval').value).toFixed(2)+' с',reversePct:()=>$('reversePct').value+'%',fadeLead:()=>timeText(+$('fadeLead').value),targetCount:()=>$('targetCount').value,decoyCount:()=>$('decoyCount').value,targetFlash:()=>timeText(+$('targetFlash').value),decoyFlash:()=>timeText(+$('decoyFlash').value),duration:()=>$('duration').value+' сек'}))$(id+'Value').textContent=fn();
+ const s=settings();
+ $('playExplanation').textContent=`Следи за точкой в центре. ${countInstruction(s)}`;
+ const eventCount=s.targets+s.decoyCount,room=Math.max(1,s.duration-2.6),typical=(s.targets*s.targetFlash+s.decoyCount*s.decoyFlash)/room;
+ $('loadNote').textContent=eventCount>7&&typical>.8?'Высокая нагрузка: несколько вспышек могут совпадать по времени. Для раздельного показа увеличь длительность или уменьши число сигналов.':`В раунде ${s.targets} важных и ${s.decoyCount} отвлекающих вспышек. Настройки меняют следующее задание.`;
+}
+function loadPreset(which){settingPreset=true;const data=PRESETS[which];if(!data)return;for(const [id,v] of Object.entries(data)){if($(id).type==='checkbox')$(id).checked=v;else $(id).value=String(v);}settingPreset=false;refreshLabels();makeNew();}
+function adjustedPositions(s){const factor=s.zonesDistance==='near'?.91:1;return PERIPH[s.sectors].map(p=>({x:CX+(p.x-CX)*factor,y:CY+(p.y-CY)*factor}));}
+function buildRound(){
+ const s=settings(),number=s.sectors,n=s.centerNodes;
+ const initial=rand(n),moves=[];let pos=initial;
+ // Важно: последнее движение завершается ДО исчезновения точки.
+ const fadeAt=s.duration-s.fadeLead;
+ const travel=Math.min(.45,s.moveInterval*.48);
+ const times=[];for(let t=.8;t+travel+.26<fadeAt;t+=s.moveInterval)times.push(+t.toFixed(3));
+ let prevDir=choose([-1,1]);
+ for(let i=0;i<times.length;i++){
+  const direction=rand(100)<s.reversePct?-prevDir:prevDir;prevDir=direction;
+  const step=s.stepMode==='one'?1:s.stepMode==='two'?2:(rand(100)<37?2:1);
+  const next=(pos+direction*step+n*4)%n;
+  moves.push({t:times[i],from:pos,to:next,delta:direction*step,anim:travel});pos=next;
+ }
+ const targetPositions=shuffle(Array.from({length:number},(_,i)=>i)).slice(0,s.targets);
+ const total=s.targets+s.decoyCount,start=1.15,finish=Math.max(start+.5,s.duration-Math.max(s.targetFlash,s.decoyFlash)-.3),slots=[];
+ if(s.flashRhythm==='even'){
+  for(let i=0;i<total;i++)slots.push(start+(finish-start)*(i+.5)/total);
+ }else{
+  // Независимые случайные интервалы, с запасом по краям раунда.
+  const weights=Array.from({length:total+1},()=>.52+Math.random()*.95);
+  const sum=weights.reduce((a,b)=>a+b,0);let time=start;
+  for(let i=0;i<total;i++){time+=(finish-start)*weights[i]/sum;slots.push(time);}
+ }
+ const kinds=shuffle([...Array(s.targets).fill('target'),...Array(s.decoyCount).fill('decoy')]);
+ let previousPos=-1,events=[];
+ const falsePool=Array.from({length:number},(_,i)=>i).filter(x=>!targetPositions.includes(x));
+ for(let i=0;i<total;i++){
+  const kind=kinds[i];let at;
+  if(kind==='target'){
+   const usedTargets=new Set(events.filter(e=>e.kind==='target').map(e=>e.pos));
+   at=choose(targetPositions.filter(x=>!usedTargets.has(x)));
+  }else{
+   const pool=falsePool.filter(x=>x!==previousPos);
+   at=choose(pool.length?pool:falsePool);
+  }
+  previousPos=at;
+  events.push({kind,pos:at,t:slots[i],dur:kind==='target'?s.targetFlash:s.decoyFlash});
+ }
+ return {settings:s,initial,final:pos,moves,events,targetPositions,positions:adjustedPositions(s),fadeAt};
+}
+function setPhase(p){
+ phase=p;$('stagePill').textContent={ready:'Подготовка',watch:'Наблюдение',answer:'Ответы',checked:'Результат'}[p];
+ $('hudPhase').textContent={ready:'Готово к запуску',watch:'Следи за центром',answer:'Выбери позиции',checked:'Проверено'}[p];
+ $('startBtn').disabled=p==='watch'||p==='answer'||p==='checked';
+ $('replayBtn').disabled=p==='watch';
+ $('newBtn').disabled=p==='watch';
+ $('checkBtn').disabled=p!=='answer'||selectedCenter===null;
+ $('view').classList.toggle('canClick',p==='answer');
+ for(const id of ['level',...SETTING_IDS])$(id).disabled=p==='watch';
+}
+function makeNew(){cancelAnimationFrame(raf);counter++;round=buildRound();elapsed=0;lastTs=0;selectedCenter=null;selectedOuter=new Set();
+ $('roundPill').textContent='Раунд '+counter;
+ $('hudClock').textContent=round.settings.duration.toFixed(1)+' с';$('fill').style.width='0%';
+ $('centerResult').textContent='Ответ появится после наблюдения.';$('centerResult').className='';$('outerResult').textContent='Не оцениваем скорость реакции.';$('outerResult').className='';
+ $('instruction').innerHTML=`<strong>Перед стартом:</strong> следи за точкой в центре. <b>${countInstruction(round.settings)}</b> После показа покажи, где остановилась точка и где появлялись ${targetNominative(round.settings)}.`;
+ setPhase('ready');draw();
+}
+function start(){if(!round||phase==='watch')return;selectedCenter=null;selectedOuter=new Set();elapsed=0;lastTs=0;
+ $('centerResult').textContent='Наблюдение…';$('centerResult').className='';$('outerResult').textContent='Сигналы появляются по краям.';$('outerResult').className='';
+ $('instruction').innerHTML=`<strong>Наблюдение:</strong> следи за точкой в центре. <b>${countInstruction(round.settings)}</b>`;
+ setPhase('watch');draw();raf=requestAnimationFrame(tick);
+}
+function tick(ts){if(phase!=='watch')return;if(!lastTs)lastTs=ts;
+ // Clamp to avoid giant jumps after switching tabs; observation should remain useful.
+ elapsed=clamp(elapsed+Math.min(.075,(ts-lastTs)/1000),0,round.settings.duration);lastTs=ts;
+ $('hudClock').textContent=Math.max(0,round.settings.duration-elapsed).toFixed(1)+' с';
+ $('fill').style.width=(elapsed/round.settings.duration*100).toFixed(2)+'%';
+ if(elapsed>=round.settings.duration){setPhase('answer');
+  $('instruction').innerHTML=`<strong>Ответ:</strong> покажи, где закончила движение точка. Затем отметь места, где появлялись <b>${targetNominative(round.settings)}</b>. Педагог может отметить ответы за ребёнка.`;
+  $('centerResult').textContent='Место в центре ещё не выбрано.';$('outerResult').textContent='Отметь места важных вспышек.';
+  draw();return;
+ }
+ draw();raf=requestAnimationFrame(tick);
+}
+function circ(x,y,r,fill,stroke='',width=1){ctx.beginPath();ctx.arc(x,y,r,0,TAU);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.lineWidth=width;ctx.strokeStyle=stroke;ctx.stroke();}}
+function line(x1,y1,x2,y2,color,width=1){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();}
+function diamond(x,y,r,fill,stroke=''){ctx.beginPath();ctx.moveTo(x,y-r);ctx.lineTo(x+r,y);ctx.lineTo(x,y+r);ctx.lineTo(x-r,y);ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke()}}
+function arc(x,y,r,start,end,color,width){ctx.beginPath();ctx.arc(x,y,r,start,end);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke()}
+function markerAt(t){
+ if(phase!=='watch'||t>=round.fadeAt)return null;
+ let at=round.initial,travel=null;
+ for(const m of round.moves){if(t>=m.t+m.anim){at=m.to;continue;}if(t>=m.t){travel=m;break;}break;}
+ if(!travel)return polar(at,R,CX,CY,round.settings.centerNodes);
+ const part=clamp((t-travel.t)/travel.anim,0,1),ease=part*part*(3-2*part);
+ return polar(travel.from+travel.delta*ease,R,CX,CY,round.settings.centerNodes);
+}
+function drawBackdrop(){
+ const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#112d59');g.addColorStop(.58,'#0b2347');g.addColorStop(1,'#173763');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ ctx.save();ctx.globalAlpha=round.settings.guides?.11:.035;
+ for(let r=175;r<600;r+=77)arc(CX,CY,r,0,TAU,'#9ab9eb',1);
+ for(let i=0;i<24;i++){let a=i/24*TAU;const x=CX+Math.cos(a)*170,y=CY+Math.sin(a)*170;const b=CX+Math.cos(a)*580,c=CY+Math.sin(a)*580;line(x,y,b,c,'#81a4d4',.7)}
+ ctx.restore();
+ // Four visual corners mark the field but don't become search cells.
+ line(20,20,65,20,'#4c6f9d',3);line(20,20,20,65,'#4c6f9d',3);
+ line(W-20,20,W-65,20,'#4c6f9d',3);line(W-20,20,W-20,65,'#4c6f9d',3);
+ line(20,H-20,65,H-20,'#4c6f9d',3);line(20,H-20,20,H-65,'#4c6f9d',3);
+ line(W-20,H-20,W-65,H-20,'#4c6f9d',3);line(W-20,H-20,W-20,H-65,'#4c6f9d',3);
+}
+function drawCenter(){
+ circ(CX,CY,159,'#1b4075','#365c91',2);
+ circ(CX,CY,140,'#102e5a','#6487b5',1.5);
+ circ(CX,CY,R,null,'#5679a8',12);
+ circ(CX,CY,R,null,'#a9c9ff',1.5);
+ for(let i=0;i<round.settings.centerNodes;i++){
+  const p=polar(i,R,CX,CY,round.settings.centerNodes);
+  const selected=(phase==='answer'||phase==='checked')&&selectedCenter===i;
+  const actual=phase==='checked'&&round.final===i;
+  if(selected||actual)circ(p.x,p.y,27,actual?'#16684c':selected?'#345fa5':'#233e6a',actual?'#55efb2':'#91baf5',3);
+  circ(p.x,p.y,14,actual?'#43deb0':selected?'#ffd29d':'#7196c7','#d3e2ff',2);
+  if(phase==='checked'&&actual)diamond(p.x,p.y,5,'#083f35');
+ }
+ circ(CX,CY,47,'#173866','#3d6697',2);
+ ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#dce9ff';ctx.font='700 17px Segoe UI,Arial';ctx.fillText('ЦЕНТР',CX,CY-9);
+ ctx.font='600 12px Segoe UI,Arial';ctx.fillStyle='#a2c0e8';ctx.fillText('держи взгляд',CX,CY+17);
+ const spot=markerAt(elapsed);
+ if(spot){
+  const pulse=1+Math.sin(elapsed*11)*.11;
+  circ(spot.x,spot.y,26*pulse,'#ff8b2417','#ffad438f',2.5);
+  circ(spot.x,spot.y,17,'#ff791c','#fff1cb',2);
+  diamond(spot.x,spot.y,7,'#fff9e9');
+ }
+ if(phase==='watch'&&!spot){ctx.font='700 12px Segoe UI,Arial';ctx.fillStyle='#f0c7a8';ctx.fillText('Запомни позицию',CX,CY+75)}
+}
+function drawPeripheral(){
+ const points=round.positions;
+ for(let i=0;i<points.length;i++){
+  const p=points[i],chosen=selectedOuter.has(i),correct=phase==='checked'&&round.targetPositions.includes(i);
+  let ring='#6185b5';if(phase==='checked')ring=correct?'#4ce3a2':chosen?'#ff7083':'#6a8aaf';else if(chosen)ring='#ffb26c';
+  circ(p.x,p.y,26,'#1d406f',ring,(correct||chosen)?4:2.3);
+  circ(p.x,p.y,6,'#6e93bf');
+  if(phase==='answer'||phase==='checked'){
+   circ(p.x,p.y,40,null,ring,1.2);
+   if(chosen)diamond(p.x,p.y,12,'#ffa45b','#ffe7c3');
+   if(phase==='checked'&&correct){
+    ctx.font='900 23px Segoe UI,Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#b7ffe0';ctx.fillText('✓',p.x,p.y+1);
+   }
+  }
+ }
+ if(phase!=='watch')return;
+ for(const e of round.events){
+  const age=elapsed-e.t;if(age<0||age>e.dur)continue;
+  const p=points[e.pos],k=clamp(Math.min(age/.18,(e.dur-age)/.16),0,1);
+  ctx.save();ctx.globalAlpha=k;
+  if((e.kind==='target')===(round.settings.targetKind==='diamond')){
+   circ(p.x,p.y,48+Math.sin(age/e.dur*Math.PI)*8,'#ff7c1720','#ff953c',4);
+   circ(p.x,p.y,32,'#ffa54740','#ffd3a3',3);
+   diamond(p.x,p.y,23,'#ff872b','#fff1cc');diamond(p.x,p.y,10,'#ffe6ac');
+   for(let j=0;j<4;j++){const ang=j*Math.PI/2;const dx=Math.cos(ang),dy=Math.sin(ang);line(p.x+dx*32,p.y+dy*32,p.x+dx*41,p.y+dy*41,'#ffd4a0',3)}
+  }else{
+   const radius=19+age/e.dur*17;
+   circ(p.x,p.y,radius,'#5fb7ff25','#84caff',5);
+   circ(p.x,p.y,9,'#79bcff6a','#d6f1ff',2);
+  }
+  ctx.restore();
+ }
+}
+function drawLegend(){
+ ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillStyle='#b6cbe9';ctx.font='600 16px Segoe UI,Arial';
+ if(round.settings.targetKind==='diamond'){diamond(675,42,11,'#ff8a25');ctx.fillText('считай ромбы',695,43);}else{circ(675,42,11,null,'#87c9ff',4);ctx.fillText('считай кольца',695,43);}
+ ctx.textAlign='right';ctx.font='600 13px Segoe UI,Arial';ctx.fillStyle='#839fc5';ctx.fillText('NeuroX · Краем глаза',W-35,H-29);
+}
+function draw(){if(!round)return;drawBackdrop();drawPeripheral();drawCenter();drawLegend();}
+function pick(canvasX,canvasY){
+ if(phase!=='answer')return;
+ const central=Array.from({length:round.settings.centerNodes},(_,i)=>({i,...polar(i,R,CX,CY,round.settings.centerNodes)}));
+ for(const p of central)if(Math.hypot(canvasX-p.x,canvasY-p.y)<=33){selectedCenter=p.i;updateSelection();draw();return;}
+ for(let i=0;i<round.positions.length;i++){
+  const p=round.positions[i];if(Math.hypot(canvasX-p.x,canvasY-p.y)<=43){
+   if(selectedOuter.has(i))selectedOuter.delete(i);else selectedOuter.add(i);
+   updateSelection();draw();return;
+  }
+ }
+}
+function updateSelection(){
+ $('checkBtn').disabled=selectedCenter===null;
+ $('centerResult').textContent=selectedCenter===null?'Место в центре ещё не выбрано.':'Центральная позиция отмечена.';
+ $('outerResult').textContent=`Отмечено зон: ${selectedOuter.size}. Можно изменить ответ.`;
+}
+function check(){
+ if(phase!=='answer'||selectedCenter===null)return;setPhase('checked');
+ const centerOK=selectedCenter===round.final;
+ const actual=new Set(round.targetPositions);
+ const hit=[...selectedOuter].filter(x=>actual.has(x)).length;
+ const missed=round.targetPositions.length-hit;
+ const extras=[...selectedOuter].filter(x=>!actual.has(x)).length;
+ const c=$('centerResult'),o=$('outerResult');
+ c.textContent=centerOK?'Верно: последняя позиция найдена.':'Ошибка: последняя позиция не совпала.';c.className=centerOK?'good':'bad';
+ o.textContent=`Верных мест: ${hit} из ${actual.size}. Пропущено: ${missed}. Лишних отметок: ${extras}.`;
+ o.className=!missed&&!extras?'good':'bad';
+ $('instruction').innerHTML='<strong>Разбор:</strong> зелёным отмечены настоящие места важных сигналов. Розовым видны лишние выборы. Для просмотра исходного эпизода нажми «Повторить». Сверяем именно наблюдение, а не скорость.';
+ draw();
+}
+canvas.addEventListener('click',e=>{const r=canvas.getBoundingClientRect();pick((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height)});
+$('startBtn').addEventListener('click',start);
+$('replayBtn').addEventListener('click',()=>{if(phase!=='watch')start()});
+$('newBtn').addEventListener('click',makeNew);
+$('checkBtn').addEventListener('click',check);
+function settingsChanged(){if(phase==='watch')return;refreshLabels();makeNew();}
+$('level').addEventListener('change',()=>{const level=$('level').value;if(level!=='custom')loadPreset(level);});
+for(const id of SETTING_IDS){
+ const el=$(id);
+ if(el.type==='range')el.addEventListener('input',refreshLabels);
+ el.addEventListener('change',()=>{
+  if(!settingPreset){$('level').value='custom';settingsChanged();}
+ });
+}
+refreshLabels();makeNew();
+</script>
+<script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
+<script src="../assets/menu-drawer.js"></script>
+<script src="../shared/new-trainers.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/mobile-new-trainers.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
+</body>
+</html>
