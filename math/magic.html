@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script src="../shared/theme.js"></script>
 
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Магический квадрат</title>
 
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="../shared/vendor/html2canvas.min.js"></script>
 
 <style>
 body{
   margin:0;
   font-family:Arial;
   background:#f4f6fb;
+  color:#172b49;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  min-height:100dvh;
 }
 
 header{
@@ -30,8 +36,8 @@ header{
 }
 
 .controls{
-  position:fixed;
-  top:72px;left:0;right:0;
+  position:relative;
+  flex:none;
   background:#1E3F8A;
   padding:10px;
   display:flex;
@@ -59,7 +65,10 @@ button{
 }
 
 #boardContainer{
-  height:100vh;
+  flex:1;
+  padding:24px 16px;
+  box-sizing:border-box;
+  min-width:0;
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -69,11 +78,14 @@ button{
 #board{
   display:grid;
   gap:8px;
+  width:100%;
 }
 
 .cell, input.cell{
-  width:clamp(40px, 12vw, 72px);
-  height:clamp(40px, 12vw, 72px);
+  width:100%;
+  height:auto;
+  min-width:0;
+  aspect-ratio:1;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -110,8 +122,16 @@ input.cell{
   font-size:11px;
   color:#888;
 }
+:root[data-theme="dark"] body {background:#101929;color:#e8effc}
+:root[data-theme="dark"] .cell {background:#19273d;color:#e8effc}
+:root[data-theme="dark"] .cell.hidden {background:#453021;color:transparent}
+:root[data-theme="dark"] input.cell {background:#19273d;color:#e8effc}
+:root[data-theme="dark"] #signature {color:#b7c5d9}
 </style>
 <link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
 </head>
 
 <body>
@@ -181,7 +201,8 @@ function render(){
   const board=document.getElementById('board');
 
   board.innerHTML='';
-  board.style.gridTemplateColumns=`repeat(${n},72px)`;
+  board.style.gridTemplateColumns=`repeat(${n},minmax(0,1fr))`;
+  board.style.maxWidth=(n*72+(n-1)*8)+'px';
 
   for(let r=0;r<n;r++){
     for(let c=0;c<n;c++){
@@ -247,8 +268,9 @@ function check(){
     const r=+inp.dataset.r;
     const c=+inp.dataset.c;
 
-    inp.style.background =
-      (+inp.value===full[r][c]) ? '#d9f7d9' : '#ffe1e1';
+    const correct = inp.value.trim() !== '' && Number(inp.value) === full[r][c];
+    inp.style.background = correct ? '#d9f7d9' : '#ffe1e1';
+    inp.style.color = correct ? '#14532d' : '#7f1d1d';
   });
 }
 
@@ -266,6 +288,13 @@ function savePNG(){
 
 
 <script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
 <script src="../assets/menu-drawer.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
 </body>
 </html>

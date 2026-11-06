@@ -1,0 +1,413 @@
+<!doctype html><html lang="ru"><head>
+<script src="../shared/theme.js"></script><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Найди и отметь — NeuroX</title><style>
+:root{--blue:#1E3F8A;--blue-light:#2A56C6;--blue-pale:#E8EEF9;--orange:#FF6A00;--orange-soft:#FF8B3D;--orange-dark:#C85100;--bg:#F4F6FB;--text:#24324B;--text-dim:#6B7280;--border:rgba(30,63,138,.15);--panel:#fff;--header-shadow:rgba(30,63,138,.25);--dot-color:rgba(30,63,138,.07);color-scheme:light}
+*{box-sizing:border-box}html,body{margin:0;padding:0;min-width:320px}
+body{font-family:'Nunito Sans',Arial,sans-serif;background:var(--bg);background-image:radial-gradient(circle,var(--dot-color) 1.5px,transparent 1.6px);background-size:26px 26px;color:var(--text);min-height:100vh}
+button,input,select,textarea{font-family:inherit;font-size:inherit}button{cursor:pointer}button:disabled{opacity:.4;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+[hidden]{display:none!important}
+.app-header{background:linear-gradient(135deg,#152E68 0%,#1E3F8A 60%,#2A4A99 100%);color:#fff;padding:10px 17px 15px;box-shadow:0 6px 20px var(--header-shadow);position:relative;z-index:2}
+.header-top{display:flex;justify-content:space-between;align-items:center;gap:14px}.brand-row{display:flex;align-items:center;gap:11px;min-width:0}.brand-text{min-width:0}
+h1{font-family:'Fredoka','Nunito Sans',Arial,sans-serif;font-size:19px;font-weight:800;letter-spacing:.2px;line-height:1.1;margin:0}
+.subtitle{font-size:11px;opacity:.85;font-weight:700;margin-top:4px}
+.logo{position:relative;width:40px;height:40px;flex:0 0 40px;background:none;border:0;padding:0;display:grid;place-items:center;transition:transform .2s}.logo>svg{display:block;width:36px;height:36px}.logo:hover{transform:scale(1.07)}
+.back-mark{position:absolute;top:0;left:-3px;width:17px;height:17px;background:var(--orange);border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;pointer-events:none;box-shadow:0 2px 5px rgba(0,0,0,.25)}
+.header-buttons{display:flex;gap:6px}.icon-btn{display:grid;place-items:center;width:38px;height:38px;border:0;border-radius:12px;background:rgba(255,255,255,.18);color:white;transition:.2s}.icon-btn svg{width:19px;height:19px}.icon-btn:hover{background:var(--orange);transform:translateY(-2px)}
+.settings-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:12px;margin-top:12px;align-items:start;max-height:none;opacity:1;transition:opacity .22s,margin .22s}
+.settings-grid.collapsed{display:none}
+.settings-section{min-width:0;border:1px solid rgba(255,255,255,.19);border-radius:11px;padding:10px 12px 13px;background:rgba(9,28,76,.18)}
+.section-heading{font-size:11px;text-transform:uppercase;letter-spacing:.55px;font-weight:800;color:#FFB37A;margin-bottom:9px}
+.group-presets{grid-column:1/-1}.group-rules{grid-column:1}.group-params{grid-column:2}.group-create{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px}
+.group-create .section-heading{margin:0 4px 0 0}.group-create #print,.group-create #save,.group-create #load{display:none}.group-create .controls{margin:0}.group-create #msg{margin:0;flex:1 1 280px;font-size:12px;line-height:1.35;color:#F3F7FF;font-weight:700}
+.tabs{display:flex;gap:7px;margin-bottom:10px}.tab,.preset{font-size:12px;font-weight:800;border:2px solid transparent;border-radius:8px;background:white;color:#53657D;padding:7px 13px;line-height:1.2;transition:.15s;white-space:nowrap}
+.tab:hover,.preset:hover{border-color:var(--orange-soft)}.tab.active,.preset.active{background:var(--orange);border-color:var(--orange-dark);color:#fff}
+.presets{display:flex;flex-wrap:wrap;gap:7px}.preset{padding:6px 10px}.preset.own-preset{border:2px dashed #FFB37A;color:#1E3F8A;background:#fff}.preset.own-preset.active{border:2px solid #FF6A00;background:#FF6A00;color:white}.group-presets .note{margin-bottom:0}
+.note{font-size:11px;line-height:1.5;color:rgba(255,255,255,.82);margin:9px 0 1px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0;margin:0 0 9px}
+.field label{font-size:11px;font-weight:800;color:rgba(255,255,255,.92);line-height:1.25}
+.field input:not([type=checkbox]),.field textarea,.field select{display:block;background:#fff;color:var(--blue);font-weight:700;font-size:12px;width:100%;min-width:0;border:2px solid transparent;border-radius:8px;padding:8px 10px;outline:0}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--orange)}.field textarea{min-height:52px;max-height:180px;resize:vertical}.field input[type=number]{width:100%}
+.two{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 9px}.group-params .field{margin-bottom:9px}.group-params .note{margin-top:6px}
+.group-params>label{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:rgba(255,255,255,.9)}#ensure{accent-color:var(--orange);width:16px;height:16px}
+#rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:start}.rule{border-radius:9px;padding:9px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.2);min-width:0}
+.rulehead{display:flex;justify-content:space-between;align-items:center;gap:5px;margin:0 0 9px}.rulehead b{font-size:12px;color:#fff}.rulehead button{background:#fff;color:#BD3528;border:0;border-radius:6px;font-size:18px;min-width:29px;height:26px;line-height:21px}
+.rulegrid{display:grid;grid-template-columns:minmax(0,1fr) 80px;gap:7px}.rule .field{margin:0 0 6px}.rule .field label{font-size:10px}
+.tip{display:none}
+.btn{padding:9px 13px;border:0;border-radius:10px;font-size:12px;font-weight:800;min-height:37px;background:var(--blue);color:#fff;transition:.18s}.btn:hover{filter:brightness(1.08)}.btn:active{transform:scale(.97)}.btn.primary{background:var(--orange);box-shadow:0 3px 0 var(--orange-dark)}.btn-blue{background:var(--blue);box-shadow:0 3px 0 #102A63}.btn-light{background:white;color:var(--blue);border:2px solid var(--border)}.group-rules>.btn{background:var(--orange);margin-top:3px}.controls{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.preview-nav{max-width:980px;margin:15px auto 7px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.preview-label{display:flex;flex-direction:column;gap:3px}.preview-label b{font-size:14px;color:var(--blue)}.preview-label span{font-size:11px;color:var(--text-dim);line-height:1.4}
+.page-controls{white-space:nowrap}#pageNum{font-weight:800;color:var(--blue);font-size:13px}.nav-btn{width:32px;height:32px;border-radius:8px;border:1px solid #CBDAEE;background:white;color:var(--blue);font-size:22px;font-weight:800;line-height:20px}.nav-btn:hover{border-color:var(--orange)}
+.game-layout{display:flex;flex-direction:column;align-items:center;margin:0 14px 13px}.field-wrapper{max-width:1000px;width:100%;display:flex;justify-content:center;overflow:auto;background:var(--panel);border:2px solid var(--border);border-radius:16px;padding:15px;box-shadow:0 4px 0 rgba(30,63,138,.08),0 10px 20px rgba(30,63,138,.06)}
+.stage{display:flex;justify-content:center;align-items:flex-start;min-width:0;min-height:130px;width:100%;overflow:hidden}.paperwrap{flex:none;position:relative}
+.paper{position:relative;width:210mm;height:297mm;background:white;color:#000;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.12);border:1px solid #ddd;font-family:Arial,sans-serif}
+.title{position:absolute;left:12mm;right:12mm;top:17mm;text-align:center;font-size:22pt;font-weight:400}
+.examples{position:absolute;top:36mm;left:20mm;right:20mm;display:flex;justify-content:center;gap:8mm;align-items:center;flex-wrap:wrap;min-height:25mm}
+.example{display:inline-flex;gap:3mm;align-items:center;font-size:19pt;white-space:nowrap}.sample{position:relative;display:inline-block;padding:4mm;line-height:1.1}
+.sheet-row{position:absolute;left:17mm;right:17mm;display:grid;align-items:center}.cell{text-align:center;display:flex;justify-content:center;align-items:center;min-width:0}.word{display:inline-block;white-space:nowrap;line-height:1.15}
+.scatter-word{position:absolute;display:block;white-space:nowrap;line-height:1.15;max-width:none;overflow:visible}
+.shape{display:inline-flex;align-items:center;justify-content:center;min-width:1.65em;min-height:1.5em;position:relative}.shape.circle{border:1.5px solid #000;border-radius:50%;padding:.1em .22em}.shape.square{border:1.5px solid #000;padding:.1em .22em}.shape.oval{border:1.5px solid #000;border-radius:50%;padding:.15em .48em}.shape.strike{text-decoration:line-through;text-decoration-thickness:1.4px}.shape.underline{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.4px}.shape.double{text-decoration-line:underline;text-decoration-style:double;text-underline-offset:3px}.shape.wave{text-decoration-line:underline;text-decoration-style:wavy;text-underline-offset:4px}.shape.cross:before,.shape.cross:after{content:'';position:absolute;left:0;top:50%;width:100%;border-top:1.5px solid;transform:rotate(22deg)}.shape.cross:after{transform:rotate(-22deg)}.shape.tick:after{content:'✓';position:absolute;font-size:.55em;top:-.9em;right:-.7em}.shape.dot:after{content:'●';position:absolute;font-size:.32em;top:-.9em;left:45%}.foot{position:absolute;bottom:10mm;right:15mm;font-size:9pt;color:#777}
+.action-bar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 14px 25px}.action-bar .btn{padding:10px 20px;font-size:13px}
+#verner{position:fixed;right:12px;bottom:6px;font-size:11px;font-weight:700;color:var(--text-dim);opacity:.8;pointer-events:none}#printArea{display:none}
+@media(max-width:820px){.settings-grid{grid-template-columns:1fr}.group-presets,.group-rules,.group-params,.group-create{grid-column:1}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.settings-section{padding:10px}}
+@media(max-width:520px){.app-header{padding:10px}.header-top{gap:7px}.subtitle{font-size:10px}h1{font-size:17px}.logo{width:34px;height:34px;flex-basis:34px}.logo>svg{width:30px;height:30px}.icon-btn{width:35px;height:35px}.presets{max-height:155px;overflow-y:auto}.preset{font-size:11px;padding:6px 8px}#rules{grid-template-columns:1fr}.rulegrid{grid-template-columns:1fr 72px}.preview-nav{margin-top:10px}.preview-label span{display:none}.field-wrapper{padding:8px}.game-layout{margin:0 5px 12px}}
+@media print{@page{size:A4;margin:0}html,body{min-width:0!important;background:#fff!important;background-image:none!important;margin:0!important;padding:0!important}.app-header,.preview-nav,.game-layout,.action-bar,#verner{display:none!important}#printArea{display:block!important}#printArea .paper{width:210mm!important;height:297mm!important;box-shadow:none!important;border:0!important;page-break-after:always;break-after:page}#printArea .paper:last-child{page-break-after:auto;break-after:auto}}
+</style><link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/generator-sidebar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
+</head><body><header class="app-header">
+<div class="header-top">
+  <div class="brand-row">
+    <button class="logo" id="backBtn" type="button" title="Назад к NeuroX" aria-label="Назад"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="title desc">
+<title id="title">Найди и отметь</title><desc id="desc">Лист с буквой А в оранжевом круге и подчёркнутой буквой О</desc>
+<rect x="7" y="5" width="50" height="54" rx="8" fill="#FFFFFF" stroke="#1E3F8A" stroke-width="3.3"/>
+<path d="M16 13h8M40 13h8" stroke="#C8D9F4" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M19 34l7-17 7 17M21.5 28h9" stroke="#1E3F8A" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="26" cy="25.5" r="14.1" stroke="#FF6A00" stroke-width="3.6"/>
+<circle cx="42" cy="42" r="6.3" stroke="#1E3F8A" stroke-width="3.1"/>
+<path d="M33.5 53h17" stroke="#FF6A00" stroke-width="3.9" stroke-linecap="round"/>
+<path d="M17 42l8 8m0-8-8 8" stroke="#1E3F8A" stroke-width="3.3" stroke-linecap="round"/>
+</svg><span class="back-mark">←</span></button>
+    <div class="brand-text"><h1>Найди и отметь</h1><div class="subtitle">NeuroX · Генератор корректурных заданий</div></div>
+  </div>
+  <div class="header-buttons">
+    <button class="icon-btn" id="regenTop" type="button" aria-label="Создать новый вариант" title="Новый вариант"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.2 5.5"/><path d="M20 4v7h-7"/></svg></button>
+    <button class="icon-btn" id="toggleBtn" type="button" aria-expanded="true" aria-controls="settingsGrid" aria-label="Скрыть или показать настройки" title="Показать / скрыть настройки"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9A1.7 1.7 0 0 0 21 10h.1a2 2 0 1 1 0 4H21a1.7 1.7 0 0 0-1.6 1z"/></svg></button>
+  </div>
+</div>
+<div id="settingsGrid" class="settings-grid">
+  <section class="settings-section group-presets"><div class="section-heading">Материал и набор</div><div class="tabs"><button aria-pressed="true" class="tab active" data-type="syllables" type="button">Слоги</button><button aria-pressed="false" class="tab" data-type="words" type="button">Слова</button></div><div class="presets" id="presets"></div><p class="note">В каждом разделе есть кнопка «Своё». Введите собственные слоги или слова ниже, выберите отметки и нажмите «Сгенерировать». Собственные наборы разделов сохраняются отдельно.</p></section>
+  <section class="settings-section group-rules"><div class="section-heading">Что искать и как отмечать</div><div id="rules"></div><button class="btn" id="addRule">＋ Добавить действие</button><p class="note">В одной строке правила можно указать несколько целей через запятую. Каждому правилу назначается своё действие.</p><div class="field"><label>Остальные элементы (отвлекающие)</label><textarea id="distractors" spellcheck="false"></textarea></div><div class="field"><label>Частота отвлекающих (вес)</label><input id="dweight" max="30" min="0" type="number" value="2"/></div><div class="tip">Например: «МА» обвести кругом, «МО» зачеркнуть крестиком, «МУ» заключить в квадрат. На листе все слова остаются без выделения, ребёнок выполняет действия сам.</div></section>
+  <section class="settings-section group-params"><div class="section-heading">Параметры листа</div><div class="two"><div class="field"><label>Расположение на листе</label><select id="placement"><option value="scatter">Вразброс, как в образце</option><option value="grid">Ровными строками</option></select></div><div class="field" id="totalField"><label>Элементов на листе</label><input id="total" max="96" min="6" type="number" value="40"/></div><div class="field" hidden="" id="rowsField"><label>Строк</label><input id="rows" max="12" min="3" type="number" value="8"/></div><div class="field" hidden="" id="colsField"><label>Элементов в строке</label><input id="cols" max="8" min="3" type="number" value="5"/></div><div class="field"><label>Размер шрифта, пт</label><input id="size" max="38" min="14" type="number" value="27"/></div><div class="field" hidden="" id="gapField"><label>Межстрочный шаг, мм</label><input id="gap" max="27" min="12" type="number" value="21"/></div><div class="field"><label>Шрифт</label><select id="font"><option value="Arial,sans-serif">Arial</option><option value="Verdana,sans-serif">Verdana</option><option value="'Times New Roman',serif">Times New Roman</option><option value="Georgia,serif">Georgia</option></select></div><div class="field"><label>Регистр</label><select id="case"><option value="as">Как введено</option><option value="lower">строчные</option><option value="upper">ПРОПИСНЫЕ</option></select></div><div class="field"><label>Листов</label><input id="sheets" max="25" min="1" type="number" value="1"/></div><div class="field"><label>Заголовок</label><input id="titleText" value="Выполни по образцу"/></div></div><label><input checked="" id="ensure" type="checkbox"/> Каждая цель хотя бы раз на листе</label></section>
+  <section class="settings-section group-create"><div class="section-heading">Сборка задания</div><div class="controls"><button class="btn primary" id="generate">↻ Сгенерировать</button><button class="btn" id="print">⎙ Печать / PDF</button><button class="btn" id="save">Сохранить набор</button><button class="btn" id="load">Загрузить набор</button></div><p class="note" id="msg"></p></section>
+</div>
+</header>
+<div class="preview-nav"><div class="preview-label"><b>Предпросмотр листа А4</b><span>На листе отметки стоят только в образцах. Основное поле ребёнок заполняет самостоятельно.</span></div><div class="controls page-controls"><button class="nav-btn" id="prev" type="button" aria-label="Предыдущий лист">‹</button><span id="pageNum">1 / 1</span><button class="nav-btn" id="next" type="button" aria-label="Следующий лист">›</button></div></div>
+<div class="game-layout"><div class="field-wrapper"><div class="stage" id="stage"><div class="paperwrap" id="paperwrap"><div class="paper" id="preview"></div></div></div></div></div>
+<div class="action-bar"><button class="btn primary" id="print2">🖨️ Печать / PDF</button><button class="btn btn-blue" id="copyPng" type="button" title="Скопировать текущий лист А4 как PNG">📋 Копировать PNG</button><button class="btn btn-blue" id="regenBottom">🎲 Новый вариант</button><button class="btn btn-light" id="saveBottom">💾 Сохранить набор</button><button class="btn btn-light" id="loadBottom">📁 Открыть набор</button></div>
+<footer id="verner">© verner · NeuroX</footer>
+<div id="printArea"></div>
+<script>
+(()=>{'use strict';const $=id=>document.getElementById(id);const ACTIONS=[['strike','Зачеркнуть линией'],['underline','Подчеркнуть'],['circle','Обвести кругом'],['square','Обвести квадратом'],['oval','Обвести овалом'],['cross','Перечеркнуть крестиком'],['tick','Поставить галочку'],['dot','Поставить точку сверху'],['double','Подчеркнуть двойной линией'],['wave','Подчеркнуть волнистой']];
+const CATALOG={syllables:[['МА / МО',['ма','мо'],['му','ми','ам','ом']],['СА / АС',['са','ас'],['со','ос','су','ус']],['ША / ЩА',['ша','ща'],['шо','щу','ши','щи']],['ЖИ / ШИ',['жи','ши'],['же','ше','жа','ша']],['ЧА / ЩА',['ча','ща'],['чу','щу','чи','щи']],['ЦА / ЧА',['ца','ча'],['цо','чо','цу','чу']],['ЛА / РА',['ла','ра'],['ло','ро','лу','ру']],['БА / ДА',['ба','да'],['бо','до','бу','ду']],['НА / ПА',['на','па'],['но','по','ну','пу']],['Е / Ё',['ле','лё'],['не','нё','се','сё']],['Я / А',['мя','ма'],['ля','ла','ня','на']],['Ю / У',['лю','лу'],['ню','ну','тю','ту']],['Прямые / обратные',['та','ат'],['то','от','ту','ут']],['Стечения',['ста','ска'],['стра','спа','сна','сла']],['Открытые / закрытые',['сон','со'],['нос','но','сом','мо']]],words:[['КОТ / ТОК',['кот','ток'],['кто','ком','топ','тик','сок','окт']],['СОН / НОС',['сон','нос'],['сок','сом','носок','соня']],['ЛУК / ЛАК',['лук','лак'],['люк','лик','луг','луна']],['ДОМ / ДЫМ',['дом','дым'],['том','сом','дам','дымок']],['МИР / РИМ',['мир','рим'],['тир','рис','миг','сыр']],['КОСА / КОЗА',['коса','коза'],['роса','поза','кожа','коза']],['ЛИСА / ЛИПА',['лиса','липа'],['лира','лиза','лапа','лиса']],['ЖУК / ЛУК',['жук','лук'],['люк','шум','бук','жар']],['МАК / РАК',['мак','рак'],['лак','бак','так','маяк']],['СЫР / СЫП',['сыр','сып'],['сын','суп','сырок','сироп']],['СТОЛ / СТУЛ',['стол','стул'],['ствол','стук','слон','стог']],['ИГРА / ИКРА',['игра','икра'],['игла','искра','гора','край']],['ПИЛА / ЛИПА',['пила','липа'],['пена','лиса','сила','пила']],['ЗИМА / ЗИНА',['зима','зина'],['зона','лима','зима','зина']],['ПАРК / ПАРА',['парк','пара'],['парта','пар','пир','рак']]]};
+let type='syllables',rules=[],sheets=[],index=0,presetIndex=0;
+// «Своё» хранится отдельно для слогов и слов. Готовые наборы остаются без изменений.
+const CUSTOM_KEY='neurox_naidi_i_otmet_own_sets_v1';
+const customSets={syllables:null,words:null};
+try {
+  const saved=JSON.parse(localStorage.getItem(CUSTOM_KEY)||'null');
+  for(const kind of ['syllables','words']) if(saved?.[kind] && Array.isArray(saved[kind].rules))customSets[kind]=saved[kind];
+} catch(e) {}
+function storeCustom(){try{localStorage.setItem(CUSTOM_KEY,JSON.stringify(customSets))}catch(e){}}
+function captureCustom(){
+  customSets[type]={rules:rules.map(r=>({...r})),distractors:$('distractors').value,dweight:$('dweight').value};
+  storeCustom();
+}
+function highlightPreset(){
+  $('presets').querySelectorAll('[data-p]').forEach(b=>{
+    const selected=Number(b.dataset.p)===presetIndex;
+    b.classList.toggle('active',selected);
+    b.setAttribute('aria-pressed',String(selected));
+  });
+  const own=$('presets').querySelector('[data-custom]');
+  if(own){own.classList.toggle('active',presetIndex===-1);own.setAttribute('aria-pressed',String(presetIndex===-1))}
+}
+function markCustom(){presetIndex=-1;captureCustom();highlightPreset()}
+function chooseCustom(){
+  if(presetIndex===-1)return;
+  presetIndex=-1;
+  const own=customSets[type];
+  rules=own?.rules?.length?own.rules.map(r=>({...r})):[
+    {words:'',action:'strike',weight:5},
+    {words:'',action:'underline',weight:5}
+  ];
+  $('distractors').value=own?.distractors??'';
+  $('dweight').value=own?.dweight??2;
+  paintRules();highlightPreset();captureCustom();
+  if(rules.some(r=>split(r.words).length))generate();
+  else {
+    sheets=[];index=0;$('pageNum').textContent='1 / 1';$('printArea').innerHTML='';
+    $('preview').innerHTML='<div class="title">Выполни по образцу</div><div style="position:absolute;top:122mm;left:15mm;right:15mm;text-align:center;font-size:14pt;color:#777">Задай свои слоги или слова в настройках</div>';
+    $('msg').textContent='Свой набор открыт. Впиши нужные слоги или слова в поля «Что искать», затем нажми «Сгенерировать».';
+    fit();
+  }
+}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function split(s){return [...new Set(String(s).split(/[\s,;，；]+/u).map(x=>x.trim()).filter(Boolean))]}function n(id,min,max){let x=Number($(id).value);if(!Number.isFinite(x))x=min;return Math.max(min,Math.min(max,Math.round(x)))}function actionSelect(v){return ACTIONS.map(([id,label])=>`<option value="${id}" ${v===id?'selected':''}>${label}</option>`).join('')}
+function paintRules(){const box=$('rules');box.innerHTML=rules.map((r,i)=>`<div class="rule"><div class="rulehead"><b>Действие ${i+1}</b><button type="button" data-del="${i}" title="Удалить действие">×</button></div><div class="field"><label>Что искать</label><textarea data-field="words" data-i="${i}" spellcheck="false">${esc(r.words)}</textarea></div><div class="rulegrid"><div class="field"><label>Как отметить</label><select data-field="action" data-i="${i}">${actionSelect(r.action)}</select></div><div class="field"><label>Частота</label><input type="number" min="0" max="30" value="${r.weight}" data-field="weight" data-i="${i}"></div></div></div>`).join('');box.querySelectorAll('[data-field]').forEach(el=>el.addEventListener('input',()=>{rules[+el.dataset.i][el.dataset.field]=el.value;markCustom()}));box.querySelectorAll('[data-del]').forEach(el=>el.addEventListener('click',()=>{if(rules.length<2){$('msg').textContent='Нужно хотя бы одно действие.';return}rules.splice(+el.dataset.del,1);paintRules();markCustom()}))}
+function choosePreset(i){presetIndex=i;const p=CATALOG[type][i];rules=[{words:p[1][0],action:'strike',weight:5},{words:p[1][1],action:'underline',weight:5}];$('distractors').value=p[2].join(', ');$('dweight').value=2;paintRules();highlightPreset();generate()}
+function updatePresets(){document.querySelectorAll('.tab').forEach(b=>{let selected=b.dataset.type===type;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected))});$('presets').innerHTML=CATALOG[type].map((p,i)=>`<button type="button" class="preset ${i===presetIndex?'active':''}" data-p="${i}" aria-pressed="${i===presetIndex}">${esc(p[0])}</button>`).join('')+`<button type="button" class="preset own-preset ${presetIndex===-1?'active':''}" data-custom="true" aria-pressed="${presetIndex===-1}">✎ Своё</button>`;$('presets').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>choosePreset(+b.dataset.p));$('presets').querySelector('[data-custom]').onclick=chooseCustom}
+function choice(a){return a[Math.floor(Math.random()*a.length)]}function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function read(){
+ const cast=w=>$('case').value==='lower'?w.toLocaleLowerCase('ru'):$('case').value==='upper'?w.toLocaleUpperCase('ru'):w;
+ const taken=new Set();const groups=rules.map(r=>{const words=split(r.words).map(cast).filter(w=>!taken.has(w));words.forEach(w=>taken.add(w));return {words,action:r.action,weight:Math.max(0,Number(r.weight)||0)}});
+ const distractors=split($('distractors').value).map(cast).filter(w=>!taken.has(w));
+ return {groups,distractors,dweight:Math.max(0,Number($('dweight').value)||0),rows:n('rows',3,12),cols:n('cols',3,8),total:n('total',6,96),placement:$('placement').value,size:n('size',14,38),gap:n('gap',12,27),count:n('sheets',1,25),title:$('titleText').value||'Выполни по образцу',font:$('font').value,ensure:$('ensure').checked};
+}
+function layout(cfg){
+ const available=cfg.groups.filter(g=>g.words.length&&g.weight>0).map(g=>({words:g.words,weight:g.weight}));
+ if(cfg.distractors.length&&cfg.dweight>0)available.push({words:cfg.distractors,weight:cfg.dweight});
+ if(!available.length){$('msg').textContent='Добавь хотя бы одну цель с частотой больше нуля.';return null}
+ const count=cfg.placement==='scatter'?cfg.total:cfg.rows*cfg.cols;
+ const goals=cfg.ensure?cfg.groups.flatMap(g=>g.words):[];
+ if(goals.length>count){$('msg').textContent=`Целей (${goals.length}) больше, чем элементов (${count}). Увеличь количество на листе.`;return null}
+ const sum=available.reduce((s,g)=>s+g.weight,0);let all=[];
+ for(let i=0;i<count;i++){
+   let x=Math.random()*sum,g=available[0];for(const e of available){x-=e.weight;if(x<=0){g=e;break}}
+   all.push(choice(g.words));
+ }
+ if(goals.length){all=shuffle(all);goals.forEach((w,i)=>all[i]=w);all=shuffle(all)}
+ return cfg.placement==='grid'?Array.from({length:cfg.rows},(_,r)=>all.slice(r*cfg.cols,(r+1)*cfg.cols)):all;
+}
+function sampleText(word,action){return `<span class="shape ${esc(action)}">${esc(word)}</span>`}
+function sampleCount(cfg){return cfg.groups.filter(g=>g.words.length).reduce((n,g)=>n+Math.min(3,g.words.length),0)}
+function startY(cfg){const n=sampleCount(cfg);return n>9?119:n>5?101:86}
+// Независимые координаты на плоскости A4. Размеры слов измеряются в выбранном шрифте;
+// проверка прямоугольников не позволяет словам пересекаться даже при сильном разбросе.
+function scatter(cfg,words){
+ const cv=document.createElement('canvas'),ctx=cv.getContext('2d');
+ ctx.font=`${cfg.size*96/72}px ${cfg.font}`;
+ const mm=25.4/96;
+ const top=startY(cfg)+2, bottom=254, left=17, right=193;
+ const height=cfg.size*25.4/72*1.15;
+ const order=words.map((word,i)=>({word,i,w:ctx.measureText(word).width*mm+1.2,h:height}));
+ // Сначала располагаем длинные слова, чтобы не загонять их в оставшиеся узкие промежутки.
+ order.sort((a,b)=>b.w-a.w||(Math.random()-.5));
+ let placed=[];
+ for(const item of order){
+  if(item.w>right-left||item.h>bottom-top)return null;
+  let chosen=null;
+  for(const [gapX,gapY] of [[4.0,5.5],[2.5,3.5],[1.2,2]]){
+   const candidates=[];
+   for(let attempt=0;attempt<290;attempt++){
+    const x=left+Math.random()*(right-left-item.w);
+    const y=top+Math.random()*(bottom-top-item.h);
+    if(placed.some(p=>x<p.x+p.w+gapX&&x+item.w+gapX>p.x&&y<p.y+p.h+gapY&&y+item.h+gapY>p.y))continue;
+    const cx=x+item.w/2,cy=y+item.h/2;
+    let near=placed.length?Math.min(...placed.map(p=>Math.hypot((cx-p.x-p.w/2)/24,(cy-p.y-p.h/2)/23))):2;
+    // Не выстраиваем слова по линиям: выбираем точку среди нескольких свободных областей.
+    candidates.push({x,y,score:near+Math.random()*.24});
+    if(candidates.length>=16)break;
+   }
+   if(candidates.length){candidates.sort((a,b)=>b.score-a.score);chosen=choice(candidates.slice(0,Math.min(5,candidates.length)));break}
+  }
+  if(!chosen)return null;
+  placed.push({...item,x:chosen.x,y:chosen.y});
+ }
+ return placed.sort((a,b)=>a.i-b.i).map(p=>({word:p.word,x:p.x,y:p.y}));
+}
+function page(cfg,content,number){
+ const samples=cfg.groups.filter(g=>g.words.length).flatMap(g=>g.words.slice(0,3).map(w=>`<span class="example">${sampleText(w,g.action)}</span>`));
+ let exercise;
+ if(cfg.placement==='scatter'){
+   exercise=content.map(p=>`<span class="scatter-word" style="left:${p.x.toFixed(2)}mm;top:${p.y.toFixed(2)}mm;font-size:${cfg.size}pt">${esc(p.word)}</span>`).join('');
+ }else{
+   const y0=startY(cfg),gap=Math.min(cfg.gap,(275-y0)/Math.max(1,cfg.rows-1));
+   exercise=content.map((row,r)=>`<div class="sheet-row" style="top:${y0+r*gap}mm;grid-template-columns:repeat(${cfg.cols},minmax(0,1fr));font-size:${cfg.size}pt">${row.map(w=>`<div class="cell"><span class="word">${esc(w)}</span></div>`).join('')}</div>`).join('');
+ }
+ return `<div class="paper" style="font-family:${esc(cfg.font)}"><div class="title">${esc(cfg.title)}</div><div class="examples">${samples.join('')}</div>${exercise}${cfg.count>1?`<div class="foot">Вариант ${number}</div>`:''}</div>`;
+}
+function draw(){if(!sheets.length)return;const cfg=sheets[0].cfg;$('preview').outerHTML=page(cfg,sheets[index].content,index+1).replace('class="paper"','class="paper" id="preview"');$('pageNum').textContent=`${index+1} / ${sheets.length}`;$('printArea').innerHTML=sheets.map((s,i)=>page(s.cfg,s.content,i+1)).join('');fit()}
+function fit(){const wrap=$('paperwrap'),stage=$('stage'),paper=$('preview');if(!paper)return;const scale=Math.min(1,(stage.clientWidth-30)/paper.offsetWidth);paper.style.transform=`scale(${scale})`;paper.style.transformOrigin='top left';wrap.style.width=paper.offsetWidth*scale+'px';wrap.style.height=paper.offsetHeight*scale+'px'}
+function updatePlacement(){
+ const scatterMode=$('placement').value==='scatter';
+ $('totalField').hidden=!scatterMode;
+ for(const id of ['rowsField','colsField','gapField'])$(id).hidden=scatterMode;
+}
+function generate(){
+ const cfg=read(),output=[];
+ for(let i=0;i<cfg.count;i++){
+   const tokens=layout(cfg);if(!tokens)return;
+   const content=cfg.placement==='scatter'?scatter(cfg,tokens):tokens;
+   if(!content){$('msg').textContent='Не удалось разместить слова без наложений. Уменьши число элементов или размер букв.';return}
+   output.push({cfg,content});
+ }
+ sheets=output;index=0;
+ $('msg').textContent=`Готово: ${cfg.count} лист(ов), ${cfg.placement==='scatter'?cfg.total:cfg.rows*cfg.cols} элементов на каждом. ${cfg.placement==='scatter'?'Размещены вразброс.':'Расположены по строкам.'}`;
+ draw();
+}
+/* ===== КОПИРОВАТЬ PNG: ТОЧНАЯ КОПИЯ ТЕКУЩЕГО ЛИСТА A4 ===== */
+async function createSheetPng(){
+ // Рисуем текст и отметки непосредственно в полном разрешении A4,
+ // а НЕ растягиваем готовую миниатюру из предпросмотра до 300 dpi.
+ const paper=$('preview');
+ if(!paper || !sheets.length)throw new Error('Нет созданного листа');
+ await document.fonts.ready;
+ const canvas=document.createElement('canvas');
+ canvas.width=2480;canvas.height=3508;
+ const ctx=canvas.getContext('2d',{alpha:false});
+ if(!ctx)throw new Error('Canvas недоступен');
+ ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+ const pbox=paper.getBoundingClientRect();
+ const scale=canvas.width/paper.offsetWidth;
+ const scaledBox=el=>{
+   const b=el.getBoundingClientRect();
+   return {x:(b.left-pbox.left)*canvas.width/pbox.width,
+           y:(b.top-pbox.top)*canvas.height/pbox.height,
+           w:b.width*canvas.width/pbox.width,
+           h:b.height*canvas.height/pbox.height};
+ };
+ const strokeWidth=cssPx=>Math.max(1,cssPx*scale);
+ function line(x1,y1,x2,y2,weight=1.5){
+   ctx.lineWidth=strokeWidth(weight);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+ }
+ function paintText(el,alignment='left',fontOverride=null){
+   const st=getComputedStyle(el),r=scaledBox(el);
+   const fontSize=(fontOverride||parseFloat(st.fontSize))*scale;
+   let lineHeight=parseFloat(st.lineHeight);
+   if(!Number.isFinite(lineHeight))lineHeight=(fontOverride||parseFloat(st.fontSize))*1.2;
+   lineHeight*=scale;
+   ctx.font=`${st.fontWeight} ${fontSize}px ${st.fontFamily}`;
+   ctx.fillStyle='#000';ctx.textAlign=alignment;
+   ctx.textBaseline='alphabetic';
+   // CSS line-box → алфавитная базовая линия, с поправкой на межстрочный интервал.
+   const metrics=ctx.measureText(el.textContent);
+   const ascent=metrics.fontBoundingBoxAscent||fontSize*.91;
+   const descent=metrics.fontBoundingBoxDescent||fontSize*.22;
+   const baseline=r.y+(r.h-(ascent+descent))/2+ascent;
+   let x=r.x;
+   if(alignment==='center')x+=r.w/2;
+   if(alignment==='right')x+=r.w;
+   ctx.fillText(el.textContent,x,baseline);
+   return {...r,baseline,fontSize};
+ }
+ ctx.strokeStyle='#000';ctx.lineCap='round';ctx.lineJoin='round';
+ const title=paper.querySelector('.title');
+ if(title)paintText(title,'center');
+ for(const shape of paper.querySelectorAll('.example .shape')){
+   const r=scaledBox(shape),style=getComputedStyle(shape),action=[...shape.classList].find(x=>x!=='shape');
+   const t=paintText(shape,'center');
+   ctx.strokeStyle='#000';ctx.fillStyle='#000';
+   const w=strokeWidth(1.5);
+   ctx.lineWidth=w;
+   if(action==='circle'||action==='oval'){
+     ctx.beginPath();ctx.ellipse(r.x+r.w/2,r.y+r.h/2,Math.max(1,r.w/2-w/2),Math.max(1,r.h/2-w/2),0,0,Math.PI*2);ctx.stroke();
+   } else if(action==='square'){
+     ctx.strokeRect(r.x+w/2,r.y+w/2,r.w-w,r.h-w);
+   } else if(action==='strike'){
+     line(r.x,t.baseline-t.fontSize*.3,r.x+r.w,t.baseline-t.fontSize*.3,1.4);
+   } else if(action==='underline'||action==='double'||action==='wave'){
+     const yy=t.baseline+t.fontSize*.085;
+     if(action==='wave'){
+       ctx.beginPath();ctx.lineWidth=strokeWidth(1.4);
+       const period=Math.max(4,t.fontSize*.27),amp=Math.max(1,t.fontSize*.055);
+       for(let xx=0;xx<=r.w;xx+=1.5){
+         const y=yy+Math.sin(xx/period*Math.PI*2)*amp;
+         if(xx===0)ctx.moveTo(r.x+xx,y);else ctx.lineTo(r.x+xx,y);
+       }
+       ctx.stroke();
+     }else{
+       line(r.x,yy,r.x+r.w,yy,1.4);
+       if(action==='double')line(r.x,yy+strokeWidth(2.5),r.x+r.w,yy+strokeWidth(2.5),1.1);
+     }
+   } else if(action==='cross'){
+     const dy=Math.tan(22*Math.PI/180)*r.w/2;
+     line(r.x,r.y+r.h/2-dy,r.x+r.w,r.y+r.h/2+dy,1.5);
+     line(r.x,r.y+r.h/2+dy,r.x+r.w,r.y+r.h/2-dy,1.5);
+   } else if(action==='tick'){
+     ctx.font=`bold ${t.fontSize*.55}px Arial`;
+     ctx.textAlign='left';ctx.fillText('✓',r.x+r.w*.83,r.y+t.fontSize*.27);
+   } else if(action==='dot'){
+     ctx.beginPath();ctx.arc(r.x+r.w*.5,r.y-t.fontSize*.06,Math.max(1,t.fontSize*.14),0,Math.PI*2);ctx.fill();
+   }
+ }
+ // Все слова рисуются из текущего готового листа, никаких новых случайных координат.
+ for(const word of paper.querySelectorAll('.scatter-word, .cell .word'))paintText(word,'center');
+ const foot=paper.querySelector('.foot');
+ if(foot)paintText(foot,'center');
+ const blob=await new Promise((resolve,reject)=>canvas.toBlob(
+   b=>b?resolve(b):reject(new Error('PNG не создан')),'image/png'));
+ return await addPngDpi(blob,300);
+}
+// Метаданные плотности PNG (pHYs): редакторы смогут определить физический размер листа A4.
+async function addPngDpi(blob,dpi){
+ const bytes=new Uint8Array(await blob.arrayBuffer());
+ if(bytes.length<16||bytes[0]!==137||bytes[1]!==80)return blob;
+ const res=Math.round(dpi/0.0254),chunk=new Uint8Array(21);
+ const dv=new DataView(chunk.buffer);
+ dv.setUint32(0,9);chunk.set([112,72,89,115],4);
+ dv.setUint32(8,res);dv.setUint32(12,res);chunk[16]=1;
+ let crc=0xffffffff;
+ for(let i=4;i<17;i++){
+   crc^=chunk[i];
+   for(let j=0;j<8;j++)crc=(crc>>>1)^((crc&1)?0xedb88320:0);
+ }
+ dv.setUint32(17,(crc^0xffffffff)>>>0);
+ // Убираем старый pHYs, если браузер его добавил.
+ const parts=[bytes.slice(0,8),bytes.slice(8,33),chunk];
+ let off=33;
+ while(off+12<=bytes.length){
+   const n=new DataView(bytes.buffer,bytes.byteOffset+off,4).getUint32(0);
+   const end=off+n+12;
+   if(end>bytes.length)break;
+   const type=String.fromCharCode(...bytes.slice(off+4,off+8));
+   if(type!=='pHYs')parts.push(bytes.slice(off,end));
+   off=end;
+ }
+ if(off<bytes.length)parts.push(bytes.slice(off));
+ return new Blob(parts,{type:'image/png'});
+}
+function savePngFallback(blob){
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+ a.href=url;a.download=`naidi_i_otmet_list_${index+1}.png`;
+ document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),3000);
+}
+async function copySheetPng(){
+ const btn=$('copyPng');
+ if(btn.disabled)return;
+ btn.disabled=true;
+ const pngPromise=createSheetPng();
+ // Запрашиваем Clipboard API сразу в обработчике клика, до первого await:
+ // иначе браузеры могут потерять разрешение пользовательского жеста.
+ let writePromise=null;
+ if(navigator.clipboard?.write && typeof ClipboardItem!=='undefined'){
+   try{writePromise=navigator.clipboard.write([new ClipboardItem({'image/png':pngPromise})]);}
+   catch(err){writePromise=Promise.reject(err)}
+ }
+ try{
+   if(writePromise){
+     try{
+       await writePromise;
+       $('msg').textContent=`Лист ${index+1} скопирован в буфер как PNG: чёткий текст, A4, 300 dpi.`;
+       return;
+     }catch(err){console.warn('Копирование в буфер недоступно:',err)}
+   }
+   const blob=await pngPromise;
+   savePngFallback(blob);
+   $('msg').textContent='Браузер не разрешил копирование в буфер: PNG сохранён файлом.';
+ }catch(err){
+   console.error(err);
+   $('msg').textContent='Не удалось получить PNG. Попробуй Chrome или Яндекс Браузер.';
+ }finally{btn.disabled=false}
+}
+$('copyPng').addEventListener('click',copySheetPng);
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{type=b.dataset.type;presetIndex=0;updatePresets();choosePreset(0)});$('addRule').onclick=()=>{rules.push({words:'',action:'circle',weight:4});paintRules();markCustom()};for(const id of ['distractors','dweight'])$(id).addEventListener('input',markCustom);$('generate').onclick=generate;$('placement').onchange=()=>{updatePlacement();generate()};function print(){if(!sheets.length)generate();if(sheets.length)window.print()}$('print').onclick=print;$('print2').onclick=print;$('prev').onclick=()=>{index=Math.max(0,index-1);draw()};$('next').onclick=()=>{index=Math.min(sheets.length-1,index+1);draw()};$('save').onclick=()=>{const config={type,rules,distractors:$('distractors').value,dweight:$('dweight').value,fields:Object.fromEntries(['placement','total','rows','cols','size','gap','font','case','sheets','titleText','ensure'].map(k=>[k,$(k).type==='checkbox'?$(k).checked:$(k).value]))};const blob=new Blob([JSON.stringify(config,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='мой-набор-корректурных-заданий.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};$('load').onclick=()=>{const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=async()=>{try{const obj=JSON.parse(await inp.files[0].text());if(!CATALOG[obj.type]||!Array.isArray(obj.rules))throw Error();type=obj.type;rules=obj.rules.slice(0,15).map(r=>({words:String(r.words||''),action:ACTIONS.some(a=>a[0]===r.action)?r.action:'circle',weight:Number(r.weight)||0}));$('distractors').value=obj.distractors||'';$('dweight').value=obj.dweight??2;for(const[k,v]of Object.entries(obj.fields||{})){if($(k))$(k).type==='checkbox'?$(k).checked=!!v:$(k).value=v}if(!obj.fields?.total && obj.fields?.rows && obj.fields?.cols)$('total').value=Math.min(96,Number(obj.fields.rows)*Number(obj.fields.cols));presetIndex=-1;updatePlacement();updatePresets();paintRules();captureCustom();generate()}catch(e){$('msg').textContent='Не удалось прочитать файл набора.'}};inp.click()};window.addEventListener('resize',fit);updatePlacement();updatePresets();choosePreset(0);
+})();
+</script>
+<script>
+(function(){
+ const settings=document.getElementById('settingsGrid');
+ const toggle=document.getElementById('toggleBtn');
+ const back=document.getElementById('backBtn');
+ toggle.addEventListener('click',()=>{
+   const collapsed=settings.classList.toggle('collapsed');
+   toggle.setAttribute('aria-expanded',String(!collapsed));
+   toggle.title=collapsed?'Показать настройки':'Скрыть настройки';
+   requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));
+ });
+ back.addEventListener('click',()=>{if(history.length>1)history.back();else if(location.protocol!=='file:')location.href='../index.html';});
+ for(const [id,target] of [['regenTop','generate'],['regenBottom','generate'],['saveBottom','save'],['loadBottom','load']]){
+   document.getElementById(id).addEventListener('click',()=>document.getElementById(target).click());
+ }
+})();
+</script><script src="../assets/menu-data.js" defer></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/generator-sidebar.js" defer></script>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+<script src="../assets/menu-drawer.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
+</body></html>

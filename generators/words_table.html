@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script src="../shared/theme.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Слова по слогам — генератор</title>
@@ -173,6 +174,10 @@
   }
 </style>
 <link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/generator-sidebar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
 </head>
 <body>
 
@@ -990,13 +995,15 @@
     const padR = parseFloat(cs.paddingRight) || 0;
     const padT = parseFloat(cs.paddingTop) || 0;
     const padB = parseFloat(cs.paddingBottom) || 0;
+    const page = cardEl.closest('.sheet');
+    const scale = page ? (Number(getComputedStyle(page).zoom) || 1) : 1;
     const availW = cardEl.clientWidth - padL - padR - 2;
     const availH = cardEl.clientHeight - padT - padB - 2;
     if (availW <= 1 || availH <= 1) return 0;
 
     wordEl.style.fontSize = '400px';
     let rect = wordEl.getBoundingClientRect();
-    if (rect.width <= availW && rect.height <= availH) {
+    if (rect.width / scale <= availW && rect.height / scale <= availH) {
       return Math.min(availH * 0.95, availW);
     }
     let lo = 5, hi = 400;
@@ -1004,7 +1011,7 @@
       const mid = (lo + hi) / 2;
       wordEl.style.fontSize = mid + 'px';
       rect = wordEl.getBoundingClientRect();
-      if (rect.width <= availW && rect.height <= availH) lo = mid;
+      if (rect.width / scale <= availW && rect.height / scale <= availH) lo = mid;
       else hi = mid;
       if (hi - lo < 0.5) break;
     }
@@ -1135,6 +1142,14 @@
 </script>
 
 <script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
 <script src="../assets/menu-drawer.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/generator-sidebar.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
 </body>
 </html>

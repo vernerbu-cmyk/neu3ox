@@ -1,0 +1,285 @@
+{
+  "version": "detective-svg-70-v1",
+  "items": [
+    {
+      "id": "apple",
+      "label": "Яблоко"
+    },
+    {
+      "id": "pear",
+      "label": "Груша"
+    },
+    {
+      "id": "banana",
+      "label": "Банан"
+    },
+    {
+      "id": "grapes",
+      "label": "Виноград"
+    },
+    {
+      "id": "strawberry",
+      "label": "Клубника"
+    },
+    {
+      "id": "cherries",
+      "label": "Вишня"
+    },
+    {
+      "id": "watermelon",
+      "label": "Арбуз"
+    },
+    {
+      "id": "pineapple",
+      "label": "Ананас"
+    },
+    {
+      "id": "carrot",
+      "label": "Морковь"
+    },
+    {
+      "id": "mushroom",
+      "label": "Гриб"
+    },
+    {
+      "id": "bread",
+      "label": "Хлеб"
+    },
+    {
+      "id": "pizza",
+      "label": "Пицца"
+    },
+    {
+      "id": "donut",
+      "label": "Пончик"
+    },
+    {
+      "id": "ice-cream",
+      "label": "Мороженое"
+    },
+    {
+      "id": "cupcake",
+      "label": "Кекс"
+    },
+    {
+      "id": "cheese",
+      "label": "Сыр"
+    },
+    {
+      "id": "honey",
+      "label": "Мёд"
+    },
+    {
+      "id": "lollipop",
+      "label": "Леденец"
+    },
+    {
+      "id": "kettle",
+      "label": "Чайник"
+    },
+    {
+      "id": "mug",
+      "label": "Кружка"
+    },
+    {
+      "id": "key",
+      "label": "Ключ"
+    },
+    {
+      "id": "book",
+      "label": "Книга"
+    },
+    {
+      "id": "pencil",
+      "label": "Карандаш"
+    },
+    {
+      "id": "scissors",
+      "label": "Ножницы"
+    },
+    {
+      "id": "magnifier",
+      "label": "Лупа"
+    },
+    {
+      "id": "camera",
+      "label": "Фотоаппарат"
+    },
+    {
+      "id": "clock",
+      "label": "Будильник"
+    },
+    {
+      "id": "telephone",
+      "label": "Телефон"
+    },
+    {
+      "id": "lamp",
+      "label": "Настольная лампа"
+    },
+    {
+      "id": "flashlight",
+      "label": "Фонарик"
+    },
+    {
+      "id": "umbrella",
+      "label": "Зонт"
+    },
+    {
+      "id": "hat",
+      "label": "Шляпа"
+    },
+    {
+      "id": "crown",
+      "label": "Корона"
+    },
+    {
+      "id": "glasses",
+      "label": "Очки"
+    },
+    {
+      "id": "mitten",
+      "label": "Варежка"
+    },
+    {
+      "id": "sock",
+      "label": "Носок"
+    },
+    {
+      "id": "boot",
+      "label": "Сапог"
+    },
+    {
+      "id": "backpack",
+      "label": "Рюкзак"
+    },
+    {
+      "id": "bow-tie",
+      "label": "Бабочка-галстук"
+    },
+    {
+      "id": "watch",
+      "label": "Наручные часы"
+    },
+    {
+      "id": "teddy",
+      "label": "Плюшевый мишка"
+    },
+    {
+      "id": "ball",
+      "label": "Футбольный мяч"
+    },
+    {
+      "id": "dice",
+      "label": "Игральный кубик"
+    },
+    {
+      "id": "puzzle",
+      "label": "Пазл"
+    },
+    {
+      "id": "gift",
+      "label": "Подарок"
+    },
+    {
+      "id": "balloon",
+      "label": "Воздушный шар"
+    },
+    {
+      "id": "kite",
+      "label": "Воздушный змей"
+    },
+    {
+      "id": "rocket",
+      "label": "Ракета"
+    },
+    {
+      "id": "car",
+      "label": "Автомобиль"
+    },
+    {
+      "id": "train",
+      "label": "Паровоз"
+    },
+    {
+      "id": "guitar",
+      "label": "Гитара"
+    },
+    {
+      "id": "drum",
+      "label": "Барабан"
+    },
+    {
+      "id": "trumpet",
+      "label": "Труба"
+    },
+    {
+      "id": "bell",
+      "label": "Колокольчик"
+    },
+    {
+      "id": "palette",
+      "label": "Палитра"
+    },
+    {
+      "id": "paintbrush",
+      "label": "Кисть"
+    },
+    {
+      "id": "flower",
+      "label": "Цветок"
+    },
+    {
+      "id": "cactus",
+      "label": "Кактус"
+    },
+    {
+      "id": "leaf",
+      "label": "Лист"
+    },
+    {
+      "id": "shell",
+      "label": "Ракушка"
+    },
+    {
+      "id": "cat",
+      "label": "Кошка"
+    },
+    {
+      "id": "dog",
+      "label": "Собака"
+    },
+    {
+      "id": "owl",
+      "label": "Сова"
+    },
+    {
+      "id": "butterfly",
+      "label": "Бабочка"
+    },
+    {
+      "id": "turtle",
+      "label": "Черепаха"
+    },
+    {
+      "id": "frog",
+      "label": "Лягушка"
+    },
+    {
+      "id": "fish",
+      "label": "Рыба"
+    },
+    {
+      "id": "ladybug",
+      "label": "Божья коровка"
+    },
+    {
+      "id": "bird",
+      "label": "Птица"
+    },
+    {
+      "id": "snail",
+      "label": "Улитка"
+    }
+  ]
+}

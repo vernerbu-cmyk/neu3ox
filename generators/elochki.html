@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script src="../shared/theme.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Ёлочка — NeuroX</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="../shared/vendor/html2canvas.min.js"></script>
 <style>
 :root{
   --blue:#1E3F8A; --blue-light:#2A56C6; --blue-pale:#E8EEF9;
@@ -387,6 +388,67 @@ input[type=range]{
   #puzzle-container{font-size:16px !important;}
   .btn{padding:9px 14px;font-size:12px;}
   .action-bar{margin:0 10px 24px;}
+}
+</style>
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/generator-sidebar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<style id="nx-elochki-sidebar-fix">
+/* Beta 12.9: боковые настройки Ёлочки — контраст и независимая прокрутка. */
+body.nx-generator-sidebar .nx-generator-side {
+  min-height: 0;
+  height: auto;
+  max-height: calc(100vh - 90px) !important;
+  max-height: calc(100dvh - 90px) !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+}
+body.nx-generator-sidebar .nx-generator-side > #panel,
+body.nx-generator-sidebar .nx-generator-side > #panel .settings:not(.collapsed) {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+body.nx-generator-sidebar .nx-generator-side > #panel .settings.collapsed {
+  height: auto !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+}
+body.nx-generator-sidebar .nx-generator-side > #panel :is(.field label,.subtitle) {
+  color: var(--text, #24324b) !important;
+}
+body.nx-generator-sidebar .nx-generator-side > #panel .field label {
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+body.nx-generator-sidebar .nx-generator-side > #panel .field label .val {
+  color: var(--orange, #ff6a00) !important;
+  font-size: 12px;
+}
+body.nx-generator-sidebar .nx-generator-side > #panel .toggle-chips {
+  background: var(--blue-pale, #e8eef9) !important;
+}
+body.nx-generator-sidebar .nx-generator-side > #panel .toggle-chip:not(.on) {
+  color: var(--text, #24324b) !important;
+}
+body.nx-generator-sidebar .nx-generator-side > #panel .toggle-chip.on {
+  color: #fff !important;
+}
+@media (max-width: 850px) {
+  body.nx-generator-sidebar .nx-generator-side {
+    position: relative !important;
+    top: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}
+@media print {
+  body.nx-generator-sidebar .nx-generator-side {display: none !important;}
 }
 </style>
 </head>
@@ -915,5 +977,15 @@ updateModeUI();
 generatePuzzle();
 </script>
 
+<script src="../assets/menu-data.js" defer></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/generator-sidebar.js" defer></script>
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+<script src="../assets/menu-drawer.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
 </body>
 </html>

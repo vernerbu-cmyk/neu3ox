@@ -2,6 +2,7 @@
 <html lang="ru">
 
   <head>
+<script src="../shared/theme.js"></script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -198,23 +199,32 @@
       }
       
       @media(max-width:600px) {
+        .container {padding:12px}
         .card {
-          width: 75px;
-          height: 75px;
+          width: 100%;
+          height: auto;
+          aspect-ratio: 1;
+          min-width: 0;
         }
         .side {
           font-size: 18px;
         }
         .column {
-          grid-template-columns: repeat(2, 75px);
+          grid-template-columns: repeat(2, minmax(0, 75px));
+          min-width: 0;
+          gap:clamp(4px,1.5vw,10px);
         }
         .board {
-          gap: 15px;
+          grid-template-columns: repeat(2,minmax(0,1fr));
+          gap:clamp(6px,2.5vw,15px);
         }
       }
     </style>
 
   <link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
 </head>
 
   <body>
@@ -575,7 +585,14 @@ ${card.text}
 
   
 <script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
 <script src="../assets/menu-drawer.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
 </body>
 
 </html>

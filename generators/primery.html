@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script src="../shared/theme.js"></script>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Примеры · тренажёр и генератор - NeuroX</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -603,6 +604,10 @@ body.mode-trainer .problem .step-btn{ display:flex; }
 }
 </style>
 <link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/generator-sidebar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
 </head>
 
 <body>
@@ -1143,7 +1148,7 @@ const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
 const LS_PROFILES = 'nx-column-profiles-v11';
 const LS_CURRENT  = 'nx-column-current-v11';
 const LS_RECORDS  = 'nx-column-records-v11';
-const LS_THEME    = 'nx-theme';
+const LS_THEME    = 'neurox_theme';
 const LS_STUDENTS = 'nx-column-students-v11';
 const LS_MODE     = 'nx-column-mode-v11';
 const LS_STATS    = 'nx-column-stats-v11';
@@ -2110,9 +2115,19 @@ function genEq(o) {
   }
   const a = randInt(o.aMin, o.aMax);
   if (kind === 'div') {
-    const b = randInt(2, 12);
-    const xx = a * b;
-    return { type:'eq', kind, x: xx, a, b, answer: xx, form: `x ÷ ${a} = ${b}` };
+    const candidates = [];
+    const firstA = Math.max(1, Math.ceil(Math.min(o.aMin, o.aMax)));
+    const lastA = Math.min(9999, Math.floor(Math.max(o.aMin, o.aMax)));
+    const rootStep = o.roundRoot ? (xMax >= 500 ? 25 : xMax >= 100 ? 10 : 5) : 1;
+    for (let divisor = firstA; divisor <= lastA; divisor++) {
+      const multiple = lcm(divisor, rootStep);
+      const first = Math.ceil(xMin / multiple), last = Math.floor(xMax / multiple);
+      if (first <= last) candidates.push({ divisor, multiple, first, last });
+    }
+    if (!candidates.length) throw new Error('В выбранных диапазонах нет уравнений с целым ответом. Измените диапазон корня или делителя.');
+    const c = candidates[randInt(0, candidates.length - 1)];
+    const xx = randInt(c.first, c.last) * c.multiple, b = xx / c.divisor;
+    return { type:'eq', kind, x:xx, a:c.divisor, b, answer:xx, form:`x ÷ ${c.divisor} = ${b}` };
   }
   if (kind === 'mul') {
     const b = a * x;
@@ -2130,37 +2145,57 @@ function genEq(o) {
   return { type:'eq', kind:'plus', x, a, b: x + a, answer: x, form: `x + ${a} = ${x + a}` };
 }
 function genPct(o) {
-  const p = randInt(o.pMin, o.pMax);
-  const step = o.round;
-  const n = randInt(Math.ceil(o.nMin/step), Math.floor(o.nMax/step)) * step;
-  const answer = (p * n) / 100;
-  if (!Number.isInteger(answer)) return genPct(o);
-  return { type:'pct', p, n, answer };
+  const pMin = Math.max(1, Math.ceil(Math.min(o.pMin, o.pMax)));
+  const pMax = Math.min(100, Math.floor(Math.max(o.pMin, o.pMax)));
+  const nMin = Math.max(1, Math.ceil(Math.min(o.nMin, o.nMax)));
+  const nMax = Math.min(10000, Math.floor(Math.max(o.nMin, o.nMax)));
+  const step = Math.max(1, Math.round(o.round));
+  const choices = [];
+  for (let p = pMin; p <= pMax; p++) {
+    const multiple = lcm(step, 100 / gcd(p, 100));
+    const first = Math.ceil(nMin / multiple), last = Math.floor(nMax / multiple);
+    if (first <= last) choices.push({ p, multiple, first, last });
+  }
+  if (!choices.length) throw new Error('Для этих настроек нет процентов с целым ответом. Измените процент, диапазон числа или кратность.');
+  const choice = choices[randInt(0, choices.length - 1)];
+  const n = randInt(choice.first, choice.last) * choice.multiple;
+  return { type:'pct', p:choice.p, n, answer:choice.p * n / 100 };
 }
 function evalSafe(expr) {
-  let i = 0;
-  const s = expr.replace(/\s+/g, '');
-  function parseExpr() {
-    let v = parseTerm();
-    while (i < s.length && (s[i] === '+' || s[i] === '-')) {
-      const op = s[i++]; const r = parseTerm();
-      v = op === '+' ? v + r : v - r;
+  const text = String(expr).replace(/\s+/g, '');
+  let index = 0;
+  function factor() {
+    if (text[index] === '(') {
+      index++;
+      const value = expression();
+      if (text[index++] !== ')') throw new Error('Незакрытая скобка');
+      return value;
     }
-    return v;
+    const match = text.slice(index).match(/^\d+/);
+    if (!match) throw new Error('Ожидалось число');
+    index += match[0].length;
+    return Number(match[0]);
   }
-  function parseTerm() {
-    let v = parseFactor();
-    while (i < s.length && (s[i] === '×' || s[i] === '*')) { i++; v *= parseFactor(); }
-    while (i < s.length && (s[i] === '÷' || s[i] === '/')) { i++; v /= parseFactor(); }
-    return v;
+  function term() {
+    let value = factor();
+    while (['×', '*', '÷', '/'].includes(text[index])) {
+      const op = text[index++], right = factor();
+      if ((op === '÷' || op === '/') && right === 0) throw new Error('Деление на ноль');
+      value = op === '×' || op === '*' ? value * right : value / right;
+    }
+    return value;
   }
-  function parseFactor() {
-    if (s[i] === '(') { i++; const v = parseExpr(); i++; return v; }
-    let n = '';
-    while (i < s.length && /[0-9]/.test(s[i])) n += s[i++];
-    return parseInt(n, 10);
+  function expression() {
+    let value = term();
+    while (text[index] === '+' || text[index] === '-') {
+      const op = text[index++], right = term();
+      value = op === '+' ? value + right : value - right;
+    }
+    return value;
   }
-  return parseExpr();
+  const value = expression();
+  if (index !== text.length) throw new Error('Лишние символы в выражении');
+  return value;
 }
 function genExpr(o) {
   const opsList = [];
@@ -3250,33 +3285,30 @@ function copyAsText() {
   );
 }
 
-function generate() {
+function generateSafely(build) {
   state.settings = readSettings();
-  state.variants = generateVariants(state.settings);
-  state.correct = 0;
-  resetTimer();
-  renderAll();
-  updateScoreUI(0, state.variants.reduce((a, v) => a + v.length, 0));
+  let message = document.getElementById('nx-generation-error');
+  if (!message) {
+    message = document.createElement('p'); message.id = 'nx-generation-error';
+    message.setAttribute('role', 'alert'); message.hidden = true;
+    document.getElementById('sheetsContainer').before(message);
+  }
+  message.hidden = true;
+  try { state.variants = build(state.settings); }
+  catch (error) { state.variants = []; message.textContent = error.message; message.hidden = false; }
+  state.correct = 0; resetTimer(); renderAll();
+  updateScoreUI(0, state.variants.reduce((total, variant) => total + variant.length, 0));
 }
-
+function generate() { generateSafely(generateVariants); }
 function cloneSheets(n) {
-  const s = readSettings();
-  const selected = ['add','sub','mul','div','frac','dec','pow','root','cmp','eq','pct','expr'].filter(op => s.ops[op]);
-  if (!selected.length) return;
-  state.settings = s;
-  state.variants = [];
-  state.correct = 0;
-  resetTimer();
-  for (let i = 0; i < n; i++) state.variants.push(s.ped.noDup ? buildVariantNoDup(s, selected) : buildVariant(s, selected));
-  renderAll();
-  updateScoreUI(0, state.variants.reduce((a, v) => a + v.length, 0));
+  generateSafely(settings => generateVariants({...settings, variants:n}));
 }
 
 function goBack() { location.href = 'index.html'; }
 function togglePanel() {
   const p = $('#panel');
   p.classList.toggle('hidden');
-  document.body.style.overflow = p.classList.contains('hidden') ? '' : 'hidden';
+  document.body.style.overflow = '';
 }
 
 const studentSel = $('#studentSelect');
@@ -3412,6 +3444,14 @@ document.addEventListener('keydown', e => {
 
 
 <script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
 <script src="../assets/menu-drawer.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/generator-sidebar.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
 </body>
 </html>
