@@ -1,0 +1,2519 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <script src="../../shared/theme.js"></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#1e3f8a">
+    <title>NeuroX · Грузовой экспресс · 90 слов</title>
+    <style>
+      :root {
+        --navy: #1e3f8a;
+        --deep: #112d65;
+        --orange: #ff6a00;
+        --ink: #193965;
+        --muted: #7290b7;
+        --shadow: 0 16px 45px #13386738;
+        --white: #fff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        font-family: Inter,'Segoe UI',Arial,sans-serif;
+        color: var(--ink);
+      }
+      button,select,input {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: .42;
+        cursor: default;
+      }
+      button:focus-visible,select:focus-visible,input:focus-visible {
+        outline: 3px solid var(--orange);
+        outline-offset: 3px;
+      }
+      .game {
+        position: relative;
+        width: 100vw;
+        height: 100dvh;
+        min-height: 620px;
+        overflow: hidden;
+        background: #d6edff;
+      }
+      .world {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .world>svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .header {
+        position: absolute;
+        z-index: 12;
+        top: 18px;
+        left: 22px;
+        right: 22px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        pointer-events: none;
+      }
+      .brand,.top-right>* {
+        pointer-events: auto;
+      }
+      .brand {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        background: #fffffff0;
+        backdrop-filter: blur(15px);
+        border: 1px solid white;
+        border-radius: 20px;
+        padding: 10px 18px 10px 10px;
+        box-shadow: 0 10px 30px #26497226;
+      }
+      .brand-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 15px;
+        background: linear-gradient(155deg,#3b6bbb,#122f70);
+        display: grid;
+        place-items: center;
+      }
+      .brand-icon svg {
+        width: 35px;
+        height: 35px;
+      }
+      .brand h1 {
+        font-size: 23px;
+        line-height: 1;
+        margin: 0 0 5px;
+        letter-spacing: -.035em;
+      }
+      .brand p {
+        color: #7991b3;
+        text-transform: uppercase;
+        font-size: 10px;
+        letter-spacing: .13em;
+        font-weight: 900;
+        margin: 0;
+      }
+      .top-right {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .counter {
+        background: #fffefaed;
+        border: 1px solid white;
+        border-radius: 16px;
+        padding: 14px 19px;
+        box-shadow: 0 8px 22px #26497226;
+        font-weight: 900;
+        letter-spacing: .03em;
+      }
+      .counter span {
+        color: var(--orange);
+      }
+      .iconbtn {
+        height: 50px;
+        width: 50px;
+        border-radius: 16px;
+        background: #fffffff2;
+        border: 1px solid white;
+        box-shadow: 0 8px 22px #26497226;
+        display: grid;
+        place-items: center;
+        color: var(--deep);
+      }
+      .iconbtn svg {
+        width: 22px;
+        height: 22px;
+      }
+      .activity-label {
+        position: absolute;
+        z-index: 11;
+        top: 101px;
+        left: 22px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px;
+        background: #fffffff0;
+        box-shadow: 0 10px 25px #25487127;
+        border: 1px solid white;
+        border-radius: 16px;
+        backdrop-filter: blur(12px);
+      }
+      .tab {
+        border: 0;
+        background: transparent;
+        color: #517099;
+        font-size: 14px;
+        font-weight: 900;
+        padding: 12px 16px;
+        border-radius: 12px;
+      }
+      .tab.active {
+        background: linear-gradient(145deg,#2f59a0,#15356d);
+        color: #fff;
+        box-shadow: 0 4px 10px #183f8838;
+      }
+      .hint {
+        position: absolute;
+        z-index: 10;
+        top: 104px;
+        right: 22px;
+        background: #fffefcef;
+        border: 1px solid white;
+        padding: 14px 19px;
+        box-shadow: 0 10px 25px #23446e22;
+        border-radius: 16px;
+        max-width: min(480px,40vw);
+        font-size: 14px;
+        font-weight: 800;
+        line-height: 1.4;
+        color: #2b507f;
+      }
+      .hint strong {
+        color: var(--orange);
+      }
+      .scene-note {
+        position: absolute;
+        z-index: 5;
+        top: 26.5%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #fffef9dd;
+        padding: 10px 20px;
+        border: 1px solid #fff;
+        border-radius: 16px;
+        box-shadow: 0 12px 25px #173b6e20;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 800;
+        color: #5c7ba5;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+      .dock {
+        position: absolute;
+        z-index: 20;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(1240px,calc(100% - 24px));
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .feedback {
+        align-self: center;
+        max-width: calc(100% - 20px);
+        text-align: center;
+        background: #fffffff2;
+        backdrop-filter: blur(8px);
+        border: 1px solid white;
+        border-radius: 12px;
+        padding: 8px 18px;
+        color: #4b6e9b;
+        font-weight: 800;
+        font-size: 13px;
+        box-shadow: 0 8px 18px #19386b22;
+        min-height: 33px;
+      }
+      .feedback.ok {
+        color: #15814f;
+      }
+      .feedback.err {
+        color: #bc493f;
+      }
+      .dockbar {
+        display: flex;
+        gap: 9px;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        background: #ffffffee;
+        border: 1px solid white;
+        box-shadow: var(--shadow);
+        border-radius: 22px;
+        backdrop-filter: blur(18px);
+      }
+      .pool {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+      }
+      .tile {
+        position: relative;
+        min-width: 78px;
+        flex: 1;
+        max-width: 112px;
+        height: 64px;
+        border-radius: 14px;
+        border: 2px solid #b0c9ed;
+        box-shadow: inset 0 -6px 0 #e4effd,0 4px 0 #9eb8dd;
+        background: linear-gradient(155deg,#fff,#f1f7ff);
+        font-size: 30px;
+        font-weight: 1000;
+        color: #163d7d;
+        letter-spacing: .02em;
+        transition: transform .16s,filter .16s;
+      }
+      .tile:not(:disabled):hover {
+        transform: translateY(-4px);
+        filter: brightness(1.02);
+      }
+      .tile.used {
+        opacity: .3;
+        transform: scale(.94);
+      }
+      .docklabel {
+        font-size: 10px;
+        font-weight: 950;
+        text-transform: uppercase;
+        letter-spacing: .14em;
+        color: #6d86ad;
+        white-space: nowrap;
+        text-align: center;
+        min-width: 88px;
+      }
+      .sep {
+        height: 44px;
+        width: 1px;
+        background: #d6e3f5;
+        flex: 0 0 auto;
+      }
+      .btn {
+        border: 1px solid #cfdff4;
+        background: #eff5ff;
+        color: #214681;
+        border-radius: 14px;
+        min-height: 58px;
+        padding: 10px 16px;
+        white-space: nowrap;
+        font-weight: 900;
+        font-size: 14px;
+        box-shadow: inset 0 -3px 0 #dce8f8;
+      }
+      .btn:hover:not(:disabled) {
+        filter: brightness(.985);
+      }
+      .btn.primary {
+        background: linear-gradient(160deg,#ff9439,#ff6800);
+        color: white;
+        border: 0;
+        box-shadow: 0 5px 0 #ca5100,0 7px 20px #ec680044;
+      }
+      .btn.next {
+        background: linear-gradient(155deg,#315fab,#173a78);
+        color: white;
+        border: 0;
+        box-shadow: 0 5px 0 #102a58;
+      }
+      .btn svg {
+        width: 18px;
+        height: 18px;
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+      .btn.good {
+        background: #e2f7e9;
+        color: #12804e;
+        border-color: #a9dabc;
+      }
+      .under {
+        position: absolute;
+        z-index: 4;
+        bottom: 145px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #23426d91;
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: .15em;
+      }
+      /* Створки, картинка и анимированная грузовая платформа внутри общего SVG */
+      #cargoArt {
+        opacity: 0;
+        transform: translate(0px,90px) scale(.78);
+        transform-box: fill-box;
+        transform-origin: center bottom;
+        transition: transform .9s cubic-bezier(.13,.85,.19,1.23),opacity .36s ease;
+      }
+      #cargoArt.show {
+        opacity: 1;
+        transform: translate(0px,-105px) scale(1.08);
+      }
+      #leftDoor,#rightDoor {
+        transition: transform .8s cubic-bezier(.22,.72,.19,1);
+        transform-box: fill-box;
+        transform-origin: center;
+      }
+      #container.open #leftDoor {
+        transform: translateX(-267px);
+      }
+      #container.open #rightDoor {
+        transform: translateX(267px);
+      }
+      #container.closed #cargoGlow {
+        opacity: 0;
+      }
+      #container.open #cargoGlow {
+        opacity: 1;
+      }
+      #cargoGlow {
+        transition: opacity .4s;
+      }
+      #wordBoard {
+        transition: opacity .25s;
+      }
+      #container.open #wordBoard {
+        opacity: 0;
+      }
+      #trainWhole {
+        transition: transform 1.6s cubic-bezier(.17,.76,.22,1);
+        transform: translateX(-260px);
+      }
+      #trainWhole.arrive {
+        transform: translateX(0px);
+      }
+      #trainWhole.depart {
+        transform: translateX(1850px);
+      }
+      #steam {
+        animation: steam 2.5s linear infinite;
+        transform-origin: 384px 294px;
+        opacity: .8;
+      }
+      @keyframes steam {
+        0% {
+          transform: translate(0,16px) scale(.7);
+          opacity: 0;
+        }
+        20% {
+          opacity: .76;
+        }
+        100% {
+          transform: translate(-45px,-95px) scale(1.5);
+          opacity: 0;
+        }
+      }
+      #art-float {
+        animation: bob 3s ease-in-out infinite;
+      }
+      @keyframes bob {
+        0%,100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
+      }
+      #successConfetti {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #successConfetti.play {
+        opacity: 1;
+        animation: sparkle 1.6s ease-out forwards;
+      }
+      @keyframes sparkle {
+        0% {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        15% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-65px);
+        }
+      }
+      /* Настройки */
+      .shade {
+        position: absolute;
+        z-index: 29;
+        inset: 0;
+        background: #0b27545e;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .25s;
+        backdrop-filter: blur(3px);
+      }
+      .shade.on {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .drawer {
+        position: absolute;
+        z-index: 30;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: min(420px,100%);
+        background: linear-gradient(#fff,#f4f8ff);
+        box-shadow: -14px 0 50px #0a28534d;
+        transform: translateX(105%);
+        transition: transform .3s ease;
+        display: flex;
+        flex-direction: column;
+      }
+      .drawer.open {
+        transform: translateX(0);
+      }
+      .drawer-top {
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #dce7f8;
+      }
+      .drawer-top h2 {
+        margin: 0;
+        font-size: 24px;
+      }
+      .drawer-body {
+        padding: 12px 24px;
+        overflow: auto;
+        flex: 1;
+      }
+      .field {
+        margin: 18px 0;
+      }
+      .field label {
+        display: block;
+        font-size: 14px;
+        font-weight: 900;
+        margin-bottom: 8px;
+      }
+      .field small {
+        display: block;
+        margin-top: 8px;
+        color: #7990b0;
+        line-height: 1.45;
+      }
+      .field select,.field input {
+        border: 1px solid #c7d9f0;
+        background: white;
+        border-radius: 12px;
+        padding: 12px 13px;
+        width: 100%;
+        font-size: 15px;
+        font-weight: 800;
+        color: #1d447a;
+        min-height: 46px;
+      }
+      .drawer-foot {
+        padding: 19px 24px;
+        border-top: 1px solid #dce7f8;
+        display: flex;
+        gap: 8px;
+      }
+      .drawer-foot button {
+        flex: 1;
+      }
+      .toast {
+        position: absolute;
+        z-index: 21;
+        top: 180px;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 280px;
+        text-align: center;
+        border-radius: 16px;
+        background: #fffffff5;
+        color: #21477e;
+        padding: 12px 18px;
+        box-shadow: 0 10px 28px #21417133;
+        font-weight: 850;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity .25s;
+      }
+      .toast.show {
+        opacity: 1;
+      }
+      @media (max-width:1150px) {
+        .brand h1 {
+          font-size: 18px;
+        }
+        .brand-icon {
+          width: 40px;
+          height: 40px;
+        }
+        .activity-label {
+          top: 78px;
+          left: 12px;
+        }
+        .hint {
+          top: 80px;
+          right: 12px;
+          font-size: 11px;
+        }
+        .scene-note {
+          display: none;
+        }
+        .dockbar {
+          flex-wrap: wrap;
+        }
+        .pool {
+          flex-basis: 100%;
+          order: 0;
+        }
+        .docklabel {
+          display: none;
+        }
+        .sep {
+          display: none;
+        }
+        .btn {
+          flex: 1;
+          min-height: 47px;
+          font-size: 12px;
+        }
+        .tile {
+          height: 52px;
+          font-size: 24px;
+        }
+        .dock {
+          bottom: 7px;
+        }
+        .under {
+          display: none;
+        }
+      }
+      @media (max-width:640px) {
+        .header {
+          top: 8px;
+          left: 8px;
+          right: 8px;
+        }
+        .brand {
+          padding: 6px 9px;
+          gap: 6px;
+        }
+        .brand h1 {
+          font-size: 15px;
+        }
+        .brand p {
+          display: none;
+        }
+        .top-right .counter {
+          display: none;
+        }
+        .activity-label {
+          top: 65px;
+        }
+        .tab {
+          padding: 8px 10px;
+          font-size: 11px;
+        }
+        .hint {
+          top: 109px;
+          left: 12px;
+          right: 12px;
+          max-width: none;
+          text-align: center;
+        }
+        .dockbar {
+          padding: 7px;
+          gap: 6px;
+        }
+        .tile {
+          min-width: 48px;
+          font-size: 20px;
+          height: 46px;
+        }
+        .btn {
+          padding: 8px 9px;
+          min-height: 40px;
+          white-space: normal;
+        }
+        .feedback {
+          font-size: 11px;
+          padding: 6px 12px;
+        }
+      }
+      @media (prefers-reduced-motion:reduce) {
+        #steam,#art-float {
+          animation: none;
+        }
+        * {
+          transition-duration: .001ms !important;
+        }
+      }
+      /* Keep the reveal inside the original container and stop hidden animations. */
+      [hidden] {
+        display: none !important;
+      }
+      #cargoArt {
+        opacity: 0;
+        visibility: hidden;
+        transform: none;
+        transition: opacity .28s ease;
+      }
+      #cargoArt.show {
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+      }
+      #cargoArt:not(.show) * {
+        animation-play-state: paused !important;
+      }
+      #container.open #leftDoor {
+        transform: translateX(-286px);
+      }
+      #container.open #rightDoor {
+        transform: translateX(286px);
+      }
+      .world #artUse svg {
+        width: 400px;
+        height: 400px;
+      }
+      .still #steam,.still #successConfetti,.still #animalSlot * {
+        animation: none !important;
+      }
+      .still #leftDoor,.still #rightDoor,.still #cargoArt,.still #wordBoard,.still #cargoGlow {
+        transition: none;
+      }
+      .still #trainWhole {
+        transition: none;
+      }
+      .read-instruction {
+        font-weight: 850;
+        color: #426799;
+        font-size: 16px;
+        text-align: center;
+        padding: 0 12px;
+      }
+      .toggle-field label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .toggle-field input {
+        width: 21px;
+        height: 21px;
+        min-height: 0;
+        accent-color: #214b8c;
+      }
+      .teacher-note {
+        font-size: 13px;
+        line-height: 1.5;
+        color: #6281a4;
+        background: #e8f0fb;
+        padding: 12px;
+        border-radius: 12px;
+      }
+      .docklabel {
+        min-width: 68px;
+        font-size: 9px;
+      }
+      .dockbar {
+        gap: 8px;
+      }
+      .btn {
+        padding: 10px 12px;
+      }
+      .tile {
+        min-width: 70px;
+      }
+      @media (min-width:1151px) and (max-width:1400px) {
+        .btn {
+          font-size: 13px;
+          padding: 10px;
+        }
+        .pool {
+          gap: 6px;
+        }
+        .tile {
+          font-size: 27px;
+          min-width: 66px;
+        }
+        .sep {
+          margin: 0 2px;
+        }
+      }
+      @media (max-height:740px) and (min-width:1151px) {
+        .scene-note {
+          top: 24%;
+          font-size: 12px;
+          padding: 7px 15px;
+        }
+        .dock {
+          bottom: 10px;
+        }
+        .tile {
+          height: 58px;
+        }
+        .btn {
+          min-height: 54px;
+        }
+      }
+      @media (max-width:850px) {
+        .read-instruction {
+          font-size: 13px;
+        }
+        .header .counter {
+          padding: 12px;
+        }
+        .dockbar {
+          gap: 6px;
+        }
+        .btn {
+          padding: 8px;
+          flex: 1 1 auto;
+        }
+        .feedback {
+          font-size: 11px;
+        }
+      }
+      @media (max-height:619px) {
+        .game {
+          min-height: 0;
+        }
+        .header {
+          top: 6px;
+        }
+        .brand {
+          padding: 6px 10px;
+        }
+        .brand-icon {
+          width: 32px;
+          height: 32px;
+        }
+        .brand h1 {
+          font-size: 16px;
+        }
+        .brand p {
+          display: none;
+        }
+        .activity-label {
+          top: 62px;
+        }
+        .hint {
+          top: 65px;
+        }
+        .dockbar {
+          padding: 6px;
+        }
+        .tile {
+          height: 42px;
+        }
+        .btn {
+          min-height: 40px;
+        }
+        .feedback {
+          padding: 4px 12px;
+          min-height: 26px;
+        }
+      }
+      @media (prefers-reduced-motion:reduce) {
+        #animalSlot * {
+          animation: none !important;
+        }
+        #successConfetti {
+          display: none;
+        }
+      }
+      .activity-label {
+        font-size: 14px;
+        font-weight: 900;
+        color: #214b8c;
+        padding: 12px 16px;
+      }
+      .read-instruction {
+        flex: 1;
+        min-width: 0;
+      }
+      @media (max-width:1150px) {
+        .read-instruction {
+          flex-basis: 100%;
+          padding: 4px 10px;
+        }
+      }
+      .game {
+        overflow: clip;
+      }
+    </style>
+    <link rel="stylesheet" href="../../assets/menu-drawer.css">
+    <link rel="stylesheet" href="../../shared/unified-topbar.css">
+    <link rel="stylesheet" href="../../shared/season-effects.css">
+    <link rel="stylesheet" href="../../shared/theme.css">
+    <link rel="stylesheet" href="../../shared/favorites.css">
+    <link rel="stylesheet" href="../../shared/preschool-new-games.css">
+  </head>
+  <body>
+    <div class="game" id="game">
+      <div class="world">
+        <svg id="worldSvg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Грузовая железнодорожная станция. Контейнерный вагон позади, паровоз впереди по направлению движения.">
+          <defs>
+            <linearGradient id="sky" x2="0" y2="1">
+              <stop stop-color="#b5dcff"/>
+              <stop offset=".67" stop-color="#e1f5ff"/>
+              <stop offset="1" stop-color="#f5fbff"/>
+            </linearGradient>
+            <linearGradient id="grass" x2="0" y2="1">
+              <stop stop-color="#99c99f"/>
+              <stop offset="1" stop-color="#d0e3a7"/>
+            </linearGradient>
+            <linearGradient id="blueTrain" x2="0" y2="1">
+              <stop stop-color="#437dca"/>
+              <stop offset=".47" stop-color="#2354a4"/>
+              <stop offset="1" stop-color="#0d2b61"/>
+            </linearGradient>
+            <linearGradient id="orange" x2="0" y2="1">
+              <stop stop-color="#ffb54c"/>
+              <stop offset=".45" stop-color="#ff7b0e"/>
+              <stop offset="1" stop-color="#d95b00"/>
+            </linearGradient>
+            <linearGradient id="containerBlue" x2="0" y2="1">
+              <stop stop-color="#3774b7"/>
+              <stop offset="1" stop-color="#15366b"/>
+            </linearGradient>
+            <linearGradient id="glow" x2="0" y2="1">
+              <stop stop-color="#fff9c5"/>
+              <stop offset="1" stop-color="#f7b34a"/>
+            </linearGradient>
+            <filter id="shadow" x="-30%" y="-70%" width="170%" height="230%">
+              <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#12345f" flood-opacity=".3"/>
+            </filter>
+            <filter id="softblur" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="12"/>
+            </filter>
+            <pattern id="railSleepers" width="65" height="55" patternUnits="userSpaceOnUse">
+              <rect x="18" y="6" width="25" height="53" rx="5" fill="#6e5d4b"/>
+            </pattern>
+            <clipPath id="doorClip">
+              <rect x="765" y="304" width="563" height="333" rx="14"/>
+            </clipPath>
+            <clipPath id="cargoClip">
+              <rect x="779" y="317" width="531" height="303" rx="9"/>
+            </clipPath>
+            <pattern id="corrugate" width="20" height="150" patternUnits="userSpaceOnUse">
+              <path d="M3 0V150" stroke="#b8dafc" stroke-opacity=".2" stroke-width="5"/>
+              <path d="M14 0V150" stroke="#0d2c65" stroke-opacity=".28" stroke-width="4"/>
+            </pattern>
+            <!-- Artwork is embedded below as independent local SVG templates. -->
+          </defs>
+          <!-- Пейзаж -->
+          <rect width="1600" height="900" fill="url(#sky)"/>
+          <circle cx="1350" cy="119" r="52" fill="#fff4be"/>
+          <circle cx="1350" cy="119" r="82" fill="#fff4be" opacity=".20"/>
+          <g fill="#fff" opacity=".85">
+            <g transform="translate(205 194)">
+              <ellipse cx="0" cy="6" rx="95" ry="26"/>
+              <ellipse cx="-34" cy="-14" rx="52" ry="38"/>
+              <ellipse cx="45" cy="-18" rx="53" ry="37"/>
+            </g>
+            <g transform="translate(988 180)">
+              <ellipse cx="0" cy="0" rx="128" ry="26"/>
+              <ellipse cx="-65" cy="-18" rx="57" ry="40"/>
+              <ellipse cx="27" cy="-29" rx="63" ry="47"/>
+            </g>
+          </g>
+          <path d="M0 380Q228 261 469 370T923 353T1600 381V900H0" fill="#b6d8d4" opacity=".68"/>
+          <path d="M0 447Q237 335 450 432T893 412T1600 456V900H0" fill="#93c8b6" opacity=".72"/>
+          <path d="M0 514Q280 449 510 503T1011 491T1600 509V900H0" fill="url(#grass)"/>
+          <path d="M0 711Q408 671 784 720T1600 691V900H0" fill="#c0d9a7"/>
+          <!-- Вокзал, кран, деревья на заднем плане -->
+          <g transform="translate(1327 290)">
+            <path d="M-35 75L20 17H185L240 75Z" fill="#244778"/>
+            <rect x="-11" y="67" width="226" height="156" rx="10" fill="#fffdf4" stroke="#7f9ebf" stroke-width="6"/>
+            <rect x="18" y="91" width="60" height="56" rx="6" fill="#aadff0" stroke="#678fb8" stroke-width="6"/>
+            <rect x="102" y="92" width="59" height="54" rx="6" fill="#aadff0" stroke="#678fb8" stroke-width="6"/>
+            <rect x="170" y="135" width="29" height="87" rx="7" fill="#507cb3"/>
+            <rect x="23" y="164" width="125" height="35" rx="14" fill="#25528b"/>
+            <text x="85" y="187" fill="#fff" font-size="17" font-weight="900" text-anchor="middle">ГРУЗОВАЯ</text>
+            <path d="M-32 75H236" stroke="#ff9738" stroke-width="12" stroke-linecap="round"/>
+          </g>
+          <g transform="translate(1165 194)">
+            <path d="M0 238V0H17V238" stroke="#6a8aac" stroke-width="8"/>
+            <path d="M-53 8H131" stroke="#507ba9" stroke-width="12"/>
+            <path d="M7 8L-23 59M10 8L43 57" stroke="#507ba9" stroke-width="7"/>
+            <path d="M107 8V92" stroke="#728cb1" stroke-width="6"/>
+            <path d="M79 92H135" stroke="#728cb1" stroke-width="9"/>
+            <rect x="88" y="91" width="35" height="28" rx="5" fill="#f3b955"/>
+          </g>
+          <g opacity=".8">
+            <path d="M42 497V422" stroke="#926c53" stroke-width="16"/>
+            <path d="M43 378L-9 453H97Z" fill="#4b9a7a"/>
+            <path d="M43 334L5 406H81Z" fill="#348b70"/>
+            <path d="M1510 487V418" stroke="#926c53" stroke-width="15"/>
+            <path d="M1512 376L1456 448H1565Z" fill="#4b9a7a"/>
+            <path d="M1512 340L1469 410H1556Z" fill="#348b70"/>
+          </g>
+          <!-- Полосы путей -->
+          <rect x="0" y="678" width="1600" height="67" fill="#988674" opacity=".5"/>
+          <rect x="0" y="686" width="1600" height="55" fill="url(#railSleepers)"/>
+          <path d="M0 687H1600M0 725H1600" stroke="#3e506b" stroke-width="12"/>
+          <path d="M0 686H1600M0 724H1600" stroke="#d7e7ed" stroke-width="4"/>
+          <rect x="0" y="746" width="1600" height="8" fill="#8793a1" opacity=".36"/>
+          <!-- Длинный грузовой состав: контейнерный вагон позади, локомотив впереди -->
+          <g id="trainWhole" class="arrive">
+            <ellipse cx="801" cy="744" rx="593" ry="22" fill="#15375c" opacity=".16" filter="url(#softblur)"/>
+            <g id="locomotive" transform="translate(650 0)" filter="url(#shadow)">
+              <path d="M214 636H681V680H216Z" fill="#15386c" stroke="#0b264f" stroke-width="6"/>
+              <rect x="234" y="500" width="170" height="153" rx="18" fill="url(#blueTrain)" stroke="#142f5a" stroke-width="8"/>
+              <path d="M225 508L248 479H408L423 504Z" fill="#ff932e" stroke="#18396e" stroke-width="7"/>
+              <rect x="257" y="525" width="126" height="83" rx="13" fill="#c8eaff" stroke="#6b9ac9" stroke-width="7"/>
+              <path d="M321 527V607" stroke="#6698c8" stroke-width="7"/>
+              <rect x="380" y="531" width="255" height="115" rx="42" fill="url(#blueTrain)" stroke="#123265" stroke-width="8"/>
+              <path d="M418 554H595" stroke="#95c6ed" stroke-width="12" opacity=".8" stroke-linecap="round"/>
+              <path d="M399 624H618" stroke="#ff9e38" stroke-width="10" stroke-linecap="round"/>
+              <path d="M479 533V508H518V533" fill="#315fa6" stroke="#19396c" stroke-width="6"/>
+              <path d="M578 533V441H619V533" fill="#193f7e" stroke="#153167" stroke-width="7"/>
+              <path d="M569 452H630V433H569Z" fill="#2b568f" stroke="#132e62" stroke-width="6"/>
+              <g id="steam">
+                <circle cx="603" cy="411" r="22" fill="#fff"/>
+                <circle cx="580" cy="378" r="27" fill="#fff" opacity=".72"/>
+                <circle cx="548" cy="358" r="34" fill="#fff" opacity=".4"/>
+              </g>
+              <path d="M631 551Q685 555 682 603V653H631Z" fill="url(#orange)" stroke="#b8510c" stroke-width="8"/>
+              <ellipse cx="676" cy="588" rx="14" ry="20" fill="#fff1be" stroke="#d7953c" stroke-width="4"/>
+              <path d="M678 662L711 679H652L637 659Z" fill="#fa973a" stroke="#163967" stroke-width="7"/>
+              <g>
+                <circle cx="289" cy="681" r="43" fill="#1c376a" stroke="#f58e35" stroke-width="9"/>
+                <circle cx="289" cy="681" r="26" fill="#7eaad9"/>
+                <circle cx="289" cy="681" r="11" fill="#173968"/>
+                <circle cx="428" cy="681" r="43" fill="#1c376a" stroke="#f58e35" stroke-width="9"/>
+                <circle cx="428" cy="681" r="26" fill="#7eaad9"/>
+                <circle cx="428" cy="681" r="11" fill="#173968"/>
+                <circle cx="563" cy="681" r="43" fill="#1c376a" stroke="#f58e35" stroke-width="9"/>
+                <circle cx="563" cy="681" r="26" fill="#7eaad9"/>
+                <circle cx="563" cy="681" r="11" fill="#173968"/>
+                <path d="M289 676H563" stroke="#e4f1fe" stroke-width="9" stroke-linecap="round"/>
+              </g>
+            </g>
+            <!-- Сцепка -->
+            <path d="M789 661H863" stroke="#1a3c6d" stroke-width="15" stroke-linecap="round"/>
+            <circle cx="789" cy="661" r="11" fill="#f5a24d"/>
+            <circle cx="863" cy="661" r="11" fill="#f5a24d"/>
+            <g id="cargoWagon" transform="translate(-580 0)">
+              <!-- Платформа под контейнером -->
+              <g filter="url(#shadow)">
+                <path d="M722 636H1355Q1370 636 1370 651V675H715V651Q715 636 722 636Z" fill="url(#orange)" stroke="#173a6f" stroke-width="7"/>
+                <rect x="739" y="660" width="610" height="28" rx="9" fill="#204c87" stroke="#173566" stroke-width="5"/>
+                <rect x="778" y="682" width="158" height="16" rx="8" fill="#203e6b"/>
+                <rect x="1153" y="682" width="158" height="16" rx="8" fill="#203e6b"/>
+                <circle cx="816" cy="684" r="36" fill="#19335f" stroke="#182851" stroke-width="7"/>
+                <circle cx="816" cy="684" r="22" fill="#8baed5"/>
+                <circle cx="918" cy="684" r="36" fill="#19335f" stroke="#182851" stroke-width="7"/>
+                <circle cx="918" cy="684" r="22" fill="#8baed5"/>
+                <circle cx="1184" cy="684" r="36" fill="#19335f" stroke="#182851" stroke-width="7"/>
+                <circle cx="1184" cy="684" r="22" fill="#8baed5"/>
+                <circle cx="1287" cy="684" r="36" fill="#19335f" stroke="#182851" stroke-width="7"/>
+                <circle cx="1287" cy="684" r="22" fill="#8baed5"/>
+              </g>
+              <!-- Контейнер: ширина 590, двери на всю высоту -->
+              <g id="container" class="closed">
+                <rect x="765" y="304" width="562" height="333" rx="20" fill="#133a78" stroke="#0e2d60" stroke-width="9"/>
+                <rect x="777" y="316" width="536" height="304" rx="12" fill="#f3f6fb"/>
+                <g id="cargoGlow">
+                  <rect x="779" y="317" width="533" height="303" rx="12" fill="#ffe9ad" opacity=".65"/>
+                  <path d="M783 607L1015 327H1305L1153 621" fill="#fff9df" opacity=".55"/>
+                </g>
+                <g clip-path="url(#cargoClip)">
+                  <g id="cargoArt" aria-hidden="true">
+                    <svg id="artUse" x="870" y="313" width="352" height="304" viewBox="0 0 400 400">
+                      <g id="animalSlot">
+                      </g>
+                    </svg>
+                  </g>
+                </g>
+                <g clip-path="url(#doorClip)">
+                  <g id="leftDoor">
+                    <rect x="770" y="304" width="280" height="333" rx="13" fill="url(#containerBlue)" stroke="#0b2a60" stroke-width="7"/>
+                    <rect x="784" y="321" width="250" height="293" fill="url(#corrugate)" opacity=".9"/>
+                    <path d="M790 334V603M1018 334V603" stroke="#8fbee6" stroke-opacity=".4" stroke-width="5"/>
+                    <path d="M1033 472V559" stroke="#cde7ff" stroke-width="8" stroke-linecap="round"/>
+                  </g>
+                  <g id="rightDoor">
+                    <rect x="1043" y="304" width="280" height="333" rx="13" fill="url(#containerBlue)" stroke="#0b2a60" stroke-width="7"/>
+                    <rect x="1061" y="321" width="244" height="293" fill="url(#corrugate)" opacity=".9"/>
+                    <path d="M1080 334V603M1301 334V603" stroke="#8fbee6" stroke-opacity=".4" stroke-width="5"/>
+                    <path d="M1061 472V559" stroke="#cde7ff" stroke-width="8" stroke-linecap="round"/>
+                  </g>
+                </g>
+                <g id="wordBoard">
+                  <rect x="843" y="463" width="408" height="104" rx="21" fill="#fffdf5" stroke="#f7b26b" stroke-width="7" filter="url(#shadow)"/>
+                  <rect x="859" y="476" width="378" height="76" rx="13" fill="#f2f7ff" stroke="#d4e4f4" stroke-width="2"/>
+                  <text id="wordText" x="1047" y="518" dominant-baseline="central" text-anchor="middle" font-size="66" font-weight="1000" fill="#153b7c" letter-spacing="2">КОШ-КА</text>
+                </g>
+                <rect x="766" y="621" width="560" height="14" rx="7" fill="#ff9b32" stroke="#c65b00" stroke-width="2"/>
+              </g>
+              <!-- Конфетти при открытии -->
+              <g id="successConfetti">
+                <circle cx="930" cy="331" r="10" fill="#ff7e28"/>
+                <circle cx="1077" cy="275" r="9" fill="#4f9ed6"/>
+                <circle cx="1202" cy="336" r="11" fill="#ffd05f"/>
+                <path d="M866 325L887 305M1259 293L1284 270" stroke="#ff9a3b" stroke-width="8" stroke-linecap="round"/>
+                <path d="M988 279L998 265M1160 280L1170 267" stroke="#4d9bd0" stroke-width="8" stroke-linecap="round"/>
+              </g>
+            </g>
+            <!-- cargoWagon -->
+          </g>
+          <rect x="0" y="756" width="1600" height="144" fill="#e5f2dc" opacity=".35"/>
+        </svg>
+      </div>
+      <header class="header">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect x="7" y="24" width="34" height="13" rx="4" stroke="white" stroke-width="4"/>
+              <path d="M12 24V14H34V24M17 14V8H30V14" stroke="white" stroke-width="4" stroke-linejoin="round"/>
+              <circle cx="15" cy="40" r="3" fill="white"/>
+              <circle cx="34" cy="40" r="3" fill="white"/>
+            </svg>
+          </div>
+          <div>
+            <h1>Грузовой экспресс</h1>
+            <p>NeuroX · чтение с сюрпризом</p>
+          </div>
+        </div>
+        <div class="top-right">
+          <div class="counter">
+            ГРУЗ
+            <span id="roundNo">1</span>
+            /
+            <span id="roundTotal">51</span>
+          </div>
+          <button class="iconbtn" id="settingsBtn" title="Настройки" aria-label="Открыть настройки">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9.6 3h4.8l.6 2.1 1.8.9 2.1-.8 2.4 4.2-1.6 1.5v2.1l1.6 1.5-2.4 4.2-2.1-.8-1.8.9-.6 2.2H9.6L9 18.8l-1.8-.9-2.1.8-2.4-4.2 1.6-1.5v-2.1L2.7 9.4l2.4-4.2 2.1.8L9 5.1Z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+      <div class="activity-label">Что в контейнере?</div>
+      <div class="hint" id="hintText">
+        <strong>Прочитай слово</strong>
+        на контейнере. Потом узнаем, что внутри.
+      </div>
+      <div class="scene-note" id="sceneNote">Сначала слово — потом сюрприз</div>
+      <div class="dock">
+        <div class="feedback" id="feedback" aria-live="polite">Попросите ребёнка прочитать слово. Затем нажмите «Открыть груз».</div>
+        <div class="dockbar">
+          <div class="read-instruction">Ребёнок читает вслух. Педагог открывает груз.</div>
+          <button class="btn primary" id="openBtn" aria-expanded="false" aria-controls="container">Открыть груз</button>
+          <button class="btn" id="prevBtn" title="Вернуться к предыдущему грузу" disabled>← Назад</button>
+          <button class="btn next" id="nextBtn">Следующий →</button>
+        </div>
+      </div>
+      <div class="shade" id="shade">
+      </div>
+      <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" aria-hidden="true" inert>
+        <div class="drawer-top">
+          <h2 id="settingsTitle">Настройки рейса</h2>
+          <button class="iconbtn" id="closeSettings" aria-label="Закрыть настройки" style="box-shadow:none">✕</button>
+        </div>
+        <div class="drawer-body">
+          <div class="field">
+            <label for="wordsSetting">Набор слов</label>
+            <select id="wordsSetting">
+              <option value="short">3–4 буквы · 51 слово</option>
+              <option value="three">3 буквы · 21 слово</option>
+              <option value="four">4 буквы · 30 слов</option>
+              <option value="animals">Животные · 54 слова</option>
+              <option value="all">Все слова · 90 слов</option>
+              <option value="easy">Два слога · 49 слов</option>
+              <option value="hard">Три слога · 14 слов</option>
+            </select>
+            <small>Начните с коротких слов: ДОМ, РАК, ВА-ЗА, РО-ЗА. Односложные слова показаны целиком. Картинка скрыта до открытия груза.</small>
+          </div>
+          <div class="field">
+            <label for="wordOrder">Порядок</label>
+            <select id="wordOrder">
+              <option value="random">Случайный, без повторений до конца набора</option>
+              <option value="fixed">По списку</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="wordPick">Первое слово (для демонстрации)</label>
+            <select id="wordPick">
+              <option value="">Любое из набора</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="wordStyle">Надпись на контейнере</label>
+            <select id="wordStyle">
+              <option value="syllables">ПО СЛОГАМ (ЛИ-СА)</option>
+              <option value="solid">ЦЕЛЫМ СЛОВОМ (ЛИСА)</option>
+            </select>
+            <small>Выберите чтение по частям или целым словом.</small>
+          </div>
+          <div class="field toggle-field">
+            <label for="soundSetting">
+              <input type="checkbox" id="soundSetting">
+              Звуковые эффекты
+            </label>
+            <small>Только короткие локальные сигналы. Озвучки слов нет.</small>
+          </div>
+          <div class="field toggle-field">
+            <label for="motionSetting">
+              <input type="checkbox" id="motionSetting" checked>
+              Анимация
+            </label>
+            <small>Выключите для спокойного показа без движения.</small>
+          </div>
+          <p class="teacher-note">Темп задаёт педагог. Переход к следующему слову — только вручную.</p>
+        </div>
+        <div class="drawer-foot">
+          <a href="words.html" target="_blank" rel="noopener" style="color:#214b8c">Посмотреть все рисунки ↗</a>
+          <button class="btn" id="cancelSettings">Отмена</button>
+          <button class="btn next" id="applySettings">Применить</button>
+        </div>
+      </aside>
+    </div>
+    <script id="wordData" type="application/json">
+      [
+        {
+          "word": "КОШКА",
+          "syllables": [
+            "КОШ",
+            "КА"
+          ],
+          "art": "cat",
+          "asset": "assets/animals/cat.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "СОБАКА",
+          "syllables": [
+            "СО",
+            "БА",
+            "КА"
+          ],
+          "art": "dog",
+          "asset": "assets/animals/dog.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "КОРОВА",
+          "syllables": [
+            "КО",
+            "РО",
+            "ВА"
+          ],
+          "art": "cow",
+          "asset": "assets/animals/cow.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "КОЗА",
+          "syllables": [
+            "КО",
+            "ЗА"
+          ],
+          "art": "goat",
+          "asset": "assets/animals/goat.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ОВЦА",
+          "syllables": [
+            "ОВ",
+            "ЦА"
+          ],
+          "art": "sheep",
+          "asset": "assets/animals/sheep.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "БАРАН",
+          "syllables": [
+            "БА",
+            "РАН"
+          ],
+          "art": "ram",
+          "asset": "assets/animals/ram.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ЛОШАДЬ",
+          "syllables": [
+            "ЛО",
+            "ШАДЬ"
+          ],
+          "art": "horse",
+          "asset": "assets/animals/horse.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ОСЁЛ",
+          "syllables": [
+            "О",
+            "СЁЛ"
+          ],
+          "art": "donkey",
+          "asset": "assets/animals/donkey.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "СВИНЬЯ",
+          "syllables": [
+            "СВИНЬ",
+            "Я"
+          ],
+          "art": "pig",
+          "asset": "assets/animals/pig.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "КРОЛИК",
+          "syllables": [
+            "КРО",
+            "ЛИК"
+          ],
+          "art": "rabbit",
+          "asset": "assets/animals/rabbit.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ХОМЯК",
+          "syllables": [
+            "ХО",
+            "МЯК"
+          ],
+          "art": "hamster",
+          "asset": "assets/animals/hamster.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ПЕТУХ",
+          "syllables": [
+            "ПЕ",
+            "ТУХ"
+          ],
+          "art": "rooster",
+          "asset": "assets/animals/rooster.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ЛИСА",
+          "syllables": [
+            "ЛИ",
+            "СА"
+          ],
+          "art": "fox",
+          "asset": "assets/animals/fox.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "БЕЛКА",
+          "syllables": [
+            "БЕЛ",
+            "КА"
+          ],
+          "art": "squirrel",
+          "asset": "assets/animals/squirrel.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ЗАЯЦ",
+          "syllables": [
+            "ЗА",
+            "ЯЦ"
+          ],
+          "art": "hare",
+          "asset": "assets/animals/hare.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ЁЖИК",
+          "syllables": [
+            "Ё",
+            "ЖИК"
+          ],
+          "art": "hedgehog",
+          "asset": "assets/animals/hedgehog.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "МЕДВЕДЬ",
+          "syllables": [
+            "МЕД",
+            "ВЕДЬ"
+          ],
+          "art": "bear",
+          "asset": "assets/animals/bear.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ОЛЕНЬ",
+          "syllables": [
+            "О",
+            "ЛЕНЬ"
+          ],
+          "art": "deer",
+          "asset": "assets/animals/deer.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "КАБАН",
+          "syllables": [
+            "КА",
+            "БАН"
+          ],
+          "art": "boar",
+          "asset": "assets/animals/boar.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "БАРСУК",
+          "syllables": [
+            "БАР",
+            "СУК"
+          ],
+          "art": "badger",
+          "asset": "assets/animals/badger.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ЕНОТ",
+          "syllables": [
+            "Е",
+            "НОТ"
+          ],
+          "art": "raccoon",
+          "asset": "assets/animals/raccoon.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ВЫДРА",
+          "syllables": [
+            "ВЫД",
+            "РА"
+          ],
+          "art": "otter",
+          "asset": "assets/animals/otter.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "СУСЛИК",
+          "syllables": [
+            "СУС",
+            "ЛИК"
+          ],
+          "art": "ground_squirrel",
+          "asset": "assets/animals/ground_squirrel.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ЖИРАФ",
+          "syllables": [
+            "ЖИ",
+            "РАФ"
+          ],
+          "art": "giraffe",
+          "asset": "assets/animals/giraffe.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ЗЕБРА",
+          "syllables": [
+            "ЗЕБ",
+            "РА"
+          ],
+          "art": "zebra",
+          "asset": "assets/animals/zebra.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ВЕРБЛЮД",
+          "syllables": [
+            "ВЕРБ",
+            "ЛЮД"
+          ],
+          "art": "camel",
+          "asset": "assets/animals/camel.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "НОСОРОГ",
+          "syllables": [
+            "НО",
+            "СО",
+            "РОГ"
+          ],
+          "art": "rhino",
+          "asset": "assets/animals/rhino.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "БЕГЕМОТ",
+          "syllables": [
+            "БЕ",
+            "ГЕ",
+            "МОТ"
+          ],
+          "art": "hippo",
+          "asset": "assets/animals/hippo.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "КЕНГУРУ",
+          "syllables": [
+            "КЕН",
+            "ГУ",
+            "РУ"
+          ],
+          "art": "kangaroo",
+          "asset": "assets/animals/kangaroo.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ПАНДА",
+          "syllables": [
+            "ПАН",
+            "ДА"
+          ],
+          "art": "panda",
+          "asset": "assets/animals/panda.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "КОАЛА",
+          "syllables": [
+            "КО",
+            "А",
+            "ЛА"
+          ],
+          "art": "koala",
+          "asset": "assets/animals/koala.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ГОРИЛЛА",
+          "syllables": [
+            "ГО",
+            "РИЛ",
+            "ЛА"
+          ],
+          "art": "gorilla",
+          "asset": "assets/animals/gorilla.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ЛЕМУР",
+          "syllables": [
+            "ЛЕ",
+            "МУР"
+          ],
+          "art": "lemur",
+          "asset": "assets/animals/lemur.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "СЛОНЁНОК",
+          "syllables": [
+            "СЛО",
+            "НЁ",
+            "НОК"
+          ],
+          "art": "elephant_calf",
+          "asset": "assets/animals/elephant_calf.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "СОВА",
+          "syllables": [
+            "СО",
+            "ВА"
+          ],
+          "art": "owl",
+          "asset": "assets/animals/owl.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "УТКА",
+          "syllables": [
+            "УТ",
+            "КА"
+          ],
+          "art": "duck",
+          "asset": "assets/animals/duck.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "КУРИЦА",
+          "syllables": [
+            "КУ",
+            "РИ",
+            "ЦА"
+          ],
+          "art": "hen",
+          "asset": "assets/animals/hen.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ПОПУГАЙ",
+          "syllables": [
+            "ПО",
+            "ПУ",
+            "ГАЙ"
+          ],
+          "art": "parrot",
+          "asset": "assets/animals/parrot.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ПАВЛИН",
+          "syllables": [
+            "ПАВ",
+            "ЛИН"
+          ],
+          "art": "peacock",
+          "asset": "assets/animals/peacock.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ЛЕБЕДЬ",
+          "syllables": [
+            "ЛЕ",
+            "БЕДЬ"
+          ],
+          "art": "swan",
+          "asset": "assets/animals/swan.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ЦАПЛЯ",
+          "syllables": [
+            "ЦАП",
+            "ЛЯ"
+          ],
+          "art": "heron",
+          "asset": "assets/animals/heron.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ПИНГВИН",
+          "syllables": [
+            "ПИНГ",
+            "ВИН"
+          ],
+          "art": "penguin",
+          "asset": "assets/animals/penguin.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "СТРАУС",
+          "syllables": [
+            "СТРА",
+            "УС"
+          ],
+          "art": "ostrich",
+          "asset": "assets/animals/ostrich.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ПЧЕЛА",
+          "syllables": [
+            "ПЧЕ",
+            "ЛА"
+          ],
+          "art": "bee",
+          "asset": "assets/animals/bee.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ОСА",
+          "syllables": [
+            "О",
+            "СА"
+          ],
+          "art": "wasp",
+          "asset": "assets/animals/wasp.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "БАБОЧКА",
+          "syllables": [
+            "БА",
+            "БОЧ",
+            "КА"
+          ],
+          "art": "butterfly",
+          "asset": "assets/animals/butterfly.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "МУРАВЕЙ",
+          "syllables": [
+            "МУ",
+            "РА",
+            "ВЕЙ"
+          ],
+          "art": "ant",
+          "asset": "assets/animals/ant.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ЛЯГУШКА",
+          "syllables": [
+            "ЛЯ",
+            "ГУШ",
+            "КА"
+          ],
+          "art": "frog",
+          "asset": "assets/animals/frog.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "УЛИТКА",
+          "syllables": [
+            "У",
+            "ЛИТ",
+            "КА"
+          ],
+          "art": "snail",
+          "asset": "assets/animals/snail.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "РЫБА",
+          "syllables": [
+            "РЫ",
+            "БА"
+          ],
+          "art": "fish",
+          "asset": "assets/animals/fish.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ВАЗА",
+          "syllables": [
+            "ВА",
+            "ЗА"
+          ],
+          "art": "vase",
+          "asset": "assets/words/vase.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "РОЗА",
+          "syllables": [
+            "РО",
+            "ЗА"
+          ],
+          "art": "rose",
+          "asset": "assets/words/rose.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "РАК",
+          "syllables": [
+            "РАК"
+          ],
+          "art": "crayfish",
+          "asset": "assets/words/crayfish.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ДОМ",
+          "syllables": [
+            "ДОМ"
+          ],
+          "art": "house",
+          "asset": "assets/words/house.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "МАК",
+          "syllables": [
+            "МАК"
+          ],
+          "art": "poppy",
+          "asset": "assets/words/poppy.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "ЛУК",
+          "syllables": [
+            "ЛУК"
+          ],
+          "art": "onion",
+          "asset": "assets/words/onion.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "СЫР",
+          "syllables": [
+            "СЫР"
+          ],
+          "art": "cheese",
+          "asset": "assets/words/cheese.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "СУП",
+          "syllables": [
+            "СУП"
+          ],
+          "art": "soup",
+          "asset": "assets/words/soup.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "СОК",
+          "syllables": [
+            "СОК"
+          ],
+          "art": "juice",
+          "asset": "assets/words/juice.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "ШАР",
+          "syllables": [
+            "ШАР"
+          ],
+          "art": "balloon",
+          "asset": "assets/words/balloon.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "МЯЧ",
+          "syllables": [
+            "МЯЧ"
+          ],
+          "art": "ball",
+          "asset": "assets/words/ball.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "КУБ",
+          "syllables": [
+            "КУБ"
+          ],
+          "art": "cube",
+          "asset": "assets/words/cube.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "ЛЕС",
+          "syllables": [
+            "ЛЕС"
+          ],
+          "art": "forest",
+          "asset": "assets/words/forest.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "КОТ",
+          "syllables": [
+            "КОТ"
+          ],
+          "art": "cat",
+          "asset": "assets/animals/cat.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "КИТ",
+          "syllables": [
+            "КИТ"
+          ],
+          "art": "whale",
+          "asset": "assets/words/whale.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "ЖУК",
+          "syllables": [
+            "ЖУК"
+          ],
+          "art": "beetle",
+          "asset": "assets/words/beetle.svg",
+          "kind": "animal",
+          "animated": true
+        },
+        {
+          "word": "МЁД",
+          "syllables": [
+            "МЁД"
+          ],
+          "art": "honey",
+          "asset": "assets/words/honey.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "ДУБ",
+          "syllables": [
+            "ДУБ"
+          ],
+          "art": "oak",
+          "asset": "assets/words/oak.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "НОС",
+          "syllables": [
+            "НОС"
+          ],
+          "art": "nose",
+          "asset": "assets/words/nose.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "РОТ",
+          "syllables": [
+            "РОТ"
+          ],
+          "art": "mouth",
+          "asset": "assets/words/mouth.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "УХО",
+          "syllables": [
+            "У",
+            "ХО"
+          ],
+          "art": "ear",
+          "asset": "assets/words/ear.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "ЛЁД",
+          "syllables": [
+            "ЛЁД"
+          ],
+          "art": "ice",
+          "asset": "assets/words/ice.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "ЛУНА",
+          "syllables": [
+            "ЛУ",
+            "НА"
+          ],
+          "art": "moon",
+          "asset": "assets/words/moon.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "РЕПА",
+          "syllables": [
+            "РЕ",
+            "ПА"
+          ],
+          "art": "turnip",
+          "asset": "assets/words/turnip.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "КАША",
+          "syllables": [
+            "КА",
+            "ША"
+          ],
+          "art": "porridge",
+          "asset": "assets/words/porridge.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "МЫЛО",
+          "syllables": [
+            "МЫ",
+            "ЛО"
+          ],
+          "art": "soap",
+          "asset": "assets/words/soap.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "ВОДА",
+          "syllables": [
+            "ВО",
+            "ДА"
+          ],
+          "art": "water",
+          "asset": "assets/words/water.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "КИВИ",
+          "syllables": [
+            "КИ",
+            "ВИ"
+          ],
+          "art": "kiwi",
+          "asset": "assets/words/kiwi.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "ДЫНЯ",
+          "syllables": [
+            "ДЫ",
+            "НЯ"
+          ],
+          "art": "melon",
+          "asset": "assets/words/melon.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "ЛИСТ",
+          "syllables": [
+            "ЛИСТ"
+          ],
+          "art": "leaf",
+          "asset": "assets/words/leaf.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "ЗОНТ",
+          "syllables": [
+            "ЗОНТ"
+          ],
+          "art": "umbrella",
+          "asset": "assets/words/umbrella.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "СТОЛ",
+          "syllables": [
+            "СТОЛ"
+          ],
+          "art": "table",
+          "asset": "assets/words/table.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "СТУЛ",
+          "syllables": [
+            "СТУЛ"
+          ],
+          "art": "chair",
+          "asset": "assets/words/chair.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "КРАН",
+          "syllables": [
+            "КРАН"
+          ],
+          "art": "tap",
+          "asset": "assets/words/tap.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "ТОРТ",
+          "syllables": [
+            "ТОРТ"
+          ],
+          "art": "cake",
+          "asset": "assets/words/cake.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "ХЛЕБ",
+          "syllables": [
+            "ХЛЕБ"
+          ],
+          "art": "bread",
+          "asset": "assets/words/bread.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "БАНТ",
+          "syllables": [
+            "БАНТ"
+          ],
+          "art": "bow",
+          "asset": "assets/words/bow.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "БУСЫ",
+          "syllables": [
+            "БУ",
+            "СЫ"
+          ],
+          "art": "beads",
+          "asset": "assets/words/beads.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "ОКНО",
+          "syllables": [
+            "ОК",
+            "НО"
+          ],
+          "art": "window",
+          "asset": "assets/words/window.svg",
+          "kind": "object",
+          "animated": false
+        },
+        {
+          "word": "ЛУПА",
+          "syllables": [
+            "ЛУ",
+            "ПА"
+          ],
+          "art": "magnifier",
+          "asset": "assets/words/magnifier.svg",
+          "kind": "object",
+          "animated": false
+        }
+      ]
+    </script>
+    <script>
+      (() => {
+          'use strict';
+          const $ = id => document.getElementById(id);
+          const entries = JSON.parse($('wordData').textContent).map(e => ({ ...e, s: e.syllables }));
+          const storageKey = 'neurox.gruzovoi-express.animals.v1';
+          const preferences = { filter: 'short', order: 'random', wordStyle: 'syllables', sound: false, motion: true };
+          try {
+              const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+              for (const [key, allowed] of Object.entries({ filter: ['short', 'three', 'four', 'animals', 'all', 'easy', 'hard'], order: ['random', 'fixed'], wordStyle: ['syllables', 'solid'] })) {
+                  if (allowed.includes(saved[key]) && !(key === 'filter' && saved[key] === 'all' && saved.vocabularyVersion !== 2))
+                      preferences[key] = saved[key];
+              }
+              for (const key of ['sound', 'motion'])
+                  if (typeof saved[key] === 'boolean')
+                      preferences[key] = saved[key];
+          }
+          catch (_) {
+          }
+          let { filter, order, wordStyle, sound, motion } = preferences;
+          let queue = [], index = 0, revealed = false, animationToken = 0, history = [], future = [];
+          let focusBeforeSettings = null, doorReady = false, celebrateCargo = false;
+          const audio = {};
+          const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
+          function persist() {
+              try {
+                  localStorage.setItem(storageKey, JSON.stringify({ filter, order, wordStyle, sound, motion, vocabularyVersion: 2 }));
+              }
+              catch (_) {
+              }
+              $('game').classList.toggle('still', !motion);
+          }
+          function openSound() {
+              if (!sound)
+                  return;
+              try {
+                  const clip = audio.open || (audio.open = new Audio('assets/sounds/open.wav'));
+                  clip.volume = .24;
+                  clip.currentTime = 0;
+                  const playing = clip.play();
+                  if (playing)
+                      playing.catch(() => {
+                      });
+              }
+              catch (_) {
+              }
+          }
+          function silence() {
+              for (const clip of Object.values(audio)) {
+                  clip.pause();
+                  clip.currentTime = 0;
+              }
+          }
+          function shuffle(values) {
+              const result = [...values];
+              for (let i = result.length - 1; i > 0; i--) {
+                  const j = Math.floor(Math.random() * (i + 1));
+                  [result[i], result[j]] = [result[j], result[i]];
+              }
+              return result;
+          }
+          function filtered(value = filter) {
+              return entries.filter(e => {
+                  if (value === 'short')
+                      return e.word.length === 3 || e.word.length === 4;
+                  if (value === 'three' || value === 'four')
+                      return e.word.length === (value === 'three' ? 3 : 4);
+                  if (value === 'animals')
+                      return e.kind === 'animal';
+                  if (value === 'easy' || value === 'hard')
+                      return e.s.length === (value === 'easy' ? 2 : 3);
+                  return true;
+              });
+          }
+          function current() {
+              return queue[index];
+          }
+          function updateStatus(text, type = '') {
+              $('feedback').className = 'feedback ' + type;
+              $('feedback').textContent = text;
+          }
+          function refreshBoard() {
+              const entry = current(), label = $('wordText');
+              label.textContent = wordStyle === 'solid' ? entry.word : entry.s.join('-');
+              label.setAttribute('font-size', '70');
+              const length = label.getComputedTextLength();
+              if (length > 366)
+                  label.setAttribute('font-size', String(Math.floor(70 * 366 / length)));
+              $('openBtn').disabled = false;
+              $('openBtn').textContent = revealed ? 'Закрыть груз' : 'Открыть груз';
+              $('openBtn').setAttribute('aria-expanded', String(revealed));
+              $('prevBtn').disabled = history.length === 0;
+          }
+          function showLoadedCargo() {
+              const art = $('animalSlot').firstElementChild;
+              if (!revealed || !doorReady || !art?.dataset.loaded)
+                  return;
+              $('cargoArt').classList.add('show');
+              if (celebrateCargo && motion && !motionPreference.matches) {
+                  $('successConfetti').classList.remove('play');
+                  void $('successConfetti').getBoundingClientRect();
+                  $('successConfetti').classList.add('play');
+              }
+              celebrateCargo = false;
+              updateStatus('В контейнере — ' + current().word.toLowerCase() + '!', 'ok');
+          }
+          function updateAnimalMotion(active = false) {
+              const art = $('animalSlot').firstElementChild;
+              if (!art)
+                  return;
+              if (!active || document.hidden) {
+                  art.removeAttribute('href');
+                  delete art.dataset.loaded;
+                  $('cargoArt').classList.remove('show');
+                  return;
+              }
+              const moving = motion && !motionPreference.matches;
+              const href = current().asset + '?art=lite-v3&motion=' + (moving ? '1' : '0#still');
+              if (art.getAttribute('href') !== href) {
+                  delete art.dataset.loaded;
+                  $('cargoArt').classList.remove('show');
+                  art.setAttribute('href', href);
+              }
+          }
+          function startRound(saved = null) {
+              animationToken++;
+              revealed = !!saved?.revealed;
+              doorReady = revealed;
+              celebrateCargo = false;
+              $('container').classList.toggle('open', revealed);
+              $('container').classList.toggle('closed', !revealed);
+              $('cargoArt').classList.remove('show');
+              $('successConfetti').classList.remove('play');
+              const art = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+              art.setAttribute('width', '400');
+              art.setAttribute('height', '400');
+              art.setAttribute('aria-label', current().word.toLowerCase());
+              art.addEventListener('load', () => {
+                  if (art !== $('animalSlot').firstElementChild || !art.hasAttribute('href'))
+                      return;
+                  art.dataset.loaded = 'true';
+                  showLoadedCargo();
+              });
+              art.addEventListener('error', () => {
+                  if (art !== $('animalSlot').firstElementChild || !revealed || !art.hasAttribute('href'))
+                      return;
+                  updateStatus('Не удалось загрузить рисунок. Закройте и откройте груз, чтобы повторить.');
+              });
+              $('animalSlot').replaceChildren(art);
+              $('animalSlot').dataset.art = current().art;
+              $('trainWhole').classList.remove('depart');
+              $('trainWhole').classList.add('arrive');
+              $('roundNo').textContent = index + 1;
+              $('roundTotal').textContent = queue.length;
+              refreshBoard();
+              updateAnimalMotion(revealed);
+              updateStatus(revealed ? 'Загружаем рисунок…' : (saved?.feedback || 'Попросите ребёнка прочитать слово. Затем нажмите «Открыть груз».'), saved?.feedbackType || '');
+          }
+          function closeCargo() {
+              animationToken++;
+              revealed = false;
+              doorReady = false;
+              celebrateCargo = false;
+              $('cargoArt').classList.remove('show');
+              $('successConfetti').classList.remove('play');
+              updateAnimalMotion(false);
+              $('container').classList.remove('open');
+              $('container').classList.add('closed');
+              refreshBoard();
+              updateStatus('Груз закрыт. Можно прочитать слово ещё раз или перейти к следующему.');
+          }
+          function reveal() {
+              if (revealed) {
+                  closeCargo();
+                  return;
+              }
+              revealed = true;
+              doorReady = false;
+              celebrateCargo = true;
+              refreshBoard();
+              $('container').classList.add('open');
+              $('container').classList.remove('closed');
+              updateAnimalMotion(true);
+              updateStatus('Контейнер открывается…');
+              openSound();
+              const token = ++animationToken;
+              setTimeout(() => {
+                  if (token !== animationToken)
+                      return;
+                  doorReady = true;
+                  if (!$('animalSlot').firstElementChild?.dataset.loaded)
+                      updateStatus('Загружаем рисунок…');
+                  showLoadedCargo();
+              }, motion && !motionPreference.matches ? 820 : 0);
+          }
+          function captureRound() {
+              return { queue: [...queue], index, revealed, feedback: $('feedback').textContent, feedbackType: $('feedback').classList.contains('ok') ? 'ok' : '' };
+          }
+          function restoreRound(saved) {
+              queue = [...saved.queue];
+              index = saved.index;
+              startRound(saved);
+          }
+          function previous() {
+              if (!history.length)
+                  return;
+              future.push(captureRound());
+              restoreRound(history.pop());
+          }
+          function next() {
+              history.push(captureRound());
+              if (future.length) {
+                  restoreRound(future.pop());
+                  return;
+              }
+              const last = current().word;
+              index++;
+              if (index >= queue.length) {
+                  queue = order === 'random' ? shuffle(filtered()) : filtered();
+                  index = 0;
+                  if (order === 'random' && queue.length > 1 && queue[0].word === last)
+                      [queue[0], queue[1]] = [queue[1], queue[0]];
+              }
+              startRound();
+          }
+          function newSeries(startWord = '') {
+              history = [];
+              future = [];
+              queue = order === 'random' ? shuffle(filtered()) : filtered();
+              if (startWord) {
+                  const i = queue.findIndex(e => e.word === startWord);
+                  if (i >= 0) {
+                      const [entry] = queue.splice(i, 1);
+                      queue.unshift(entry);
+                  }
+              }
+              index = 0;
+              startRound();
+          }
+          function fillWordOptions(value = filter) {
+              const select = $('wordPick');
+              select.replaceChildren(new Option('Любое из набора', ''));
+              for (const entry of filtered(value))
+                  select.add(new Option(entry.word, entry.word));
+          }
+          function showSettings(flag) {
+              if (flag) {
+                  focusBeforeSettings = document.activeElement;
+                  $('wordsSetting').value = filter;
+                  $('wordOrder').value = order;
+                  $('wordStyle').value = wordStyle;
+                  $('soundSetting').checked = sound;
+                  $('motionSetting').checked = motion;
+                  fillWordOptions();
+              }
+              $('shade').classList.toggle('on', flag);
+              $('drawer').classList.toggle('open', flag);
+              $('drawer').setAttribute('aria-hidden', String(!flag));
+              $('drawer').inert = !flag;
+              for (const element of document.querySelectorAll('.header,.activity-label,.dock'))
+                  element.inert = flag;
+              if (flag)
+                  $('closeSettings').focus({ preventScroll: true });
+              else if (focusBeforeSettings)
+                  focusBeforeSettings.focus({ preventScroll: true });
+          }
+          function apply() {
+              filter = $('wordsSetting').value;
+              order = $('wordOrder').value;
+              wordStyle = $('wordStyle').value;
+              sound = $('soundSetting').checked;
+              motion = $('motionSetting').checked;
+              if (!sound)
+                  silence();
+              const chosen = $('wordPick').value;
+              persist();
+              showSettings(false);
+              newSeries(chosen);
+          }
+          for (const [id, fn] of Object.entries({ openBtn: reveal, prevBtn: previous, nextBtn: next }))
+              $(id).addEventListener('click', fn);
+          $('settingsBtn').addEventListener('click', () => showSettings(true));
+          for (const id of ['closeSettings', 'cancelSettings', 'shade'])
+              $(id).addEventListener('click', () => showSettings(false));
+          $('applySettings').addEventListener('click', apply);
+          $('wordsSetting').addEventListener('change', () => fillWordOptions($('wordsSetting').value));
+          document.addEventListener('visibilitychange', () => updateAnimalMotion(revealed));
+          if (motionPreference.addEventListener)
+              motionPreference.addEventListener('change', () => updateAnimalMotion(revealed));
+          else
+              motionPreference.addListener(() => updateAnimalMotion(revealed));
+          document.addEventListener('keydown', event => {
+              if ($('drawer').classList.contains('open')) {
+                  if (event.key === 'Escape') {
+                      event.preventDefault();
+                      showSettings(false);
+                  }
+                  if (event.key === 'Tab') {
+                      const controls = [...$('drawer').querySelectorAll('button,select,input,a[href]')].filter(el => !el.disabled && el.getClientRects().length);
+                      const first = controls[0], last = controls[controls.length - 1];
+                      if (event.shiftKey && document.activeElement === first) {
+                          event.preventDefault();
+                          last.focus();
+                      }
+                      else if (!event.shiftKey && document.activeElement === last) {
+                          event.preventDefault();
+                          first.focus();
+                      }
+                  }
+                  return;
+              }
+              if (event.target.closest('select,input,textarea,[contenteditable]'))
+                  return;
+              if (event.key === 'ArrowLeft') {
+                  event.preventDefault();
+                  previous();
+                  return;
+              }
+              if (event.key === 'ArrowRight') {
+                  event.preventDefault();
+                  next();
+                  return;
+              }
+              if (event.key === 'Escape' && revealed) {
+                  event.preventDefault();
+                  closeCargo();
+                  return;
+              }
+              if (event.target.closest('button'))
+                  return;
+              if (event.key === 'Enter') {
+                  event.preventDefault();
+                  reveal();
+              }
+          });
+          persist();
+          newSeries();
+      })();
+    </script>
+    <script src="../../assets/menu-data.js" defer></script>
+    <script src="../../assets/menu-drawer.js" defer></script>
+    <script src="../../shared/favorites.js" defer></script>
+    <script src="../../shared/unified-topbar.js" defer></script>
+    <script src="../../shared/seasons.js" defer></script>
+    <script src="../../shared/accessibility.js" defer></script>
+    <script src="../../shared/teacher-panel.js" defer></script>
+  </body>
+</html>

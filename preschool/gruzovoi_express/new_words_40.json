@@ -1,0 +1,415 @@
+[
+  {
+    "word": "ВАЗА",
+    "syllables": [
+      "ВА",
+      "ЗА"
+    ],
+    "art": "vase",
+    "asset": "assets/words/vase.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "РОЗА",
+    "syllables": [
+      "РО",
+      "ЗА"
+    ],
+    "art": "rose",
+    "asset": "assets/words/rose.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "РАК",
+    "syllables": [
+      "РАК"
+    ],
+    "art": "crayfish",
+    "asset": "assets/words/crayfish.svg",
+    "kind": "animal",
+    "animated": true
+  },
+  {
+    "word": "ДОМ",
+    "syllables": [
+      "ДОМ"
+    ],
+    "art": "house",
+    "asset": "assets/words/house.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "МАК",
+    "syllables": [
+      "МАК"
+    ],
+    "art": "poppy",
+    "asset": "assets/words/poppy.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "ЛУК",
+    "syllables": [
+      "ЛУК"
+    ],
+    "art": "onion",
+    "asset": "assets/words/onion.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "СЫР",
+    "syllables": [
+      "СЫР"
+    ],
+    "art": "cheese",
+    "asset": "assets/words/cheese.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "СУП",
+    "syllables": [
+      "СУП"
+    ],
+    "art": "soup",
+    "asset": "assets/words/soup.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "СОК",
+    "syllables": [
+      "СОК"
+    ],
+    "art": "juice",
+    "asset": "assets/words/juice.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "ШАР",
+    "syllables": [
+      "ШАР"
+    ],
+    "art": "balloon",
+    "asset": "assets/words/balloon.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "МЯЧ",
+    "syllables": [
+      "МЯЧ"
+    ],
+    "art": "ball",
+    "asset": "assets/words/ball.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "КУБ",
+    "syllables": [
+      "КУБ"
+    ],
+    "art": "cube",
+    "asset": "assets/words/cube.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "ЛЕС",
+    "syllables": [
+      "ЛЕС"
+    ],
+    "art": "forest",
+    "asset": "assets/words/forest.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "КОТ",
+    "syllables": [
+      "КОТ"
+    ],
+    "art": "cat",
+    "asset": "assets/animals/cat.svg",
+    "kind": "animal",
+    "animated": true
+  },
+  {
+    "word": "КИТ",
+    "syllables": [
+      "КИТ"
+    ],
+    "art": "whale",
+    "asset": "assets/words/whale.svg",
+    "kind": "animal",
+    "animated": true
+  },
+  {
+    "word": "ЖУК",
+    "syllables": [
+      "ЖУК"
+    ],
+    "art": "beetle",
+    "asset": "assets/words/beetle.svg",
+    "kind": "animal",
+    "animated": true
+  },
+  {
+    "word": "МЁД",
+    "syllables": [
+      "МЁД"
+    ],
+    "art": "honey",
+    "asset": "assets/words/honey.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "ДУБ",
+    "syllables": [
+      "ДУБ"
+    ],
+    "art": "oak",
+    "asset": "assets/words/oak.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "НОС",
+    "syllables": [
+      "НОС"
+    ],
+    "art": "nose",
+    "asset": "assets/words/nose.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "РОТ",
+    "syllables": [
+      "РОТ"
+    ],
+    "art": "mouth",
+    "asset": "assets/words/mouth.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "УХО",
+    "syllables": [
+      "У",
+      "ХО"
+    ],
+    "art": "ear",
+    "asset": "assets/words/ear.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "ЛЁД",
+    "syllables": [
+      "ЛЁД"
+    ],
+    "art": "ice",
+    "asset": "assets/words/ice.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "ЛУНА",
+    "syllables": [
+      "ЛУ",
+      "НА"
+    ],
+    "art": "moon",
+    "asset": "assets/words/moon.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "РЕПА",
+    "syllables": [
+      "РЕ",
+      "ПА"
+    ],
+    "art": "turnip",
+    "asset": "assets/words/turnip.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "КАША",
+    "syllables": [
+      "КА",
+      "ША"
+    ],
+    "art": "porridge",
+    "asset": "assets/words/porridge.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "МЫЛО",
+    "syllables": [
+      "МЫ",
+      "ЛО"
+    ],
+    "art": "soap",
+    "asset": "assets/words/soap.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "ВОДА",
+    "syllables": [
+      "ВО",
+      "ДА"
+    ],
+    "art": "water",
+    "asset": "assets/words/water.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "КИВИ",
+    "syllables": [
+      "КИ",
+      "ВИ"
+    ],
+    "art": "kiwi",
+    "asset": "assets/words/kiwi.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "ДЫНЯ",
+    "syllables": [
+      "ДЫ",
+      "НЯ"
+    ],
+    "art": "melon",
+    "asset": "assets/words/melon.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "ЛИСТ",
+    "syllables": [
+      "ЛИСТ"
+    ],
+    "art": "leaf",
+    "asset": "assets/words/leaf.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "ЗОНТ",
+    "syllables": [
+      "ЗОНТ"
+    ],
+    "art": "umbrella",
+    "asset": "assets/words/umbrella.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "СТОЛ",
+    "syllables": [
+      "СТОЛ"
+    ],
+    "art": "table",
+    "asset": "assets/words/table.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "СТУЛ",
+    "syllables": [
+      "СТУЛ"
+    ],
+    "art": "chair",
+    "asset": "assets/words/chair.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "КРАН",
+    "syllables": [
+      "КРАН"
+    ],
+    "art": "tap",
+    "asset": "assets/words/tap.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "ТОРТ",
+    "syllables": [
+      "ТОРТ"
+    ],
+    "art": "cake",
+    "asset": "assets/words/cake.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "ХЛЕБ",
+    "syllables": [
+      "ХЛЕБ"
+    ],
+    "art": "bread",
+    "asset": "assets/words/bread.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "БАНТ",
+    "syllables": [
+      "БАНТ"
+    ],
+    "art": "bow",
+    "asset": "assets/words/bow.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "БУСЫ",
+    "syllables": [
+      "БУ",
+      "СЫ"
+    ],
+    "art": "beads",
+    "asset": "assets/words/beads.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "ОКНО",
+    "syllables": [
+      "ОК",
+      "НО"
+    ],
+    "art": "window",
+    "asset": "assets/words/window.svg",
+    "kind": "object",
+    "animated": false
+  },
+  {
+    "word": "ЛУПА",
+    "syllables": [
+      "ЛУ",
+      "ПА"
+    ],
+    "art": "magnifier",
+    "asset": "assets/words/magnifier.svg",
+    "kind": "object",
+    "animated": false
+  }
+]
