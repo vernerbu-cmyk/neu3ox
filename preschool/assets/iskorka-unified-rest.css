@@ -1,0 +1,101 @@
+/* Единая оболочка для остальных 16 игр. Не меняет алгоритмы и графику игрового поля. */
+body.ix-rest{--ix-header-h:68px;padding-top:var(--ix-header-h)!important;font-family:'Nunito Sans','Segoe UI',Arial,sans-serif}
+body.ix-rest .ix-header{z-index:100;line-height:1.2}
+body.ix-rest .ix-header button,body.ix-rest .ix-header a{font-family:inherit}
+body.ix-rest #nx-site-return{display:none!important}
+body.ix-rest #nx-drawer-btn{display:none!important}
+body.ix-rest .ix-new-settings{background:#F5F8FD}
+body.ix-rest .ix-new-help{background:#FFF3E9;color:#9B4C16;border-color:#FFD8BC}
+body.ix-rest .ix-panel-head{font-family:'Nunito Sans','Segoe UI',Arial,sans-serif;line-height:1.25}
+body.ix-rest .ix-panel-head span{font-size:19px;font-weight:900}
+body.ix-rest .ix-panel-head .ix-panel-close{border:0!important;flex:0 0 42px;line-height:1;min-width:42px}
+body.ix-rest .ix-rest-drawer{position:fixed!important;top:var(--ix-header-h)!important;right:0!important;bottom:0!important;left:auto!important;width:min(450px,100vw)!important;min-width:0!important;max-width:100vw!important;height:auto!important;max-height:none!important;overflow-y:auto!important;overflow-x:hidden!important;z-index:106!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;flex-wrap:nowrap!important;justify-content:flex-start!important;gap:12px!important;margin:0!important;padding:17px 19px 35px!important;border:0!important;border-left:1px solid #DDE7F4!important;border-radius:20px 0 0 20px!important;background:#fff!important;color:#173462!important;box-shadow:-14px 0 42px rgba(6,24,58,.2)!important;transform:translateX(105%);visibility:hidden;pointer-events:none;transition:transform .2s ease,visibility .2s}
+body.ix-rest .ix-rest-drawer.ix-open{transform:translateX(0);visibility:visible;pointer-events:auto}
+body.ix-rest .ix-backdrop{z-index:105}
+body.ix-rest.ix-settings-visible .ix-backdrop{visibility:visible;opacity:1}
+body.ix-rest .ix-rest-drawer :is(button,select,input,textarea){font-family:inherit}
+body.ix-rest .ix-rest-drawer button{min-height:42px;border-radius:12px;cursor:pointer}
+body.ix-rest .ix-rest-drawer :is(select,input[type=number],input[type=text]){max-width:100%;font-size:14px}
+body.ix-rest .ix-rest-drawer :is(button,select,input):focus-visible{outline:3px solid #FF6A00;outline-offset:2px}
+body.ix-rest .ix-rest-drawer .ix-panel-head{position:sticky;top:-17px;z-index:10;flex:0 0 auto;min-height:59px;padding:8px 0 11px;margin:0 0 8px;background:#fff!important;border-bottom:1px solid #DDE7F4}
+/* Лёгкая общая типографика, не затрагивая рисунки, фигуры или ответы */
+body.ix-rest :is(.panel,.card,.game-card){border-radius:20px}
+body.ix-rest :is(.controls,.actions,.task-actions) :is(button.btn,button.button,button.secondary){border-radius:13px;min-height:43px}
+body.ix-rest :is(.controls,.actions,.task-actions) :is(button.btn.primary,button.button.main){background:#FF6A00;color:#fff;border-color:#FF6A00}
+/* Без второй шапки, но игровые счётчики оставляем */
+body.ix-plain > header:not(.ix-header),body.ix-plain .app-head{display:none!important}
+body.ix-score .container>header{display:flex!important;justify-content:flex-end!important;min-height:50px;margin-bottom:11px;padding:7px 14px!important;border:1px solid #E0E8F4!important;background:#fff!important;border-radius:15px!important;box-shadow:0 3px 14px #183B7208!important}
+body.ix-score .container>header :is(h1,.back-btn){display:none!important}
+body.ix-score .container>header .score-bar{font-size:15px;color:#1E3F8A}
+/* Мемо, Что изменилось: исторические шапки удалены, настройки сменили место */
+body.ix-memo .header,body.ix-changed>header:not(.ix-header){display:none!important}
+body.ix-changed #panel.ix-rest-drawer{margin-top:0!important}
+body.ix-changed #panel .panel-emoji{font-size:20px}
+body.ix-changed #panel :is(button,select){min-height:40px}
+/* Найди букву: скрытую мобильную панель возвращаем как drawer */
+body.ix-findletter{display:flex;flex-direction:row}
+body.ix-findletter #panel.ix-rest-drawer{background:#fff!important;color:#173462!important;--panel-bg:#fff;--text:#173462}
+body.ix-findletter #panel.ix-rest-drawer .ix-panel-head{display:flex!important}
+body.ix-findletter #panel.ix-rest-drawer > *{flex:none;max-width:100%}
+body.ix-findletter #panel.ix-rest-drawer .speed-control{display:flex!important}
+body.ix-findletter #toggleBtn{display:none!important}
+body.ix-findletter #wrap{width:100%!important;min-width:0!important;flex:1 1 auto!important}
+body.ix-findletter #panel.ix-rest-drawer button{background:#EDF3FC;color:#1E3F8A;border:1px solid #DCE7F4}
+body.ix-findletter #panel.ix-rest-drawer #restartBtn{background:#FF6A00;color:#fff}
+/* Лабиринты: выдвигаем существующую панель, canvas оставляем прежних размеров */
+body.ix-labyrinth #topbar.ix-rest-drawer{padding:10px 15px 30px!important;pointer-events:auto!important}
+body.ix-labyrinth #topbar-card{width:100%;max-width:none;border:0;box-shadow:none;background:transparent;padding:0;pointer-events:auto}
+body.ix-labyrinth #row-1{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}
+body.ix-labyrinth #row-1>.back-btn,body.ix-labyrinth #row-1>#title{display:none!important}
+body.ix-labyrinth #row-1 .right-btns{display:flex;gap:6px;flex-wrap:wrap}
+body.ix-labyrinth #row-2{display:flex!important;flex-direction:column;align-items:stretch;gap:9px;max-width:none}
+body.ix-labyrinth #row-2 .field{display:flex!important;justify-content:space-between;min-height:42px;flex-wrap:wrap;gap:7px;width:100%;font-size:13px}
+body.ix-labyrinth #row-2 .toggle{display:flex!important;min-height:42px}
+body.ix-labyrinth #topbar .ix-panel-head{width:100%;min-height:56px}
+body.ix-labyrinth #btnGenerate{background:#FF6A00;color:#fff;min-height:48px;font-weight:800}
+body.ix-labyrinth #maze{z-index:1}
+/* Настройки внутри страницы преобразованы в боковую панель */
+body.ix-mathworkshop header.top,body.ix-numbers header.top,body.ix-moreless header.top,body.ix-patterns header.topbar{display:none!important}
+body.ix-mathworkshop .layout,body.ix-numbers .layout{grid-template-columns:minmax(0,1fr)!important}
+body.ix-mathworkshop #settingsPanel,body.ix-numbers #settingsPanel{grid-row:auto;grid-column:auto}
+body.ix-mathworkshop .sidebar,body.ix-numbers .sidebar{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+body.ix-mathworkshop .ix-rest-drawer .settings-grid,body.ix-numbers .ix-rest-drawer .settings-grid{grid-template-columns:1fr}
+/* Существующие модальные настройки: боковая панель без смены событий */
+body.ix-modal #settingsOverlay.open{top:var(--ix-header-h);bottom:0;padding:0!important;align-items:stretch!important;justify-content:flex-end!important;z-index:108!important;background:rgba(11,27,54,.45)!important}
+body.ix-modal #settingsOverlay.open>.modal{height:100%;max-height:100%;width:min(475px,100vw);max-width:100%;border-radius:21px 0 0 21px!important;margin:0;padding:19px 18px 25px;overflow-y:auto;box-shadow:-14px 0 42px #0003}
+body.ix-modal #settingsOverlay .modal :is(.segments,.segmented,.mode-grid,.mode-choices){max-width:100%}
+body.ix-modal #settingsOverlay .modal .modal-head{position:sticky;top:-19px;z-index:2;background:#fff;padding-top:8px}
+/* Пещера: прогресс остаётся отдельной полоской, диалог-настройки боковой */
+body.ix-cave{overflow:hidden;padding-top:var(--ix-header-h)!important}
+body.ix-cave #app{height:calc(100dvh - var(--ix-header-h))}
+body.ix-cave #topbar{height:48px;min-height:48px;background:#0E203F;flex:0 0 48px}
+body.ix-cave #topbar>.brand,body.ix-cave #btnSettings{display:none!important}
+body.ix-cave #topbar>.progress{margin-left:4px}
+body.ix-cave #overlay:not(.hidden):has(.settings-panel){inset:var(--ix-header-h) 0 0;padding:0!important;justify-content:flex-end!important;align-items:stretch!important;background:rgba(11,27,54,.55)!important;z-index:109}
+body.ix-cave #overlay:has(.settings-panel) .settings-panel{height:100%;max-height:100%;width:min(510px,100vw);max-width:100%;overflow-y:auto;margin:0;border-radius:20px 0 0 20px!important;padding:22px 19px}
+body.ix-cave #overlay:has(.settings-panel) .settings-grid{grid-template-columns:1fr}
+/* Следопыт: динамическая подпись текущего задания не теряется */
+body.ix-pathfinder>header:not(.ix-header){display:none!important}
+body.ix-pathfinder .ix-label small{display:block}
+/* Удобство для телефона */
+@media(max-width:650px){
+ body.ix-rest{--ix-header-h:60px}
+ body.ix-rest .ix-rest-drawer{border-radius:14px 0 0 14px!important;padding:12px 15px 28px!important}
+ body.ix-rest .ix-rest-drawer .ix-panel-head{top:-12px}
+ body.ix-rest .ix-header .ix-label small{font-size:10px}
+ body.ix-rest .ix-header .ix-action{padding:0 9px}
+ body.ix-cave #topbar{padding:6px 10px}
+ body.ix-cave #topbar .pbar{width:clamp(80px,26vw,160px)}
+ body.ix-labyrinth #row-2 label:has(#algo),body.ix-labyrinth #row-2 label:has(#seed),body.ix-labyrinth #row-2 label:has(#animToggle),body.ix-labyrinth #row-2 label:has(#labubuToggle),body.ix-labyrinth #row-2 label:has(#nolimitToggle){display:flex!important}
+ body.ix-modal #settingsOverlay.open>.modal{border-radius:15px 0 0 15px!important}
+}
+@media(prefers-reduced-motion:reduce){body.ix-rest .ix-rest-drawer{transition:none!important}}
+
+/* Одни и те же спокойные светлые поля в двух старых тёмных панелях. */
+body.ix-changed #panel.ix-rest-drawer :is(select,input:not([type=checkbox]),textarea),body.ix-findletter #panel.ix-rest-drawer :is(select,input:not([type=checkbox]),textarea){background:#F4F7FD!important;color:#173462!important;border:1px solid #DCE6F4!important;border-radius:12px!important;min-height:41px}
+body.ix-changed #panel.ix-rest-drawer :is(select,input),body.ix-findletter #panel.ix-rest-drawer :is(select,input){accent-color:#1E3F8A}
+body.ix-changed #panel.ix-rest-drawer :is(option),body.ix-findletter #panel.ix-rest-drawer :is(option){background:#fff;color:#173462}
+body.ix-changed #panel.ix-rest-drawer button{background:#ECF2FB;color:#1E3F8A;border:1px solid #D6E3F5;border-radius:13px}
+body.ix-changed #panel.ix-rest-drawer button:is(:hover,:focus-visible){background:#DDE9FD}
+body.ix-changed #panel.ix-rest-drawer button:is(.start-btn,#startBtn){background:#FF6A00;color:#fff;border-color:#FF6A00}
+body.ix-changed #panel.ix-rest-drawer button[onclick*="startGame"]{background:#FF6A00;color:#fff;border-color:#FF6A00}
