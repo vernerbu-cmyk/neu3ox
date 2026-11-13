@@ -1,0 +1,362 @@
+window.NEUROX_QUESTIONS = [
+  {
+    "id": "true_01",
+    "text": "Дождь капает с неба.",
+    "correct": true,
+    "image": "images/true_01.webp"
+  },
+  {
+    "id": "true_02",
+    "text": "Повар готовит еду.",
+    "correct": true,
+    "image": "images/true_02.webp"
+  },
+  {
+    "id": "true_03",
+    "text": "В холодильнике хранят еду.",
+    "correct": true,
+    "image": "images/true_03.webp"
+  },
+  {
+    "id": "true_04",
+    "text": "На лыжах ездят по снегу.",
+    "correct": true,
+    "image": "images/true_04.webp"
+  },
+  {
+    "id": "true_05",
+    "text": "Крот роет землю.",
+    "correct": true,
+    "image": "images/true_05.webp"
+  },
+  {
+    "id": "true_06",
+    "text": "По дереву стучит дятел.",
+    "correct": true,
+    "image": "images/true_06.webp"
+  },
+  {
+    "id": "true_07",
+    "text": "У жирафа длинная шея.",
+    "correct": true,
+    "image": "images/true_07.webp"
+  },
+  {
+    "id": "true_08",
+    "text": "Суп едят ложкой.",
+    "correct": true,
+    "image": "images/true_08.webp"
+  },
+  {
+    "id": "true_09",
+    "text": "Жаба ловит мух.",
+    "correct": true,
+    "image": "images/true_09.webp"
+  },
+  {
+    "id": "true_10",
+    "text": "Бабушка вяжет шарф.",
+    "correct": true,
+    "image": "images/true_10.webp"
+  },
+  {
+    "id": "true_11",
+    "text": "Котёнок играет с нитками.",
+    "correct": true,
+    "image": "images/true_11.webp"
+  },
+  {
+    "id": "true_12",
+    "text": "Верблюд живёт в пустыне.",
+    "correct": true,
+    "image": "images/true_12.webp"
+  },
+  {
+    "id": "true_13",
+    "text": "Мама готовит блины.",
+    "correct": true,
+    "image": "images/true_13.webp"
+  },
+  {
+    "id": "true_14",
+    "text": "Бабочек ловят сачком.",
+    "correct": true,
+    "image": "images/true_14.webp"
+  },
+  {
+    "id": "true_15",
+    "text": "Из крана течёт вода.",
+    "correct": true,
+    "image": "images/true_15.webp"
+  },
+  {
+    "id": "true_16",
+    "text": "Собака живёт в будке.",
+    "correct": true,
+    "image": "images/true_16.webp"
+  },
+  {
+    "id": "true_17",
+    "text": "Медведи зимой спят.",
+    "correct": true,
+    "image": "images/true_17.webp"
+  },
+  {
+    "id": "true_18",
+    "text": "Зубы чистят щёткой.",
+    "correct": true,
+    "image": "images/true_18.webp"
+  },
+  {
+    "id": "true_19",
+    "text": "Телегу везёт лошадь.",
+    "correct": true,
+    "image": "images/true_19.webp"
+  },
+  {
+    "id": "true_20",
+    "text": "Клубника растёт на грядке.",
+    "correct": true,
+    "image": "images/true_20.webp"
+  },
+  {
+    "id": "true_21",
+    "text": "Совы летают ночью.",
+    "correct": true,
+    "image": "images/true_21.webp"
+  },
+  {
+    "id": "true_22",
+    "text": "Белки едят орехи.",
+    "correct": true,
+    "image": "images/true_22.webp"
+  },
+  {
+    "id": "true_23",
+    "text": "Салат из овощей.",
+    "correct": true,
+    "image": "images/true_23.webp"
+  },
+  {
+    "id": "true_24",
+    "text": "Птицы строят гнёзда.",
+    "correct": true,
+    "image": "images/true_24.webp"
+  },
+  {
+    "id": "true_25",
+    "text": "Заяц грызёт морковку.",
+    "correct": true,
+    "image": "images/true_25.webp"
+  },
+  {
+    "id": "true_26",
+    "text": "Дети ходят в школу.",
+    "correct": true,
+    "image": "images/true_26.webp"
+  },
+  {
+    "id": "true_27",
+    "text": "В футбол играют мячом.",
+    "correct": true,
+    "image": "images/true_27.webp"
+  },
+  {
+    "id": "true_28",
+    "text": "Петух кричит утром.",
+    "correct": true,
+    "image": "images/true_28.webp"
+  },
+  {
+    "id": "true_29",
+    "text": "Рыбы живут в воде.",
+    "correct": true,
+    "image": "images/true_29.webp"
+  },
+  {
+    "id": "true_30",
+    "text": "Поезд едет по рельсам.",
+    "correct": true,
+    "image": "images/true_30.webp"
+  },
+  {
+    "id": "false_01",
+    "text": "Носки надевают на руки.",
+    "correct": false,
+    "image": "images/false_01.webp"
+  },
+  {
+    "id": "false_02",
+    "text": "Самолёт плавает в море.",
+    "correct": false,
+    "image": "images/false_02.webp"
+  },
+  {
+    "id": "false_03",
+    "text": "Мандарины фиолетовые.",
+    "correct": false,
+    "image": "images/false_03.webp"
+  },
+  {
+    "id": "false_04",
+    "text": "Луна светит днём.",
+    "correct": false,
+    "image": "images/false_04.webp"
+  },
+  {
+    "id": "false_05",
+    "text": "Варенье делают из мяса.",
+    "correct": false,
+    "image": "images/false_05.webp"
+  },
+  {
+    "id": "false_06",
+    "text": "Снеговика лепят из песка.",
+    "correct": false,
+    "image": "images/false_06.webp"
+  },
+  {
+    "id": "false_07",
+    "text": "Автобус едет под землёй.",
+    "correct": false,
+    "image": "images/false_07.webp"
+  },
+  {
+    "id": "false_08",
+    "text": "Корабли плавают в молоке.",
+    "correct": false,
+    "image": "images/false_08.webp"
+  },
+  {
+    "id": "false_09",
+    "text": "В чай добавляют арбуз.",
+    "correct": false,
+    "image": "images/false_09.webp"
+  },
+  {
+    "id": "false_10",
+    "text": "Радуга зелёная.",
+    "correct": false,
+    "image": "images/false_10.webp"
+  },
+  {
+    "id": "false_11",
+    "text": "Медведи живут на деревьях.",
+    "correct": false,
+    "image": "images/false_11.webp"
+  },
+  {
+    "id": "false_12",
+    "text": "Морковь растёт на дереве.",
+    "correct": false,
+    "image": "images/false_12.webp"
+  },
+  {
+    "id": "false_13",
+    "text": "Пушистый ёжик.",
+    "correct": false,
+    "image": "images/false_13.webp"
+  },
+  {
+    "id": "false_14",
+    "text": "Цветы поливают кока-колой.",
+    "correct": false,
+    "image": "images/false_14.webp"
+  },
+  {
+    "id": "false_15",
+    "text": "Дети ходят на работу.",
+    "correct": false,
+    "image": "images/false_15.webp"
+  },
+  {
+    "id": "false_16",
+    "text": "Мухи делают мёд.",
+    "correct": false,
+    "image": "images/false_16.webp"
+  },
+  {
+    "id": "false_17",
+    "text": "На Новый год наряжают берёзу.",
+    "correct": false,
+    "image": "images/false_17.webp"
+  },
+  {
+    "id": "false_18",
+    "text": "Ворона лакает молоко.",
+    "correct": false,
+    "image": "images/false_18.webp"
+  },
+  {
+    "id": "false_19",
+    "text": "Букет собирают из палок.",
+    "correct": false,
+    "image": "images/false_19.webp"
+  },
+  {
+    "id": "false_20",
+    "text": "Кошка убегает от мыши.",
+    "correct": false,
+    "image": "images/false_20.webp"
+  },
+  {
+    "id": "false_21",
+    "text": "Летом носят шубу.",
+    "correct": false,
+    "image": "images/false_21.webp"
+  },
+  {
+    "id": "false_22",
+    "text": "Сыр делают из сока.",
+    "correct": false,
+    "image": "images/false_22.webp"
+  },
+  {
+    "id": "false_23",
+    "text": "Дед Мороз отбирает подарки.",
+    "correct": false,
+    "image": "images/false_23.webp"
+  },
+  {
+    "id": "false_24",
+    "text": "Курицы улетают на юг.",
+    "correct": false,
+    "image": "images/false_24.webp"
+  },
+  {
+    "id": "false_25",
+    "text": "Собака выгуливает человека.",
+    "correct": false,
+    "image": "images/false_25.webp"
+  },
+  {
+    "id": "false_26",
+    "text": "Суп варят в чайнике.",
+    "correct": false,
+    "image": "images/false_26.webp"
+  },
+  {
+    "id": "false_27",
+    "text": "В холодильнике разогревают еду.",
+    "correct": false,
+    "image": "images/false_27.webp"
+  },
+  {
+    "id": "false_28",
+    "text": "Мороженое греют в микроволновке.",
+    "correct": false,
+    "image": "images/false_28.webp"
+  },
+  {
+    "id": "false_29",
+    "text": "Черепаха бегает.",
+    "correct": false,
+    "image": "images/false_29.webp"
+  },
+  {
+    "id": "false_30",
+    "text": "На роликах катаются по льду.",
+    "correct": false,
+    "image": "images/false_30.webp"
+  }
+];

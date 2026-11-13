@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#1e3f8a">
+<title>Построй слово · NeuroX</title>
+<style>
+:root{--blue:#1e3f8a;--dark:#152e66;--orange:#ff6a00;--ink:#35466a;--muted:#7e8eae;--bg:#f4f6fb;--line:#e0e8f6;--green:#188467;--red:#bd4866;--shadow:0 14px 38px #1e3f8a13}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;min-width:280px;background:var(--bg);color:var(--ink);font:500 15px/1.4 'Trebuchet MS',system-ui,Arial,sans-serif}button,select,input{font:inherit}button{cursor:pointer;touch-action:manipulation}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #ffad53;outline-offset:3px}button:disabled{opacity:.48;cursor:default}.wrap{max-width:1190px;width:calc(100% - 32px);margin:auto}.top{background:#fff;border-bottom:1px solid var(--line)}.topin{min-height:76px;display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{display:flex;gap:11px;align-items:center;color:var(--dark)}.brandicon{display:grid;place-items:center;width:45px;height:45px;border-radius:15px;background:var(--blue);color:white;font-size:25px;font-weight:1000;box-shadow:0 4px 0 #142c66}.brand strong{display:block;font-size:24px;letter-spacing:-1.2px;line-height:1}.brand small{display:block;font-size:10px;letter-spacing:1px;font-weight:950;color:#94a2bc;margin-top:6px}.tag{background:#eff4ff;color:var(--blue);padding:9px 13px;border-radius:25px;font-size:12px;font-weight:900}.hero{display:flex;justify-content:space-between;align-items:center;padding:22px 0 18px;gap:18px}.eyebrow{text-transform:uppercase;letter-spacing:1.8px;font-size:11px;font-weight:1000;color:#c86927}.eyebrow:before{content:'';display:inline-block;width:18px;height:3px;border-radius:2px;background:var(--orange);vertical-align:middle;margin-right:8px}h1{font-size:clamp(31px,4vw,48px);line-height:1.08;letter-spacing:-1.5px;margin:8px 0;color:var(--dark)}h1 em{color:var(--orange);font-style:normal}.hero p{margin:0;color:var(--muted);font-size:13px;font-weight:800;max-width:650px}.heroart{display:flex;gap:8px;background:#eaf0ff;padding:14px 19px;border-radius:45px;transform:rotate(-4deg)}.heroart span{font-size:32px;font-weight:1000;color:var(--blue);width:51px;height:55px;display:grid;place-items:center;background:white;border-radius:16px;box-shadow:0 4px 0 #d3dff3}.heroart span:nth-child(2){color:var(--orange);transform:rotate(8deg)}.heroart span:nth-child(3){color:#2d9c95;transform:rotate(-6deg)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 305px;gap:18px;align-items:start;padding-bottom:35px}.card{background:white;border:1px solid #e4ebf8;border-radius:25px;box-shadow:var(--shadow);min-width:0}.game{overflow:hidden}.gamehead{display:flex;justify-content:space-between;gap:13px;padding:23px 24px 14px}.kicker{font-size:10px;letter-spacing:1.5px;color:#99a9c5;font-weight:1000}.gamehead h2{font-size:clamp(21px,3vw,27px);letter-spacing:-.7px;color:var(--dark);margin:4px 0}.gamehead p{margin:0;font-size:13px;color:#7e90ac;font-weight:750}.round{align-self:start;background:#eff4ff;color:var(--blue);padding:9px 12px;border-radius:15px;white-space:nowrap;font-weight:950}.round b{font-size:22px}.progress{height:8px;background:#e7eef8;margin:0 24px 18px;border-radius:10px;overflow:hidden}.progress div{height:100%;width:0;background:linear-gradient(90deg,#ffc36d,var(--orange));transition:width .25s}.modes{padding:0 24px 16px;display:flex;gap:7px;overflow:auto;scrollbar-width:thin}.pill{white-space:nowrap;border-radius:20px;border:1px solid #dce8f8;background:#f6f9ff;color:#58749b;font-size:11px;font-weight:950;padding:7px 11px}.pill.on{background:var(--blue);color:white;border-color:var(--blue)}.boardpad{padding:0 24px}.board{min-height:310px;background:radial-gradient(ellipse at 15% 0%,#fff 0%,#f5faff 55%,#eaf3ff 100%);border:2px dashed #dbe8f7;border-radius:24px;padding:20px 18px 18px;text-align:center;position:relative}.board:after{content:'✦';font-size:24px;color:#ffd098;position:absolute;top:10px;right:14px}.boardtag{font-size:11px;text-transform:uppercase;letter-spacing:1.6px;color:#8195b8;font-weight:1000}.taskinstruction{color:var(--dark);font-weight:950;font-size:17px;margin:11px auto 11px;max-width:590px}.picture{width:min(220px,74%);min-height:175px;margin:0 auto 9px;display:grid;place-items:center;border:1px solid #e1eafa;background:linear-gradient(145deg,#fff,#f1f6ff);border-radius:27px;box-shadow:0 6px 0 #e3ebfa}.picture img{display:block;width:100%;max-width:215px;height:176px;object-fit:contain}.picture.smaller{width:min(180px,63%);min-height:146px}.picture.smaller img{height:145px}.picture-caption{font-size:11px;color:#8b9dbb;font-weight:800;margin-top:-2px}.word-model{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap;margin:18px auto}.model-part{font-size:clamp(25px,5vw,42px);font-weight:1000;color:var(--blue);padding:9px 14px;border-radius:15px;background:#fff;border:2px solid #d8e7ff;box-shadow:0 4px 0 #e2ebf8;letter-spacing:1px}.model-part.last{background:#fff2e7;border-color:#ffcb9b;color:#cb5b13}.model-arrow{font-weight:1000;color:#9eafcc;font-size:30px}.model-word{font-size:clamp(30px,6vw,57px);font-weight:1000;color:var(--dark);letter-spacing:2px;line-height:1.18;padding:11px 4px;overflow-wrap:anywhere}.model-word .divider{color:#a6b7d1;padding:0 4px}.slotlist{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:16px auto 2px}.slot{width:clamp(68px,12vw,98px);min-height:73px;border:2px dashed #aac5ec;border-radius:17px;display:grid;place-items:center;background:#fff;font-weight:1000;color:#a2b3ce;font-size:24px;box-shadow:0 4px 0 #e1eafa;touch-action:none}.slot.filled{border:2px solid #ffb06c;background:#fff5e8;color:#c7681c}.slot.fixed{border:2px solid #afc9ed;background:#e8f2ff;color:var(--blue)}.slot.good{background:#e5f7ec;color:#157f5d;border-color:#60b88a}.subnote{font-size:12px;font-weight:800;color:#8b9db8;max-width:500px;margin:10px auto 0}.taskresult{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;font-size:20px;font-weight:1000;color:#167c60;margin-top:12px}.taskresult strong{color:var(--dark)}
+.workspace{padding:16px 24px 21px}.worktitle{font-size:12px;color:#587197;font-weight:950;margin-bottom:12px}.tray{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:8px auto 16px}.tile{border-radius:17px;border:2px solid #d9e5f5;background:#fff;color:var(--blue);min-width:65px;min-height:67px;padding:8px 13px;box-shadow:0 4px 0 #d7e2f2;font-size:clamp(22px,4vw,30px);font-weight:1000;touch-action:none;user-select:none;-webkit-user-select:none}.tile:active:not(:disabled){transform:translateY(2px)}.tile.selected{background:#edf2f9;border-color:#d6e0ed;color:#9daec8;box-shadow:none}.tile.wrong{border-color:#e4a5b5;background:#fff1f3;color:var(--red)}.tile.right{background:#e8f8ee;border-color:#5db98b;color:#15805b}.tile-picture{padding:7px;min-width:102px;min-height:111px;display:grid;place-items:center}.tile-picture img{width:106px;height:88px;display:block;object-fit:contain}.tile-picture .tile-check{font-size:12px;font-weight:950;margin-top:2px;color:inherit}.choices-pics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-width:630px;margin:auto}.controlbar{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:9px}.btn{border:0;border-radius:14px;background:#edf3ff;color:var(--blue);font-size:13px;font-weight:950;min-height:48px;padding:11px 16px;display:inline-flex;justify-content:center;align-items:center;gap:6px}.btn.main{background:var(--orange);color:#fff;box-shadow:0 4px 0 #d55a0b}.btn.green{background:var(--green);color:#fff;box-shadow:0 4px 0 #0d624c}.btn.plain{background:#f3f6fa;color:#71839f}.btn.full{width:100%}.btn:active:not(:disabled){transform:translateY(2px)}.feedback{min-height:49px;background:#edf3fc;color:#60789b;font-size:13px;font-weight:850;display:grid;place-items:center;text-align:center;padding:12px 13px;margin:13px 0 0;border-radius:15px}.feedback.good{background:#e4f8ed;color:#16815d}.feedback.bad{background:#fff0f2;color:#bc4160}.feedback.hint{background:#fff3e5;color:#9f6724}.nextbar{display:flex;gap:9px;flex-wrap:wrap;justify-content:space-between;margin-top:15px}.nextbar .btn{flex-grow:1}.teacherconfirm{margin-top:13px;background:#f3f8ff;border:1px solid #e1ebfa;border-radius:15px;padding:11px 14px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:#536d96}.teacherconfirm input{accent-color:var(--blue);width:18px;height:18px}.footerhint{padding:0 24px 20px;font-size:11px;color:#9aa8bc;font-weight:750}
+.sidecol{display:grid;gap:15px}.side{padding:20px}.side-title{font-size:11px;font-weight:1000;color:#94a6c1;letter-spacing:1.3px;margin-bottom:11px}.fox{display:flex;align-items:center;gap:12px;border-radius:20px;background:#fff7ec;border:1px solid #ffe9cc;padding:12px}.fox svg{flex:none;width:64px;height:65px}.fox strong{font-size:14px;color:#986020}.fox p{font-size:12px;color:#a17c51;font-weight:800;margin:3px 0 0}.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.stat{border-radius:15px;background:#f3f7ff;padding:12px}.stat strong{display:block;font-size:26px;line-height:1.1;color:var(--blue)}.stat span{font-size:11px;font-weight:900;color:#8b9dbb}.side h3{font-size:22px;color:var(--dark);margin:4px 0 7px;letter-spacing:-.6px}.settingsint{font-size:12px;color:#8494b1;font-weight:800;margin:0}.field{margin:15px 0}.field label:not(.checkline),.field legend{display:block;font-size:12px;font-weight:950;color:#516991;margin:0 0 7px}.field select{width:100%;border:1px solid #d9e5f6;background:#f8faff;min-height:45px;color:var(--dark);border-radius:12px;padding:9px 11px;font-weight:850}.checkline{display:flex;gap:8px;align-items:center;font-size:12px;font-weight:800;margin:9px 0;color:#5b6d8d}.checkline input{accent-color:var(--blue);height:18px;width:18px}.presetrow{display:flex;flex-wrap:wrap;gap:6px;margin:7px 0 10px}.presetrow button{background:#f0f5ff;color:var(--blue);border:1px solid #dfe9fa;border-radius:12px;padding:7px 10px;font-size:11px;font-weight:950}.lettergrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.letter{position:relative;display:grid;place-items:center;background:#f7faff;border:1px solid #dfebfb;color:#9cacbf;border-radius:10px;min-height:35px;font-size:15px;font-weight:1000;cursor:pointer}.letter input{position:absolute;opacity:0;pointer-events:none}.letter:has(input:checked){background:#e6efff;color:var(--blue);border-color:#a8c5f2}.letter:focus-within{outline:3px solid #f5ac53}.previewcount{background:#eff8f4;border:1px solid #d2ebdf;padding:12px;border-radius:14px;font-size:12px;color:#2a8568;font-weight:900;line-height:1.55;margin:14px 0 12px}.previewcount.warn{background:#fff4e7;color:#986025;border-color:#ffe2bc}.details{border:1px solid #e4eaf6;border-radius:13px;padding:8px 11px}.details summary{font-size:12px;font-weight:950;color:#4f6793;cursor:pointer;list-style-position:inside}.settingactions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.errorbox{padding:13px;border-radius:12px;background:#fff0e5;color:#a15317;font-size:12px;font-weight:900;margin:10px 0}
+.doneview{padding:36px 22px;text-align:center}.done-icon{font-size:64px;line-height:1.2}.doneview h2{color:var(--dark);font-size:29px;letter-spacing:-.6px}.doneview p{color:#788ba9;font-weight:800}.donegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;max-width:530px;margin:22px auto}.donestat{border-radius:17px;padding:16px 5px;background:#f2f7ff}.donestat b{display:block;font-size:30px;color:var(--blue)}.donestat span{font-size:11px;color:#7f93af;font-weight:900}.dragghost{position:fixed;pointer-events:none;z-index:1000;background:#fff6e9;border:2px solid #ffad63;box-shadow:0 12px 25px #203e7228;border-radius:18px;padding:12px 20px;color:var(--blue);font-size:29px;font-weight:1000;transform:translate(-50%,-50%);white-space:nowrap}.dropover{outline:3px solid #ffb76a;outline-offset:3px}
+@media(max-width:950px){.layout{grid-template-columns:1fr}.sidecol{grid-template-columns:1fr 1fr;align-items:start}.heroart{display:none}.sidecol>.card:nth-child(2){grid-row:1 / span 2;grid-column:2}.settings{padding:18px}}@media(max-width:610px){.wrap{width:calc(100% - 20px)}.topin{min-height:62px}.brandicon{width:38px;height:38px;border-radius:12px;font-size:22px}.brand strong{font-size:21px}.brand small{font-size:9px}.tag{font-size:10px;padding:6px 8px}.hero{padding:16px 0 13px}h1{margin:7px 0;font-size:31px}.hero p{font-size:12px}.layout{gap:13px}.card{border-radius:20px}.gamehead{padding:18px 14px 11px}.round b{font-size:19px}.progress{margin:0 14px 13px}.modes{padding:0 14px 12px}.boardpad{padding:0 12px}.board{padding:17px 10px;min-height:282px}.taskinstruction{font-size:15px}.picture{min-height:150px;width:min(190px,79%)}.picture img{height:150px}.picture.smaller img{height:125px}.picture.smaller{min-height:125px}.workspace{padding:12px 12px 17px}.slotlist{gap:6px}.slot{width:clamp(59px,17vw,78px);min-height:65px}.choices-pics{gap:5px}.tile-picture{min-width:0;min-height:94px;padding:4px;border-radius:12px}.tile-picture img{max-width:100%;height:77px}.tile{min-height:61px;min-width:58px}.sidecol{display:grid;grid-template-columns:1fr}.sidecol>.card:nth-child(2){grid-row:auto;grid-column:auto}.side{padding:17px}.nextbar{gap:7px}.btn{padding:10px 11px}.donegrid{gap:6px}}@media(max-width:345px){.tag{display:none}.model-part{padding:8px 9px}.tile{min-width:53px;padding:8px}.slot{min-width:56px}.model-word{font-size:29px}.choices-pics{gap:3px}.tile-picture{font-size:11px;padding:2px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+/* Four-syllable words must not wrap inside a syllable on narrow phones. */
+@media(max-width:460px){
+ .model-word{font-size:clamp(19px,5.7vw,26px);letter-spacing:0;white-space:nowrap;overflow-wrap:normal;word-break:normal}
+ .model-word .divider{padding:0 2px}
+}
+</style>
+<style>
+#nx-site-return{position:fixed;z-index:99998;top:10px;left:10px;padding:9px 12px;border-radius:13px;background:#1e3f8a;color:#fff;font:700 13px/1.2 Arial,sans-serif;text-decoration:none;box-shadow:0 3px 12px #0002}#nx-site-return:focus-visible{outline:3px solid #ff6a00;outline-offset:3px}@media(max-width:390px){#nx-site-return{font-size:12px;padding:8px 10px}}
+</style>
+<link rel="stylesheet" href="../assets/iskorka-unified.css">
+<script src="../../shared/theme.js"></script>
+<link rel="stylesheet" href="../../assets/menu-drawer.css">
+<link rel="stylesheet" href="../../shared/unified-topbar.css">
+<link rel="stylesheet" href="../../shared/season-effects.css">
+<link rel="stylesheet" href="../../shared/theme.css">
+<link rel="stylesheet" href="../../shared/favorites.css">
+<link rel="stylesheet" href="../assets/neurox-iskorka.css">
+</head>
+<body class="nx-iskorka-game ix-word"><a id="nx-site-return" href="../index.html" aria-label="Все игры, на главную">← Все игры</a>
+<header class="top"><div class="wrap topin"><div class="brand"><div class="brandicon">✦</div><div><strong>NeuroX</strong><small>ИГРЫ ДЛЯ РАЗВИТИЯ</small></div></div><div class="tag">ДОШКОЛЯТАМ · 5–7 ЛЕТ</div></div></header>
+<main class="wrap"><section class="hero"><div><div class="eyebrow">Чтение и слоговой синтез</div><h1>Построй <em>слово</em></h1><p>Смотри, собирай, читай и находи смысл. Никакого готового ответа перед глазами.</p></div><div class="heroart" aria-hidden="true"><span>ЛИ</span><span>СА</span><span>✦</span></div></section>
+<div class="layout"><section class="card game" id="gameCard" data-nx-game-field="1"><div id="playView"><div class="gamehead"><div><div class="kicker" id="levelText">УРОВЕНЬ 1</div><h2 id="modeTitle">Собери слово</h2><p id="modeDesc">Собери название картинки из слогов.</p></div><div class="round"><b id="roundNum">1</b> / <span id="roundTotal">10</span></div></div><div class="progress"><div id="progressBar"></div></div><div class="modes" id="modePills"></div><div class="boardpad"><div class="board"><div class="boardtag" id="boardTag">СЛОГИ И СМЫСЛ</div><div id="taskArea"></div></div></div><div class="workspace"><div class="worktitle" id="answerTitle">Выбери слоги</div><div id="answerArea"></div><div id="feedback" role="status" aria-live="polite" class="feedback">Начнём!</div><label class="teacherconfirm" id="teacherLine" hidden><input type="checkbox" id="oralCheck"> Педагог: ребёнок самостоятельно прочитал полученное слово вслух</label><div class="nextbar"><button class="btn" id="hintBtn">✧ Подсказка</button><button class="btn plain" id="skipBtn">Пропустить</button><button class="btn main" id="nextBtn" hidden>Следующее →</button></div></div><div class="footerhint">Перетаскивай слоги или выбирай нажатием. Устное чтение оценивает педагог, не программа.</div></div><div id="doneView" class="doneview" hidden><div class="done-icon">✧</div><h2>Серия завершена!</h2><p id="doneDesc"></p><div class="donegrid"><div class="donestat"><b id="doneClean">0</b><span>Без ошибок и помощи</span></div><div class="donestat"><b id="doneErrors">0</b><span>Ошибок</span></div><div class="donestat"><b id="doneOral">0</b><span>Прочитано вслух*</span></div></div><p style="font-size:12px">*Только по отметке педагога, без автоматического распознавания речи.</p><button class="btn main" id="restartBtn">Новая серия ↻</button></div></section>
+<aside class="sidecol"><section class="card side"><div class="side-title">ЛИСЁНОК ПОДСКАЗЫВАЕТ</div><div class="fox"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M15 14 33 31 50 21 69 31 86 13 85 61Q79 86 50 92 18 85 14 60Z" fill="#ef8d31" stroke="#cb6b22" stroke-width="4"/><path d="M20 18 35 40 27 48Z M80 18 65 40 73 48Z" fill="#fff1e1"/><path d="M22 62 49 90 78 62 62 68 50 56 39 69Z" fill="#fff6ea"/><ellipse cx="37" cy="53" rx="4" ry="6" fill="#273f60"/><ellipse cx="64" cy="53" rx="4" ry="6" fill="#273f60"/><path d="M43 70 50 76 58 70Z" fill="#343c55"/><path d="M44 80Q50 84 56 80" fill="none" stroke="#343c55" stroke-width="2" stroke-linecap="round"/></svg><div><strong>Думай по слогам!</strong><p id="foxText">Посмотри на картинку. Какие слоги помогут назвать предмет?</p></div></div><div class="stats"><div class="stat"><strong id="statClean">0</strong><span>Без ошибок и помощи</span></div><div class="stat"><strong id="statErrors">0</strong><span>Ошибок</span></div><div class="stat"><strong id="statHints">0</strong><span>Подсказок</span></div><div class="stat"><strong id="statSkipped">0</strong><span>Пропусков</span></div></div></section>
+<section class="card side" id="settingsCard"><div class="side-title">ПАНЕЛЬ ПЕДАГОГА</div><h3>Настройки игры</h3><p class="settingsint">Меняй задания, буквы и сложность. Настройки сохраняются на этом устройстве.</p>
+<div class="field"><label for="modeSelect">Игровой режим</label><select id="modeSelect"><option value="mix">Все четыре · по очереди</option><option value="assemble">Собери слово по картинке</option><option value="read">Прочитай и найди картинку</option><option value="change">Замени слог по картинке</option><option value="finish">Закончи слово</option></select></div>
+<div class="field"><label for="levelSelect">Сложность</label><select id="levelSelect"><option value="mix">Смешанная · 1–4</option><option value="1">1 · Начальный</option><option value="2">2 · Закрепление</option><option value="3">3 · Уверенное чтение</option><option value="4">4 · Эксперт</option></select></div>
+<div class="field"><label for="countSelect">Заданий в серии</label><select id="countSelect"><option value="5">5 заданий</option><option value="10">10 заданий</option><option value="15">15 заданий</option><option value="20">20 заданий</option></select></div>
+<div class="field"><label for="lengthSelect">Длина слова</label><select id="lengthSelect"><option value="all">Любая · 2–4 слога</option><option value="2">Только 2 слога</option><option value="3">Только 3 слога</option><option value="4">Только 4 слога</option></select></div>
+<fieldset class="field" style="border:0;padding:0"><legend>Какие слоги разрешены в словах?</legend><label class="checkline"><input type="checkbox" id="typeOpen"> Открытые, оканчиваются на гласную (ЛИ-СА)</label><label class="checkline"><input type="checkbox" id="typeClosed"> Закрытые, оканчиваются на согласную (БАН в БА-НАН)</label><label class="checkline"><input type="checkbox" id="typeBlend"> Разрешить стечения согласных (КНИ-ГА, БЕЛ-КА)</label><p class="settingsint">Если в слове встречается запрещённый тип слога, оно не попадёт в задания. Стечения проверяются отдельно.</p></fieldset>
+<div class="field"><label for="distractorsSelect">Лишние варианты слогов</label><select id="distractorsSelect"><option value="1">1 лишний слог</option><option value="2">2 лишних слога</option><option value="3">3 лишних слога</option></select></div>
+<div class="field"><label for="breaksSelect">Как показывать слово при чтении</label><select id="breaksSelect"><option value="breaks">По слогам: ЛИ-СА</option><option value="whole">Целиком: ЛИСА</option><option value="mix">Смешивать оба варианта</option></select></div>
+<details class="details" id="lettersDetails"><summary>Выбор изученных букв · <span id="letterCount">33</span></summary><div class="presetrow"><button type="button" data-preset="start">Начальные</button><button type="button" data-preset="reading">Основные</button><button type="button" data-preset="all">Все</button><button type="button" data-preset="none">Снять выбор</button></div><div class="lettergrid" id="letterGrid"></div></details>
+<div class="field"><label class="checkline"><input id="hintsCheck" type="checkbox"> Показывать подсказки по запросу</label><label class="checkline"><input id="schemeCheck" type="checkbox"> Подсказывать количество слогов</label><label class="checkline"><input id="soundCheck" type="checkbox"> Звуки при ответе</label></div>
+<div class="previewcount" id="availableText"></div><div class="errorbox" id="settingsError" hidden></div><div class="settingactions"><button class="btn main" id="startBtn">Начать / применить</button><button class="btn plain" id="defaultsBtn">Сброс настроек</button></div>
+</section></aside></div></main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const LETTERS='АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.split('');
+const VOWELS='АЕЁИОУЫЭЮЯ';
+const STORAGE='neurox_preschool_syllablebuilder_v2';
+const MODES=['assemble','read','change','finish'];
+const LABELS={assemble:'Собери слово',read:'Прочитай и найди',change:'Замени слог',finish:'Закончи слово'};
+const DESCS={assemble:'Собери название предмета из слогов.',read:'Прочитай слово и найди подходящую картинку.',change:'Измени один слог, чтобы получилось слово на картинке.',finish:'Подбери недостающий слог по картинке.'};
+const DEF={mode:'mix',level:'mix',count:10,length:'all',types:['open','closed','blend'],distractors:2,breaks:'breaks',letters:LETTERS.join(''),hints:true,scheme:true,sound:false};
+let cfg={...DEF},task=null,serial={index:0,clean:0,errors:0,hints:0,skipped:0,oral:0},lastKey='',modeQueue=[],usedWordIds=new Set();
+const random=n=>Math.floor(Math.random()*n);
+const pick=a=>a[random(a.length)];
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=random(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;};
+const uniq=a=>[...new Set(a)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Each item has a unique illustration. Hyphens are deliberate syllable boundaries.
+// Familiar concrete nouns, with no generated pseudo-words.
+const DATA=[
+ ['ЛИ-СА','fox'],
+ ['КО-ЗА','goat'],
+ ['РО-ЗА','rose'],
+ ['ВА-ЗА','vase'],
+ ['ЛУ-НА','moon'],
+ ['РЫ-БА','fish'],
+ ['РУ-КА','hand'],
+ ['НО-ГА','leg'],
+ ['СО-ВА','owl'],
+ ['ГО-РА','mountain'],
+ ['КА-ША','porridge'],
+ ['ЧА-ША','bowl'],
+ ['ЛА-ПА','paw'],
+ ['ЛАМ-ПА','lamp'],
+ ['МУ-ХА','fly'],
+ ['МУ-КА','flour'],
+ ['БЕЛ-КА','squirrel'],
+ ['КОШ-КА','cat'],
+ ['МЫШ-КА','mouse'],
+ ['КНИ-ГА','book'],
+ ['ЧАШ-КА','cup'],
+ ['ЛОЖ-КА','spoon'],
+ ['ШАП-КА','hat'],
+ ['БА-НАН','banana'],
+ ['ЛИ-МОН','lemon'],
+ ['МА-ШИ-НА','car'],
+ ['МА-ЛИ-НА','raspberry'],
+ ['КО-РО-ВА','cow'],
+ ['СО-БА-КА','dog'],
+ ['СО-РО-КА','magpie'],
+ ['КО-РО-НА','crown'],
+ ['РА-КЕ-ТА','rocket'],
+ ['КА-ПУС-ТА','cabbage'],
+ ['РО-ЩА','grove'],
+ ['ПИ-ЛА','saw'],
+ ['ВОЛ-НА','wave'],
+ ['КО-ТЫ','cats'],
+ ['КИ-ТЫ','whales'],
+ ['ЧЕ-РЕ-ПА-ХА','turtle'],
+ ['ЖА-БА','frog2'],
+ ['МАС-КА','mask'],
+ ['КАС-КА','helmet'],
+ ['ПИЦ-ЦА','pizza'],
+ ['КОЛЬ-ЦО','ring'],
+ ['ПЕ-РО','feather'],
+ ['МО-РЕ','sea'],
+ ['НЕ-БО','sky'],
+ ['ЗВЕЗ-ДА','star'],
+ ['БУЛ-КА','bun'],
+ ['МЯ-ЧИК','ball'],
+ ['СУМ-КА','bag'],
+ ['КУ-КЛА','doll'],
+ ['ДОС-КА','board'],
+ ['РУЧ-КА','pen'],
+ ['СА-ЛАТ','salad'],
+ ['СТА-КАН','glass'],
+ ['КО-ФЕ','coffee'],
+ ['КРЫ-ША','roof'],
+ ['ДВЕ-РИ','door'],
+ ['ДО-МИК','house'],
+ ['ДИ-ВАН','sofa'],
+ ['ПТИ-ЦА','bird'],
+ ['ВО-РОН','raven'],
+ ['ЛО-ШАДЬ','horse'],
+ ['УТ-КА','duck'],
+ ['ПА-УК','spider'],
+ ['МИШ-КА','bear'],
+ ['ЗЕ-БРА','zebra'],
+ ['БУ-КЕТ','bouquet'],
+ ['ЦВЕ-ТЫ','flowers'],
+ ['ТРА-ВА','grass'],
+ ['ЛИ-СТЬЯ','leaves'],
+ ['РЕЧ-КА','river'],
+ ['ЛОД-КА','boat'],
+ ['ЛУ-ПА','magnifier'],
+ ['ГО-РОХ','peas'],
+ ['НО-РА','burrow'],
+ ['СА-НИ','sled'],
+ ['СО-СНА','pine'],
+ ['ЁЛ-КА','fir'],
+ ['ШИШ-КА','cone'],
+ ['ГРУ-ША','pear'],
+ ['СЛИ-ВА','plum'],
+ ['ТЫ-КВА','pumpkin'],
+ ['МОР-КОВЬ','carrot'],
+ ['ША-РЫ','balloons'],
+ ['ЧА-СЫ','clock'],
+ ['ЗОН-ТИК','umbrella'],
+ ['КА-РТА','map'],
+ ['ПИСЬ-МО','mail'],
+ ['ПО-ЕЗД','train'],
+ ['НОС-КИ','socks'],
+ ['ЮБ-КА','skirt'],
+ ['СА-ПОГ','boot'],
+ ['Я-БЛО-КО','apple'],
+ ['А-ПЕЛЬ-СИН','orange'],
+ ['О-ГУ-РЕЦ','cucumber'],
+ ['ПО-МИ-ДОР','tomato'],
+ ['КАР-ТОШ-КА','potato'],
+ ['А-НА-НАС','pineapple'],
+ ['КЛУБ-НИ-КА','strawberry'],
+ ['ЧЕ-РЕШ-НЯ','cherries'],
+ ['КО-ЛЕ-СО','wheel'],
+ ['КО-ЛЯС-КА','stroller'],
+ ['КА-РАН-ДАШ','pencil'],
+ ['КА-ЛЕН-ДАРЬ','calendar'],
+ ['У-ЧЕБ-НИК','textbook'],
+ ['ТЕ-ЛЕ-ФОН','phone'],
+ ['КОМ-ПЬЮ-ТЕР','computer'],
+ ['СА-МО-ЛЁТ','plane'],
+ ['А-ВТО-БУС','bus'],
+ ['ВЕР-ТО-ЛЁТ','helicopter'],
+ ['ПА-РО-ХОД','ship'],
+ ['МО-ЛО-КО','milk'],
+ ['КО-РОБ-КА','box'],
+ ['КО-ЛО-КОЛ','bell'],
+ ['СА-МО-КАТ','scooter'],
+ ['РА-ДУ-ГА','rainbow'],
+ ['СНЕ-ЖИН-КА','snowflake'],
+ ['ОБ-ЛА-КО','cloud'],
+ ['РО-МАШ-КА','daisy'],
+ ['У-ЛИТ-КА','snail'],
+ ['ЛЯ-ГУШ-КА','littlefrog'],
+ ['ТЕ-ЛЕ-ГА','cart'],
+ ['КА-ПЕЛЬ-КА','drop'],
+ ['НОЖ-НИ-ЦЫ','scissors'],
+ ['ПО-ДУШ-КА','pillow'],
+ ['ПИ-РО-ЖОК','pie'],
+ ['СА-МО-ВАР','samovar'],
+ ['БУ-ДИЛЬ-НИК','alarm'],
+ ['ЛИ-НЕЙ-КА','ruler'],
+ ['МА-ГА-ЗИН','store'],
+ ['БА-БОЧ-КА','butterfly'],
+ ['КО-ЛО-БОК','kolobok'],
+ ['ПЕ-ЧЕ-НЬЕ','cookie'],
+ ['СОЛ-НЫШ-КО','sunshine'],
+ ['ВЕ-ЛО-СИ-ПЕД','bicycle'],
+ ['ТЕ-ЛЕ-ВИ-ЗОР','tv'],
+ ['ПИ-А-НИ-НО','piano'],
+ ['КУ-КУ-РУ-ЗА','corn'],
+ ['РУ-КА-ВИ-ЦЫ','mittens'],
+ ['МА-КА-РО-НЫ','pasta'],
+ ['О-ДУ-ВАН-ЧИК','dandelion'],
+ ['ПИ-РА-МИ-ДА','pyramid'],
+ ['РУ-КА-ВИ-ЦА','mitten_single'],
+ ['ПИ-РА-МИ-ДЫ','pyramids'],
+ ['О-БЕЗЬ-Я-НЫ','monkeys'],
+ ['ХО-ЛО-ДИЛЬ-НИК','fridge'],
+ ['О-БЕЗЬ-Я-НА','monkey'],
+ ['ПА-У-ТИ-НА','web']
+].map(([raw,pic])=>({id:pic,word:raw.replaceAll('-',''),parts:raw.split('-')}));
+const BY_ID=Object.fromEntries(DATA.map(w=>[w.id,w]));
+// Curated transitions: exactly one syllable differs; destination illustrated, not written.
+const CHANGES=[['goat','rose'],['vase','rose'],['rose','grove'],['porridge','bowl'],['paw','lamp'],['fly','flour'],['moon','wave'],['cats','whales'],['car','raspberry'],['cow','crown'],['dog','magpie'],['moon','magnifier'],['fish','frog2'],['hand','flour'],['leg','burrow'],['mountain','burrow'],['porridge','pear'],['bowl','pear'],['paw','magnifier'],['cat','mouse'],['cup','spoon'],['cup','hat'],['hat','mask'],['hat','helmet'],['squirrel','cup'],['goat','coffee'],['mask','helmet'],['pen','river'],['roof','pear'],['mouse','hat'],['fir','cone'],['bun','cat'],['cats','flowers'],['box','stroller'],['scooter','samovar'],['bell','kolobok'],['plane','scooter'],['phone','cart'],['plane','samovar'],['goat','cats'],['mittens','mitten_single'],['pyramid','pyramids'],['monkey','monkeys']].flatMap(([a,b])=>[[a,b],[b,a]]);
+// A word can contain BOTH open and closed syllables. Validate each syllable,
+// then independently check for adjacent consonants (including boundaries).
+function wordStructure(w){
+ const kinds=w.parts.map(p=>VOWELS.includes(p.at(-1))?'open':'closed');
+ const clusters=/[БВГДЖЗЙКЛМНПРСТФХЦЧШЩ]{2,}/.test(w.word);
+ return {kinds,clusters};
+}
+function eligible(w,c=cfg){
+ const selected=new Set(c.letters);
+ if((c.length!=='all'&&w.parts.length!==Number(c.length))||![...w.word].every(ch=>selected.has(ch)))return false;
+ const s=wordStructure(w);
+ if(s.kinds.some(kind=>!c.types.includes(kind)))return false;
+ if(s.clusters&&!c.types.includes('blend'))return false;
+ return true;
+}
+function pool(c=cfg){return DATA.filter(w=>eligible(w,c));}
+function candidatesFor(mode,c=cfg){const p=pool(c);if(mode==='change')return CHANGES.filter(([a,b])=>p.includes(BY_ID[a])&&p.includes(BY_ID[b])&&(c.level!=='4'||BY_ID[b].parts.length>=3));return mode==='read'?p.length>=3?p:[]:p;}
+function availableModes(c=cfg){return MODES.filter(m=>candidatesFor(m,c).length>0);}
+function chooseLevel(c=cfg){return c.level==='mix'?1+random(4):Number(c.level);}
+function levelList(list,level){const size=level<=2?2:level===3?3:4;const preferred=list.filter(w=>w.parts.length===size);return preferred.length?preferred:list;}
+// All 150 illustrations are local SVG files in assets/word-pictures/.
+// Consistent, offline SVG assets; original gameplay and word sets are unchanged.
+function picture(id,small=false){const word=BY_ID[id]?.word?.toLowerCase()||'предмет';return `<img src="../assets/word-pictures/${id}.svg" width="160" height="150" alt="${esc(word)}" draggable="false" loading="eager">`;}
+function pictureCard(id,small=false){return `<div class="picture ${small?'smaller':''}" aria-label="Картинка для задания">${picture(id)}</div>`;}
+// Avoid filler variants that aren't allowed by the teacher's selected letters.
+function syllableBank(w,p,extras){const own=w.parts;const other=uniq(p.flatMap(x=>x.parts)).filter(s=>!own.includes(s));let close=other.filter(s=>own.some(o=>s[0]===o[0]||s.slice(-1)===o.slice(-1)));
+ const chosen=[];for(const a of [shuffle(close),shuffle(other)]){for(const s of a){if(chosen.length>=extras)break;if(!chosen.includes(s))chosen.push(s);}}
+ return shuffle(own.map((value,i)=>({id:`own${i}`,value})).concat(chosen.map((value,i)=>({id:`extra${i}`,value}))));}
+function buildTask(mode=null,level=null){const p=pool();const modes=availableModes();if(!modes.length)return null;
+ const m=mode||pick(modes);let lvl=level||chooseLevel();let w,otherWord=null;
+ if(m==='change'){let ch=candidatesFor('change');ch=ch.filter(pair=>BY_ID[pair[1]].parts.length===BY_ID[pair[0]].parts.length);if(!ch.length)return null;
+ let targetPairs=ch.filter(pair=>lvl<=2?BY_ID[pair[1]].parts.length===2:lvl===3?BY_ID[pair[1]].parts.length>=3:BY_ID[pair[1]].parts.length>=3);
+ // In expert mode offer four-syllable transitions regularly, not accidentally.
+ if(lvl===4){const four=targetPairs.filter(pair=>BY_ID[pair[1]].parts.length===4);if(four.length&&random(100)<65)targetPairs=four;}
+ if(!targetPairs.length){targetPairs=ch;lvl=Math.min(lvl,3);}
+ const fresh=targetPairs.filter(pair=>!usedWordIds.has(pair[1]));
+ const [a,b]=pick(fresh.length?fresh:targetPairs);w=BY_ID[b];otherWord=BY_ID[a];
+ } else {const list=levelList(p,lvl);const fresh=list.filter(x=>!usedWordIds.has(x.id));w=pick(fresh.length?fresh:list);}
+ lastKey=w.id;usedWordIds.add(w.id);
+ const t={mode:m,level:lvl,word:w,from:otherWord,done:false,error:false,hint:false,wrong:[],checked:false,selected:[],slots:[],answerChoices:[],oral:false};
+ if(m==='assemble'){
+  const n=Math.min(3,Math.max(1,cfg.distractors+(lvl>=3?1:0)));t.tiles=syllableBank(w,p,n);t.slots=Array(w.parts.length).fill(null);
+ }
+ if(m==='read'){
+  let alternatives=shuffle(p.filter(x=>x.id!==w.id)); // Similar-looking written words first on higher levels.
+  if(lvl>=3)alternatives.sort((a,b)=>[...a.word].filter(c=>w.word.includes(c)).length-[...b.word].filter(c=>w.word.includes(c)).length).reverse();
+  t.answerChoices=shuffle([w,...alternatives.slice(0,2)]);
+  t.showBreaks=cfg.breaks==='mix'?random(2)===0:cfg.breaks==='breaks';
+ }
+ if(m==='change'){
+  const idx=w.parts.findIndex((s,i)=>s!==otherWord.parts[i]);t.replaceIndex=idx;t.correct=w.parts[idx];
+  const existing=uniq(p.flatMap(x=>x.parts)).filter(s=>s!==t.correct&&s!==otherWord.parts[idx]);const similar=shuffle(existing.filter(s=>s[0]===t.correct[0]||s.slice(-1)===t.correct.slice(-1)));
+  const all=uniq(similar.concat(shuffle(existing)));t.tiles=shuffle([{id:'answer',value:t.correct},...all.slice(0,Math.max(2,cfg.distractors+1)).map((value,i)=>({id:`fake${i}`,value}))]);
+ }
+ if(m==='finish'){
+  t.missingIndex=lvl===1?w.parts.length-1:lvl===2?0:random(w.parts.length);t.correct=w.parts[t.missingIndex];
+  const poolSyl=uniq(p.flatMap(x=>x.parts)).filter(x=>x!==t.correct);const close=shuffle(poolSyl.filter(s=>s[0]===t.correct[0]||s.slice(-1)===t.correct.slice(-1)));
+  t.tiles=shuffle([{id:'answer',value:t.correct},...uniq(close.concat(shuffle(poolSyl))).slice(0,Math.max(2,cfg.distractors+1)).map((value,i)=>({id:`fake${i}`,value}))]);
+ }
+ return t;}
+function setFeedback(msg,kind=''){$('feedback').className='feedback'+(kind?' '+kind:'');$('feedback').textContent=msg;}
+function fmt(w){return esc(w.parts.join('-'));}
+function drawTask(t){let h='';const showScheme=cfg.scheme;
+ if(t.mode==='assemble'){
+   h=`<div class="taskinstruction">Собери название предмета из слогов</div>${pictureCard(t.word.id)}${showScheme?`<div class="picture-caption">В слове ${t.word.parts.length} слога. Нажми на карточку или перетащи её в клетку.</div>`:''}<div class="slotlist" aria-label="Собираем слово">${t.slots.map((o,i)=>`<button type="button" class="slot ${o?'filled':''}" data-slot="${i}" ${t.done?'disabled':''} aria-label="Место ${i+1}${o?': '+esc(o.value):', пусто'}">${o?esc(o.value):'·'}</button>`).join('')}</div>`;
+ }else if(t.mode==='read'){
+   h=`<div class="taskinstruction">Прочитай слово. Какая картинка подходит?</div><div class="model-word">${t.showBreaks?t.word.parts.map(esc).join('<span class="divider">·</span>'):esc(t.word.word)}</div><div class="subnote">Прочитай вслух, затем выбери картинку.</div>`;
+ }else if(t.mode==='change'){
+   h=`<div class="taskinstruction">Замени один слог и назови предмет</div>${pictureCard(t.word.id,true)}<div class="model-word">${t.from.parts.map((s,i)=>i===t.replaceIndex?`<span style="color:var(--orange)">${esc(s)}</span>`:esc(s)).join('<span class="divider">·</span>')}</div><div class="subnote">Это другое слово. Замени выделенный слог, чтобы получилось название картинки.</div>`;
+ }else if(t.mode==='finish'){
+   h=`<div class="taskinstruction">Какого слога не хватает?</div>${pictureCard(t.word.id,true)}<div class="slotlist">${t.word.parts.map((s,i)=>`<div class="slot ${i===t.missingIndex?'':'fixed'}">${i===t.missingIndex?'?':esc(s)}</div>`).join('')}</div><div class="subnote">Назови предмет. Прочитай и закончи слово.</div>`;
+ }
+ if(t.done){h+=`<div class="taskresult">✓ Получилось: <strong>${fmt(t.word)}</strong></div>`;}
+ return h;
+}
+function drawAnswers(t){if(t.mode==='assemble'){
+  const occupied=new Set(t.slots.filter(Boolean).map(o=>o.id));return `<div class="tray" aria-label="Слоги для сборки">${t.tiles.map((o,i)=>`<button type="button" class="tile ${occupied.has(o.id)?'selected':''}" data-tile="${i}" ${t.done||occupied.has(o.id)?'disabled':''} aria-label="Слог ${esc(o.value)}">${esc(o.value)}</button>`).join('')}</div><div class="controlbar"><button class="btn green" id="checkBtn" ${t.done||t.slots.some(o=>!o)?'disabled':''}>✓ Проверить</button><button class="btn plain" id="resetBtn" ${t.done||t.slots.every(o=>!o)?'disabled':''}>↶ Очистить</button></div>`;
+ }
+ if(t.mode==='read')return `<div class="choices-pics" aria-label="Выбери подходящую картинку">${t.answerChoices.map(w=>`<button class="tile tile-picture ${t.wrong.includes(w.id)?'wrong':''} ${t.done&&w.id===t.word.id?'right':''}" data-choice="${w.id}" ${t.done||t.wrong.includes(w.id)?'disabled':''} aria-label="Картинка ${t.answerChoices.indexOf(w)+1}">${picture(w.id)}</button>`).join('')}</div>`;
+ return `<div class="tray" aria-label="Выбери нужный слог">${t.tiles.map((o,i)=>`<button type="button" class="tile ${t.wrong.includes(o.id)?'wrong':''} ${t.done&&o.id==='answer'?'right':''}" data-option="${esc(o.id)}" ${t.done||t.wrong.includes(o.id)?'disabled':''}>${esc(o.value)}</button>`).join('')}</div>`;
+}
+function updateStats(){$('statClean').textContent=serial.clean;$('statErrors').textContent=serial.errors;$('statHints').textContent=serial.hints;$('statSkipped').textContent=serial.skipped;}
+function render(){const t=task;if(!t)return;$('playView').hidden=false;$('doneView').hidden=true;$('roundNum').textContent=serial.index+1;$('roundTotal').textContent=cfg.count;$('progressBar').style.width=(100*serial.index/cfg.count)+'%';$('levelText').textContent='УРОВЕНЬ '+t.level+(t.level===4?' · ЭКСПЕРТ':'');$('modeTitle').textContent=LABELS[t.mode];$('modeDesc').textContent=DESCS[t.mode];$('modePills').innerHTML=MODES.map(m=>`<span class="pill ${t.mode===m?'on':''}">${LABELS[m]}</span>`).join('');$('boardTag').textContent=t.mode==='read'?'ЧИТАЕМ И ПОНИМАЕМ':'СЛОГИ И СМЫСЛ';$('taskArea').innerHTML=drawTask(t);$('answerArea').innerHTML=drawAnswers(t);$('answerTitle').textContent=t.mode==='read'?'Выбери картинку':t.mode==='assemble'?'Слоги для сборки':'Выбери слог';$('hintBtn').hidden=!cfg.hints;$('hintBtn').disabled=t.hint||t.done;$('skipBtn').hidden=t.done;$('nextBtn').hidden=!t.done;$('teacherLine').hidden=!t.done||!!t.skipped;$('oralCheck').checked=!!t.oral;$('foxText').textContent=t.mode==='read'?'Не угадывай по первой букве. Прочитай слово целиком.':t.mode==='change'?'Подумай, чем отличаются слова по смыслу.':'Посмотри на предмет, назови его и попробуй прочитать слоги.';}
+function freshTask(){if(serial.index>=cfg.count){finish();return;}const allowed=availableModes();if(!allowed.length){$('settingsError').hidden=false;$('settingsError').textContent='При этих настройках нет подходящих слов. Выбери больше изученных букв или другие типы слогов.';return;}if(!modeQueue.length)modeQueue=shuffle(allowed);let m=cfg.mode==='mix'?modeQueue.shift():cfg.mode;task=buildTask(m);if(!task){$('settingsError').hidden=false;$('settingsError').textContent='Для выбранного режима недостаточно слов. Попробуй другие настройки.';return;}render();setFeedback('Прочитай или собери слово. Ошибку можно исправить.');}
+function start(){const current=readSettings();const m=availableModes(current);if(!m.length||(current.mode!=='mix'&&!m.includes(current.mode))){$('settingsError').hidden=false;$('settingsError').textContent='Недостаточно слов для этого набора букв и выбранного режима. Расширь выбор букв или типы слогов.';$('settingsCard').scrollIntoView({behavior:'smooth',block:'start'});return;}cfg=current;save();$('settingsError').hidden=true;serial={index:0,clean:0,errors:0,hints:0,skipped:0,oral:0};lastKey='';usedWordIds=new Set();modeQueue=[];updateStats();freshTask();$('gameCard').scrollIntoView({behavior:'smooth',block:'start'});}
+function partial(){if(!task)return;$('taskArea').innerHTML=drawTask(task);$('answerArea').innerHTML=drawAnswers(task);}
+function place(i,pos=null){const t=task;if(!t||t.done||t.mode!=='assemble')return;const o=t.tiles[i];if(!o)return;if(t.slots.some(x=>x&&x.id===o.id))return;if(pos===null)pos=t.slots.findIndex(x=>!x);if(pos<0)return;const prior=t.slots[pos];t.slots[pos]=o;if(prior){const previous=t.slots.findIndex(x=>!x);if(previous>=0)t.slots[previous]=prior;} // Если свободного места нет, прежний слог возвращается в набор.
+ partial();setFeedback('Слоги на месте: '+t.slots.filter(Boolean).length+' из '+t.slots.length+'.');}
+function swapSlots(a,b){const t=task;if(!t||t.done||t.mode!=='assemble'||a===b||!t.slots[a])return;[t.slots[a],t.slots[b]]=[t.slots[b],t.slots[a]];partial();setFeedback('Переставили слог. Проверь порядок.');}
+function removeSlot(i){const t=task;if(!t||t.done||t.mode!=='assemble'||!t.slots[i])return;t.slots[i]=null;partial();setFeedback('Слог вернулся в набор.');}
+function resetSlots(){const t=task;if(!t||t.done||t.mode!=='assemble')return;t.slots.fill(null);partial();setFeedback('Можно собрать заново.');}
+let audioContext;
+function sound(good){if(!cfg.sound)return;try{audioContext??=new (window.AudioContext||window.webkitAudioContext)();const osc=audioContext.createOscillator();const gain=audioContext.createGain();osc.type='sine';osc.frequency.value=good?590:250;gain.gain.value=.045;osc.connect(gain);gain.connect(audioContext.destination);osc.start();osc.stop(audioContext.currentTime+.11);}catch(e){}}
+function wrong(){if(!task||task.done)return;task.error=true;serial.errors++;updateStats();sound(false);setFeedback('Пока не получилось. Попробуй ещё раз, не торопясь.','bad');}
+function complete(skip=false){const t=task;if(!t||t.done)return;t.done=true;t.skipped=skip;if(skip)serial.skipped++;else if(!t.error&&!t.hint)serial.clean++;updateStats();sound(!skip);render();$('progressBar').style.width=(100*(serial.index+1)/cfg.count)+'%';setFeedback(skip?`Правильное слово: ${fmt(t.word)}. Переходим к следующему.`:`Верно! Получилось ${fmt(t.word)}. Прочитай вслух.`,skip?'hint':'good');$('foxText').textContent=skip?'Следующее задание попробуем самостоятельно.':'Молодец! А произнести слово вслух поможет педагог.';}
+function check(){const t=task;if(!t||t.done||t.mode!=='assemble'||t.slots.some(o=>!o))return;const correct=t.slots.every((o,i)=>o.value===t.word.parts[i]);if(correct)complete();else wrong();}
+function choose(id){const t=task;if(!t||t.done)return;if(t.mode==='assemble')return;
+ if(t.mode==='read'){if(t.wrong.includes(id))return;if(id===t.word.id){complete();return;}t.wrong.push(id);wrong();partial();return;}
+ const o=t.tiles.find(x=>x.id===id);if(!o||t.wrong.includes(id))return;if(o.value===t.correct){complete();return;}t.wrong.push(id);wrong();partial();}
+function hint(){const t=task;if(!t||t.done||t.hint||!cfg.hints)return;t.hint=true;serial.hints++;updateStats();$('hintBtn').disabled=true;
+ let message;if(t.mode==='read')message=`Прочитай всё слово по слогам: ${fmt(t.word)}. Затем ищи предмет.`;else if(t.mode==='assemble')message=`Первый слог: «${t.word.parts[0]}». Остальные попробуй выбрать самостоятельно.`;else if(t.mode==='change')message=`Посмотри на картинку и сравни слово по слогам. Меняем слог № ${t.replaceIndex+1}. Первая буква нужного слога — «${t.correct[0]}».`;else message=`Недостающий слог начинается на «${t.correct[0]}».`;
+ setFeedback(message,'hint');$('foxText').textContent=message;}
+function next(){if(!task||!task.done)return;serial.index++;freshTask();}
+function finish(){$('playView').hidden=true;$('doneView').hidden=false;$('doneClean').textContent=serial.clean;$('doneErrors').textContent=serial.errors;$('doneOral').textContent=serial.oral;$('doneDesc').textContent=`Всего ${cfg.count} заданий. Подсказок: ${serial.hints}, пропусков: ${serial.skipped}.`;$('gameCard').scrollIntoView({behavior:'smooth',block:'start'});}
+function readSettings(){const sel=new Set([...$('letterGrid').querySelectorAll('input:checked')].map(x=>x.value));return {mode:$('modeSelect').value,level:$('levelSelect').value,count:Number($('countSelect').value),length:$('lengthSelect').value,types:['open','closed','blend'].filter((x,i)=>$(['typeOpen','typeClosed','typeBlend'][i]).checked),distractors:Number($('distractorsSelect').value),breaks:$('breaksSelect').value,letters:LETTERS.filter(l=>sel.has(l)).join(''),hints:$('hintsCheck').checked,scheme:$('schemeCheck').checked,sound:$('soundCheck').checked};}
+function renderLetters(){const sel=new Set(cfg.letters);$('letterGrid').innerHTML=LETTERS.map(c=>`<label class="letter" title="Буква ${c}"><input type="checkbox" value="${c}" ${sel.has(c)?'checked':''}><span>${c}</span></label>`).join('');}
+function fillSettings(){$('modeSelect').value=cfg.mode;$('levelSelect').value=cfg.level;$('countSelect').value=String(cfg.count);$('lengthSelect').value=cfg.length;$('typeOpen').checked=cfg.types.includes('open');$('typeClosed').checked=cfg.types.includes('closed');$('typeBlend').checked=cfg.types.includes('blend');$('distractorsSelect').value=String(cfg.distractors);$('breaksSelect').value=cfg.breaks;$('hintsCheck').checked=cfg.hints;$('schemeCheck').checked=cfg.scheme;$('soundCheck').checked=cfg.sound;renderLetters();updateAvailable();}
+function updateAvailable(){const c=readSettings();const p=pool(c);const allowed=availableModes(c);$('letterCount').textContent=c.letters.length;$('availableText').className='previewcount'+(!allowed.length?' warn':'');$('availableText').textContent=`Доступно ${p.length} слов с картинками. Режимов: ${allowed.length}/4.${p.length? ' Неизученные буквы и запрещённые типы слогов исключены.':' Для слов со смешанными слогами разреши оба типа: открытые и закрытые. При необходимости включи стечения.'}`;}
+function save(){try{localStorage.setItem(STORAGE,JSON.stringify(cfg));}catch(e){}}
+function load(){try{const old=JSON.parse(localStorage.getItem(STORAGE));if(old&&typeof old==='object')cfg={...DEF,...old,types:Array.isArray(old.types)?old.types:DEF.types,letters:typeof old.letters==='string'?old.letters:DEF.letters};}catch(e){cfg={...DEF};}}
+// pointer drag/touch with click fallback and keyboard-operable button tiles.
+let drag=null,ignoreClick=false;
+function removeGhost(){document.querySelector('.dragghost')?.remove();document.querySelectorAll('.dropover').forEach(x=>x.classList.remove('dropover'));}
+document.addEventListener('click',e=>{if(ignoreClick){ignoreClick=false;e.preventDefault();e.stopImmediatePropagation();}},true);
+document.addEventListener('pointerdown',e=>{if(!task||task.done||task.mode!=='assemble'||e.pointerType==='mouse'&&e.button!==0)return;const tile=e.target.closest('[data-tile]'),slot=e.target.closest('[data-slot]');if(tile&&!tile.disabled){drag={kind:'tile',index:Number(tile.dataset.tile),x:e.clientX,y:e.clientY,id:e.pointerId,moving:false,label:tile.textContent.trim()};}else if(slot&&!slot.disabled&&task.slots[Number(slot.dataset.slot)]){drag={kind:'slot',index:Number(slot.dataset.slot),x:e.clientX,y:e.clientY,id:e.pointerId,moving:false,label:slot.textContent.trim()};}else return;try{e.target.setPointerCapture(e.pointerId)}catch(_){};});
+document.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;const d=drag;if(!d.moving&&Math.hypot(e.clientX-d.x,e.clientY-d.y)<9)return;if(!d.moving){d.moving=true;const ghost=document.createElement('div');ghost.className='dragghost';ghost.textContent=d.label;document.body.appendChild(ghost);}e.preventDefault();const ghost=document.querySelector('.dragghost');if(ghost){ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px';}document.querySelectorAll('.dropover').forEach(x=>x.classList.remove('dropover'));const slot=document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-slot]');if(slot)slot.classList.add('dropover');},{passive:false});
+function endDrag(e){if(!drag||drag.id!==e.pointerId)return;const d=drag;drag=null;if(d.moving){const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-slot]');if(target){const pos=Number(target.dataset.slot);if(d.kind==='tile')place(d.index,pos);else swapSlots(d.index,pos);}else if(d.kind==='slot')removeSlot(d.index);ignoreClick=true;setTimeout(()=>{ignoreClick=false;},80);}removeGhost();}
+document.addEventListener('pointerup',endDrag);document.addEventListener('pointercancel',e=>{drag=null;removeGhost();});
+$('answerArea').addEventListener('click',e=>{const tile=e.target.closest('[data-tile]');if(tile){place(Number(tile.dataset.tile));return;}const choice=e.target.closest('[data-choice]');if(choice){choose(choice.dataset.choice);return;}const option=e.target.closest('[data-option]');if(option){choose(option.dataset.option);return;}if(e.target.closest('#checkBtn'))check();if(e.target.closest('#resetBtn'))resetSlots();});
+$('taskArea').addEventListener('click',e=>{const slot=e.target.closest('[data-slot]');if(slot)removeSlot(Number(slot.dataset.slot));});
+$('hintBtn').addEventListener('click',hint);$('skipBtn').addEventListener('click',()=>complete(true));$('nextBtn').addEventListener('click',next);$('restartBtn').addEventListener('click',start);$('startBtn').addEventListener('click',start);
+$('oralCheck').addEventListener('change',e=>{if(!task||!task.done)return;serial.oral+=e.target.checked?1:-1;task.oral=e.target.checked;});
+$('defaultsBtn').addEventListener('click',()=>{cfg={...DEF,types:[...DEF.types]};fillSettings();start();});
+$('settingsCard').addEventListener('change',e=>{if(e.target.id==='letterGrid')return;updateAvailable();});
+$('letterGrid').addEventListener('change',updateAvailable);
+document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{const preset=b.dataset.preset;const presetLetters=preset==='start'?'АИОУЫМНЛСРКТВБЗГ':preset==='reading'?'АЕЁИОУЫЭЮЯМНЛСРКТПВБДГЗЖШЩЧЦФХЬ':preset==='all'?LETTERS.join(''):'';document.querySelectorAll('#letterGrid input').forEach(e=>e.checked=presetLetters.includes(e.value));updateAvailable();}));
+load();fillSettings();cfg=readSettings();start();
+</script><!-- Icons derived from Font Awesome Free 6.7.2 (CC BY 4.0), copyright Fonticons, Inc. https://fontawesome.com/license/free -->
+<script src="../assets/iskorka-unified.js" data-game="syllablebuilder"></script>
+
+<!-- NeuroX main-site navigation, favorites, seasons and teacher screen. -->
+<script src="../../assets/menu-data.js"></script>
+<script src="../../assets/menu-drawer.js"></script>
+<script defer src="../../shared/favorites.js"></script>
+<script defer src="../../shared/unified-topbar.js"></script>
+<script defer src="../../shared/seasons.js"></script>
+<script defer src="../../shared/accessibility.js"></script>
+<script defer src="../../shared/teacher-panel.js"></script>
+</body></html>

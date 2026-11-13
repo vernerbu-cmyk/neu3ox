@@ -2,6 +2,7 @@
 <html lang="ru">
 
 <head>
+<script src="../shared/theme.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -163,16 +164,89 @@
     .card:hover .cave-cr-2 { animation: caveGlow 2.2s ease-in-out infinite .6s; }
     .card:hover .cave-cr-3 { animation: caveGlow 1.8s ease-in-out infinite .3s; }
     .card:hover .cave-eye  { animation: caveEyeBlink 4s ease-in-out infinite; }
-  </style>
+
+    /* 8. БУКВЕННЫЕ ТЕНИ */
+    .nx-shadow-beam { transform-origin:50% 50%;transform-box:fill-box; }
+    .card:hover .nx-shadow-beam { animation:nxShadowSweep 2.5s ease-in-out infinite alternate; }
+    .card:hover .nx-shadow-spark { animation:nxShadowPulse 1.5s ease-in-out infinite; }
+    @keyframes nxShadowSweep {from {transform:translateX(-6px)} to {transform:translateX(7px)}}
+    @keyframes nxShadowPulse {0%,100%{opacity:.35}50%{opacity:1}}
+  
+/* Искорка — лёгкий акцент в существующем разделе, не отдельная громоздкая шапка. */
+.nx-iskorka-welcome{box-sizing:border-box;position:relative;isolation:isolate;min-height:112px;padding:20px clamp(18px,3vw,36px);margin:10px 0 24px;display:flex;align-items:center;overflow:hidden;border-radius:21px;background:linear-gradient(110deg,#eaf2ff 0%,#f8fbff 67%,#fff4e7 100%);border:1px solid #dce7f6;box-shadow:0 6px 20px rgba(30,63,138,.06)}
+.nx-iskorka-welcome strong{font:900 clamp(17px,2vw,24px)/1.2 'Nunito Sans',Arial,sans-serif;color:#1e3f8a;display:block}
+.nx-iskorka-welcome p{color:#577093;font-size:13px;font-weight:700;margin:7px 120px 0 0;line-height:1.4}
+.nx-iskorka-welcome img{position:absolute;width:94px;height:116px;object-fit:contain;object-position:center bottom;right:clamp(12px,3vw,36px);bottom:-7px;filter:drop-shadow(0 6px 6px #1c35501c)}
+:root[data-theme=dark] .nx-iskorka-welcome{background:linear-gradient(110deg,#203959,#1b2c45 65%,#3a2e29);border-color:#3c5674}
+:root[data-theme=dark] .nx-iskorka-welcome strong{color:#eaf3ff}
+:root[data-theme=dark] .nx-iskorka-welcome p{color:#bed0e3}
+@media(max-width:540px){.nx-iskorka-welcome{min-height:95px;padding:14px 14px;margin:8px 0 16px;border-radius:16px}.nx-iskorka-welcome strong{font-size:17px}.nx-iskorka-welcome p{font-size:11px;margin-right:76px}.nx-iskorka-welcome img{width:72px;height:94px;right:8px;bottom:-5px}}
+@media(prefers-reduced-motion:reduce){.nx-iskorka-welcome *{animation:none!important}}
+/* New-card icon microanimation, same quiet spirit as existing cards. */
+@keyframes nxNewSpark{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.card:hover .nx-new-icon{animation:nxNewSpark 1.7s ease-in-out infinite}
+.nx-new-icon{transform-origin:center;transform-box:fill-box}
+
+/* Искорка: четыре подраздела без изменения существующих карточек. */
+.nx-preschool-filters{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 21px}
+.nx-preschool-filter{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:43px;padding:9px 15px;border-radius:14px;border:1px solid #cfdaed;background:var(--card-bg,#fff);color:var(--blue,#1e3f8a);font:800 13px/1.3 'Nunito Sans',Arial,sans-serif;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.nx-preschool-filter span{font-size:11px;font-weight:900;opacity:.72}
+.nx-preschool-filter:hover{border-color:#ff8c42}
+.nx-preschool-filter.is-active{background:#1e3f8a;color:#fff;border-color:#1e3f8a}
+.nx-preschool-filter:focus-visible{outline:3px solid #ff6a00;outline-offset:3px}
+body.nx-grid-view .cards > .nx-preschool-group-title{grid-column:1/-1;margin:8px 0 0;padding:2px 0 4px;color:var(--blue,#1e3f8a);display:flex;align-items:center;gap:10px;font:900 clamp(18px,2vw,24px)/1.3 'Nunito Sans',Arial,sans-serif}
+body.nx-grid-view .cards > .nx-preschool-group-title:not(:first-child){margin-top:20px}
+.nx-preschool-group-title span{font-size:12px;font-weight:800;color:var(--text-muted,#7183a0);white-space:nowrap}
+body.nx-grid-view .cards > .card[hidden],body.nx-grid-view .cards > .nx-preschool-group-title[hidden]{display:none!important}
+:root[data-theme=dark] .nx-preschool-filter{background:#182a46;color:#e9f2ff;border-color:#435979}
+:root[data-theme=dark] .nx-preschool-filter.is-active{background:#ff6a00;border-color:#ff6a00;color:#162548}
+:root[data-theme=dark] body.nx-grid-view .nx-preschool-group-title{color:#e9f2ff}
+@media(max-width:620px){.nx-preschool-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:16px}.nx-preschool-filter{padding:9px 7px;font-size:11.5px;min-height:48px;white-space:normal;text-align:center}body.nx-grid-view .cards > .nx-preschool-group-title{font-size:18px}body.nx-grid-view .cards > .nx-preschool-group-title:not(:first-child){margin-top:12px}}
+
+    /* 9. ГРУЗОВОЙ ЭКСПРЕСС — вагон, дым и колёса */
+    .nx-freight-train, .nx-freight-wheel, .nx-freight-puff { transform-box: fill-box; transform-origin: center; }
+    @keyframes nxFreightRoll { 0%, 100% { transform: translateX(-1px); } 50% { transform: translateX(2px); } }
+    @keyframes nxFreightWheel { to { transform: rotate(360deg); } }
+    @keyframes nxFreightPuff { 0% { transform: translate(0, 3px) scale(.75); opacity: .18; } 55% { opacity: .7; } 100% { transform: translate(-2px, -4px) scale(1.15); opacity: 0; } }
+    .card:hover .nx-freight-train { animation: nxFreightRoll .9s ease-in-out infinite; }
+    .card:hover .nx-freight-wheel { animation: nxFreightWheel .95s linear infinite; }
+    .card:hover .nx-freight-puff { animation: nxFreightPuff 1.4s ease-out infinite; }
+    .card:hover .nx-freight-puff.puff-2 { animation-delay: .5s; }
+    @media (prefers-reduced-motion: reduce) {
+       .card:hover .nx-freight-train, .card:hover .nx-freight-wheel, .card:hover .nx-freight-puff { animation: none; }
+    }
+
+    /* Верю — не верю: аккуратная анимация карточки. */
+    .nx-believe-tile { transform-box: fill-box; transform-origin: center; }
+    .card:hover .nx-believe-tile-yes { animation: nxBelieveYes 1.65s ease-in-out infinite; }
+    .card:hover .nx-believe-tile-no { animation: nxBelieveNo 1.65s ease-in-out infinite .15s; }
+    @keyframes nxBelieveYes { 0%,100% { transform:rotate(-3deg) translateY(0); } 50% { transform:rotate(2deg) translateY(-2px); } }
+    @keyframes nxBelieveNo { 0%,100% { transform:rotate(3deg) translateY(0); } 50% { transform:rotate(-2deg) translateY(2px); } }
+    @media (prefers-reduced-motion:reduce) {
+      .card:hover .nx-believe-tile { animation:none; }
+    }
+</style>
+<link rel="stylesheet" href="../shared/square-grid.css" />
+<link rel="stylesheet" href="../shared/theme.css">
 </head>
 
-<body>
+<body class="nx-grid-view">
 
   <div class="container">
+    <section class="nx-iskorka-welcome" aria-label="Искорка — помощница дошколят">
+      <div><strong>Учимся и играем с Искоркой!</strong><p>Буквы, числа, узоры и первые открытия.</p></div>
+      <img src="assets/iskorka-mascot.png" width="94" height="116" alt="Белочка Искорка с большим карандашом" loading="eager" decoding="async">
+    </section>
+    <nav class="nx-preschool-filters" aria-label="Подразделы дошколят">
+      <button type="button" class="nx-preschool-filter is-active" data-nx-group="all" aria-pressed="true">Все <span>15</span></button>
+      <button type="button" class="nx-preschool-filter" data-nx-group="read" aria-pressed="false">Буквы и чтение <span>9</span></button>
+      <button type="button" class="nx-preschool-filter" data-nx-group="math" aria-pressed="false">Числа и математика <span>3</span></button>
+      <button type="button" class="nx-preschool-filter" data-nx-group="logic" aria-pressed="false">Логика и мышление <span>2</span></button>
+      <button type="button" class="nx-preschool-filter" data-nx-group="memory" aria-pressed="false">Память и внимание <span>1</span></button>
+    </nav>
     <div class="cards">
-
-      <!-- 1. БУКВЫ -->
-      <div class="card" onclick="openTrainer('alf/letalf.html')">
+      <h2 class="nx-preschool-group-title" data-nx-group="read">Буквы и чтение <span>9 игр</span></h2>
+      <div class="card" data-nx-group="read" onclick="openTrainer('alf/letalf.html')">
         <div class="left">
           <div class="icon-wrap">
             <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-linecap="round">
@@ -191,9 +265,236 @@
         </div>
         <div class="arrow">›</div>
       </div>
+      <div class="card" data-nx-group="read" onclick="openTrainer('bukvennye-teni.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <rect x="4" y="4" width="40" height="40" rx="11" fill="currentColor" opacity=".07"/>
+              <text x="24" y="34" text-anchor="middle" font-family="Fredoka,Arial,sans-serif" font-size="35" font-weight="700" fill="currentColor" opacity=".22">А</text>
+              <g class="nx-shadow-beam">
+                <path d="M15 10a18 18 0 0 1 0 28" stroke="#FF6A00" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3 3"/>
+                <path d="M16 14v20" stroke="#FF6A00" stroke-width="4" stroke-linecap="round" opacity=".55"/>
+                <circle cx="22" cy="24" r="11" fill="#FF6A00" opacity=".12"/>
+                <path d="M22 15v18m-7-9h14" stroke="#FF6A00" stroke-width="1.5" stroke-linecap="round" opacity=".9"/>
+                <circle class="nx-shadow-spark" cx="22" cy="24" r="3" fill="#FF6A00"/>
+              </g>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Буквенные тени</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="card" data-nx-group="read" onclick="openTrainer('findletter.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 100 100" fill="none">
+              <text class="letter-b letter-b1" x="24" y="30"
+                    font-family="Fredoka, sans-serif" font-size="24" font-weight="700"
+                    fill="currentColor" stroke="none" text-anchor="middle">А</text>
+              <text class="letter-b letter-b2" x="76" y="24"
+                    font-family="Fredoka, sans-serif" font-size="24" font-weight="700"
+                    fill="currentColor" stroke="none" text-anchor="middle">Б</text>
+              <text class="letter-b letter-b3" x="82" y="78"
+                    font-family="Fredoka, sans-serif" font-size="24" font-weight="700"
+                    fill="currentColor" stroke="none" text-anchor="middle">В</text>
+              <text class="letter-b letter-b4" x="18" y="86"
+                    font-family="Fredoka, sans-serif" font-size="24" font-weight="700"
+                    fill="currentColor" stroke="none" text-anchor="middle">Г</text>
 
-      <!-- 2. СЛЕДОПЫТ -->
-      <div class="card" onclick="openTrainer('pathfinder.html')">
+              <g class="lens-group">
+                <circle cx="24" cy="30" r="18"
+                        stroke="#FF6A00" stroke-width="3.4" fill="rgba(255,106,0,.1)"/>
+                <path d="M16 23 Q20 17 26 17"
+                      stroke="#FF6A00" stroke-width="2" fill="none"
+                      opacity=".6" stroke-linecap="round"/>
+                <path d="M37 43 L53 59" stroke="#FF6A00" stroke-width="4" stroke-linecap="round"/>
+              </g>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Найди букву</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="card" data-nx-group="read" onclick="openTrainer('letimage.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+              <text x="11" y="34" font-family="Fredoka, sans-serif" font-size="22" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">А</text>
+              <g class="arrow-group">
+                <path d="M22 26 L29 26" stroke="#FF6A00" stroke-width="2.4"/>
+                <path d="M26 23 L29 26 L26 29" stroke="#FF6A00" stroke-width="2.4" fill="none"/>
+              </g>
+              <g class="apple">
+                <circle cx="38" cy="31" r="7" fill="#FF6A00" stroke="#FF6A00"/>
+                <path d="M36 24 L38 21 L40 24" stroke="currentColor" stroke-width="1.8" fill="none"/>
+                <path d="M38 21 L40 18" stroke="currentColor" stroke-width="1.8" fill="none"/>
+                <path d="M40 22 Q44 21 42 18" stroke="currentColor" stroke-width="1.6" fill="none"/>
+              </g>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Буква — картинка</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="card" data-nx-group="read" onclick="openTrainer('slogolaz.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+              <!-- гора -->
+              <path d="M3 44 L24 12 L45 44 Z" fill="rgba(255,106,0,.08)"/>
+              <!-- снежная шапка -->
+              <path d="M24 12 L19 20 L22 19 L24 21 L26 19 L29 20 Z" fill="#fff" stroke-width="1.4"/>
+              <!-- слог МА -->
+              <g class="slogo-step slogo-step-1">
+                <rect x="8" y="34" width="13" height="8" rx="2.5" fill="currentColor"/>
+                <text x="14.5" y="40.2"
+                      font-family="Fredoka, sans-serif" font-size="7" font-weight="700"
+                      fill="#fff" stroke="none" text-anchor="middle">МА</text>
+              </g>
+              <!-- слог ЛУ -->
+              <g class="slogo-step slogo-step-2">
+                <rect x="22" y="23" width="13" height="8" rx="2.5" fill="#FF6A00"/>
+                <text x="28.5" y="29.2"
+                      font-family="Fredoka, sans-serif" font-size="7" font-weight="700"
+                      fill="#fff" stroke="none" text-anchor="middle">ЛУ</text>
+              </g>
+              <!-- флажок на пике -->
+              <rect x="23.3" y="0" width="1.4" height="13" fill="currentColor"/>
+              <g class="slogo-flag">
+                <path d="M24.7 0 h7.5 l-2.5 2.5 2.5 2.5 h-7.5 z" fill="#FF6A00"/>
+              </g>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Слоголаз</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="card" data-nx-group="read" onclick="openTrainer('iskorka/syllablebuilder.html')">
+        <div class="left"><div class="icon-wrap">
+          <svg class="nx-new-icon" viewBox="0 0 48 48" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="6" width="22" height="19" rx="5" fill="#e4edff"/><rect x="22" y="21" width="22" height="19" rx="5" fill="#fff0e5"/><text x="15" y="20" font-size="13" font-weight="900" text-anchor="middle" fill="#1e3f8a">МА</text><text x="33" y="35" font-size="13" font-weight="900" text-anchor="middle" fill="#ff6a00">МА</text></svg>
+        </div><div class="card-text"><div class="title">Построй слово</div></div></div>
+        <div class="arrow">›</div>
+      </div>
+      <!-- Верю — не верю: сначала фраза, картинка только после выбора -->
+      <div class="card" data-nx-group="read" onclick="openTrainer('veryu-ne-veryu/index.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="6" width="38" height="36" rx="9" fill="currentColor" opacity=".08"/>
+              <path d="M12 13h24M15 18h18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" opacity=".65"/>
+              <g class="nx-believe-tile nx-believe-tile-yes">
+                <rect x="7" y="23" width="16" height="16" rx="4.2" fill="#239D7F"/>
+                <path d="m11 31 3.5 3.3 5-6" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </g>
+              <g class="nx-believe-tile nx-believe-tile-no">
+                <rect x="25" y="23" width="16" height="16" rx="4.2" fill="#FF6A00"/>
+                <path d="m30 28 6 6m0-6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+              </g>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Верю — не верю</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="card" data-nx-group="read" onclick="openTrainer('gruzovoi_express/gruzovoi_express.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 41H45M5 45H43" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".40"/>
+              <g class="nx-freight-train">
+                <rect x="3.5" y="19" width="24" height="15.5" rx="3.3" fill="#DCE9FF" stroke="#1E3F8A" stroke-width="2"/>
+                <path d="M7 22.7H24M7 27H24" stroke="#7A9ACB" stroke-width="1.3" stroke-linecap="round"/>
+                <path d="M15.3 21.6L12 29.5H17L15.3 21.6Z" fill="#FF6A00" opacity=".8"/>
+                <rect x="27" y="15.5" width="14" height="19" rx="3.2" fill="#FF6A00" stroke="#1E3F8A" stroke-width="2"/>
+                <path d="M30.5 18.8H37.4V25H30.5Z" fill="#D6F0FF" stroke="#1E3F8A" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M41 30H44L45 33.2H41" fill="#1E3F8A"/>
+                <path d="M30.1 15.7V12" stroke="#1E3F8A" stroke-width="2.6" stroke-linecap="round"/>
+                <g class="nx-freight-puff puff-1"><circle cx="28.6" cy="7.2" r="3" fill="#B4C6DE"/></g>
+                <g class="nx-freight-puff puff-2"><circle cx="23.2" cy="5.3" r="2.4" fill="#B4C6DE" opacity=".7"/></g>
+                <g class="nx-freight-wheel"><circle cx="11" cy="36" r="4.2" fill="#1E3F8A"/><path d="M11 33.3V38.7M8.3 36H13.7" stroke="white" stroke-width="1.1" stroke-linecap="round"/></g>
+                <g class="nx-freight-wheel"><circle cx="23.2" cy="36" r="4.2" fill="#1E3F8A"/><path d="M23.2 33.3V38.7M20.5 36H25.9" stroke="white" stroke-width="1.1" stroke-linecap="round"/></g>
+                <g class="nx-freight-wheel"><circle cx="35" cy="36" r="4.2" fill="#1E3F8A"/><path d="M35 33.3V38.7M32.3 36H37.7" stroke="white" stroke-width="1.1" stroke-linecap="round"/></g>
+              </g>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Грузовой экспресс (тест)</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="card" data-nx-group="read" onclick="openTrainer('cave/index.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none">
+              <!-- тёмный фон пещеры -->
+              <path d="M4 44 L4 20 L14 12 L22 16 L30 10 L44 18 L44 44 Z"
+                    fill="rgba(95,224,255,.08)" stroke="currentColor"
+                    stroke-width="1.6" stroke-linejoin="round"/>
+              <!-- кристалл 1 (синий, светится) -->
+              <g class="cave-cr cave-cr-1">
+                <polygon points="14,38 18,30 22,38 18,44"
+                         fill="#5fe0ff" stroke="#e8fbff" stroke-width="1.2"/>
+                <circle cx="18" cy="38" r="7" fill="#5fe0ff" opacity=".35"/>
+              </g>
+              <!-- кристалл 2 (фиолетовый) -->
+              <g class="cave-cr cave-cr-2">
+                <polygon points="28,40 31,33 34,40 31,45"
+                         fill="#9a86ff" stroke="#e8d4ff" stroke-width="1.2"/>
+              </g>
+              <!-- кристалл 3 (золотой, ярче) -->
+              <g class="cave-cr cave-cr-3">
+                <polygon points="22,26 25,20 28,26 25,31"
+                         fill="#ffd24a" stroke="#fff2b8" stroke-width="1.2"/>
+                <circle cx="25" cy="26" r="6" fill="#ffd24a" opacity=".4"/>
+              </g>
+              <!-- силуэт тайны в глубине -->
+              <ellipse class="cave-eye" cx="25" cy="14" rx="2" ry="2" fill="#ffd24a"/>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Кристальная пещера</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+      <h2 class="nx-preschool-group-title" data-nx-group="math">Числа и математика <span>3 игр</span></h2>
+      <div class="card" data-nx-group="math" onclick="openTrainer('iskorka/numbers.html')">
+        <div class="left"><div class="icon-wrap">
+          <svg class="nx-new-icon" viewBox="0 0 48 48" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="5" width="36" height="38" rx="9" fill="#e5efff"/><text x="16" y="27" fill="#1e3f8a" font-size="22" font-weight="900">1</text><text x="27" y="37" fill="#ff6a00" font-size="24" font-weight="900">2</text><circle cx="37" cy="14" r="4" fill="#ff6a00"/></svg>
+        </div><div class="card-text"><div class="title">Мир чисел</div></div></div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="card" data-nx-group="math" onclick="openTrainer('iskorka/moreless.html')">
+        <div class="left"><div class="icon-wrap">
+          <svg class="nx-new-icon" viewBox="0 0 48 48" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="14" r="6" fill="#1e3f8a"/><circle cx="12" cy="32" r="6" fill="#1e3f8a"/><circle cx="31" cy="10" r="5" fill="#ff6a00"/><circle cx="40" cy="19" r="5" fill="#ff6a00"/><circle cx="31" cy="29" r="5" fill="#ff6a00"/><path d="M21 23h7m-3-3 3 3-3 3" stroke="#1e3f8a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div><div class="card-text"><div class="title">Где больше?</div></div></div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="card" data-nx-group="math" onclick="openTrainer('iskorka/mathworkshop.html')">
+        <div class="left"><div class="icon-wrap">
+          <svg class="nx-new-icon" viewBox="0 0 48 48" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M8 10h29v29H8z" fill="#e7efff" stroke="#1e3f8a" stroke-width="2.5" stroke-linejoin="round"/><path d="M17 15v12m-6-6h12M29 18h6m-6 6h6M14 33h8m9 0h1" stroke="#ff6a00" stroke-width="3" stroke-linecap="round"/><circle cx="41" cy="8" r="4" fill="#ff6a00"/></svg>
+        </div><div class="card-text"><div class="title">Математическая мастерская</div></div></div>
+        <div class="arrow">›</div>
+      </div>
+      <h2 class="nx-preschool-group-title" data-nx-group="logic">Логика и мышление <span>2 игр</span></h2>
+      <div class="card" data-nx-group="logic" onclick="openTrainer('different.html')">
+        <div class="left">
+          <div class="icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round">
+              <circle cx="7" cy="24" r="5"/>
+              <circle cx="23" cy="24" r="5"/>
+              <rect class="odd-square" x="34" y="19" width="10" height="10" rx="2.5" fill="#FF6A00" stroke="#FF6A00"/>
+            </svg>
+          </div>
+          <div class="card-text"><div class="title">Что лишнее?</div></div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="card" data-nx-group="logic" onclick="openTrainer('iskorka/patterns.html')">
+        <div class="left"><div class="icon-wrap">
+          <svg class="nx-new-icon" viewBox="0 0 48 48" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="16" r="7" fill="#ff6a00"/><rect x="22" y="9" width="14" height="14" rx="3" fill="#1e3f8a"/><circle cx="10" cy="36" r="7" fill="#ff6a00"/><rect x="22" y="29" width="14" height="14" rx="3" fill="#1e3f8a"/><path d="m40 12 4 4-4 4" fill="none" stroke="#ff6a00" stroke-width="2"/></svg>
+        </div><div class="card-text"><div class="title">Продолжи узор</div></div></div>
+        <div class="arrow">›</div>
+      </div>
+      <h2 class="nx-preschool-group-title" data-nx-group="memory">Память и внимание <span>1 игр</span></h2>
+      <div class="card" data-nx-group="memory" onclick="openTrainer('pathfinder.html')">
         <div class="left">
           <div class="icon-wrap">
             <svg viewBox="0 0 100 100" fill="none">
@@ -227,148 +528,6 @@
         </div>
         <div class="arrow">›</div>
       </div>
-
-      <!-- 3. НАЙДИ БУКВУ -->
-      <div class="card" onclick="openTrainer('findletter.html')">
-        <div class="left">
-          <div class="icon-wrap">
-            <svg viewBox="0 0 100 100" fill="none">
-              <text class="letter-b letter-b1" x="24" y="30"
-                    font-family="Fredoka, sans-serif" font-size="24" font-weight="700"
-                    fill="currentColor" stroke="none" text-anchor="middle">А</text>
-              <text class="letter-b letter-b2" x="76" y="24"
-                    font-family="Fredoka, sans-serif" font-size="24" font-weight="700"
-                    fill="currentColor" stroke="none" text-anchor="middle">Б</text>
-              <text class="letter-b letter-b3" x="82" y="78"
-                    font-family="Fredoka, sans-serif" font-size="24" font-weight="700"
-                    fill="currentColor" stroke="none" text-anchor="middle">В</text>
-              <text class="letter-b letter-b4" x="18" y="86"
-                    font-family="Fredoka, sans-serif" font-size="24" font-weight="700"
-                    fill="currentColor" stroke="none" text-anchor="middle">Г</text>
-
-              <g class="lens-group">
-                <circle cx="24" cy="30" r="18"
-                        stroke="#FF6A00" stroke-width="3.4" fill="rgba(255,106,0,.1)"/>
-                <path d="M16 23 Q20 17 26 17"
-                      stroke="#FF6A00" stroke-width="2" fill="none"
-                      opacity=".6" stroke-linecap="round"/>
-                <path d="M37 43 L53 59" stroke="#FF6A00" stroke-width="4" stroke-linecap="round"/>
-              </g>
-            </svg>
-          </div>
-          <div class="card-text"><div class="title">Найди букву</div></div>
-        </div>
-        <div class="arrow">›</div>
-      </div>
-
-      <!-- 4. БУКВА — КАРТИНКА -->
-      <div class="card" onclick="openTrainer('letimage.html')">
-        <div class="left">
-          <div class="icon-wrap">
-            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
-              <text x="11" y="34" font-family="Fredoka, sans-serif" font-size="22" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">А</text>
-              <g class="arrow-group">
-                <path d="M22 26 L29 26" stroke="#FF6A00" stroke-width="2.4"/>
-                <path d="M26 23 L29 26 L26 29" stroke="#FF6A00" stroke-width="2.4" fill="none"/>
-              </g>
-              <g class="apple">
-                <circle cx="38" cy="31" r="7" fill="#FF6A00" stroke="#FF6A00"/>
-                <path d="M36 24 L38 21 L40 24" stroke="currentColor" stroke-width="1.8" fill="none"/>
-                <path d="M38 21 L40 18" stroke="currentColor" stroke-width="1.8" fill="none"/>
-                <path d="M40 22 Q44 21 42 18" stroke="currentColor" stroke-width="1.6" fill="none"/>
-              </g>
-            </svg>
-          </div>
-          <div class="card-text"><div class="title">Буква — картинка</div></div>
-        </div>
-        <div class="arrow">›</div>
-      </div>
-
-      <!-- 5. ЧТО ЛИШНЕЕ -->
-      <div class="card" onclick="openTrainer('different.html')">
-        <div class="left">
-          <div class="icon-wrap">
-            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round">
-              <circle cx="7" cy="24" r="5"/>
-              <circle cx="23" cy="24" r="5"/>
-              <rect class="odd-square" x="34" y="19" width="10" height="10" rx="2.5" fill="#FF6A00" stroke="#FF6A00"/>
-            </svg>
-          </div>
-          <div class="card-text"><div class="title">Что лишнее?</div></div>
-        </div>
-        <div class="arrow">›</div>
-      </div>
-
-      <!-- 6. СЛОГОЛАЗ -->
-      <div class="card" onclick="openTrainer('slogolaz.html')">
-        <div class="left">
-          <div class="icon-wrap">
-            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
-              <!-- гора -->
-              <path d="M3 44 L24 12 L45 44 Z" fill="rgba(255,106,0,.08)"/>
-              <!-- снежная шапка -->
-              <path d="M24 12 L19 20 L22 19 L24 21 L26 19 L29 20 Z" fill="#fff" stroke-width="1.4"/>
-              <!-- слог МА -->
-              <g class="slogo-step slogo-step-1">
-                <rect x="8" y="34" width="13" height="8" rx="2.5" fill="currentColor"/>
-                <text x="14.5" y="40.2"
-                      font-family="Fredoka, sans-serif" font-size="7" font-weight="700"
-                      fill="#fff" stroke="none" text-anchor="middle">МА</text>
-              </g>
-              <!-- слог ЛУ -->
-              <g class="slogo-step slogo-step-2">
-                <rect x="22" y="23" width="13" height="8" rx="2.5" fill="#FF6A00"/>
-                <text x="28.5" y="29.2"
-                      font-family="Fredoka, sans-serif" font-size="7" font-weight="700"
-                      fill="#fff" stroke="none" text-anchor="middle">ЛУ</text>
-              </g>
-              <!-- флажок на пике -->
-              <rect x="23.3" y="0" width="1.4" height="13" fill="currentColor"/>
-              <g class="slogo-flag">
-                <path d="M24.7 0 h7.5 l-2.5 2.5 2.5 2.5 h-7.5 z" fill="#FF6A00"/>
-              </g>
-            </svg>
-          </div>
-          <div class="card-text"><div class="title">Слоголаз</div></div>
-        </div>
-        <div class="arrow">›</div>
-      </div>
-
-      <!-- 7. КРИСТАЛЬНАЯ ПЕЩЕРА -->
-      <div class="card" onclick="openTrainer('cave/index.html')">
-        <div class="left">
-          <div class="icon-wrap">
-            <svg viewBox="0 0 48 48" fill="none">
-              <!-- тёмный фон пещеры -->
-              <path d="M4 44 L4 20 L14 12 L22 16 L30 10 L44 18 L44 44 Z"
-                    fill="rgba(95,224,255,.08)" stroke="currentColor"
-                    stroke-width="1.6" stroke-linejoin="round"/>
-              <!-- кристалл 1 (синий, светится) -->
-              <g class="cave-cr cave-cr-1">
-                <polygon points="14,38 18,30 22,38 18,44"
-                         fill="#5fe0ff" stroke="#e8fbff" stroke-width="1.2"/>
-                <circle cx="18" cy="38" r="7" fill="#5fe0ff" opacity=".35"/>
-              </g>
-              <!-- кристалл 2 (фиолетовый) -->
-              <g class="cave-cr cave-cr-2">
-                <polygon points="28,40 31,33 34,40 31,45"
-                         fill="#9a86ff" stroke="#e8d4ff" stroke-width="1.2"/>
-              </g>
-              <!-- кристалл 3 (золотой, ярче) -->
-              <g class="cave-cr cave-cr-3">
-                <polygon points="22,26 25,20 28,26 25,31"
-                         fill="#ffd24a" stroke="#fff2b8" stroke-width="1.2"/>
-                <circle cx="25" cy="26" r="6" fill="#ffd24a" opacity=".4"/>
-              </g>
-              <!-- силуэт тайны в глубине -->
-              <ellipse class="cave-eye" cx="25" cy="14" rx="2" ry="2" fill="#ffd24a"/>
-            </svg>
-          </div>
-          <div class="card-text"><div class="title">Кристальная пещера</div></div>
-        </div>
-        <div class="arrow">›</div>
-      </div>
-
     </div>
   </div>
 
@@ -391,7 +550,7 @@
       if (h1) h1.textContent = 'Дошколятам';
 
       const subtitle = document.getElementById('headerSubtitle');
-      if (subtitle) subtitle.textContent = 'NeuroX · 7 тренажёров';
+      if (subtitle) subtitle.textContent = 'NeuroX · 15 тренажёров';
 
       // Перехват клика по логотипу: app.js открывает welcome, нам нужно — назад
       const logo = document.getElementById('logoBtn');
@@ -405,6 +564,35 @@
     });
   </script>
 
+
+<script>
+// Выбор направления сохраняется только в этой вкладке: возвращаясь из игры,
+// педагог или ребёнок попадает в тот же подраздел.
+(function(){
+  const controls=[...document.querySelectorAll('.nx-preschool-filter')];
+  const elements=[...document.querySelectorAll('.cards > [data-nx-group]')];
+  const allowed=new Set(['all','read','math','logic','memory']);
+  let initial='all';
+  try { initial=sessionStorage.getItem('nx-preschool-subgroup')||'all'; } catch (_) {}
+  function select(group){
+    if(!allowed.has(group))group='all';
+    controls.forEach(btn=>{
+      const active=btn.dataset.nxGroup===group;
+      btn.classList.toggle('is-active',active);
+      btn.setAttribute('aria-pressed',String(active));
+    });
+    elements.forEach(el=>el.hidden=group!=='all'&&el.dataset.nxGroup!==group);
+    try { sessionStorage.setItem('nx-preschool-subgroup',group); } catch (_) {}
+  }
+  controls.forEach(btn=>btn.addEventListener('click',()=>select(btn.dataset.nxGroup)));
+  select(initial);
+})();
+</script>
+<script src="../assets/menu-data.js" defer></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
 </body>
 
 </html>

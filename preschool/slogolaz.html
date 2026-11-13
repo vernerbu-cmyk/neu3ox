@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script src="../shared/theme.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Слоголаз — читаем по слогам</title>
@@ -9,6 +10,9 @@
   :root{
     --p1:#ff6b3d; --p1-dark:#c9440f; --p1-light:#ff9b73;
     --p2:#2f9bff; --p2-dark:#0f63b8; --p2-light:#77bdff;
+    --p1-text:#fff; --p2-text:#fff;
+    --p1-tint:rgba(255,107,61,.30); --p2-tint:rgba(47,155,255,.30);
+    --p1-halo:rgba(255,107,61,.22); --p2-halo:rgba(47,155,255,.22);
     --vowel:#e63946; --cons:#1d3557; --soft:#7b8794; --ink:#16233b;
   }
   html,body{ height:100%; }
@@ -46,8 +50,8 @@
     font-size:clamp(14px,1.45vw,26px); color:var(--ink);
     box-shadow:0 3px 10px rgba(30,60,110,.14); margin-bottom:.7vh; white-space:nowrap; }
   .side-head .dot{ width:.75em; height:.75em; border-radius:50%; flex:none; }
-  .dot.p1{ background:var(--p1); box-shadow:0 0 0 3px rgba(255,107,61,.22); }
-  .dot.p2{ background:var(--p2); box-shadow:0 0 0 3px rgba(47,155,255,.22); }
+  .dot.p1{ background:var(--p1); box-shadow:0 0 0 3px var(--p1-halo); }
+  .dot.p2{ background:var(--p2); box-shadow:0 0 0 3px var(--p2-halo); }
   .pscore{ font-variant-numeric:tabular-nums; background:var(--ink); color:#fff;
     padding:.1em .55em; border-radius:100px; font-size:.85em; }
   .side.p1win .side-head{ box-shadow:0 0 0 4px #ffd93b, 0 6px 22px rgba(255,190,0,.55); }
@@ -57,12 +61,12 @@
   .scene{ position:absolute; inset:0; z-index:1; }
   .scene-svg{ position:absolute; inset:0; width:100%; height:100%; display:block; }
   .scene-tint{ position:absolute; inset:0; z-index:4; pointer-events:none; display:none; }
-  body[data-theme="mountains"] .scene-tint{ display:block; }
-  #track1 .scene-tint{ background:linear-gradient(180deg, rgba(255,107,61,0) 0%, rgba(255,107,61,0) 38%, rgba(255,107,61,.30) 100%); }
-  #track2 .scene-tint{ background:linear-gradient(180deg, rgba(47,155,255,0) 0%, rgba(47,155,255,0) 38%, rgba(47,155,255,.30) 100%); }
-  body:not([data-theme="mountains"]) .scene-mountain{ display:none; }
-  body[data-theme="mountains"] .scene{ background:none; border-radius:0; box-shadow:none; overflow:visible; clip-path:none; }
-  body[data-theme="mountains"] .scene::after{
+  body[data-game-theme="mountains"] .scene-tint{ display:block; }
+  #track1 .scene-tint{ background:linear-gradient(180deg, rgba(255,107,61,0) 0%, rgba(255,107,61,0) 38%, var(--p1-tint) 100%); }
+  #track2 .scene-tint{ background:linear-gradient(180deg, rgba(47,155,255,0) 0%, rgba(47,155,255,0) 38%, var(--p2-tint) 100%); }
+  body:not([data-game-theme="mountains"]) .scene-mountain{ display:none; }
+  body[data-game-theme="mountains"] .scene{ background:none; border-radius:0; box-shadow:none; overflow:visible; clip-path:none; }
+  body[data-game-theme="mountains"] .scene::after{
     content:''; position:absolute; inset:0; z-index:2;
     background:repeating-linear-gradient(102deg, rgba(255,255,255,.10) 0 9px, rgba(0,0,0,.055) 9px 21px);
     pointer-events:none;
@@ -88,76 +92,76 @@
   }
   .climber-pos.winner .climber{ filter:drop-shadow(0 0 14px rgba(255,215,60,.95)); }
 
-  body[data-theme="mountains"] .ledge{
+  body[data-game-theme="mountains"] .ledge{
     height:clamp(5px,.75vh,9px); border-radius:100px;
     background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.32));
     box-shadow:0 2px 4px rgba(60,30,0,.25); transform:translateY(50%);
   }
-  body[data-theme="mountains"] .goal{
+  body[data-game-theme="mountains"] .goal{
     top:-2%; left:50%; right:auto; transform:translateX(-50%);
     width:clamp(34px,3.4vw,62px); height:clamp(34px,3.4vw,62px);
     filter:drop-shadow(0 3px 6px rgba(0,0,0,.32));
   }
 
-  body[data-theme="space"] .scene{ background:transparent; border-radius:0; box-shadow:none; overflow:visible; }
-  body[data-theme="space"] .scene::before{
+  body[data-game-theme="space"] .scene{ background:transparent; border-radius:0; box-shadow:none; overflow:visible; }
+  body[data-game-theme="space"] .scene::before{
     content:''; position:absolute; left:50%; top:0; bottom:7%; width:clamp(4px,.6vw,10px); transform:translateX(-50%);
     background:linear-gradient(180deg, rgba(150,210,255,.15) 0%, rgba(150,210,255,.85) 45%, rgba(150,210,255,.9) 55%, rgba(150,210,255,.15) 100%);
     border-radius:100px; box-shadow:0 0 22px rgba(120,200,255,.55);
   }
-  body[data-theme="space"] .scene::after{
+  body[data-game-theme="space"] .scene::after{
     content:''; position:absolute; left:50%; bottom:0; width:82%; height:6%; transform:translateX(-50%);
     background:linear-gradient(180deg,#4a5a7a 0%,#2a3a5a 55%,#152044 100%); border-radius:8px 8px 4px 4px;
     box-shadow: inset 0 -6px 14px rgba(0,0,0,.45), inset 0 3px 8px rgba(120,200,255,.35), 0 -6px 22px rgba(120,200,255,.4);
   }
-  body[data-theme="space"] .ledge{
+  body[data-game-theme="space"] .ledge{
     left:50%; width:clamp(8px,1vw,14px); height:clamp(8px,1vh,14px); border-radius:50%; transform:translate(-50%,50%);
     background:radial-gradient(circle,#fff 0%,#9fd9ff 40%,rgba(159,217,255,0) 75%); box-shadow:0 0 12px rgba(159,217,255,.9);
   }
-  body[data-theme="space"] .goal{
+  body[data-game-theme="space"] .goal{
     top:-1%; left:50%; right:auto; transform:translateX(-50%);
     width:clamp(56px,6vw,110px); height:clamp(56px,6vw,110px); filter:drop-shadow(0 0 22px rgba(255,255,210,.75));
   }
 
-  body[data-theme="pirates"] .scene{ background:transparent; border-radius:0; box-shadow:none; overflow:visible; }
-  body[data-theme="pirates"] .scene::before{
+  body[data-game-theme="pirates"] .scene{ background:transparent; border-radius:0; box-shadow:none; overflow:visible; }
+  body[data-game-theme="pirates"] .scene::before{
     content:''; position:absolute; left:50%; top:2%; bottom:6%; width:clamp(46px,6vw,130px); transform:translateX(-50%);
     background: linear-gradient(90deg, transparent 0%, transparent 6%, #6b4a24 6%, #6b4a24 10%, transparent 10%, transparent 90%, #6b4a24 90%, #6b4a24 94%, transparent 94%, transparent 100%);
     filter:drop-shadow(0 1px 2px rgba(0,0,0,.3));
   }
-  body[data-theme="pirates"] .scene::after{
+  body[data-game-theme="pirates"] .scene::after{
     content:''; position:absolute; left:50%; bottom:0; width:96%; height:6%; transform:translateX(-50%);
     background: repeating-linear-gradient(90deg,#8a5a2b 0 8px,#7a4e26 8px 16px), linear-gradient(180deg,#a06a35,#6b4a24);
     border-radius:5px 5px 0 0;
     box-shadow: inset 0 4px 8px rgba(255,220,160,.28), inset 0 -6px 10px rgba(0,0,0,.35), 0 -4px 12px rgba(60,30,0,.3);
   }
-  body[data-theme="pirates"] .ledge{
+  body[data-game-theme="pirates"] .ledge{
     left:50%; width:clamp(40px,5vw,110px); height:clamp(4px,.65vh,8px); border-radius:3px; transform:translate(-50%,50%);
     background:linear-gradient(180deg,#b98b52 0%,#8a5a2b 55%,#5a3a1b 100%);
     box-shadow:0 2px 3px rgba(0,0,0,.4), inset 0 1px 1px rgba(255,220,170,.5);
   }
-  body[data-theme="pirates"] .goal{
+  body[data-game-theme="pirates"] .goal{
     top:0; left:50%; right:auto; transform:translateX(-50%);
     width:clamp(58px,6.4vw,120px); height:clamp(58px,6.4vw,120px); filter:drop-shadow(0 5px 9px rgba(60,30,0,.4));
   }
 
-  body[data-theme="robots"] .scene{ background:transparent; border-radius:0; box-shadow:none; overflow:visible; }
-  body[data-theme="robots"] .scene::before{
+  body[data-game-theme="robots"] .scene{ background:transparent; border-radius:0; box-shadow:none; overflow:visible; }
+  body[data-game-theme="robots"] .scene::before{
     content:''; position:absolute; left:50%; top:6%; bottom:7%; width:clamp(12px,1.6vw,26px); transform:translateX(-50%);
     background:linear-gradient(180deg,#8a9aaa 0%,#5a6a7a 50%,#8a9aaa 100%); border-radius:8px;
     box-shadow: inset 0 0 8px rgba(0,0,0,.4), inset 2px 0 3px rgba(255,255,255,.18), 0 0 14px rgba(100,200,255,.35);
   }
-  body[data-theme="robots"] .scene::after{
+  body[data-game-theme="robots"] .scene::after{
     content:''; position:absolute; left:50%; bottom:0; width:84%; height:6.5%; transform:translateX(-50%);
     background:linear-gradient(180deg,#5a6a7a 0%,#3a4a5a 45%,#1e2e3e 100%); border-radius:8px 8px 4px 4px;
     box-shadow: inset 0 4px 8px rgba(120,220,255,.35), inset 0 -6px 12px rgba(0,0,0,.5), 0 -5px 18px rgba(100,200,255,.4);
   }
-  body[data-theme="robots"] .ledge{
+  body[data-game-theme="robots"] .ledge{
     left:50%; width:clamp(18px,2.4vw,38px); height:clamp(5px,.8vh,10px); border-radius:4px; transform:translate(-50%,50%);
     background:linear-gradient(180deg,#9aaaba 0%,#6a7a8a 55%,#4a5a6a 100%);
     box-shadow: 0 0 10px rgba(120,200,255,.65), inset 0 1px 1px rgba(255,255,255,.4);
   }
-  body[data-theme="robots"] .goal{
+  body[data-game-theme="robots"] .goal{
     top:-1%; left:50%; right:auto; transform:translateX(-50%);
     width:clamp(52px,5.6vw,105px); height:clamp(52px,5.6vw,105px); filter:drop-shadow(0 0 16px rgba(120,220,255,.8));
   }
@@ -199,6 +203,9 @@
   .task{ display:flex; align-items:center; justify-content:center; gap:.3em;
     line-height:1.02; font-weight:900; white-space:nowrap; text-align:center; max-width:100%;
     transition:opacity .28s ease, filter .28s ease; }
+  /* Слова в фразах и предложениях остаются целыми, но сами фразы могут
+     переноситься по словам на узких планшетах и ПК. */
+  .task.phrase{white-space:normal;flex-wrap:wrap;column-gap:.2em;row-gap:.1em;align-content:center;}
   .task.task-busy{ opacity:.22; filter:blur(1px); }
   .group{ display:inline-flex; align-items:center; }
   .syl{ display:inline-block; }
@@ -221,10 +228,19 @@
   .score-btn .plus{ font-size:1.35em; line-height:1; }
   .score-btn:hover{ filter:brightness(1.08); }
   .score-btn:active{ transform:translateY(3px); }
-  .score-btn.p1{ background:linear-gradient(180deg,var(--p1-light),var(--p1)); box-shadow:0 5px 0 var(--p1-dark); }
+  .score-btn.p1{ background:linear-gradient(180deg,var(--p1-light),var(--p1)); box-shadow:0 5px 0 var(--p1-dark); color:var(--p1-text); }
   .score-btn.p1:active{ box-shadow:0 2px 0 var(--p1-dark); }
-  .score-btn.p2{ background:linear-gradient(180deg,var(--p2-light),var(--p2)); box-shadow:0 5px 0 var(--p2-dark); }
+  .score-btn.p2{ background:linear-gradient(180deg,var(--p2-light),var(--p2)); box-shadow:0 5px 0 var(--p2-dark); color:var(--p2-text); }
   .score-btn.p2:active{ box-shadow:0 2px 0 var(--p2-dark); }
+  .player-controls{ display:flex; flex-direction:column; gap:6px; width:clamp(130px,19vw,265px); min-width:0; flex-shrink:1; }
+  .player-controls .score-btn{ width:100%; justify-content:center; }
+  .undo-btn{ font-family:inherit; min-height:33px; border-radius:12px;
+    border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.12);
+    color:#e5edfa; cursor:pointer; font-weight:800; font-size:clamp(12px,1.05vw,18px);
+    transition:background .15s, opacity .15s; }
+  .undo-btn:hover:not(:disabled){ background:rgba(255,255,255,.24); }
+  .undo-btn:disabled{ opacity:.38; cursor:not-allowed; }
+  .undo-btn:focus-visible{ outline:3px solid #ffd75c; outline-offset:2px; }
   .panel-mid{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center; }
   .ghost-btn{ font-family:inherit; background:rgba(255,255,255,.1); color:#dbe8ff;
     border:2px solid rgba(255,255,255,.18); border-radius:13px; padding:.5em 1.05em;
@@ -276,6 +292,10 @@
     border-color:#6b21c8; box-shadow:0 3px 8px rgba(124,58,237,.4); }
   .chip.warn.active{ background:linear-gradient(180deg,#7ee0a0,#3fbf6c); border-color:#2f9e56;
     box-shadow:0 3px 8px rgba(63,191,108,.35); }
+  .material-notice{ flex:1; font-size:clamp(12px,1.2vw,17px); color:#49617d;
+    background:#f1f7ff; border:1px solid #d8e9fa; border-radius:12px;
+    padding:10px 12px; line-height:1.4; }
+  .material-notice.warning{ background:#fff3e9; color:#954616; border-color:#ffd0ae; }
   .name-input{ font-family:inherit; font-size:clamp(14px,1.2vw,20px); font-weight:800; color:var(--ink);
     padding:.45em .8em; border:2px solid #dbe5f0; border-radius:11px; outline:none;
     width:min(200px,40vw); transition:border-color .15s; }
@@ -295,9 +315,44 @@
     .arena{ grid-template-columns:1fr 1.2fr 1fr; gap:.6vw; padding:.8vh .6vw; }
     .track{ width:clamp(70px,15vw,150px); }
     .panel{ padding:.7vh .8vw; gap:8px; }
+    .player-controls{ width:clamp(100px,23vw,195px); }
     .score-btn{ padding:.5em .9em; }
     .ghost-btn{ padding:.45em .7em; }
     .srow > label{ flex-basis:100%; padding-top:0; }
+  }
+
+  /* Портретный экран: две дорожки над общим полем чтения. */
+  @media (max-width:650px) and (orientation:portrait){
+    html,body{ height:100%; height:100dvh; }
+    .arena{
+      display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+      grid-template-rows:minmax(140px,48%) minmax(95px,1fr);
+      column-gap:10px; row-gap:3px; padding:8px 8px 4px;
+    }
+    .side{ grid-row:1; min-width:0; }
+    #side1{ grid-column:1; }
+    #side2{ grid-column:2; }
+    .side-head{ font-size:clamp(11px,3.2vw,16px); padding:.3em .55em; gap:.35em; }
+    .track{ width:clamp(94px,26vw,135px); --ch:clamp(43px,8vh,70px); }
+    .center{ grid-row:2; grid-column:1/-1; min-height:0; padding:4px 8px; }
+    .hint{ font-size:clamp(13px,3.9vw,20px); margin-bottom:3px; }
+    .task{ white-space:normal; flex-wrap:wrap; }
+    .timer{ position:relative; top:auto; left:auto; transform:none; margin-bottom:7px; font-size:14px; }
+    .panel{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px;
+      padding:8px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left)); }
+    .player-controls{ width:100%; min-width:0; }
+    .p1-controls{ grid-column:1; grid-row:1; }
+    .p2-controls{ grid-column:2; grid-row:1; }
+    .undo-btn{ min-height:34px; font-size:clamp(11px,3vw,14px); }
+    .score-btn{ min-width:0; min-height:48px; justify-content:center; padding:10px 6px; font-size:clamp(12px,3.5vw,17px); }
+    .score-btn .plus{ font-size:1.1em; }
+    .panel-mid{ grid-column:1/-1; grid-row:2; gap:6px; }
+    .ghost-btn{ flex:1; min-height:42px; font-size:clamp(10px,3vw,14px); padding:8px 4px; }
+    .card{ max-width:calc(100vw - 22px); max-height:calc(100dvh - 26px); padding:20px 14px; }
+    .srow{ gap:8px; }
+    .srow > label{ flex-basis:100%; }
+    .chip{ padding:9px 10px; min-height:38px; }
+    .name-fields{ grid-template-columns:1fr; }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -310,10 +365,170 @@
     .task{ transition-duration: .12s !important; }
     .goal{ transition: top .15s, left .15s, right .15s, width .15s, height .15s, transform .15s !important; }
   }
+
+  /* Three story-based routes. They deliberately keep the reading area clear. */
+  .head-edit{border:0;background:#edf4ff;color:#365d8d;border-radius:50%;min-width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;}
+  .head-edit:focus-visible,.name-input:focus-visible{outline:3px solid #ff9d32;outline-offset:2px;}
+  .pname{max-width:9ch;text-overflow:ellipsis;overflow:hidden;}
+  .name-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;flex:1;}
+  .name-row{background:#f5f8fd;border-radius:14px;padding:12px;margin-bottom:7px;border:1px solid #e2e9f3;}
+  .color-choices{flex:1;min-width:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+  .color-player{background:#f5f8fd;border:1px solid #e2e9f3;border-radius:14px;padding:12px;min-width:0;}
+  .color-player-name{display:block;font-weight:900;color:#41556e;font-size:15px;margin-bottom:10px;overflow-wrap:anywhere;}
+  .color-palette{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+  .color-swatch{height:31px;width:31px;flex:none;border:2px solid #fff;border-radius:9px;cursor:pointer;outline:1px solid #c8d3e0;position:relative;}
+  .color-swatch[aria-pressed="true"]{outline:3px solid #172e60;outline-offset:1px;}
+  .color-swatch[aria-pressed="true"]::after{content:'✓';position:absolute;inset:0;display:grid;place-items:center;color:var(--swatch-ink,#fff);font-size:18px;font-weight:900;text-shadow:0 1px 1px rgba(0,0,0,.15);}
+  .color-swatch:focus-visible{outline:3px solid #ff6a00;outline-offset:3px;}
+  .custom-color-label{font-size:13px;font-weight:800;display:inline-flex;align-items:center;gap:9px;color:#49617d;cursor:pointer;}
+  .custom-color-label input[type="color"]{width:42px;height:32px;border:1px solid #d0dbe9;border-radius:8px;padding:2px;background:#fff;cursor:pointer;}
+  @media(max-width:700px){.color-choices{grid-template-columns:1fr;}}
+  .name-row label{padding-top:12px;}
+  @media(max-width:550px){.name-fields{grid-template-columns:1fr;}.head-edit{min-width:27px;height:27px;font-size:14px}.side-head{gap:4px;padding:.32em .55em}}
+
+  /* SWEET LAND: gingerbread climbers scale an actual cookie tower. */
+  body[data-game-theme="candy"] .scene{background:none;overflow:visible;}
+  body[data-game-theme="candy"] .scene::before{
+    content:'';position:absolute;top:2%;bottom:5%;left:50%;transform:translateX(-50%);
+    width:clamp(42px,5.5vw,108px);border-radius:24px;
+    background:repeating-linear-gradient(0deg,
+       #c9864c 0 12px,#f5c88b 12px 17px,#fff6e9 17px 20px,#c9864c 20px 30px);
+    box-shadow:inset 8px 0 rgba(255,255,255,.24),inset -8px 0 rgba(105,57,33,.14),0 9px 24px rgba(174,79,75,.2);
+  }
+  body[data-game-theme="candy"] .scene::after{
+    content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+    width:95%;height:7%;border-radius:45% 45% 9px 9px;
+    background:linear-gradient(#fff8f1 0 27%,#f8b8d0 28% 55%,#d986ab 100%);
+    box-shadow:inset 0 4px rgba(255,255,255,.65),0 -3px 18px rgba(233,99,153,.25);
+  }
+  body[data-game-theme="candy"] .ledge{
+    left:50%;transform:translate(-50%,50%);width:clamp(43px,5.4vw,99px);
+    height:clamp(12px,1.5vh,20px);border-radius:60% 60% 38% 38%;
+    background:radial-gradient(circle at 22% 46%,#9e603b 0 2px,transparent 3px),
+               radial-gradient(circle at 66% 48%,#9e603b 0 2px,transparent 3px),
+               radial-gradient(circle at 48% 23%,#9e603b 0 2px,transparent 3px),
+               linear-gradient(#ffdfac,#c98754);
+    border:2px solid #ad7245;box-shadow:0 3px 3px rgba(101,50,38,.18);
+  }
+  body[data-game-theme="candy"] .goal{
+    top:-3%;bottom:auto;left:50%;transform:translateX(-50%);
+    width:clamp(60px,6.2vw,114px);height:clamp(60px,6.2vw,114px);
+    filter:drop-shadow(0 4px 5px rgba(182,71,120,.3));
+  }
+  .cake-flame{transform-box:fill-box;transform-origin:50% 100%}
+  .goal.goal-win .cake-flame{animation:cakeFlame .42s ease-in-out infinite alternate}
+  @keyframes cakeFlame{to{transform:rotate(7deg) scale(1.15)}}
+  .goal.goal-win .cake-body{animation:cakeBounce .75s ease-in-out 1}
+  @keyframes cakeBounce{50%{transform:scale(1.07)}}
+
+  /* FOREST: the squirrels climb a trunk, stepping along alternating branches. */
+  body[data-game-theme="squirrels"] .scene{background:none;overflow:visible;}
+  body[data-game-theme="squirrels"] .scene::before{
+    content:'';position:absolute;top:0;bottom:6%;left:50%;transform:translateX(-50%);
+    width:clamp(45px,6vw,112px);border-radius:27px 27px 8px 8px;
+    background:repeating-linear-gradient(96deg,#865534 0 9px,#9e6b3e 9px 16px,#70442b 16px 21px,#9d6a40 21px 30px);
+    box-shadow:inset 6px 0 8px rgba(248,204,147,.2),inset -8px 0 8px rgba(48,30,18,.18),0 5px 15px rgba(61,91,40,.25);
+  }
+  body[data-game-theme="squirrels"] .scene::after{
+    content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+    width:108%;height:8%;border-radius:48% 48% 0 0;
+    background:linear-gradient(#8cce63,#4e9c42);box-shadow:0 -4px 14px rgba(81,151,70,.3);
+  }
+  body[data-game-theme="squirrels"] .ledge{
+    height:clamp(8px,1.1vh,13px);border-radius:80px;
+    background:linear-gradient(#b47d47,#875329 64%,#653b1f);
+    box-shadow:0 3px 5px rgba(64,39,19,.3);
+  }
+  body[data-game-theme="squirrels"] .ledge::after{
+    content:'';position:absolute;top:-11px;right:10%;width:24%;height:17px;
+    border-radius:95% 10% 95% 10%;background:#7dbc57;transform:rotate(-22deg);
+    box-shadow:-11px 1px 0 -2px #a2db7a;
+  }
+  body[data-game-theme="squirrels"] .ledge:nth-child(even)::after{left:10%;right:auto;transform:rotate(22deg)}
+  body[data-game-theme="squirrels"] .goal{
+    top:-2%;bottom:auto;left:50%;transform:translateX(-50%);
+    width:clamp(60px,6vw,110px);height:clamp(60px,6vw,110px);
+    filter:drop-shadow(0 5px 8px rgba(69,54,27,.24));
+  }
+  .acorn-top{transform-box:fill-box;transform-origin:50% 100%}
+  .goal.goal-win .acorn-top{animation:acornNod .6s ease-in-out infinite alternate}
+  @keyframes acornNod{to{transform:rotate(-7deg)}}
+  .goal.goal-win .acorn-glow{animation:pearlGlow .8s ease-out forwards}
+
+  /* DEEP SEA: fish descend through water; bubbles are waypoints, not stairs. */
+  body[data-game-theme="ocean"] .scene{background:none;overflow:visible;}
+  body[data-game-theme="ocean"] .scene::before{
+    content:'';position:absolute;top:0;bottom:6%;left:50%;transform:translateX(-50%);
+    width:clamp(38px,4.7vw,82px);border-radius:50%;opacity:.85;
+    background:radial-gradient(circle at 29% 17px,rgba(255,255,255,.95) 0 3px,transparent 4px) center top/100% 42px repeat-y,
+               radial-gradient(circle at 72% 31px,rgba(218,251,255,.8) 0 5px,transparent 6px) center top/100% 58px repeat-y;
+  }
+  body[data-game-theme="ocean"] .scene::after{
+    content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+    width:112%;height:5%;border-radius:48% 48% 0 0;
+    background:linear-gradient(#f6d998,#d5ad6e);box-shadow:inset 0 6px rgba(255,255,255,.22),0 -7px 13px rgba(20,91,118,.18);
+  }
+  body[data-game-theme="ocean"] .ledge{
+    left:50%;transform:translate(-50%,50%);width:clamp(17px,2.1vw,32px);
+    height:clamp(17px,2.1vw,32px);border-radius:50%;
+    border:2px solid rgba(225,251,255,.9);background:radial-gradient(circle at 30% 28%,#fff 0 13%,rgba(205,246,255,.48) 35%,rgba(205,246,255,.08) 75%);
+    box-shadow:0 0 9px rgba(209,248,255,.55);
+  }
+  body[data-game-theme="ocean"] .climber-pos{
+    width:calc(var(--ch) * 1.14);top:0;bottom:auto;
+    transition:top .62s cubic-bezier(.24,.74,.35,1);
+  }
+  body[data-game-theme="ocean"] .climber.hop{animation:fishSwim .75s ease-in-out}
+  @keyframes fishSwim{
+    0%,100%{transform:translateY(0) rotate(0deg)}
+    32%{transform:translateY(4px) rotate(8deg)}
+    65%{transform:translateY(2px) rotate(-5deg)}
+  }
+  body[data-game-theme="ocean"] .goal{
+    top:auto;bottom:4%;left:50%;transform:translateX(-50%);
+    width:clamp(65px,6.7vw,122px);height:clamp(65px,6.7vw,122px);
+    filter:drop-shadow(0 0 12px rgba(228,254,255,.7));
+  }
+  .shell-top{transform-box:fill-box;transform-origin:50% 94%}
+  .goal.goal-win .shell-top{animation:shellOpen .8s ease-in-out forwards}
+  @keyframes shellOpen{to{transform:rotate(-18deg)}}
+  .goal.goal-win .pearl-glow{animation:pearlGlow .9s ease-out forwards}
+  @keyframes pearlGlow{to{opacity:1}}
+  @media(prefers-reduced-motion:reduce){
+    body[data-game-theme="ocean"] .climber.hop,.goal.goal-win .cake-flame,.goal.goal-win .acorn-top,.goal.goal-win .shell-top{animation:none!important}
+    body[data-game-theme="ocean"] .climber-pos{transition-duration:.12s!important}
+  }
+
+  /* На портретных планшетах центральному полю требуется больше места
+     для длинных слов и предложений. Дорожки остаются по краям. */
+  @media (min-width:651px) and (max-width:950px) and (orientation:portrait){
+    .arena{grid-template-columns:minmax(0,1fr) minmax(0,1.9fr) minmax(0,1fr);gap:8px;}
+    .track{width:clamp(68px,11vw,116px);}
+  }
+
+  /* Полные имена вместо многоточий, компактная сетка на телефонах. */
+  .side-head{max-width:100%;white-space:normal;}
+  .side-head .pname{max-width:none;min-width:0;overflow:visible;text-overflow:clip;white-space:normal;overflow-wrap:anywhere;text-align:center;}
+  .turn-hint{max-width:100%;text-align:center;color:#1d3557;background:rgba(255,255,255,.87);padding:6px 12px;border-radius:999px;font-size:clamp(12px,1.3vw,18px);font-weight:900;margin-bottom:8px;}
+  .turn-hint.hidden{display:none;}
+  .side.waiting-turn .side-head{opacity:.72;}
+  .score-btn:disabled{opacity:.46;cursor:not-allowed;filter:grayscale(.35);box-shadow:none;}
+  @media(max-width:650px) and (orientation:portrait){
+    .side-head{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto;column-gap:4px;row-gap:2px;justify-items:center;align-items:center;}
+    .side-head .pname{font-size:clamp(10px,2.8vw,14px);line-height:1.12;}
+    .side-head .pscore{grid-column:1/-1;justify-self:center;font-size:12px;}
+    .side-head .dot{width:8px;height:8px;}
+    .head-edit{min-width:23px;height:23px;font-size:12px;}
+    .score-btn{white-space:normal;overflow-wrap:anywhere;line-height:1.1;}
+    .turn-hint{font-size:12px;padding:4px 8px;margin-bottom:4px;}
+  }
 </style>
 <link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
 </head>
-<body data-theme="mountains">
+<body data-game-theme="mountains">
 
 <div class="bg-sun"></div>
 <div class="bg-cloud c1"></div>
@@ -326,6 +541,7 @@
     <div class="side-head">
       <span class="dot p1"></span>
       <span class="pname" id="nameLabel1">Игрок 1</span>
+      <button class="head-edit" id="editName1" title="Изменить имя первого игрока" aria-label="Изменить имя первого игрока">✏️</button>
       <span class="pscore" id="score1">0 / 8</span>
     </div>
     <div class="track" id="track1">
@@ -353,6 +569,7 @@
   <section class="center">
     <div class="timer hidden" id="timerEl">00:00</div>
     <div class="hint" id="hintEl">Прочитай вслух</div>
+    <div class="turn-hint hidden" id="turnHint" aria-live="polite"></div>
     <div class="task" id="taskEl"></div>
   </section>
 
@@ -360,6 +577,7 @@
     <div class="side-head">
       <span class="dot p2"></span>
       <span class="pname" id="nameLabel2">Игрок 2</span>
+      <button class="head-edit" id="editName2" title="Изменить имя второго игрока" aria-label="Изменить имя второго игрока">✏️</button>
       <span class="pscore" id="score2">0 / 8</span>
     </div>
     <div class="track" id="track2">
@@ -386,24 +604,30 @@
 </main>
 
 <footer class="panel">
-  <button class="score-btn p1" id="btnP1" aria-label="Добавить балл первому игроку">
-    <span class="plus">+1</span><span id="btnP1Label">Игрок 1</span>
-  </button>
+  <div class="player-controls p1-controls">
+    <button class="score-btn p1" id="btnP1" aria-labelledby="btnP1Plus btnP1Label">
+      <span class="plus" id="btnP1Plus">+1</span> <span id="btnP1Label">Игрок 1</span>
+    </button>
+    <button class="undo-btn" id="btnUndo1" aria-label="Отменить балл первого игрока">↩ Отменить</button>
+  </div>
   <div class="panel-mid">
-    <button class="ghost-btn" id="btnUndo" aria-label="Отменить последний ход">↩ Отменить</button>
-    <button class="ghost-btn" id="btnNext" aria-label="Следующее задание">⟳ Новое задание</button>
+    <button class="ghost-btn" id="btnNext" aria-label="Новое задание">⟳ Новое задание</button>
     <button class="ghost-btn" id="btnSettings" aria-label="Открыть настройки">⚙ Настройки</button>
   </div>
-  <button class="score-btn p2" id="btnP2" aria-label="Добавить балл второму игроку">
-    <span class="plus">+1</span><span id="btnP2Label">Игрок 2</span>
-  </button>
+  <div class="player-controls p2-controls">
+    <button class="score-btn p2" id="btnP2" aria-labelledby="btnP2Plus btnP2Label">
+      <span class="plus" id="btnP2Plus">+1</span> <span id="btnP2Label">Игрок 2</span>
+    </button>
+    <button class="undo-btn" id="btnUndo2" aria-label="Отменить балл второго игрока">↩ Отменить</button>
+  </div>
 </footer>
 
 <div class="overlay hidden" id="victoryOverlay">
   <div class="card">
     <div class="trophy" id="trophyEl">🏆</div>
     <h1 id="victoryTitle">Победа!</h1>
-    <p><span class="win-name p1" id="winName">Игрок 1</span> <span id="winAction">добрался до вершины первым!</span></p>
+    <p><span class="win-name p1" id="winName">Игрок 1</span></p>
+    <p id="winAction">Первым у финиша!</p>
     <p id="winTime" style="display:none;"></p>
     <div>
       <button class="btn-primary" id="btnNewRound">Новый раунд</button>
@@ -416,6 +640,30 @@
   <div class="card settings-card">
     <h2>⚙ Настройки для педагога</h2>
 
+    <div class="srow name-row">
+      <label>Имена игроков</label>
+      <div class="name-fields">
+        <input class="name-input" id="nameInput1" maxlength="16" value="Игрок 1" aria-label="Имя первого игрока">
+        <input class="name-input" id="nameInput2" maxlength="16" value="Игрок 2" aria-label="Имя второго игрока">
+      </div>
+    </div>
+
+    <div class="srow">
+      <label>Цвет каждого игрока</label>
+      <div class="color-choices">
+        <div class="color-player">
+          <span class="color-player-name" id="colorName1">Игрок 1</span>
+          <div class="color-palette" id="colorPalette1" role="group" aria-label="Готовые цвета первого игрока"></div>
+          <label class="custom-color-label">Свой цвет <input type="color" id="playerColor1" aria-label="Произвольный цвет первого игрока"></label>
+        </div>
+        <div class="color-player">
+          <span class="color-player-name" id="colorName2">Игрок 2</span>
+          <div class="color-palette" id="colorPalette2" role="group" aria-label="Готовые цвета второго игрока"></div>
+          <label class="custom-color-label">Свой цвет <input type="color" id="playerColor2" aria-label="Произвольный цвет второго игрока"></label>
+        </div>
+      </div>
+    </div>
+
     <div class="srow">
       <label>Тема игры</label>
       <div class="chips" id="themeChips"></div>
@@ -425,7 +673,15 @@
       <div class="chips" id="levelChips"></div>
     </div>
     <div class="srow">
-      <label>Этапов на горе</label>
+      <label>Задания для двух детей</label>
+      <div class="chips" id="playerModeChips"></div>
+    </div>
+    <div class="srow">
+      <label>Что читаем</label>
+      <div class="chips" id="taskModeChips"></div>
+    </div>
+    <div class="srow">
+      <label>Шагов до финиша</label>
       <div class="chips" id="stepsChips"></div>
     </div>
     <div class="srow">
@@ -437,26 +693,41 @@
       <div class="chips" id="vowelChips"></div>
     </div>
     <div class="srow">
-      <label>Таймер раунда</label>
-      <div class="chips">
-        <button class="chip warn" id="timerChip" aria-label="Переключить таймер">Выключен</button>
+      <label>Показ слов и фраз</label>
+      <div class="chips"><button class="chip active" id="syllableBreakChip" type="button">По слогам</button></div>
+    </div>
+    <div class="srow">
+      <label>Быстрый подбор</label>
+      <div class="chips" id="presetChips">
+        <button class="chip" type="button" data-preset="basic">Простые слоги</button>
+        <button class="chip" type="button" data-preset="eYo">Е и Ё</button>
+        <button class="chip" type="button" data-preset="yaYu">Я и Ю</button>
+        <button class="chip" type="button" data-preset="clusters">Стечения</button>
+        <button class="chip" type="button" data-preset="allwords">Все буквы + слова</button>
+        <button class="chip" type="button" data-preset="phrases">Все буквы + фразы</button>
+        <button class="chip" type="button" data-preset="sentences">Все буквы + предложения</button>
       </div>
     </div>
     <div class="srow">
-      <label>Имена игроков</label>
+      <label>Подбор заданий</label>
+      <div id="materialNotice" class="material-notice" aria-live="polite"></div>
+    </div>
+    <div class="srow">
+      <label>Таймер раунда</label>
       <div class="chips">
-        <input class="name-input" id="nameInput1" maxlength="16" value="Игрок 1" aria-label="Имя первого игрока">
-        <input class="name-input" id="nameInput2" maxlength="16" value="Игрок 2" aria-label="Имя второго игрока">
+        <button class="chip warn" id="timerChip" aria-label="Переключить таймер">Выключен</button>
       </div>
     </div>
     <div class="settings-actions">
       <button class="btn-primary" id="btnRestart">Начать раунд заново</button>
       <button class="btn-secondary" id="btnCloseSettings">Закрыть</button>
     </div>
-    <div class="note">
+    <div class="note">Педагог слушает чтение и нажимает +1 нужному ребёнку. Игра не оценивает произношение автоматически. В режиме «По очереди» смена игроков происходит после задания, а отмена балла не забирает уже начатый ход другого ребёнка.<br>
       Горячие клавиши: <b>A</b> / <b>Ф</b> / <b>1</b> — «+1» Игроку 1 &nbsp;•&nbsp;
       <b>L</b> / <b>Д</b> / <b>2</b> — «+1» Игроку 2 &nbsp;•&nbsp;
-      <b>Backspace</b> — отменить шаг &nbsp;•&nbsp; <b>Пробел</b> — новое задание
+       <b>Z / Я</b> — отменить балл первого &nbsp;•&nbsp;
+       <b>M / Ь</b> — отменить балл второго &nbsp;•&nbsp;
+       <b>Backspace</b> — отменить последний балл &nbsp;•&nbsp; <b>Пробел</b> — новое задание
     </div>
   </div>
 </div>
@@ -468,10 +739,41 @@
 'use strict';
 
 const STORAGE_KEY = 'readingGame_settings_v1';
+const PLAYER_COLOR_PRESETS = [
+  ['#ff6b3d', 'Оранжевый'], ['#2f9bff', 'Голубой'], ['#28a36b', 'Зелёный'],
+  ['#934fd1', 'Фиолетовый'], ['#d83d86', 'Розовый'], ['#e3b326', 'Жёлтый'],
+  ['#e44848', 'Красный'], ['#147f9a', 'Бирюзовый']
+];
 const VOWELS_MAIN = ['а','о','у','ы','и','э'];
 const VOWELS_IOT  = ['я','ё','ю','е'];
 const VOWELS_ALL  = VOWELS_MAIN.concat(VOWELS_IOT);
-const CONS_ALL    = ['б','в','г','д','ж','з','к','л','м','н','п','р','с','т','ш','ч'];
+const CONS_ALL    = ['б','в','г','д','ж','з','й','к','л','м','н','п','р','с','т','ф','х','ц','ч','ш','щ'];
+const COMPLEX_SYLLABLES = [
+  'ста','сто','сту','сты','сте','сти','стё',
+  'стра','стро','стру','стры','стре',
+  'ска','ско','ску','ски','ске',
+  'спа','спо','спу','спи','спе',
+  'сла','сло','слу','слы','сле',
+  'сна','сно','сну','сны','сне',
+  'тра','тро','тру','тры','тре','три',
+  'дра','дро','дру','дре','дри',
+  'кра','кро','кру','кры','кре','кри',
+  'гра','гро','гру','гры','гре','гри',
+  'бра','бро','бру','бре','бри',
+  'пра','про','пру','пры','пре','при',
+  'кла','кло','клу','клы','кле','кли',
+  'пла','пло','плу','плы','пле','пли',
+  'гла','гло','глу','глы','гле','гли',
+  'шка','шко','шку','шки','шке',
+  'щёт','щёк' /* эти сочетания убираются ниже, поскольку это уже закрытые слоги */
+].filter(s => /^[бвгджзйклмнпрстфхцчшщ]{2,3}[аоуыиэяёюе]$/.test(s));
+const TASK_MODES = [
+  {v:'auto',t:'Смешанные'}, {v:'syllable',t:'Слоги'},
+  {v:'chain',t:'Цепочки'}, {v:'word2',t:'Слова: 2 слога'},
+  {v:'word34',t:'Слова: 3–4 слога'}, {v:'phrase',t:'Фразы'},
+  {v:'sentence',t:'Предложения'}, {v:'compare',t:'Найди одинаковые'},
+  {v:'clusters',t:'Стечения согласных'}
+];
 
 const WORDS2 = [
   ['ма','ма'],['па','па'],['ба','ба'],['ла','па'],['ра','ма'],['но','га'],['ру','ка'],
@@ -483,6 +785,9 @@ const WORDS2 = [
   ['де','ло'],['те','ло'],['се','но'],['ле','са'],['ро','са'],['ко','са'],['ла','ма'],
   ['да','ма'],['зи','мы'],['со','мы'],['ды','мы'],['шу','ба'],['шу','мы'],['ли','па'],
   ['ре','па'],['ла','пы'],['сто','лы'],['сло','ны'],['кро','ты'],['ку','ры']
+,
+  /* Расширенный словарь */
+  ["а", "ист"],["ар", "буз"],["аль", "бом"],["бан", "тик"],["баш", "ня"],["бе", "лый"],["бе", "да"],["бе", "рег"],["бе", "тон"],["би", "лет"],["бли", "ны"],["бо", "бы"],["бо", "ты"],["бо", "ец"],["бу", "сы"],["бу", "ран"],["бу", "кет"],["бу", "ря"],["ва", "та"],["ва", "ня"],["вар", "ка"],["ве", "тер"],["ви", "лы"],["во", "лос"],["вол", "на"],["вью", "га"],["га", "зон"],["га", "ля"],["гал", "ка"],["га", "мак"],["ге", "на"],["го", "род"],["го", "лод"],["го", "лос"],["гос", "ти"],["го", "лубь"],["гу", "сак"],["гу", "си"],["гу", "ля"],["да", "ша"],["да", "ня"],["де", "ньги"],["де", "ти"],["ди", "ван"],["дож", "дик"],["дос", "ка"],["ду", "бок"],["ду", "ма"],["ё", "жик"],["ёл", "ка"],["жа", "ра"],["жа", "ба"],["зеб", "ра"],["за", "бор"],["за", "ряд"],["за", "яц"],["за", "вал"],["зи", "на"],["зме", "я"],["иг", "ла"],["иг", "ра"],["ин", "дюк"],["и", "рис"],["кар", "та"],["ка", "мыш"],["кап", "ля"],["кап", "ли"],["кед", "ры"],["ки", "са"],["кис", "ка"],["клюк", "ва"],["ко", "тик"],["ко", "фе"],["крас", "ка"],["кро", "лик"],["ла", "дья"],["лас", "ка"],["ле", "бедь"],["лей", "ка"],["ле", "ша"],["ле", "на"],["ли", "мон"],["лу", "жа"],["лу", "жок"],["лю", "ди"],["лю", "тик"],["май", "ка"],["ма", "йор"],["ма", "лыш"],["мар", "ка"],["ме", "сяц"],["ме", "ня"],["ме", "лок"],["мет", "ла"],["ми", "мо"],["ми", "ша"],["мис", "ка"],["мо", "да"],["мо", "тор"],["му", "ха"],["мы", "ши"],["на", "дя"],["не", "су"],["не", "ту"],["ни", "на"],["нит", "ка"],["но", "сик"],["но", "ги"],["нор", "ка"],["о", "сёл"],["о", "са"],["о", "ля"],["о", "пыт"],["о", "рех"],["о", "сень"],["о", "тец"],["о", "бед"],["о", "гонь"],["па", "рус"],["па", "ша"],["пал", "ка"],["пе", "на"],["пе", "ро"],["пе", "сок"],["пе", "тух"],["пи", "рог"],["пись", "мо"],["про", "ба"],["пу", "ля"],["пят", "ка"],["ра", "зум"],["ра", "ки"],["ра", "ны"],["ре", "ка"],["ре", "мень"],["ре", "чи"],["ри", "та"],["ро", "бот"],["ро", "ма"],["ро", "тик"],["ру", "ки"],["ру", "бин"],["ру", "лон"],["ры", "жик"],["са", "пог"],["са", "ша"],["са", "лат"],["са", "хар"],["са", "дик"],["се", "ло"],["се", "мья"],["се", "мя"],["сер", "ый"],["си", "то"],["си", "ний"],["ска", "ла"],["ска", "мья"],["сло", "во"],["сле", "ды"],["сне", "жок"],["со", "кол"],["соп", "ка"],["сос", "на"],["со", "рок"],["спи", "на"],["ста", "кан"],["ста", "я"],["сто", "лик"],["сто", "ит"],["су", "ша"],["сы", "нок"],["сы", "ры"],["та", "зик"],["та", "ня"],["те", "ма"],["те", "ни"],["тес", "то"],["ти", "на"],["то", "вар"],["то", "ня"],["тра", "ва"],["тру", "ба"],["тру", "сы"],["ту", "пик"],["тык", "ва"],["ут", "ро"],["у", "рок"],["у", "хо"],["фа", "кел"],["фа", "ра"],["фи", "кус"],["ха", "та"],["ха", "лат"],["хал", "ва"],["ху", "тор"],["цве", "ты"],["це", "на"],["ча", "сы"],["чаш", "ка"],["че", "ки"],["чер", "дак"],["чис", "то"],["чу", "до"],["ша", "рик"],["ша", "ры"],["шар", "фик"],["ши", "на"],["ши", "ло"],["ши", "пы"],["шко", "ла"],["шку", "ра"],["шля", "па"],["шут", "ка"],["ще", "ка"],["щу", "ка"],["э", "хо"],["э", "таж"],["ю", "ла"],["ю", "ра"],["юб", "ка"],["я", "зык"],["я", "ма"],["я", "ша"]
 ];
 const WORDS34 = [
   ['мо','ло','ко'],['со','ба','ка'],['ко','ро','ва'],['во','ро','на'],['ба','ра','бан'],
@@ -492,11 +797,195 @@ const WORDS34 = [
   ['ко','лё','са'],['бе','рё','за'],['де','ре','во'],['го','ло','ва'],['бо','ро','да'],
   ['хо','ро','шо'],['да','ле','ко'],['вы','со','ко'],['ве','се','ло'],['по','да','рок'],
   ['о','го','род'],['у','чи','тель'],['ра','бо','та'],['за','бо','та'],['ка','че','ли'],
-  ['са','по','ги'],['но','со','ки'],['цве','то','чек'],['ко','ра','блик'],['зве','ря','та'],
+  ['са','по','ги'],['но','соч','ки'],['цве','то','чек'],["ко", "раб", "лик"],['зве','ря','та'],
   ['ре','бя','та'],['мо','ло','дой'],['ве','ло','си','пед'],['пе','ре','ме','на'],
   ['по','ро','сё','нок'],['шо','ко','лад','ка'],['ку','ку','ру','за'],['че','ре','па','ха'],
   ['па','ро','хо','дик']
+,
+  /* Расширенный словарь */
+  ["а", "пель", "син"],["а", "ре", "на"],["ба", "боч", "ка"],["ба", "на", "ны"],["ба", "ра", "шек"],["бе", "лоч", "ка"],["бе", "рё", "за"],["бе", "ре", "жок"],["бе", "ре", "га"],["бе", "се", "да"],["бо", "ло", "то"],["бо", "ти", "нок"],["бо", "ти", "ки"],["бу", "ма", "га"],["бу", "ра", "ти", "но"],["бу", "син", "ка"],["ва", "ре", "нье"],["ва", "ре", "ник"],["ве", "сё", "лый"],["ве", "се", "ло"],["вет", "ре", "но"],["ве", "ли", "кан"],["ви", "но", "град"],["ви", "та", "мин"],["во", "ло", "сы"],["во", "ро", "та"],["го", "ро", "док"],["го", "лу", "бой"],["гу", "се", "ни", "ца"],["де", "воч", "ка"],["де", "ре", "вья"],["де", "тиш", "ки"],["ди", "но", "завр"],["до", "ро", "га"],["до", "рож", "ка"],["до", "ми", "ки"],["е", "но", "тик"],["ё", "жи", "ки"],["ё", "лоч", "ка"],["же", "лез", "ка"],["жи", "во", "тик"],["жи", "ра", "фа"],["за", "гад", "ка"],["за", "мо", "чек"],["за", "ряд", "ка"],["за", "те", "я"],["зво", "но", "чек"],["зе", "лё", "ный"],["зо", "ло", "то"],["зо", "ло", "та", "я"],["иг", "руш", "ка"],["и", "рис", "ка"],["ка", "лен", "дарь"],["ка", "на", "ва"],["ка", "ни", "ку", "лы"],["ка", "пус", "та"],["ка", "ра", "вай"],["кар", "ман", "чик"],["ка", "ру", "сель"],["ка", "та", "ет"],["кла", "дов", "ка"],["кле", "точ", "ка"],["кни", "жеч", "ка"],["ко", "ло", "сок"],["ко", "ро", "боч", "ка"],["ко", "сын", "ка"],["кре", "вет", "ка"],["ку", "куш", "ка"],["лу", "но", "ход"],["ле", "сен", "ка"],["ли", "мо", "над"],["ли", "мо", "ны"],["ли", "ней", "ка"],["ли", "си", "ца"],["ло", "па", "та"],["ло", "доч", "ка"],["ма", "лы", "ши"],["ма", "лыш", "ка"],["ма", "лют", "ка"],["ме", "ду", "за"],["ме", "те", "ли", "ца"],["ми", "ну", "та"],["ми", "нут", "ка"],["мо", "ло", "ток"],["мо", "ро", "зы"],["мо", "то", "цикл"],["му", "ра", "вей"],["му", "ра", "вей", "ник"],["му", "раш", "ка"],["на", "у", "ка"],["не", "ва", "ляш", "ка"],["не", "де", "ля"],["не", "дол", "го"],["но", "со", "рог"],["об", "ла", "ка"],["об", "лач", "ко"],["о", "го", "род"],["о", "гу", "рец"],["о", "гур", "чик"],["о", "де", "я", "ло"],["о", "ле", "нё", "нок"],["от", "крыт", "ка"],["па", "ке", "тик"],["па", "лат", "ка"],["па", "ра", "шют"],["па", "ро", "ход"],["пе", "ре", "пел"],["пе", "ре", "ход"],["пе", "ту", "шок"],["пи", "а", "ни", "но"],["пи", "лот", "ка"],["пи", "са", "ла"],["по", "бе", "да"],["по", "во", "рот"],["по", "гу", "лял"],["по", "да", "ри", "ла"],["по", "да", "рок"],["по", "ло", "вик"],["по", "мо", "гал"],["по", "мо", "га", "ет"],["по", "мо", "ет"],["по", "ка", "за", "ла"],["по", "ка", "зал"],["по", "ка", "тит"],["по", "ка", "ти", "ла"],["по", "смо", "три"],["по", "чи", "нил"],["по", "че", "му"],["про", "бе", "жал"],["про", "во", "да"],["про", "ле", "тел"],["про", "мы", "ла"],["пу", "зы", "рёк"],["пы", "ле", "сос"],["ра", "бо", "та"],["ра", "бо", "тал"],["ра", "ду", "га"],["ра", "ке", "та"],["рас", "ска", "зал"],["ре", "бя", "та"],["ре", "зин", "ка"],["ри", "со", "ва", "ла"],["ро", "ди", "на"],["ро", "ди", "те", "ли"],["ро", "маш", "ка"],["ры", "ба", "ки"],["са", "мо", "кат"],["са", "пож", "ки"],["са", "ра", "фан"],["са", "ха", "рок"],["све", "то", "фор"],["се", "реб", "ро"],["се", "ме", "на"],["си", "не", "ва"],["си", "нич", "ка"],["ска", "за", "ла"],["ска", "мей", "ка"],["ско", "во", "ро", "да"],["сне", "го", "вик"],["со", "ло", "ма"],["со", "ро", "ка"],["со", "сис", "ка"],["спа", "си", "бо"],["ста", "ка", "ны"],["сто", "ло", "ва", "я"],["сто", "ро", "на"],["су", "ха", "ри", "ки"],["та", "ре", "лоч", "ка"],["те", "ле", "га"],["те", "ле", "фон"],["то", "ва", "ры"],["тре", "во", "га"],["тру", "боч", "ка"],["ту", "ма", "ны"],["тык", "воч", "ка"],["у", "ве", "рен", "но"],["у", "доб", "но"],["у", "лыб", "ка"],["у", "мы", "ва", "ет"],["у", "че", "ник"],["у", "че", "ни", "ца"],["у", "чи", "тель"],["фи", "гу", "ра"],["фо", "на", "рик"],["фут", "бол", "ка"],["хо", "ро", "ший"],["хо", "ро", "ша", "я"],["хо", "ро", "шо"],["ху", "дож", "ник"],["ца", "ра", "пи", "на"],["цве", "то", "чек"],["цып", "лё", "нок"],["ча", "сов", "щик"],["ча", "шеч", "ка"],["че", "мо", "дан"],["че", "реш", "ня"],["чи", "та", "ла"],["чи", "та", "ет"],["чис", "ти", "ла"],["чис", "то", "та"],["чу", "де", "са"],["ша", "ри", "ки"],["ше", "лу", "ха"],["ше", "по", "чет"],["ши", "пов", "ник"],["шо", "ко", "лад"],["шко", "льни", "ца"],["шу", "ми", "ха"],["щё", "точ", "ка"],["э", "ки", "паж"],["эс", "ки", "мо"],["ю", "но", "ша"],["я", "го", "да"],["я", "год", "ка"],["я", "ще", "ри", "ца"]
 ];
+
+const PHRASE_LINES = `ма-ма до-ма
+па-па до-ма
+ры-жий кот
+бе-лый кот
+се-рый кот
+ры-жа-я ли-са
+си-ня-я ва-за
+но-ва-я кни-га
+са-мый боль-шой
+на-ша ма-ма
+на-ша шко-ла
+но-вый мяч
+ма-лень-кий дом
+вы-со-кий дом
+си-не-е мо-ре
+ти-хо-е мо-ре
+си-не-е не-бо
+се-ро-е не-бо
+бе-лы-е об-ла-ка
+яр-ко-е солн-це
+тёп-ло-е ле-то
+хо-лод-на-я зи-ма
+мяг-ка-я тра-ва
+зим-ний лес
+зе-лё-ный лес
+лес-на-я тро-па
+по-ле-ва-я мышь
+доб-ра-я ма-ма
+но-ва-я шап-ка
+кра-си-вый шар
+боль-шой шар
+ша-ры на не-бе
+ку-бик на по-лу
+миш-ка на сту-ле
+кот на ок-не
+кот у до-ма
+ко-тик спит
+ма-ма чи-та-ет
+па-па чи-та-ет
+де-ти иг-ра-ют
+де-ти ри-су-ют
+ма-ша по-ёт
+са-ша по-ёт
+ми-ша бе-жит
+ро-ма иг-ра-ет
+ле-на ри-су-ет
+ма-ма пи-шет
+па-па мо-ет
+брат и сес-тра
+ба-ба и де-да
+ту-ча и дождь
+гриб и я-го-да
+ры-ба и кит
+кот и пёс
+ли-са и за-яц
+ку-ри-ца и пе-тух
+яб-ло-ко и гру-ша
+мяч и ку-бик
+шап-ка и шарф
+ве-тер в ле-су
+ве-тер на мо-ре
+ли-са в ле-су
+за-яц в ле-су
+во-да в ре-ке
+ры-ба в ре-ке
+ко-рабль на мо-ре
+са-ни на сне-гу
+са-ни у до-ма
+цве-ты на лу-гу
+лис-тья на де-ре-ве
+яб-ло-ки на сто-ле
+пе-на в чаш-ке
+ма-ша у ок-на
+па-па у до-ма
+пти-ца на вет-ке
+бу-сы у ма-мы
+мяч на по-лу
+де-ти на го-ре
+ёл-ка в ле-су
+ёл-ка у до-ма
+ли-са у но-ры
+мя-чик у ма-ши
+мо-ло-ко в чаш-ке
+кош-ка и ко-тё-нок
+со-ба-ка и ще-нок
+боль-ша-я ма-ши-на
+ма-лень-ка-я ры-ба
+чис-ты-е ру-ки
+вкус-на-я ка-ша
+слад-ка-я ды-ня
+крас-на-я ро-за
+ве-сё-лый кло-ун
+ма-лень-кий зай-ка
+кра-си-ва-я ба-боч-ка
+мо-ро-же-но-е на пал-ке
+ша-рик на нит-ке
+ми-ша на са-мо-ка-те
+па-па на ра-бо-те`;
+const SENTENCE_LINES = `ма-ма мы-ла ру-ки.
+па-па мо-ет ру-ки.
+ко-тик спит на ок-не.
+кош-ка спит на ди-ва-не.
+ма-ша мо-ет чаш-ку.
+ми-ша ка-та-ет мяч.
+ро-ма ри-су-ет дом.
+ле-на ри-су-ет ко-та.
+ма-ма чи-та-ет кни-гу.
+па-па чи-та-ет га-зе-ту.
+за-яц си-дит в но-ре.
+ли-са бе-жит по ле-су.
+ры-ба плы-вёт в во-де.
+ко-рабль плы-вёт по мо-рю.
+ве-тер ка-ча-ет де-ре-во.
+ёл-ка рас-тёт в ле-су.
+на по-ле рас-тёт ро-за.
+на лу-гу рас-тёт тра-ва.
+у ма-ши есть кук-ла.
+у ми-ши есть мяч.
+у ле-ны есть кни-га.
+са-ша не-сёт бу-кет.
+ко-тик ла-ка-ет мо-ло-ко.
+со-ба-ка ла-ет на ко-та.
+на сто-ле ле-жит кни-га.
+на по-лу ле-жит мяч.
+ма-ма ку-пи-ла ды-ню.
+па-па ку-пил ар-буз.
+ми-ша съел яб-ло-ко.
+ма-ша съе-ла гру-шу.
+на не-бе све-тит солн-це.
+на не-бе плы-вёт ту-ча.
+де-ти иг-ра-ют в мя-чик.
+де-ти гу-ля-ют в пар-ке.
+с ут-ра и-дёт дождь.
+ми-ша ви-дит ба-боч-ку.
+со-ня чи-та-ет сло-ги.
+ро-ма зна-ет бук-вы.
+ле-на у-ме-ет чи-тать.
+на ёл-ке ви-сит ша-рик.
+ма-ша ри-су-ет мо-ре.
+от-крой кни-гу и чи-тай.
+у бе-ре-га плы-вёт ут-ка.
+за-яц ска-чет по по-лю.
+ма-ма при-нес-ла бу-кет.
+па-па по-чи-нил стул.
+у ры-бы есть хвост.
+ко-ро-ва ест тра-ву.
+пе-тух сто-ит у до-ма.
+че-ре-па-ха не-спеш-но пол-зёт.
+са-ни е-дут с го-ры.
+ка-ша сто-ит на сто-ле.
+пи-рог ос-ты-ва-ет на ок-не.
+сне-го-вик сто-ит во дво-ре.
+бел-ка пря-чет о-ре-хи.
+ми-ша и-щет ры-жий мяч.
+па-па сде-лал бу-маж-ный ко-раб-лик.
+ма-ма го-то-вит вкус-ный суп.`;
+
+/* Фразы и короткие предложения. Разделены на слоги вручную. */
+const PHRASES = PHRASE_LINES.trim().split('\n').map(parseReadingLine);
+const SENTENCES = SENTENCE_LINES.trim().split('\n').map(parseReadingLine);
+function parseReadingLine(source){
+  source = source.trim();
+  const match = source.match(/([.!?])$/);
+  const punctuation = match ? match[1] : '';
+  if(punctuation) source = source.slice(0,-1);
+  return { words:source.split(/\s+/).map(w=>w.split('-')), punctuation };
+}
+
+/* Исключаем повторяющиеся слова из разных частей словаря, сохраняя исходные карточки. */
+function uniqueWords(items){
+  const seen = new Set();
+  return items.filter(parts => {
+    const key = parts.join('');
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+const WORDS2_UNIQUE = uniqueWords(WORDS2);
+const WORDS34_UNIQUE = uniqueWords(WORDS34);
 
 /* ==== ЦЕЛИ ==== */
 const GOAL_FLAG =
@@ -571,6 +1060,45 @@ const GOAL_BATTERY =
     '<rect x="80" y="40" width="10" height="28" rx="3" fill="#3a4a5a"/>' +
     '<path class="bat-bolt" d="M56 32 L38 56 H50 L44 76 L66 50 H54 Z" fill="#ffffff" stroke="#0e1e3a" stroke-width="1.2" stroke-linejoin="round"/>' +
     '<rect x="24" y="26" width="46" height="4" rx="2" fill="#ffffff" opacity=".35"/>' +
+  '</svg>';
+
+const GOAL_CAKE =
+  '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<g class="cake-body">' +
+      '<ellipse cx="50" cy="80" rx="34" ry="8" fill="#d88fb1" opacity=".28"/>' +
+      '<rect x="18" y="42" width="64" height="34" rx="10" fill="#ffb3cf" stroke="#d86a99" stroke-width="2"/>' +
+      '<path d="M18 50 Q26 44 34 50 T50 50 T66 50 T82 50 V60 H18 Z" fill="#fff4fb"/>' +
+      '<rect x="22" y="58" width="56" height="12" rx="6" fill="#ffc94d" opacity=".95"/>' +
+      '<circle cx="34" cy="44" r="5" fill="#ff6b8d"/>' +
+      '<circle cx="50" cy="40" r="5" fill="#7dd87d"/>' +
+      '<circle cx="66" cy="44" r="5" fill="#5cb8ff"/>' +
+    '</g>' +
+    '<rect x="47" y="25" width="6" height="18" rx="3" fill="#6b4d33"/>' +
+    '<path class="cake-flame" d="M50 14 C57 22 56 28 50 31 C44 28 43 22 50 14 Z" fill="#ffb703" stroke="#ff7a00" stroke-width="1.4"/>' +
+  '</svg>';
+
+const GOAL_ACORN =
+  '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<g class="acorn-glow" opacity="0"><circle cx="50" cy="54" r="44" fill="#ffe8a3" opacity=".55"/></g>' +
+    '<path d="M58 20 C68 8 84 14 84 30 C73 31 64 27 58 20 Z" fill="#71b85a" stroke="#3f7f34" stroke-width="2"/>' +
+    '<path d="M50 19 C54 12 60 10 66 11" stroke="#5a3a1b" stroke-width="3" stroke-linecap="round"/>' +
+    '<path d="M50 34 C69 34 82 48 82 64 C82 80 67 91 50 91 C33 91 18 80 18 64 C18 48 31 34 50 34 Z" fill="#b77437" stroke="#6f441e" stroke-width="2.3"/>' +
+    '<path class="acorn-top" d="M24 34 C27 21 38 13 50 13 C62 13 73 21 76 34 C67 39 59 42 50 42 C41 42 33 39 24 34 Z" fill="#8a5a2b" stroke="#6f441e" stroke-width="2.3"/>' +
+    '<path d="M30 29 H70" stroke="#a06f3c" stroke-width="2" opacity=".7"/>' +
+    '<path d="M34 24 H66" stroke="#a06f3c" stroke-width="2" opacity=".7"/>' +
+  '</svg>';
+
+const GOAL_PEARL =
+  '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<g class="pearl-glow" opacity="0"><circle cx="50" cy="55" r="47" fill="#e9fbff" opacity=".65"/></g>' +
+    '<path d="M12 65 Q19 52 50 51 Q81 52 88 65 Q77 84 50 85 Q23 84 12 65 Z" fill="#8666c6" stroke="#4c3985" stroke-width="3"/>' +
+    '<path d="M24 69 Q50 77 76 69" stroke="#d9c8fa" stroke-width="2.5" fill="none"/>' +
+    '<g class="shell-top">' +
+      '<path d="M12 64 Q12 31 50 22 Q88 31 88 64 Q71 53 50 53 Q29 53 12 64 Z" fill="#d7baf7" stroke="#614b9b" stroke-width="3" stroke-linejoin="round"/>' +
+      '<path d="M50 24 L50 54 M30 33 L39 55 M70 33 L61 55 M18 48 L33 57 M82 48 L67 57" stroke="#a486dd" stroke-width="2.5" stroke-linecap="round"/>' +
+    '</g>' +
+    '<circle cx="50" cy="63" r="13" fill="#ffffff" stroke="#aacfe9" stroke-width="2.4"/>' +
+    '<circle cx="45" cy="58" r="4" fill="#ffffff" opacity=".9"/>' +
   '</svg>';
 
 /* ==== ПЕРСОНАЖИ ==== */
@@ -668,26 +1196,118 @@ function svgRobot(main, dark){
   '</svg>';
 }
 
+function svgGingerbread(main, dark){
+  return '<svg viewBox="0 0 48 72" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M17 28 Q14 18 12 10" stroke="'+dark+'" stroke-width="6.5" stroke-linecap="round" fill="none"/>' +
+    '<path d="M31 28 Q34 18 36 10" stroke="'+dark+'" stroke-width="6.5" stroke-linecap="round" fill="none"/>' +
+    '<path d="M19 46 Q16 55 16 63" stroke="'+dark+'" stroke-width="7" stroke-linecap="round" fill="none"/>' +
+    '<path d="M29 46 Q32 55 32 63" stroke="'+dark+'" stroke-width="7" stroke-linecap="round" fill="none"/>' +
+    '<circle cx="24" cy="14" r="10.5" fill="'+main+'" stroke="'+dark+'" stroke-width="1.4"/>' +
+    '<rect x="12.5" y="22" width="23" height="27" rx="11" fill="'+main+'" stroke="'+dark+'" stroke-width="1.4"/>' +
+    '<circle cx="20" cy="13.5" r="1.5" fill="#4a2b17"/>' +
+    '<circle cx="28" cy="13.5" r="1.5" fill="#4a2b17"/>' +
+    '<path d="M20 18 Q24 21 28 18" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/>' +
+    '<circle cx="20" cy="31" r="2.5" fill="#fff"/><circle cx="28" cy="37" r="2.5" fill="#fff"/><circle cx="24" cy="43" r="2.5" fill="#fff"/>' +
+    '<path d="M18 27 H30" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>' +
+    '<path d="M18 27 L24 33 L30 27" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
+  '</svg>';
+}
+function svgSquirrel(main, dark){
+  // Обе белки рыжие, но с разными жилетками: цвета обозначают игроков.
+  // Полноценный вектор: силуэт хвоста, кисточки, мордочка, лапки и одежда.
+  return `<svg viewBox="0 0 64 92" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <!-- Пышный изогнутый хвост за спиной. -->
+    <path d="M34 69 C24 77 11 73 6 63 C1 54 5 44 13 38 C9 34 10 27 18 22 C17 16 20 11 26 7 L29 3 C31 12 36 17 35 27 C34 39 24 45 22 52 C20 59 28 63 35 57 Z"
+      fill="#b96530" stroke="#814320" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M19 19 C24 18 28 14 29 10 C33 20 32 27 27 35 C22 41 14 45 13 52 C12 57 15 63 20 66 C12 62 9 56 11 49 C13 42 20 37 19 31 C17 27 16 24 19 19 Z"
+      fill="#f7b86d" opacity=".96"/>
+    <path d="M17 57 C18 63 25 66 31 64" fill="none" stroke="#fbd49c" stroke-width="3" opacity=".85" stroke-linecap="round"/>
+    <!-- Ушки с острыми кисточками. -->
+    <path d="M32 23 Q28 13 29 6 L36 14 Q42 17 39 25 Z" fill="#bf713a" stroke="#7a421f" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M48 22 Q53 14 57 8 Q58 19 54 25 Z" fill="#bf713a" stroke="#7a421f" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M32 20 L32 13 L38 20 Z" fill="#ffcebe"/>
+    <path d="M51 20 L56 14 L53 22 Z" fill="#ffcebe"/>
+    <path d="M29 11 L27 5 M56 11 L60 6" stroke="#7a421f" stroke-width="2" stroke-linecap="round"/>
+    <!-- Задние лапки. -->
+    <path d="M35 70 Q29 77 31 82 L40 84 Q45 79 43 71 Z" fill="#bc7139" stroke="#7a421f" stroke-width="2.2"/>
+    <path d="M47 71 Q45 79 49 84 L58 83 Q60 76 55 69 Z" fill="#bc7139" stroke="#7a421f" stroke-width="2.2"/>
+    <ellipse cx="36.5" cy="83.5" rx="7.5" ry="4.2" fill="#e59a53" stroke="#7a421f" stroke-width="2"/>
+    <ellipse cx="54" cy="83.5" rx="7.2" ry="4.2" fill="#e59a53" stroke="#7a421f" stroke-width="2"/>
+    <path d="M35 82 v3 M52 82 v3" stroke="#a7602f" stroke-width="1.1" stroke-linecap="round"/>
+    <!-- Туловище и узнаваемый цветной жилет игрока. -->
+    <path d="M34 45 C30 53 30 64 33 73 Q42 81 54 74 C58 65 56 52 50 45 Z"
+      fill="#cb793e" stroke="#7a421f" stroke-width="2.5"/>
+    <path d="M33 51 Q42 56 54 51 L55 70 Q45 77 34 70 Z"
+      fill="${main}" stroke="${dark}" stroke-width="1.6" stroke-linejoin="round"/>
+    <ellipse cx="44" cy="62" rx="6.3" ry="9" fill="#fff0cc"/>
+    <path d="M44 54 v-5" stroke="#fff8ef" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="44" cy="72" r="2" fill="#ffe9a3" stroke="${dark}" stroke-width=".8"/>
+    <!-- Лапки будто держатся за ветку. -->
+    <path d="M34 51 Q27 54 28 60 Q30 65 36 61" fill="none" stroke="#b96e39" stroke-width="8" stroke-linecap="round"/>
+    <path d="M54 52 Q60 54 58 61 Q55 65 51 60" fill="none" stroke="#b96e39" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="34" cy="61" r="4" fill="#eda65d" stroke="#7a421f" stroke-width="1.3"/>
+    <circle cx="53" cy="61" r="4" fill="#eda65d" stroke="#7a421f" stroke-width="1.3"/>
+    <!-- Голова и светлые щёчки, чтобы зверёк читался в маленьком размере. -->
+    <ellipse cx="43.5" cy="32.5" rx="16" ry="17.2" fill="#d98442" stroke="#7a421f" stroke-width="2.6"/>
+    <path d="M30 38 C32 48 40 50 44 49 C52 50 58 45 58 39 C54 34 49 34 44 37 C39 33 34 34 30 38 Z"
+      fill="#ffe3ba"/>
+    <ellipse cx="37" cy="32" rx="2.4" ry="3.1" fill="#35271f"/>
+    <ellipse cx="50" cy="32" rx="2.4" ry="3.1" fill="#35271f"/>
+    <circle cx="37.9" cy="30.7" r=".9" fill="#fff"/>
+    <circle cx="50.9" cy="30.7" r=".9" fill="#fff"/>
+    <path d="M40.5 39 Q44 42 47.5 39 Q47 36 44 36 Q41 36 40.5 39 Z" fill="#7d4631"/>
+    <path d="M44 41 v2 M44 43 q-2 2-4 0 M44 43 q2 2 4 0" stroke="#7d4631" stroke-width="1.25" fill="none" stroke-linecap="round"/>
+    <circle cx="32.5" cy="39" r="2.1" fill="#f7af8f" opacity=".7"/>
+    <circle cx="55" cy="39" r="2.1" fill="#f7af8f" opacity=".7"/>
+    <path d="M34 41 L27 39 M34 43 L27 44 M54 41 L60 39 M54 43 L61 44" fill="none" stroke="#7d4631" stroke-width="1.1" stroke-linecap="round" opacity=".8"/>
+  </svg>`;
+}
+function svgFish(main, dark){
+  return '<svg viewBox="0 0 80 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<path d="M24 33 L7 19 Q3 18 5 25 L7 33 L5 41 Q3 49 7 47 Z" fill="'+dark+'" stroke="#234d68" stroke-width="1.7" stroke-linejoin="round"/>' +
+    '<path d="M39 20 L44 8 Q51 9 56 22 Z" fill="'+dark+'" opacity=".96"/>' +
+    '<path d="M43 46 L52 61 Q57 54 57 44 Z" fill="'+dark+'" opacity=".94"/>' +
+    '<ellipse cx="44" cy="34" rx="27" ry="18" fill="'+main+'" stroke="'+dark+'" stroke-width="2"/>' +
+    '<path d="M37 20 Q39 34 37 47" fill="none" stroke="'+dark+'" stroke-width="2.4" opacity=".43"/>' +
+    '<path d="M47 20 Q49 34 47 47" fill="none" stroke="'+dark+'" stroke-width="2.4" opacity=".3"/>' +
+    '<path d="M36 37 Q45 44 53 37 Q50 30 44 33 Z" fill="'+dark+'" opacity=".7"/>' +
+    '<circle cx="59" cy="29" r="5.4" fill="#ffffff"/><circle cx="60.5" cy="29" r="2.4" fill="#233b58"/>' +
+    '<circle cx="61.5" cy="28" r=".9" fill="#ffffff"/>' +
+    '<path d="M66 37 Q70 39 73 37" fill="none" stroke="'+dark+'" stroke-width="1.9" stroke-linecap="round"/>' +
+    '<circle cx="11" cy="14" r="3.2" fill="none" stroke="#daf8ff" stroke-width="1.5" opacity=".86"/>' +
+    '<circle cx="20" cy="7" r="2.1" fill="none" stroke="#daf8ff" stroke-width="1.3" opacity=".78"/>' +
+  '</svg>';
+}
+
 const THEMES = {
-  mountains: { name:'⛰ Альпинисты', trophy:'🏆', winAction:'добрался до вершины первым!',
+  mountains: { name:'⛰ Альпинисты', trophy:'🏆', winAction:'Вершина покорена!',
     sky:'linear-gradient(180deg,#8fd8ff 0%,#bfeaff 42%,#eaf9ff 100%)',
     hideSun:false, hideClouds:false, stars:false, goal:GOAL_FLAG, climber:svgMountaineer },
-  space: { name:'🚀 Космонавты', trophy:'🌙', winAction:'долетел до Луны первым!',
+  space: { name:'🚀 Космонавты', trophy:'🌙', winAction:'Луна достигнута!',
     sky:'linear-gradient(180deg,#050a24 0%,#0e1a44 55%,#1a2a5e 100%)',
     hideSun:true, hideClouds:true, stars:true, goal:GOAL_MOON, climber:svgRocket },
-  pirates: { name:'🏴‍☠️ Пираты', trophy:'💎', winAction:'добрался до сокровищ первым!',
+  pirates: { name:'🏴‍☠️ Пираты', trophy:'💎', winAction:'Сокровище найдено!',
     sky:'linear-gradient(180deg,#ffb26e 0%,#ffd39c 45%,#fff0d2 100%)',
     hideSun:false, hideClouds:false, stars:false, goal:GOAL_TREASURE, climber:svgPirate },
-  robots: { name:'🤖 Роботы', trophy:'⚡', winAction:'добрался до зарядки первым!',
+  robots: { name:'🤖 Роботы', trophy:'⚡', winAction:'Зарядка получена!',
     sky:'linear-gradient(180deg,#c4dff2 0%,#d8ecf7 45%,#eef8ff 100%)',
-    hideSun:false, hideClouds:false, stars:false, goal:GOAL_BATTERY, climber:svgRobot }
+    hideSun:false, hideClouds:false, stars:false, goal:GOAL_BATTERY, climber:svgRobot },
+  candy: { name:'🍬 Сладости', trophy:'🎂', winAction:'Торт ждёт победителя!',
+    sky:'linear-gradient(180deg,#ffd1e3 0%,#ffe3f0 44%,#fff6fb 100%)',
+    hideSun:false, hideClouds:false, stars:false, goal:GOAL_CAKE, climber:svgGingerbread },
+  squirrels: { name:'🐿 Белки', trophy:'🌰', winAction:'Жёлудь найден!',
+    sky:'linear-gradient(180deg,#d8f0b3 0%,#edf8d8 46%,#f9fff0 100%)',
+    hideSun:false, hideClouds:false, stars:false, goal:GOAL_ACORN, climber:svgSquirrel },
+  ocean: { name:'🐠 Подводный мир', trophy:'🦪', winAction:'Жемчужина найдена!',
+    sky:'linear-gradient(180deg,#b4f3ff 0%,#42b9df 48%,#096eaa 100%)',
+    hideSun:true, hideClouds:true, stars:false, goal:GOAL_PEARL, climber:svgFish }
 };
 
 const state = {
-  steps: [0, 0], maxSteps: 8, level: 'auto',
+  steps: [0, 0], maxSteps: 8, level: 'auto', playerMode:'shared', activePlayer:0, roundStarter:0, nextRoundStarter:0, finalResponsePlayer:null, taskMode:'auto', showSyllableBreaks:true, recentTaskKeys:[],
   consonants: ['м','н','л','р','п','б','т','д','с','к'],
   vowels: ['а','о','у','ы','и','э'],
-  timerOn: false, names: ['Игрок 1','Игрок 2'], theme: 'mountains',
+  timerOn: false, names: ['Игрок 1','Игрок 2'], playerColors:['#ff6b3d','#2f9bff'], theme: 'mountains',
   answered: 0, history: [], task: null, finished: false,
   timerRunning: false, elapsed: 0, timerId: null,
   inputLocked: false,
@@ -702,16 +1322,86 @@ const rnd = arr => arr[Math.floor(Math.random() * arr.length)];
 function isVowel(ch){ ch = ch.toLowerCase(); return VOWELS_ALL.indexOf(ch) !== -1; }
 function isSoft(ch){ return ch === 'ь' || ch === 'ъ'; }
 function isBadPair(c, v){
-  const hardOnly = 'шжц', alwaysSoft = 'чщй';
-  if (hardOnly.indexOf(c) !== -1 && (v === 'ю' || v === 'я')) return true;
-  if (alwaysSoft.indexOf(c) !== -1 && (v === 'ы' || v === 'э' || v === 'ю' || v === 'я' || v === 'о')) return true;
+  if (c === 'й') return true;
+  if ('шжц'.includes(c) && ['ю','я','ы'].includes(v)) return true;
+  if ('чщ'.includes(c) && ['ы','э','ю','я','о'].includes(v)) return true;
   return false;
 }
 
 function saveSettings(){
   const s = { theme:state.theme, level:state.level, maxSteps:state.maxSteps, names:state.names,
-              timerOn:state.timerOn, consonants:state.consonants, vowels:state.vowels };
+              timerOn:state.timerOn, consonants:state.consonants, vowels:state.vowels,
+              taskMode:state.taskMode, playerMode:state.playerMode, showSyllableBreaks:state.showSyllableBreaks,
+              playerColors:state.playerColors };
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }catch(e){}
+}
+function normalizePlayerColor(value){
+  return typeof value === 'string' && /^#[0-9a-fA-F]{6}$/.test(value) ? value.toLowerCase() : null;
+}
+function hexRGB(value){
+  const h = value.slice(1);
+  return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16));
+}
+function rgbHEX(rgb){
+  return '#' + rgb.map(x=>Math.max(0,Math.min(255,Math.round(x))).toString(16).padStart(2,'0')).join('');
+}
+function mixColor(color, other, weight){
+  const a=hexRGB(color), b=hexRGB(other);
+  return rgbHEX(a.map((v,i)=>v*(1-weight)+b[i]*weight));
+}
+function luminance(hex){
+  const rgb=hexRGB(hex).map(n=>{
+    const c=n/255;return c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4);
+  });
+  return rgb[0]*.2126 + rgb[1]*.7152 + rgb[2]*.0722;
+}
+function inkForColor(main, light){
+  const darkInk = '#16233b', white='#ffffff';
+  const ratio=(x,y)=>{const a=luminance(x),b=luminance(y);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);};
+  return Math.min(ratio(darkInk,main),ratio(darkInk,light)) >=
+    Math.min(ratio(white,main),ratio(white,light)) ? darkInk : white;
+}
+function applyPlayerColors(){
+  const root=document.documentElement.style;
+  state.playerColors.forEach((color,i)=>{
+    const p=i+1, rgb=hexRGB(color), light=mixColor(color,'#ffffff',.24),dark=mixColor(color,'#000000',.3);
+    root.setProperty('--p'+p,color);
+    root.setProperty('--p'+p+'-light',light);
+    root.setProperty('--p'+p+'-dark',dark);
+    root.setProperty('--p'+p+'-text',inkForColor(color,light));
+    root.setProperty('--p'+p+'-tint','rgba('+rgb.join(',')+',.30)');
+    root.setProperty('--p'+p+'-halo','rgba('+rgb.join(',')+',.22)');
+    const native=$('#playerColor'+p);
+    if(native) native.value=color;
+    const palette=$('#colorPalette'+p);
+    if(palette) palette.querySelectorAll('button[data-color]').forEach(btn=>{
+      btn.setAttribute('aria-pressed',String(btn.dataset.color===color));
+    });
+  });
+  buildClimbers();
+}
+function setPlayerColor(player,color){
+  const valid=normalizePlayerColor(color);
+  if(!valid || (player!==1 && player!==2)) return;
+  state.playerColors[player-1]=valid;
+  applyPlayerColors();
+  saveSettings();
+}
+function buildPlayerColorSettings(){
+  [1,2].forEach(player=>{
+    const palette=$('#colorPalette'+player);
+    palette.innerHTML='';
+    PLAYER_COLOR_PRESETS.forEach(([color,label])=>{
+      const btn=document.createElement('button');
+      btn.type='button'; btn.className='color-swatch';btn.dataset.color=color;
+      btn.style.background=color;btn.style.setProperty('--swatch-ink',inkForColor(color,color));
+      btn.title=label;btn.setAttribute('aria-label',label+' — игрок '+player);
+      btn.addEventListener('click',()=>setPlayerColor(player,color));
+      palette.appendChild(btn);
+    });
+    $('#playerColor'+player).addEventListener('input',e=>setPlayerColor(player,e.target.value));
+  });
+  applyPlayerColors();
 }
 function loadSettings(){
   try{
@@ -719,129 +1409,225 @@ function loadSettings(){
     if (!raw) return;
     const p = JSON.parse(raw);
     if (p.theme && THEMES[p.theme]) state.theme = p.theme;
-    if (p.level) state.level = p.level;
-    if (p.maxSteps) state.maxSteps = p.maxSteps;
+    if (['auto','1','2','3','4','5'].includes(String(p.level))) state.level = p.level;
+    if (TASK_MODES.some(m => m.v === p.taskMode)) state.taskMode = p.taskMode;
+    if (['shared','turns'].includes(p.playerMode)) state.playerMode = p.playerMode;
+    if (typeof p.showSyllableBreaks === 'boolean') state.showSyllableBreaks=p.showSyllableBreaks;
+    if ([5,6,8,10,12].includes(p.maxSteps)) state.maxSteps = p.maxSteps;
     if (p.names && p.names.length === 2) state.names = p.names;
+    if (Array.isArray(p.playerColors) && p.playerColors.length === 2){
+      state.playerColors = p.playerColors.map((c,i) => normalizePlayerColor(c) || state.playerColors[i]);
+    }
     if (typeof p.timerOn === 'boolean') state.timerOn = p.timerOn;
-    if (Array.isArray(p.consonants) && p.consonants.length) state.consonants = p.consonants;
-    if (Array.isArray(p.vowels) && p.vowels.length) state.vowels = p.vowels;
+    if (Array.isArray(p.consonants) && p.consonants.length){
+      const uniqueCons = [...new Set(p.consonants.filter(c => CONS_ALL.includes(c)))];
+      if (uniqueCons.length) state.consonants = uniqueCons;
+    }
+    if (Array.isArray(p.vowels) && p.vowels.length){
+      const uniqueVowels = [...new Set(p.vowels.filter(v => VOWELS_ALL.includes(v)))];
+      if (uniqueVowels.length) state.vowels = uniqueVowels;
+    }
   }catch(e){}
 }
 
-function getAvailableConsonants(){ return state.consonants.length ? state.consonants.slice() : ['м','н','л']; }
+/* ==== ПОДБОР МАТЕРИАЛА: строго из выбранных букв ==== */
+/* Деление слов по слогам отредактировано вручную для учебного чтения.
+   Не заменять границы алгоритмическим разбиением по гласным:
+   сос-на, дос-ка, чаш-ка, кап-ля, кусочки со стечениями. */
+function allowedLetters(syl){
+  return [...syl].every(ch => isVowel(ch) ? state.vowels.includes(ch) :
+    (isSoft(ch) || state.consonants.includes(ch)));
+}
 function getAvailableVowels(level){
-  let sel = state.vowels.filter(v => VOWELS_ALL.indexOf(v) !== -1);
-  if (!sel.length) sel = ['а','о','у'];
+  const chosen = state.vowels.filter(v => VOWELS_ALL.includes(v));
   if (level <= 1){
-    const simple = sel.filter(v => VOWELS_MAIN.indexOf(v) !== -1);
-    if (simple.length) return simple;
+    const basics = chosen.filter(v => VOWELS_MAIN.includes(v));
+    if (basics.length) return basics;
   }
-  return sel;
+  return chosen;
 }
-function makeSyllable(level){
-  const vowels = getAvailableVowels(level), cons = getAvailableConsonants();
-  for (let i = 0; i < 60; i++){
-    const c = rnd(cons), v = rnd(vowels);
-    if (isBadPair(c, v)) continue;
-    return c + v;
-  }
-  return 'ма';
+function syllablePool(level){
+  const vowels = getAvailableVowels(level);
+  return state.consonants.filter(c => c !== 'й')
+    .flatMap(c => vowels.filter(v => !isBadPair(c,v)).map(v => c+v));
 }
+function complexPool(){
+  return COMPLEX_SYLLABLES.filter(allowedLetters);
+}
+function wordPool(list){
+  return list.filter(word => word.every(allowedLetters));
+}
+function phrasePool(list){
+  return list.filter(entry => entry.words.every(word => word.every(allowedLetters)));
+}
+function getTaskPool(level = currentLevel()){
 
-/* ==== ТРОЙКА «НАЙДИ ДВА ОДИНАКОВЫХ» ==== */
+  const syllables = syllablePool(level);
+  const result = {
+    syllable: syllables,
+    chain: syllables,
+    compare: syllables.length >= 2 ? syllables : [],
+    word2: wordPool(WORDS2_UNIQUE),
+    word34: wordPool(WORDS34_UNIQUE),
+    phrase: phrasePool(PHRASES),
+    sentence: phrasePool(SENTENCES),
+    clusters: complexPool()
+  };
+  return result;
+}
 function makeCompareTriple(level){
-  const vowels = getAvailableVowels(level), cons = getAvailableConsonants();
-
-  const base = makeSyllable(level);
-  const baseC = base[0], baseV = base.slice(1);
-
-  const otherCons   = cons.filter(c => c !== baseC && !isBadPair(c, baseV));
-  const otherVowels = vowels.filter(v => v !== baseV && !isBadPair(baseC, v));
-
-  const variants = [];
-  if (otherCons.length)   variants.push(rnd(otherCons) + baseV);
-  if (otherVowels.length) variants.push(baseC + rnd(otherVowels));
-
-  let odd = variants.length ? rnd(variants) : null;
-
-  if (!odd || odd === base){
-    for (let i = 0; i < 30; i++){
-      const c = rnd(cons), v = rnd(vowels);
-      if (isBadPair(c, v)) continue;
-      const test = c + v;
-      if (test !== base){ odd = test; break; }
-    }
-  }
-  if (!odd || odd === base) odd = base === 'ма' ? 'на' : 'ма';
-
-  const oddPos = Math.floor(Math.random() * 3);
-  const arr = [base, base, base];
-  arr[oddPos] = odd;
+  const pool = syllablePool(level);
+  if (pool.length < 2) return null;
+  const base = rnd(pool);
+  const close = pool.filter(s => s !== base && (s[0] === base[0] || s[1] === base[1]));
+  const odd = rnd(close.length ? close : pool.filter(s => s !== base));
+  const arr = [base,base,base];
+  arr[Math.floor(Math.random()*3)] = odd;
   return arr;
 }
-
-function pickWord(list){
-  const cons = state.consonants, vows = state.vowels;
-  if (cons.length && vows.length){
-    const f = list.filter(w => w.every(syl => [...syl].every(ch => {
-      const lc = ch.toLowerCase();
-      if (isVowel(lc)) return vows.indexOf(lc) !== -1;
-      if (isSoft(lc)) return true;
-      return cons.indexOf(lc) !== -1;
-    })));
-    if (f.length) return rnd(f).slice();
+function pickType(level, pool){
+  const possible = Object.keys(pool).filter(type => pool[type].length > 0);
+  if (!possible.length) return null;
+  if (state.taskMode !== 'auto'){
+    return pool[state.taskMode].length ? state.taskMode : null;
   }
-  if (cons.length){
-    const f = list.filter(w => w.every(syl => [...syl].every(ch => CONS_ALL.indexOf(ch) === -1 || cons.indexOf(ch) !== -1)));
-    if (f.length) return rnd(f).slice();
-  }
-  return rnd(list).slice();
+  let weights;
+  if (level === 1) weights = ['syllable','syllable','syllable'];
+  else if (level === 2) weights = ['syllable','chain','syllable','chain'];
+  else if (level === 3) weights = ['chain','word2','chain','word2'];
+  else if (level === 4) weights = ['compare','chain','word2','word2','phrase'];
+  else weights = ['word34','word34','compare','word2','chain','phrase','sentence'];
+  const eligible = weights.filter(t => pool[t].length > 0);
+  return rnd(eligible.length ? eligible : possible);
 }
-function pickType(level){
-  const r = Math.random();
-  if (level === 1) return 'syllable';
-  if (level === 2) return r < 0.5 ? 'syllable' : 'chain';
-  if (level === 3) return r < 0.35 ? 'chain' : 'word2';
-  if (level === 4) return r < 0.42 ? 'compare' : (r < 0.72 ? 'word2' : 'chain');
-  return r < 0.55 ? 'word34' : (r < 0.8 ? 'compare' : 'word2');
-}
-function buildTask(type, level){
+function buildTask(type, level, pool){
   if (type === 'syllable'){
-    const s = makeSyllable(level);
-    return { key:'s-'+s, hint:'Прочитай слог', syllables:[s], sep:'', compare:false };
+    const syl = rnd(pool.syllable);
+    return { key:'s-'+syl, hint:'Прочитай слог', syllables:[syl], sep:'', compare:false };
   }
   if (type === 'chain'){
     const n = level <= 2 ? 2 : 3, arr = [];
-    for (let i = 0; i < n; i++) arr.push(makeSyllable(level));
-    return { key:'c-'+arr.join(''), hint:'Прочитай цепочку слогов', syllables:arr, sep:'-', compare:false };
+    for (let i=0;i<n;i++) arr.push(rnd(pool.chain));
+    return { key:'c-'+arr.join('/'), hint:'Прочитай цепочку слогов', syllables:arr, sep:'-', compare:false };
+  }
+  if (type === 'clusters'){
+    const syl = rnd(pool.clusters);
+    return { key:'x-'+syl, hint:'Прочитай слог со стечением', syllables:[syl], sep:'', compare:false };
   }
   if (type === 'word2'){
-    const w = pickWord(WORDS2);
-    return { key:'w-'+w.join(''), hint:'Прочитай слово по слогам', syllables:w, sep:'-', compare:false };
+    const w = rnd(pool.word2).slice();
+    return { key:'w-'+w.join('/'), hint:'Прочитай слово', syllables:w, sep:'-', compare:false, word:true };
   }
   if (type === 'word34'){
-    const w = pickWord(WORDS34);
-    return { key:'W-'+w.join(''), hint:'Прочитай длинное слово по слогам', syllables:w, sep:'-', compare:false };
+    const w = rnd(pool.word34).slice();
+    return { key:'W-'+w.join('/'), hint:'Прочитай длинное слово', syllables:w, sep:'-', compare:false, word:true };
+  }
+  if (type === 'phrase' || type === 'sentence'){
+    const entry = rnd(pool[type]);
+    return { key:type+'-'+entry.words.map(w=>w.join('')).join('/'),
+      hint:type === 'phrase' ? 'Прочитай фразу' : 'Прочитай предложение',
+      words:entry.words.map(w=>w.slice()), punctuation:entry.punctuation,
+      syllables:[], sep:'-', compare:false, phrase:true };
   }
   const triple = makeCompareTriple(level);
-  return {
-    key: 'p-' + triple.join('|'),
-    hint: 'Найди два одинаковых слога',
-    syllables: triple,
-    sep: '',
-    compare: true
-  };
+  if (!triple) return null;
+  return { key:'p-'+triple.join('|'), hint:'Найди два одинаковых слога',
+    syllables:triple, sep:'', compare:true };
 }
 function currentLevel(){
-  if (state.level === 'auto') return Math.min(5, 1 + Math.floor(state.answered / 3));
-  return Number(state.level);
+  if (state.level !== 'auto') return Number(state.level);
+  // В персональном режиме задания выбираются для ребёнка, чей сейчас ход.
+  // В общей игре ориентируемся на менее продвинувшегося, а не на сумму двух счётов.
+  const score = state.playerMode === 'turns'
+    ? state.steps[state.activePlayer]
+    : Math.min(...state.steps);
+  return Math.min(5, 1 + Math.floor(score / 2));
 }
-function generateTask(){
+function updateTurnUI(){
+  const personal = state.playerMode === 'turns';
+  const pendingShared = !personal && state.pendingWinner !== null;
+  const turn = $('#turnHint');
+  turn.classList.toggle('hidden', !personal && !pendingShared);
+  if (personal){
+    const name = state.names[state.activePlayer];
+    const finalChance = state.finalResponsePlayer === state.activePlayer ||
+      (state.activePlayer !== state.roundStarter && Math.max(...state.steps) >= state.maxSteps);
+    turn.textContent = (finalChance ? 'Последний ход: ' : 'Сейчас читает: ') +
+      name + ' · уровень ' + currentLevel();
+  } else if (pendingShared){
+    turn.textContent = 'Последний шанс сравнять счёт: ' + state.names[2 - state.pendingWinner];
+  }
+  [1, 2].forEach(p => {
+    const active = personal ? state.activePlayer === p - 1 :
+      pendingShared ? p !== state.pendingWinner : true;
+    const side = $('#side' + p);
+    side.classList.toggle('waiting-turn', !active);
+    const btn = $('#btnP' + p);
+    btn.disabled = !active || state.finished || state.inputLocked || !state.task;
+    btn.title = !active ? 'Сейчас ход другого игрока' : 'Засчитать чтение';
+    $('#btnUndo' + p).disabled = state.steps[p - 1] <= 0;
+  });
+  const next = $('#btnNext');
+  next.textContent = pendingShared ? '🏁 Завершить раунд' : '⟳ Новое задание';
+  next.setAttribute('aria-label', pendingShared ? 'Новое задание — закончить раунд без второго балла' : 'Новое задание');
+}
+
+function materialMessage(){
+  const pool = getTaskPool();
+  const chosen = state.taskMode;
+  if (chosen === 'auto' && Object.values(pool).some(a => a.length)){
+    return { ok:true, text:'Авто: задания подбираются из выбранных букв. Если слов пока нет, игра предложит слоги.' };
+  }
+  if (chosen !== 'auto' && pool[chosen].length){
+    const suffix = chosen === 'compare' ? ' разных слога.' : ' подходящих вариантов.';
+    return { ok:true, text:'Доступно '+pool[chosen].length+suffix+' Если вариантов мало, некоторые будут повторяться.' };
+  }
+  return {ok:false,text:'Для этого задания пока нет материала с выбранными буквами. Добавь буквы или выбери другой тип задания.'};
+}
+function updateMaterialNotice(){
+  const box = $('#materialNotice');
+  if (!box) return;
+  const msg = materialMessage();
+  box.textContent = msg.text;
+  box.classList.toggle('warning', !msg.ok);
+  $('#btnRestart').disabled = !msg.ok;
+}
+function readingTaskKey(task){
+  if(!task) return '';
+  if(task.phrase) return task.words.map(w=>w.join('')).join(' ')+(task.punctuation||'');
+  return (task.syllables||[]).join(task.word ? '' : '|');
+}
+function generateTask(excludeTask=null){
   const level = currentLevel();
-  let task = null;
-  for (let i = 0; i < 16; i++){
-    task = buildTask(pickType(level), level);
-    if (!state.task || task.key !== state.task.key) break;
+  const pool = getTaskPool(level);
+  const excludedText = readingTaskKey(excludeTask);
+  let task = null, candidate = null;
+  // Prefer both a fresh item and reading content different from the preceding task.
+  for (let i=0;i<90;i++){
+    const type = pickType(level,pool);
+    if (!type) return null;
+    const proposal = buildTask(type,level,pool);
+    if (!proposal) continue;
+    if (excludedText && readingTaskKey(proposal) === excludedText) continue;
+    if (!candidate) candidate = proposal;
+    if (!state.recentTaskKeys.includes(proposal.key)){
+      task = proposal;
+      break;
+    }
+  }
+  // When there are only a few words, allow a previous word, but NOT the one just read.
+  task = task || candidate;
+  // The only-entry case has no other valid reading content: return null rather
+  // than giving the second child exactly the first child's word.
+  if (!task && excludeTask) return null;
+  if (!task){
+    const type=pickType(level,pool);
+    if (!type) return null;
+    task=buildTask(type,level,pool);
+  }
+  if(task){
+    state.recentTaskKeys.push(task.key);
+    if(state.recentTaskKeys.length>8) state.recentTaskKeys.shift();
   }
   return task;
 }
@@ -859,7 +1645,9 @@ function makeGroup(syls, sep){
   g.className = 'group';
   syls.forEach((s, i) => {
     if (i > 0){
-      if (sep){
+      if (sep === null){
+        // При чтении целиком между частями слова нет пробелов.
+      } else if (sep){
         const sp = document.createElement('span');
         sp.className = 'sep'; sp.textContent = sep;
         g.appendChild(sp);
@@ -876,12 +1664,34 @@ function makeGroup(syls, sep){
 }
 function renderTask(task){
   state.task = task;
-  $('#hintEl').textContent = task.hint;
+  updateTurnUI();
   const el = $('#taskEl');
   el.innerHTML = '';
+  el.removeAttribute('aria-label');
+  if (!task){
+    $('#hintEl').textContent = 'Нужны другие буквы';
+    el.textContent = 'Открой настройки';
+    el.style.fontSize = 'clamp(18px,2.5vw,34px)';
+    return;
+  }
+  $('#hintEl').textContent = task.hint;
   el.classList.toggle('compare', !!task.compare);
+  el.classList.toggle('phrase', !!task.phrase);
 
-  if (task.compare){
+  if (task.phrase){
+    el.setAttribute('aria-label',task.words.map(w=>w.join('')).join(' ')+(task.punctuation||''));
+    task.words.forEach((word, index) => {
+      const g = makeGroup(word, state.showSyllableBreaks ? '-' : null);
+      g.classList.add('phrase-word');
+      if (index === task.words.length - 1 && task.punctuation){
+        const p = document.createElement('span');
+        p.className = 'phrase-punctuation';
+        p.textContent = task.punctuation;
+        g.appendChild(p);
+      }
+      el.appendChild(g);
+    });
+  } else if (task.compare){
     task.syllables.forEach((syl, i) => {
       if (i > 0){
         const d = document.createElement('span');
@@ -891,7 +1701,7 @@ function renderTask(task){
       el.appendChild(makeGroup([syl], ''));
     });
   } else {
-    el.appendChild(makeGroup(task.syllables, task.sep));
+    el.appendChild(makeGroup(task.syllables, task.word && !state.showSyllableBreaks ? null : task.sep));
   }
   fitTask();
 }
@@ -911,6 +1721,25 @@ function fitTask(){
   const arena = document.querySelector('.arena');
   if (!center || !arena) return;
   const w = center.clientWidth, h = arena.clientHeight;
+  if(el.classList.contains('phrase')){
+    const words = [...el.querySelectorAll('.phrase-word')];
+    if(!words.length) return;
+    const unitLengths = words.map(x => x.textContent.length);
+    const longest = Math.max(...unitLengths);
+    const total = unitLengths.reduce((a,b)=>a+b,0);
+    const portrait = innerWidth <= 650 && innerHeight >= innerWidth;
+    const maxHeight = Math.max(68, center.clientHeight * (portrait ? .72 : .68));
+    const maxWidth = w*.94;
+    // Начинаем с размера, позволяющего переносить фразу по словам, а не уменьшать всё до одной строки.
+    let fs = Math.min(portrait ? 43 : 74, Math.max(27, maxWidth/(Math.max(longest+1,6)*.66)));
+    for(let i=0;i<20;i++){
+      el.style.fontSize = fs+'px';
+      // Individual words never break; the phrase itself can wrap between words.
+      if(el.scrollWidth <= maxWidth+2 && el.scrollHeight <= maxHeight+2) break;
+      fs=Math.max(18,fs*.91);
+    }
+    return;
+  }
   let units = 0;
   el.querySelectorAll('.syl').forEach(s => { units += s.textContent.length; });
   const seps = el.querySelectorAll('.sep').length + (el.classList.contains('compare') ? 2 : 0);
@@ -926,7 +1755,7 @@ function fitTask(){
 function applyTheme(key){
   const theme = THEMES[key] || THEMES.mountains;
   state.theme = key;
-  document.body.dataset.theme = key;
+  document.body.dataset.gameTheme = key;
   document.body.style.background = theme.sky;
 
   document.querySelectorAll('.goal').forEach(el => { el.innerHTML = theme.goal; });
@@ -968,8 +1797,8 @@ function applyTheme(key){
 
 function buildClimbers(){
   const theme = THEMES[state.theme] || THEMES.mountains;
-  $('#climber1 .climber').innerHTML = theme.climber('#ff6b3d', '#c9440f');
-  $('#climber2 .climber').innerHTML = theme.climber('#2f9bff', '#0f63b8');
+  $('#climber1 .climber').innerHTML = theme.climber(state.playerColors[0], mixColor(state.playerColors[0],'#000000',.30));
+  $('#climber2 .climber').innerHTML = theme.climber(state.playerColors[1], mixColor(state.playerColors[1],'#000000',.30));
 }
 
 function buildTracks(){
@@ -980,11 +1809,22 @@ function buildTracks(){
       const ratio = i / state.maxSteps;
       const d = document.createElement('div');
       d.className = 'ledge';
-      d.style.bottom = (ratio * 100) + '%';
+      // Only the ocean progresses top-to-bottom: the bubbles mark deeper water.
+      if (state.theme === 'ocean'){
+        d.style.top = (ratio * 100) + '%';
+        d.style.bottom = 'auto';
+      } else {
+        d.style.bottom = (ratio * 100) + '%';
+      }
       if (state.theme === 'mountains'){
         const w = 88 - ratio * 70;
         d.style.width = w + '%';
         d.style.left = ((100 - w) / 2) + '%';
+      } else if (state.theme === 'squirrels'){
+        // Branches grow alternately from the tree trunk.
+        d.style.width = '59%';
+        d.style.left = i % 2 ? '-4%' : '45%';
+        d.style.transform = 'translateY(50%)';
       }
       track.appendChild(d);
     }
@@ -996,7 +1836,13 @@ function updateClimbers(animatePlayer){
     const steps = state.steps[p - 1];
     const pos = document.getElementById('climber' + p);
     const ratio = Math.max(0, Math.min(1, steps / state.maxSteps));
-    pos.style.bottom = 'calc(' + ratio + ' * (100% - var(--ch)))';
+    if (state.theme === 'ocean'){
+      pos.style.bottom = 'auto';
+      pos.style.top = 'calc(' + ratio + ' * (100% - var(--ch)))';
+    } else {
+      pos.style.top = 'auto';
+      pos.style.bottom = 'calc(' + ratio + ' * (100% - var(--ch)))';
+    }
     if (animatePlayer === p){
       const climber = pos.querySelector('.climber');
       climber.classList.remove('hop');
@@ -1004,6 +1850,9 @@ function updateClimbers(animatePlayer){
       climber.classList.add('hop');
     }
     document.getElementById('score' + p).textContent = steps + ' / ' + state.maxSteps;
+    // Возможность отменить ошибочный клик появляется сразу, не через 700 мс.
+    const undoBtn = document.getElementById('btnUndo' + p);
+    if (undoBtn) undoBtn.disabled = steps <= 0;
   });
 }
 
@@ -1026,20 +1875,31 @@ function startTimer(){
   if (!state.timerOn || state.timerRunning || state.finished) return;
   state.timerRunning = true;
   const base = state.elapsed, startedAt = Date.now();
+  state.timerBase = base;
+  state.timerStartedAt = startedAt;
   state.timerId = setInterval(() => {
     state.elapsed = base + (Date.now() - startedAt);
     updateTimerDisplay();
   }, 200);
 }
 function stopTimer(){
+  if (state.timerRunning && state.timerStartedAt){
+    state.elapsed = state.timerBase + (Date.now() - state.timerStartedAt);
+  }
   if (state.timerId) clearInterval(state.timerId);
   state.timerId = null;
   state.timerRunning = false;
+  state.timerStartedAt = null;
+  updateTimerDisplay();
 }
 
 /* ==== КОНЕЦ РАУНДА ==== */
 function finishRound(winner){
   state.finished = true;
+  state.pendingWinner = null;
+  state.finalResponsePlayer = null;
+  state.inputLocked = false;
+  updateTurnUI();
   stopTimer();
   if (state.taskSwapTimer){ clearTimeout(state.taskSwapTimer); state.taskSwapTimer = null; }
   if (state.graceTimerId){ clearTimeout(state.graceTimerId); state.graceTimerId = null; }
@@ -1059,13 +1919,95 @@ function finishRound(winner){
   }, 1700);
 }
 
+/* После ОБОИХ ходов в паре проверяем финиш.
+   Игрок, который ходит первым, не может выиграть, лишив соперника последней попытки. */
+function turnsWinnerAfterTurn(){
+  if (state.playerMode !== 'turns' || state.activePlayer === state.roundStarter ||
+      Math.max(...state.steps) < state.maxSteps) return null;
+  if (state.steps[0] === state.steps[1]) return 'draw';
+  return state.steps[0] > state.steps[1] ? 1 : 2;
+}
+
+/* В общем режиме не заставляем второго ребёнка уложиться в три секунды.
+   Если до финиша ему один балл, у него остаётся одна полноценная попытка. */
+function startSharedFinish(winner){
+  const otherScore = state.steps[2 - winner];
+  state.inputLocked = false;
+  if (otherScore < state.maxSteps - 1){
+    finishRound(winner);
+    return;
+  }
+  state.pendingWinner = winner;
+  const previous = state.task;
+  const next = generateTask(previous);
+  if(!next){
+    // Material was limited to exactly one exercise. Do not repeat it silently;
+    // pedagogues can finish the round without awarding a duplicate point.
+    state.inputLocked = false;
+    renderTask(null);
+    $('#hintEl').textContent = 'Нет другого задания для последнего шанса';
+    $('#taskEl').textContent = 'Расширь набор букв в следующем раунде или заверши раунд';
+    $('#taskEl').style.fontSize = 'clamp(17px,2vw,28px)';
+    updateTurnUI();
+    return;
+  }
+  // Switch to the final task after the same short transition as a normal turn.
+  state.inputLocked = true;
+  const el=$('#taskEl');
+  el.classList.add('task-busy');
+  if(state.taskSwapTimer) clearTimeout(state.taskSwapTimer);
+  state.taskSwapTimer=setTimeout(()=>{
+    state.taskSwapTimer=null;
+    if(state.finished || state.pendingWinner!==winner) return;
+    el.classList.remove('task-busy');
+    state.inputLocked=false;
+    renderTask(next);
+  },700);
+  updateTurnUI();
+}
+
 /* ==== ИГРОВОЙ ПРОЦЕСС ==== */
 function addPoint(player){
-  if (state.finished || isModalOpen()) return;
+  if (state.finished || isModalOpen() || !state.task) return;
+  if (state.playerMode === 'turns' && state.activePlayer !== player - 1) return;
+  if (state.playerMode === 'turns'){
+    if (state.inputLocked || state.pendingWinner !== null) return;
+    state.inputLocked = true;
+    startTimer();
+    state.history.push({ player, kind:'point', steps:state.steps.slice(), answered:state.answered,
+      task:state.task, activePlayer:state.activePlayer });
+    state.steps[player - 1]++;
+    state.answered++;
+    updateClimbers(player);
+    updateTurnUI();
+    // Если после исправления счёта одному ребёнку остался последний ход,
+    // завершаем раунд сразу после его попытки.
+    const winner = state.finalResponsePlayer === player - 1
+      ? (state.steps[0] === state.steps[1] ? 'draw' : (state.steps[0] > state.steps[1] ? 1 : 2))
+      : turnsWinnerAfterTurn();
+    if (winner !== null){
+      state.inputLocked = false;
+      finishRound(winner);
+      return;
+    }
+    const el = $('#taskEl');
+    el.classList.add('task-busy');
+    if (state.taskSwapTimer) clearTimeout(state.taskSwapTimer);
+    state.taskSwapTimer = setTimeout(() => {
+      state.taskSwapTimer = null;
+      el.classList.remove('task-busy');
+      if (state.finished) return;
+      state.activePlayer = 1 - state.activePlayer;
+      state.inputLocked = false;
+      renderTask(generateTask());
+    }, 700);
+    return;
+  }
 
   if (state.pendingWinner !== null){
-    if (state.pendingWinner === player) return;
+    if (state.pendingWinner === player || state.inputLocked) return;
 
+    state.history.push({ player, kind:'point', steps: state.steps.slice(), answered: state.answered, task: state.task, activePlayer:state.activePlayer });
     startTimer();
     state.steps[player - 1]++;
     state.answered++;
@@ -1089,23 +2031,17 @@ function addPoint(player){
   state.inputLocked = true;
 
   startTimer();
-  state.history.push({ steps: state.steps.slice(), answered: state.answered, task: state.task });
+  state.history.push({ player, kind:'point', steps: state.steps.slice(), answered: state.answered, task: state.task, activePlayer:state.activePlayer });
   state.steps[player - 1]++;
   state.answered++;
   updateClimbers(player);
+  updateTurnUI();
 
   const nowFinished = state.steps[player - 1] >= state.maxSteps;
 
   if (nowFinished){
-    state.pendingWinner = player;
-    state.inputLocked = false;
-    state.graceTimerId = setTimeout(() => {
-      state.graceTimerId = null;
-      if (state.finished || state.pendingWinner === null) return;
-      const w = state.pendingWinner;
-      state.pendingWinner = null;
-      finishRound(w);
-    }, 3000);
+    startSharedFinish(player);
+    updateTurnUI();
     return;
   }
 
@@ -1121,8 +2057,36 @@ function addPoint(player){
   }, 700);
 }
 
-function undo(){
-  if (isModalOpen()) return;
+/* Отмена балла одного ребёнка не отменяет ход другого и не меняет
+   очерёдность, если следующий ребёнок уже получил своё задание.
+   Если отменяют только что поставленный балл, возвращаем текущий материал. */
+function undoForPlayer(player){
+  if (isModalOpen() || (player !== 1 && player !== 2)) return;
+  const idx = state.history.findLastIndex(h => h.kind === 'point' && h.player === player);
+  if (idx < 0) return;
+  const isLatest = idx === state.history.length - 1;
+  const h = state.history.splice(idx, 1)[0];
+  const wasFinished = state.finished;
+  const winnerUndo = state.pendingWinner === player;
+  const currentSwap = !!state.taskSwapTimer && isLatest &&
+    (state.playerMode !== 'turns' || state.activePlayer === player - 1);
+  state.steps[player - 1] = Math.max(0, state.steps[player - 1] - 1);
+  state.answered = Math.max(0, state.answered - 1);
+
+  // При исправлении более раннего балла не прерываем уже начатый ход
+  // другого ребёнка и не сбрасываем его анимацию перехода.
+  if (!wasFinished && !winnerUndo && !currentSwap){
+    updateClimbers();
+    // После исправления счёта второй больше не может сравнять счёт.
+    // Не оставляем игру зависшей в ожидании невозможной ничьей.
+    if (state.playerMode === 'shared' && state.pendingWinner !== null &&
+        state.steps[2 - state.pendingWinner] < state.maxSteps - 1){
+      finishRound(state.pendingWinner);
+    } else {
+      updateTurnUI();
+    }
+    return;
+  }
 
   if (state.graceTimerId){ clearTimeout(state.graceTimerId); state.graceTimerId = null; }
   if (state.victoryTimerId){ clearTimeout(state.victoryTimerId); state.victoryTimerId = null; }
@@ -1130,24 +2094,75 @@ function undo(){
   $('#taskEl').classList.remove('task-busy');
   state.inputLocked = false;
   state.pendingWinner = null;
-
-  const h = state.history.pop();
-  if (!h) return;
-  state.steps = h.steps.slice();
-  state.answered = h.answered;
+  state.finalResponsePlayer = null;
   state.finished = false;
   hideVictory();
   clearWinnerVisuals();
-  renderTask(h.task);
+
+  if (state.playerMode === 'turns'){
+    if (wasFinished){
+      const missing = state.steps.findIndex(v => v < state.maxSteps);
+      if (Math.max(...state.steps) >= state.maxSteps && missing >= 0){
+        state.finalResponsePlayer = missing;
+        state.activePlayer = missing;
+      } else {
+        state.activePlayer = player - 1;
+      }
+    }
+    // При currentSwap оставляем ход у текущего ребёнка.
+    // В других случаях ход уже перешёл: не отправляем его назад.
+  }
+  if (currentSwap || winnerUndo || wasFinished){
+    renderTask(isLatest ? h.task : generateTask());
+  } else {
+    updateTurnUI();
+  }
   updateClimbers();
+  // После отмены балла в завершённом общем раунде может остаться игрок,
+  // который уже достиг финиша. Он не должен получать девятый балл.
+  if (wasFinished && state.playerMode === 'shared'){
+    const stillWinner = state.steps.findIndex(v => v >= state.maxSteps);
+    if (stillWinner >= 0){
+      startSharedFinish(stillWinner + 1);
+    }
+  }
+  if (state.timerOn && state.answered > 0 && !state.finished) startTimer();
+}
+
+function undoLastPoint(){
+  for (let i = state.history.length - 1; i >= 0; i--){
+    if (state.history[i].kind === 'point'){
+      undoForPlayer(state.history[i].player);
+      return;
+    }
+  }
 }
 
 function nextTask(){
   if (isModalOpen() || state.finished) return;
-  if (state.pendingWinner !== null) return;
+  if (state.pendingWinner !== null){
+    if(state.inputLocked) return;
+    finishRound(state.pendingWinner);
+    return;
+  }
+  // Во время анимации ход уже засчитан; не разрешаем случайно пропустить следующий.
+  if (state.playerMode === 'turns' && state.inputLocked) return;
   if (state.taskSwapTimer){ clearTimeout(state.taskSwapTimer); state.taskSwapTimer = null; }
   $('#taskEl').classList.remove('task-busy');
   state.inputLocked = false;
+  if (state.playerMode === 'turns'){
+    // «Новое задание» вместо балла означает пропуск хода. Его можно отменить.
+    state.history.push({ kind:'skip', steps:state.steps.slice(), answered:state.answered,
+      task:state.task, activePlayer:state.activePlayer });
+    const winner = state.finalResponsePlayer === state.activePlayer
+      ? (state.steps[0] === state.steps[1] ? 'draw' : (state.steps[0] > state.steps[1] ? 1 : 2))
+      : turnsWinnerAfterTurn();
+    if (winner !== null){
+      finishRound(winner);
+      return;
+    }
+    state.activePlayer = 1 - state.activePlayer;
+  }
   renderTask(generateTask());
 }
 
@@ -1158,14 +2173,24 @@ function newRound(){
   $('#taskEl').classList.remove('task-busy');
 
   state.steps = [0, 0];
+  // В каждом новом раунде первым начинает другой ребёнок.
+  state.roundStarter = state.nextRoundStarter;
+  state.activePlayer = state.roundStarter;
+  state.nextRoundStarter = 1 - state.roundStarter;
   state.history = [];
+  state.finalResponsePlayer = null;
   state.answered = 0;
+  state.recentTaskKeys = [];
   state.finished = false;
-  state.elapsed = 0;
   state.pendingWinner = null;
   state.inputLocked = false;
 
+  // Сначала остановить предыдущий таймер, затем сбросить накопленное время.
+  // Иначе stopTimer() снова запишет в elapsed время прошлого раунда.
   stopTimer();
+  state.elapsed = 0;
+  state.timerBase = 0;
+  state.timerStartedAt = null;
   updateTimerDisplay();
   hideVictory();
   clearWinnerVisuals();
@@ -1184,7 +2209,7 @@ function showVictory(winner){
     titleEl.textContent = 'Ничья!';
     nameEl.textContent = 'Оба игрока';
     nameEl.className = 'win-name draw';
-    actionEl.textContent = 'добрались до вершины одновременно!';
+    actionEl.textContent = 'Оба добрались до финиша!';
     $('#side1').classList.add('p1win');
     $('#side2').classList.add('p2win');
     $('#climber1').classList.add('winner');
@@ -1239,6 +2264,26 @@ function isModalOpen(){
          !$('#victoryOverlay').classList.contains('hidden');
 }
 
+function nextTaskAfterSettings(){
+  const hadSwap = !!state.taskSwapTimer;
+  if (state.taskSwapTimer){ clearTimeout(state.taskSwapTimer); state.taskSwapTimer=null; }
+  // Если настройки открыли во время анимации, уже засчитанный ход
+  // обязан перейти следующему игроку, как и при обычной смене задания.
+  if (hadSwap && state.playerMode === 'turns'){
+    state.activePlayer = 1 - state.activePlayer;
+  }
+  state.inputLocked = false;
+  $('#taskEl').classList.remove('task-busy');
+  renderTask(generateTask());
+}
+
+function closeSettings(){
+  if (!$('#settingsOverlay').classList.contains('hidden')){
+    $('#settingsOverlay').classList.add('hidden');
+    if (state.answered > 0 && !state.finished) startTimer();
+  }
+}
+
 /* ==== НАСТРОЙКИ ==== */
 function buildThemeChips(){
   const wrap = $('#themeChips');
@@ -1256,6 +2301,32 @@ function buildThemeChips(){
     wrap.appendChild(b);
   });
 }
+function buildPlayerModeChips(){
+  const wrap = $('#playerModeChips');
+  wrap.innerHTML = '';
+  [
+    {v:'shared', t:'Общее задание'},
+    {v:'turns', t:'По очереди · свой уровень'}
+  ].forEach(o => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'chip' + (state.playerMode === o.v ? ' active' : '');
+    btn.textContent = o.t;
+    btn.addEventListener('click', () => {
+      if (state.playerMode !== o.v){
+        state.playerMode = o.v;
+        // Не смешиваем события двух разных режимов в одном раунде.
+        newRound();
+      }
+      wrap.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      updateTurnUI();
+      updateMaterialNotice();
+      saveSettings();
+    });
+    wrap.appendChild(btn);
+  });
+}
 function buildLevelChips(){
   const wrap = $('#levelChips');
   wrap.innerHTML = '';
@@ -1270,6 +2341,68 @@ function buildLevelChips(){
       saveSettings();
     });
     wrap.appendChild(b);
+  });
+}
+function updateSyllableBreakChip(){
+  const btn=$('#syllableBreakChip');
+  btn.textContent=state.showSyllableBreaks ? 'По слогам' : 'Целым словом';
+  btn.classList.toggle('active', state.showSyllableBreaks);
+}
+function buildSyllableBreakChip(){
+  updateSyllableBreakChip();
+  $('#syllableBreakChip').addEventListener('click',()=>{
+    state.showSyllableBreaks=!state.showSyllableBreaks;
+    updateSyllableBreakChip();
+    saveSettings();
+  });
+}
+function buildTaskModeChips(){
+  const wrap = $('#taskModeChips');
+  wrap.innerHTML = '';
+  TASK_MODES.forEach(o => {
+    const b = document.createElement('button');
+    b.className = 'chip'+(state.taskMode === o.v ? ' active' : '');
+    b.textContent = o.t;
+    b.type = 'button';
+    b.addEventListener('click', () => {
+      state.taskMode = o.v;
+      wrap.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      b.classList.add('active');
+      updateMaterialNotice();
+      saveSettings();
+    });
+    wrap.appendChild(b);
+  });
+}
+function buildPresetChips(){
+  $('#presetChips').querySelectorAll('[data-preset]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.preset;
+      if (key === 'basic'){
+        state.consonants = ['м','н','л','с','р','п'];
+        state.vowels = ['а','о','у','ы','и'];
+        state.taskMode = 'syllable';
+      } else if (key === 'eYo'){
+        state.consonants = ['м','н','л','р','с','т','д','б','в','к','з'];
+        state.vowels = ['е','ё'];
+        state.taskMode = 'syllable';
+      } else if (key === 'yaYu'){
+        state.consonants = ['м','н','л','р','с','т','д','б','в','к','з'];
+        state.vowels = ['я','ю'];
+        state.taskMode = 'syllable';
+      } else if (key === 'clusters'){
+        state.consonants = ['с','т','р','к','п','л'];
+        state.vowels = ['а','о','у','ы','и','е'];
+        state.taskMode = 'clusters';
+      } else if (['allwords','phrases','sentences'].includes(key)){
+        state.consonants = CONS_ALL.slice();
+        state.vowels = VOWELS_ALL.slice();
+        state.taskMode = key === 'phrases' ? 'phrase' : key === 'sentences' ? 'sentence' : 'word2';
+      }
+      buildConsChips(); buildVowelChips(); buildTaskModeChips();
+      updateMaterialNotice();
+      saveSettings();
+    });
   });
 }
 function buildStepsChips(){
@@ -1304,6 +2437,7 @@ function buildConsChips(){
       wrap.querySelectorAll('.chip').forEach(chip => {
         chip.classList.toggle('active', state.consonants.indexOf(chip.textContent.toLowerCase()) !== -1);
       });
+      updateMaterialNotice();
       saveSettings();
     });
     wrap.appendChild(b);
@@ -1324,6 +2458,7 @@ function buildVowelChips(){
       wrap.querySelectorAll('.chip').forEach(chip => {
         chip.classList.toggle('active', state.vowels.indexOf(chip.textContent.toLowerCase()) !== -1);
       });
+      updateMaterialNotice();
       saveSettings();
     });
     wrap.appendChild(b);
@@ -1344,16 +2479,40 @@ function updateNameLabels(){
   $('#nameLabel2').textContent = state.names[1];
   $('#btnP1Label').textContent = state.names[0];
   $('#btnP2Label').textContent = state.names[1];
+  $('#btnUndo1').setAttribute('aria-label', 'Отменить балл: ' + state.names[0]);
+  $('#btnUndo2').setAttribute('aria-label', 'Отменить балл: ' + state.names[1]);
+  $('#colorName1').textContent = state.names[0];
+  $('#colorName2').textContent = state.names[1];
+  updateTurnUI();
 }
 
 function bindUI(){
   $('#btnP1').addEventListener('click', () => addPoint(1));
   $('#btnP2').addEventListener('click', () => addPoint(2));
-  $('#btnUndo').addEventListener('click', undo);
+  $('#btnUndo1').addEventListener('click', () => undoForPlayer(1));
+  $('#btnUndo2').addEventListener('click', () => undoForPlayer(2));
   $('#btnNext').addEventListener('click', nextTask);
-  $('#btnSettings').addEventListener('click', () => { $('#settingsOverlay').classList.remove('hidden'); });
-  $('#btnCloseSettings').addEventListener('click', () => { $('#settingsOverlay').classList.add('hidden'); });
-  $('#btnRestart').addEventListener('click', () => { newRound(); $('#settingsOverlay').classList.add('hidden'); });
+  function openSettings(focusInputId){
+    if (state.pendingWinner !== null) return;
+    stopTimer();
+    $('#settingsOverlay').classList.remove('hidden');
+    updateMaterialNotice();
+    if (focusInputId){
+      setTimeout(() => {
+        const input = document.getElementById(focusInputId);
+        if (input){ input.focus(); input.select(); }
+      }, 40);
+    }
+  }
+  $('#btnSettings').addEventListener('click', () => openSettings());
+  $('#editName1').addEventListener('click', () => openSettings('nameInput1'));
+  $('#editName2').addEventListener('click', () => openSettings('nameInput2'));
+  $('#btnCloseSettings').addEventListener('click', () => {
+    if (!materialMessage().ok){ updateMaterialNotice(); return; }
+    if (!state.finished && state.pendingWinner === null) nextTaskAfterSettings();
+    closeSettings();
+  });
+  $('#btnRestart').addEventListener('click', () => { newRound(); closeSettings(); });
   $('#timerChip').addEventListener('click', () => {
     state.timerOn = !state.timerOn;
     updateTimerChip();
@@ -1375,7 +2534,11 @@ function bindUI(){
   document.addEventListener('keydown', e => {
     if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
     if (e.key === 'Escape'){
-      $('#settingsOverlay').classList.add('hidden');
+      if (!$('#settingsOverlay').classList.contains('hidden')){
+        if (!materialMessage().ok){ updateMaterialNotice(); return; }
+        if (!state.finished) nextTaskAfterSettings();
+      }
+      closeSettings();
       hideVictory();
       return;
     }
@@ -1383,7 +2546,9 @@ function bindUI(){
     const k = e.key.toLowerCase();
     if (k === 'a' || k === 'ф' || k === '1'){ e.preventDefault(); addPoint(1); }
     else if (k === 'l' || k === 'д' || k === '2'){ e.preventDefault(); addPoint(2); }
-    else if (k === 'backspace'){ e.preventDefault(); undo(); }
+    else if (k === 'z' || k === 'я'){ e.preventDefault(); undoForPlayer(1); }
+    else if (k === 'm' || k === 'ь'){ e.preventDefault(); undoForPlayer(2); }
+    else if (k === 'backspace'){ e.preventDefault(); undoLastPoint(); }
     else if (k === ' ' || k === 'enter'){ e.preventDefault(); nextTask(); }
   });
 }
@@ -1391,11 +2556,17 @@ function bindUI(){
 function init(){
   loadSettings();
   buildThemeChips();
+  buildPlayerColorSettings();
   buildLevelChips();
+  buildPlayerModeChips();
+  buildTaskModeChips();
+  buildSyllableBreakChip();
+  buildPresetChips();
   buildStepsChips();
   buildConsChips();
   buildVowelChips();
   updateTimerChip();
+  updateMaterialNotice();
   $('#nameInput1').value = state.names[0];
   $('#nameInput2').value = state.names[1];
   updateNameLabels();
@@ -1410,6 +2581,13 @@ document.addEventListener('DOMContentLoaded', init);
 </script>
 
 <script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
 <script src="../assets/menu-drawer.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
 </body>
 </html>

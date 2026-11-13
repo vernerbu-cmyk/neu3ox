@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<script src="../shared/theme.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Буквенные тени — NeuroX</title>
+<style>
+:root{--navy:#08162e;--navy2:#0d2850;--panel:#0e2343;--panelEdge:#294765;--blue:#317bd5;--cyan:#84e4ff;--orange:#ff832e;--text:#f3f8ff;--muted:#97b0ce;--glass:#10294a;--line:#294463;--good:#73ddad}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,'Segoe UI',Arial,sans-serif;background:var(--navy);color:var(--text)}body{overflow-x:hidden}button,select,input{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #ffab65;outline-offset:3px}button:disabled{opacity:.42;cursor:not-allowed}
+.background{position:fixed;inset:0;z-index:0;background:radial-gradient(circle at 71% 30%,#16466d90 0,transparent 36%),radial-gradient(circle at 30% 100%,#133d65 0,transparent 39%),linear-gradient(145deg,#06142b,#102947 55%,#06162d);pointer-events:none}.background::before{content:"";position:absolute;inset:0;background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px);background-size:46px 46px;mask-image:linear-gradient(90deg,#000 50%,transparent 100%)}.background::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0,transparent 4px,#fff 5px,transparent 6px);opacity:.025;pointer-events:none}
+.shell{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;padding:21px 26px 22px;gap:17px;max-width:1800px;margin:auto}.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px}.identity{display:flex;gap:14px;align-items:center}.logo{height:50px;width:50px;border:1px solid #5993c566;border-radius:16px;background:linear-gradient(145deg,#214c7f,#0d2b52);display:grid;place-items:center;box-shadow:0 9px 24px #0004, inset 0 1px 0 #fff2}.logo svg{width:29px;height:29px}.topname{font-weight:850;font-size:21px;letter-spacing:-.45px}.topsub{font-size:10px;font-weight:850;letter-spacing:2.1px;color:var(--cyan);margin-top:4px}.topright{display:flex;align-items:center;gap:11px}.statuspill{display:flex;align-items:center;gap:9px;background:#163555bb;border:1px solid #4a739960;border-radius:40px;padding:10px 16px;color:#ccdeec;font-size:12px;font-weight:800;letter-spacing:.07em}.statuspill i{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 12px var(--good)}.minibtn{height:39px;padding:0 13px;border:1px solid #53779d80;border-radius:12px;background:#173858ad;color:#e5f3ff;font-size:12px;font-weight:800;transition:.18s}.minibtn:hover{border-color:#99c7ef;background:#22496f}
+.workspace{flex:1;display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px;min-height:0}.panel{background:linear-gradient(157deg,#0f2847f0,#0b1e39f5);border:1px solid #53759b55;border-radius:24px;box-shadow:0 22px 55px #0003,inset 0 1px 0 #ffffff0a;padding:20px;display:flex;flex-direction:column;gap:21px}.panelheading{display:flex;align-items:center;gap:11px;border-bottom:1px solid #ffffff12;padding-bottom:17px}.panelheading .gear{height:38px;width:38px;border-radius:13px;background:#204870;display:grid;place-items:center;color:#8ce0f8;font-size:19px}.panelheading b{font-size:15px}.panelheading small{display:block;color:#8eacc8;font-size:11px;margin-top:5px}.sect{display:flex;flex-direction:column;gap:10px}.eyebrow{font-size:10px;letter-spacing:1.65px;font-weight:900;color:#b4c7de}.modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.modebtn{border:1px solid #315273;background:#112f51;color:#b7d0e9;border-radius:13px;padding:11px 7px 10px;min-height:72px;display:flex;gap:8px;align-items:center;justify-content:center;flex-direction:column;font-size:12px;font-weight:750;transition:background .17s,border .17s,transform .17s}.modebtn svg{width:23px;height:23px;stroke:#88aed6}.modebtn:hover{background:#21486f}.modebtn.active{background:linear-gradient(150deg,#284f79,#123a66);color:white;border-color:#ff943d;box-shadow:inset 0 0 0 1px #ff943d33,0 0 0 2px #fa8c3326}.modebtn.active svg{stroke:var(--orange)}.selectrow{display:grid;grid-template-columns:1fr 1fr;gap:9px}.selectrow label{min-width:0;font-size:10px;letter-spacing:.7px;font-weight:800;color:#aac2da}.selectrow select{display:block;width:100%;margin-top:8px;padding:10px 27px 10px 10px;border-radius:10px;border:1px solid #385f82;background:#132f51;color:#fff;font-size:12px;font-weight:750;min-width:0}.letterbox{background:#112f50;border-radius:14px;border:1px solid #375c80;display:flex;align-items:center;justify-content:space-between;padding:12px 11px;gap:7px}.letterbox .count{font-weight:850;font-size:14px}.letterbox .count small{display:block;color:#97b4cf;font-size:10px;margin-top:5px;font-weight:600}.letterbox button{background:#ff8631;color:#15233a;border:0;border-radius:9px;padding:9px 11px;font-weight:900;font-size:11px}.letterbox button:hover{background:#ffa25c}.speedrow{display:flex;justify-content:space-between;align-items:center;color:#b1c7dd;font-size:11px}.speedrow strong{color:#f3f9ff}.panelnote{margin-top:auto;border-top:1px solid #ffffff19;padding-top:16px;color:#91aeca;font-size:11px;line-height:1.7}.panelnote strong{color:#edf6ff}
+.stagewrap{display:flex;min-width:0;flex-direction:column;gap:14px}.stage{position:relative;isolation:isolate;min-height:570px;flex:1;border-radius:28px;overflow:hidden;border:1px solid #527eaa78;background:radial-gradient(ellipse at 53% 45%,#1b4b75 0%,#102b50 35%,#071a34 80%);box-shadow:inset 0 1px 1px #fff4,0 23px 65px #0005}.stage:before{content:"";position:absolute;inset:0;border:10px solid #071b32a9;border-radius:28px;pointer-events:none;z-index:3}.stage:after{content:"";position:absolute;top:0;left:3%;right:3%;height:2px;background:linear-gradient(90deg,transparent,#86dfff8a,transparent);pointer-events:none}.stagegrid{position:absolute;inset:0;background:linear-gradient(90deg,#ffffff08 1px,transparent 1px),linear-gradient(#ffffff07 1px,transparent 1px);background-size:40px 40px;opacity:.45;mask-image:radial-gradient(ellipse at 50% 48%,black 18%,transparent 78%)}.halo{position:absolute;width:68%;aspect-ratio:1;border-radius:50%;left:50%;top:48%;transform:translate(-50%,-50%);border:1px solid #9ae6ff25;box-shadow:0 0 90px #39bbfc1c,inset 0 0 120px #3685c010;pointer-events:none}.halo:before,.halo:after{content:"";position:absolute;border-radius:50%;inset:12%;border:1px dashed #b7e6ff38}.halo:after{inset:25%;border-style:solid;border-color:#a1dcff1c}
+.stagehead{position:absolute;z-index:5;top:26px;left:37px;right:37px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px}.stagehead .kicker{color:#8bc6ec;font-size:10px;letter-spacing:2.4px;font-weight:950}.stagehead h1{margin:7px 0 0;font-size:25px;letter-spacing:-.6px;font-weight:850}.stagehead .readout{font-size:11px;color:#bad0e8;background:#0b2949b8;padding:10px 13px;border:1px solid #43719b8c;border-radius:30px;white-space:nowrap}.readout strong{color:#ff9a49}.stagefoot{position:absolute;z-index:5;bottom:27px;left:35px;right:35px;display:flex;justify-content:space-between;align-items:center;gap:15px;font-size:11px;font-weight:700;color:#98b3ce}.stagefoot .dots{display:flex;gap:6px}.dot{height:6px;width:19px;border-radius:6px;background:#375976;transition:.3s}.dot.on{background:var(--orange);box-shadow:0 0 10px #ff8d38a0}.corner{position:absolute;width:31px;height:31px;border-color:#75c9e977;z-index:2;pointer-events:none}.tl{top:97px;left:31px;border-top:2px solid;border-left:2px solid;border-radius:7px 0 0 0}.tr{top:97px;right:31px;border-top:2px solid;border-right:2px solid;border-radius:0 7px 0 0}.bl{bottom:84px;left:31px;border-bottom:2px solid;border-left:2px solid;border-radius:0 0 0 7px}.br{bottom:84px;right:31px;border-bottom:2px solid;border-right:2px solid;border-radius:0 0 7px 0}
+.scancontainer{position:absolute;z-index:2;top:103px;bottom:85px;left:40px;right:40px;display:block;min-width:0;min-height:0}.stage.scanner .scancontainer{cursor:crosshair;touch-action:none}.stage:not(.scanner) #scannerLens{display:none}.stage.scanner .scanLine{display:none}.stage.scanner .scancontainer:after{display:none}.scanSvg{display:block;width:100%;height:100%;max-width:100%;max-height:100%;overflow:hidden;filter:drop-shadow(0 14px 35px #0004)}.scancontainer:before{content:"";position:absolute;inset:2%;border-radius:20px;box-shadow:inset 0 0 100px #3a8acc19;background:linear-gradient(115deg,#ceeefe08 0%,transparent 27%,#a6ddfd08 48%,transparent 68%);pointer-events:none}.scancontainer:after{content:"";position:absolute;top:0;bottom:0;width:18%;left:-40%;transform:skewX(-22deg);background:linear-gradient(90deg,transparent,#a3f4ff1a,transparent);pointer-events:none;animation:sweep 7s linear infinite}@keyframes sweep{0%{left:-43%}70%,100%{left:140%}}
+#lightRings circle{fill:none;stroke:#ffab5f;stroke-width:2;opacity:.85;filter:drop-shadow(0 0 6px #ff9a49);animation:ringIn .55s ease both}#lightRings circle:nth-child(even){stroke:#7de5ff}#revealGlow{filter:drop-shadow(0 0 18px #70d9ff88)}.fogLayer{position:absolute;z-index:1;inset:0;pointer-events:none;background:radial-gradient(ellipse at 30% 25%,#ddf5ff30,transparent 50%),radial-gradient(ellipse at 75% 80%,#83b6d427,transparent 55%);opacity:0;transition:opacity .5s}.stage.fog .fogLayer{opacity:1}.scanLine{position:absolute;z-index:4;top:21%;left:13%;right:13%;height:1px;background:linear-gradient(90deg,transparent,#67c5ff77,transparent);box-shadow:0 0 18px #6ecaffc0;animation:scanLine 5s ease-in-out infinite;pointer-events:none}@keyframes scanLine{0%{top:22%;opacity:0}20%{opacity:.7}76%{opacity:.65}100%{top:80%;opacity:0}}.stage.focus .scanLine,.stage.shadow .scanLine{opacity:.25}.glassChip{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:6;color:#fff;font-size:26px;font-weight:900;letter-spacing:2px;text-shadow:0 2px 18px #0008;background:#0d3154ab;border:1px solid #e7f6ff5e;padding:15px 28px;border-radius:14px;opacity:0;pointer-events:none}.glassChip.show{animation:chipIn .55s ease both}@keyframes chipIn{0%{opacity:0;transform:translate(-50%,-40%) scale(.92)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}@keyframes ringIn{from{opacity:0;r:4}to{opacity:.85}}
+.controlbar{border:1px solid #496e9366;border-radius:22px;background:linear-gradient(145deg,#102b4a,#0b213c);box-shadow:0 12px 33px #0003;padding:16px 19px;display:flex;align-items:center;gap:11px;flex-wrap:wrap}.controlbar button[hidden]{display:none}.controlbar button{border:1px solid #365d83;background:#1a3b5d;color:#d9eeff;border-radius:13px;padding:13px 15px;min-height:46px;font-size:12px;font-weight:850;white-space:nowrap;transition:background .16s,transform .16s}.controlbar button:not(:disabled):hover{transform:translateY(-2px);background:#275477}.controlbar button.primary{background:linear-gradient(130deg,#fe9a45,#fc752b);border-color:#ffaa66;color:#1d2b3a;box-shadow:0 6px 21px #ff7b302e}.controlbar button.primary:not(:disabled):hover{background:#ffab61}.controlbar button.good{background:#124e52;border-color:#307b75;color:#c0f5dc}.controlbar button.ghost{background:transparent;border-color:#3b5f80}.controlbar .stretch{flex:1}.controlbar .tip{font-size:11px;color:#91b0cc;font-weight:650;margin-right:5px}.controlbar .divider{height:29px;width:1px;background:#47627a;margin:0 3px}.keyboard{margin-left:auto;color:#91aac2;font-size:10px;line-height:1.5;text-align:right;max-width:200px}.keyboard kbd{background:#244360;border:1px solid #4e7495;border-radius:4px;padding:2px 5px;color:#e4f2ff}
+.footer{color:#6e95b7;font-size:10px;display:flex;align-items:center;justify-content:space-between;padding:0 3px;letter-spacing:.4px}
+.overlay[hidden]{display:none}.overlay{position:fixed;z-index:30;inset:0;background:#021122b9;backdrop-filter:blur(8px);display:grid;place-items:center;padding:20px}.modal{width:min(600px,100%);max-height:90vh;overflow:auto;background:linear-gradient(160deg,#163756,#0b223d);border:1px solid #608bb7;border-radius:24px;box-shadow:0 30px 100px #000b;padding:24px}.modalTop{display:flex;gap:15px;align-items:start;justify-content:space-between}.modal h2{margin:0;font-size:22px}.modal p{color:#a7c1db;margin:9px 0 0;font-size:12px;line-height:1.6}.xbtn{background:#254564;color:#fff;border:0;border-radius:9px;font-size:26px;width:36px;height:36px}.quick{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:19px 0}.quick button,.pairs button{background:#204363;border:1px solid #456b90;border-radius:9px;color:#e8f5ff;font-size:11px;font-weight:800;padding:9px 11px}.quick button:hover,.pairs button:hover{background:#2f5b83}.lettersgrid{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:7px}.lettersgrid label{position:relative;cursor:pointer}.lettersgrid input{position:absolute;opacity:0}.lettersgrid span{display:grid;place-items:center;aspect-ratio:1;border:1px solid #395e80;border-radius:11px;background:#143251;color:#b3c9e0;font-size:20px;font-weight:850;transition:.15s}.lettersgrid input:checked+span{border-color:#ff9c4f;color:#fff;background:#2b5478;box-shadow:0 0 0 1px #ff9b4c22}.lettersgrid input:focus-visible+span{outline:3px solid #ffac68;outline-offset:2px}.modalNote{font-size:11px;color:#93b6ce;line-height:1.6;margin-top:16px}.pairs{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}.modalBottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px}.modalBottom button{padding:11px 17px;border-radius:11px;border:1px solid #4b7190;color:#fff;background:#1a4064;font-weight:850}.modalBottom button.apply{background:var(--orange);color:#192b3c;border-color:#ffae75}.modalBottom button:disabled{opacity:.4}.modalBottom .num{font-weight:850;color:#b9dbed;font-size:13px}
+@media (max-width:1080px){.shell{padding:15px}.workspace{grid-template-columns:255px minmax(0,1fr);gap:11px}.panel{padding:15px;gap:15px}.stage{min-height:490px}.controlbar{padding:12px}.controlbar .keyboard{display:none}}@media (max-width:770px){.shell{padding:11px;gap:10px}.topname{font-size:18px}.topsub{font-size:9px}.statuspill{display:none}.workspace{grid-template-columns:1fr;gap:12px}.panel{order:2;gap:15px}.stagewrap{order:1}.stage{min-height:500px}.stagehead{left:24px;right:22px}.stagehead h1{font-size:20px}.stagehead .readout{font-size:10px}.stagefoot{left:25px;right:25px}.scancontainer{left:13px;right:13px}.controlbar{gap:7px}.controlbar button{flex:1;padding:11px 9px;font-size:11px}.controlbar .divider{display:none}.controlbar .stretch{display:none}.controlbar .tip{display:none}.panelnote{margin-top:0}.lettersgrid{grid-template-columns:repeat(7,1fr)}}@media(max-width:440px){.topright .minibtn{display:none}.stage{min-height:425px}.stagehead{top:24px;left:22px;right:20px}.stagehead .kicker{font-size:9px}.stagehead h1{font-size:17px}.stagehead .readout{font-size:9px;padding:8px}.scancontainer{top:87px;bottom:72px}.stagefoot{bottom:20px;flex-wrap:wrap;gap:7px}.controlbar button{flex:auto}.modal{padding:16px}.lettersgrid{gap:4px}.lettersgrid span{font-size:17px;border-radius:7px}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+
+<!-- Общие элементы NeuroX: боковое меню, шапка, темы, сезоны. -->
+<link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<link rel="stylesheet" href="../shared/favorites.css">
+<style id="nx-lettershadows-suite">
+/* Local game frame fills the space beneath the shared NeuroX navigation. */
+body[data-nx-path="preschool/bukvennye-teni.html"] .shell {
+  min-height:calc(100dvh - var(--nx-nav-height, 58px));
+  padding-top:clamp(10px,1.6vw,20px);
+}
+body[data-nx-path="preschool/bukvennye-teni.html"] .stage { color:#f3f8ff; }
+/* Light theme: readable teacher controls while the dark letter stage remains unchanged. */
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] {
+  --navy:#edf3fd;--text:#213a60;--muted:#536b88;--line:#c5d7eb;
+  color:#213a60;background:#edf3fd;
+}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .background {
+  background:radial-gradient(circle at 85% 6%,#d9e9fc 0,transparent 43%),linear-gradient(155deg,#eef5fd,#e8f0fa);
+}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .background::before {opacity:.35}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .panel,
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .controlbar {
+  background:linear-gradient(160deg,#fff,#f7faff);border-color:#cedcf0;
+  box-shadow:0 15px 42px #264b7d1a;color:#213a60;
+}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .panelheading {border-color:#dce5f1}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .panelheading .gear {background:#eaf2ff;color:#1e3f8a}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .panelheading small,
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .eyebrow,
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .selectrow label,
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .letterbox .count small,
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .panelnote,
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .controlbar .tip,
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .keyboard {color:#546f91}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .panelnote {border-color:#dce5f1}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .panelnote strong {color:#173b71}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .modebtn {
+  background:#f0f6ff;border-color:#cfdef1;color:#26466b;
+}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .modebtn:hover {background:#e1edff}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .modebtn.active {
+  background:#dfeeff;border-color:#ff832e;color:#1b3d6b;
+}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .letterbox {
+  background:#f0f6ff;border-color:#cbddf1;
+}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .selectrow select {
+  background:#fff;color:#20375b;border-color:#b9cfe6;
+}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .controlbar button:not(.primary):not(.good) {
+  background:#edf4fd;color:#204575;border-color:#c4d7ed;
+}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .controlbar button.good {
+  background:#daf7eb;color:#155d46;border-color:#8dd5bc;
+}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .keyboard kbd {
+  background:#e2ecf9;border-color:#c0d2eb;color:#204575;
+}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .controlbar .divider {background:#cbd7e6}
+:root[data-theme="light"] body[data-nx-path="preschool/bukvennye-teni.html"] .footer {color:#627f9f}
+@media(max-width:770px){
+  body[data-nx-path="preschool/bukvennye-teni.html"] .stagewrap {order:1}
+  body[data-nx-path="preschool/bukvennye-teni.html"] .panel {order:2}
+}
+</style>
+
+</head>
+<body>
+<div class="background"></div>
+<div class="shell">
+ <div class="workspace">
+  <aside class="panel" aria-label="Управление педагога">
+   <div class="panelheading"><span class="gear">⚙</span><div><b>Настройки тренажёра</b><small>Режимы открытия букв</small></div></div>
+   <div class="sect"><div class="eyebrow">СПОСОБ ОТКРЫТИЯ</div><div class="modegrid" id="modes">
+    <button type="button" class="modebtn active" data-mode="scanner" aria-pressed="true"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>Сканер</button>
+    <button type="button" class="modebtn" data-mode="fog" aria-pressed="false"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path d="M3 16q4-4 9 0t9 0M4 10q4-4 8 0t8 0M7 5q4-3 8 0"/></svg>Туман</button>
+    <button type="button" class="modebtn" data-mode="focus" aria-pressed="false"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="7"/><path d="M4 4l3 3m13-3l-3 3M4 20l3-3m13 3l-3-3"/></svg>Проявление</button>
+    <button type="button" class="modebtn" data-mode="shadow" aria-pressed="false"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path d="M7 20V4h8a5 5 0 0 1 0 10H7m8 0 4 6"/></svg>Силуэт</button>
+   </div></div>
+   <div class="sect"><div class="eyebrow">НАЧЕРТАНИЕ</div><div class="selectrow">
+    <label>Размер букв<select id="letterCase"><option value="upper">Заглавные</option><option value="lower">Строчные</option><option value="mixed">Вперемешку</option></select></label>
+    <label>Шрифт<select id="fontPick"><option value="sans">Без засечек</option><option value="serif">С засечками</option><option value="mono">Моноширинный</option><option value="mix">Смешанный</option></select></label>
+   </div></div>
+   <div class="sect"><div class="eyebrow">НАБОР БУКВ</div><div class="letterbox"><div class="count" id="countLabel">Все 33<small>Случайно · без повторений</small></div><button id="openPicker" type="button">Выбрать</button></div></div>
+   <div class="sect"><div class="eyebrow">СЛОЖНОСТЬ</div><div class="selectrow" style="grid-template-columns:1fr"><label>Размер открываемой области<select id="difficulty"><option value="easy">Крупные фрагменты</option><option value="normal" selected>Обычные</option><option value="hard">Маленькие фрагменты</option></select></label></div></div>
+   <div class="panelnote"><strong>Как играть</strong><br>В режиме «Сканер» веди мышкой по букве (или двигай пальцем по экрану). Видна только область под лучом — остальные части снова скрываются. Ребёнок называет букву вслух. В остальных режимах фрагменты открываются кнопкой.</div>
+  </aside>
+  <div class="stagewrap">
+   <section class="stage scanner" id="stage" data-nx-tv-area aria-label="Игровое поле">
+    <div class="stagegrid"></div><div class="halo"></div><div class="fogLayer"></div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="stagehead"><div><div class="kicker">СЕКТОР 01 / РАСПОЗНАВАНИЕ</div><h1 id="stageTitle">Какая буква спрятана?</h1></div><div class="readout">ЗАДАНИЕ <strong id="round">01 / 33</strong></div></div>
+    <div class="scancontainer">
+     <svg class="scanSvg" id="letterSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Скрытая буква, постепенно открывается">
+      <defs>
+       <mask id="revealMask" maskUnits="userSpaceOnUse" x="0" y="0" width="680" height="540"><rect width="680" height="540" fill="black"/><g id="maskHoles" fill="white"></g></mask>
+       <linearGradient id="letterGradient" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8f8ff"/><stop offset="52%" stop-color="#78d4f7"/><stop offset="100%" stop-color="#62a8fb"/></linearGradient>
+       <radialGradient id="flare"><stop offset="0" stop-color="#c2edff" stop-opacity=".15"/><stop offset="1" stop-color="#5ec7fc" stop-opacity="0"/></radialGradient>
+       <filter id="fogEdge"><feGaussianBlur stdDeviation="8"/></filter>
+       <radialGradient id="scannerHalo"><stop offset="0" stop-color="#b7eeff" stop-opacity=".13"/><stop offset=".78" stop-color="#59bdff" stop-opacity=".07"/><stop offset="1" stop-color="#59bdff" stop-opacity="0"/></radialGradient>
+      </defs>
+      <circle cx="340" cy="270" r="236" fill="url(#flare)"/>
+      <g fill="none" stroke="#8fc2e3" opacity=".22"><circle cx="340" cy="270" r="207" stroke-dasharray="5 16"/><path d="M340 40V66M340 474v26M112 270h26m404 0h26"/></g>
+      <text id="glyphShadow" x="340" y="366" fill="#163c63" text-anchor="middle">?</text>
+      <text id="glyph" x="340" y="366" fill="url(#letterGradient)" text-anchor="middle" mask="url(#revealMask)">?</text>
+      <g id="lightRings"></g>
+      <g id="scannerLens" aria-hidden="true" transform="translate(340 270)">
+       <circle id="scannerField" r="69" fill="url(#scannerHalo)" stroke="#80dfff" stroke-opacity=".8" stroke-width="2.2" stroke-dasharray="13 6" />
+       <circle id="scannerInner" r="57" fill="none" stroke="#9cedff" stroke-opacity=".28" stroke-width="1.1" />
+       <path id="scannerTicks" d="M-91 0h15M76 0h15M0 -91v15M0 76v15" fill="none" stroke="#ffad64" stroke-width="3" stroke-linecap="round"/>
+       <circle r="3.5" fill="#ffad64" opacity=".85" />
+      </g>
+     </svg>
+    </div>
+    <div class="scanLine"></div><div class="glassChip" id="feedback"></div>
+    <div class="stagefoot"><span id="stageCaption">Подвижный сканер · буква скрыта</span><div class="dots" id="steps"></div><span>NEUROX / LETTER LAB</span></div>
+   </section>
+   <section class="controlbar" aria-label="Управление раундом">
+    <button class="primary" type="button" id="revealBtn" hidden>◉ Открыть ещё</button>
+    <button class="ghost" type="button" id="showBtn">◌ Показать букву</button>
+    <span class="divider"></span>
+    <button class="good" type="button" id="correctBtn">✓ Верно</button>
+    <button type="button" id="wrongBtn">✕ Пока нет</button>
+    <span class="stretch"></span><button type="button" id="nextBtn">Следующая →</button><button class="ghost" type="button" id="fullscreen" title="Во весь экран">⛶ Экран</button>
+    <div class="keyboard" id="keyboardHint">Веди мышкой или пальцем по полю · <kbd>→</kbd> следующая</div>
+   </section>
+  </div>
+ </div>
+ <div class="footer"><span>NEUROX · ДОШКОЛЯТАМ · БУКВЕННЫЕ ТЕНИ</span><span>Без регистрации · работает в составе NeuroX</span></div>
+</div>
+<div class="overlay" id="picker" hidden>
+ <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
+  <div class="modalTop"><div><h2 id="pickerTitle">Какие буквы показывать?</h2><p>Выбери нужные. В серии они появляются вперемешку и не повторяются.</p></div><button type="button" class="xbtn" id="closePicker" aria-label="Закрыть">×</button></div>
+  <div class="quick"><button id="allBtn" type="button">Все 33</button><button id="noneBtn" type="button">Снять выбор</button><button id="vowelBtn" type="button">Гласные</button><button id="consonantBtn" type="button">Согласные</button></div>
+  <div id="lettersGrid" class="lettersgrid"></div>
+  <div class="modalNote">Быстрый выбор похожих букв:</div>
+  <div class="pairs" id="pairs"></div>
+  <div class="modalBottom"><span class="num" id="selectedCount">33 из 33</span><div><button id="cancelPicker" type="button">Отмена</button> <button class="apply" id="applyPicker" type="button">Применить</button></div></div>
+ </div>
+</div>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const alphabet = [...'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'];
+  const vowelSet = new Set([...'АЕЁИОУЫЭЮЯ']);
+  const pairs = ['П Н','И Й','Ш Щ','Е Ё','Б В','Ь Ъ','О С','Г Т','З Э'];
+  const fonts = {sans:'Arial, "Liberation Sans", sans-serif',serif:'Georgia, "DejaVu Serif", serif',mono:'"DejaVu Sans Mono", Consolas, monospace'};
+  const ns='http://www.w3.org/2000/svg';
+  const maxSteps=6;
+  const modeDescriptions={scanner:'Подвижный сканер',fog:'Открываем окошки в тумане',focus:'Фокусировка изображения',shadow:'Осветляем силуэт'};
+  let state={mode:'scanner',difficulty:'normal',selected:new Set(alphabet),temp:new Set(alphabet),order:[],index:0,step:1,finished:false,revealed:false,points:[],glyph:'',font:'sans',answer:'',scanner:{x:340,y:270}};
+  let patchId=0;
+  const svg=$('letterSvg'), glyph=$('glyph'), shadow=$('glyphShadow'), stage=$('stage');
+  const canvas=document.createElement('canvas');canvas.width=680;canvas.height=540;const ctx=canvas.getContext('2d',{willReadFrequently:true});
+  function randomize(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b;}
+  function fontNow(){const val=$('fontPick').value;return val==='mix'?randomize(['sans','serif','mono'])[0]:val;}
+  function letterNow(letter){const val=$('letterCase').value;return val==='mixed'?(Math.random()<.5?letter:letter.toLowerCase()):val==='lower'?letter.toLowerCase():letter;}
+  function configureGlyph(letter){
+    state.glyph=letterNow(letter);state.answer=letter;state.font=fontNow();
+    const family=fonts[state.font];let size=370;
+    ctx.font=`900 ${size}px ${family}`;
+    let m=ctx.measureText(state.glyph);
+    const w=m.width || 100;
+    const h=(m.actualBoundingBoxAscent||290)+(m.actualBoundingBoxDescent||10);
+    size=Math.min(size,size*320/w,size*338/h);
+    // Readable letter in a stable central field, regardless of font and width.
+    const base=350, baseline=378;
+    const font=`900 ${Math.floor(size)}px ${family}`;
+    for(const item of [glyph,shadow]){item.textContent=state.glyph;item.style.font=font;item.setAttribute('x',String(base));item.setAttribute('y',String(baseline));}
+    ctx.clearRect(0,0,680,540);ctx.fillStyle='#fff';ctx.font=font;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText(state.glyph,base,baseline);
+    const pix=ctx.getImageData(0,0,680,540).data;
+    const cells=[];
+    for(let y=126;y<455;y+=15)for(let x=155;x<530;x+=15){let s=0;for(const [ox,oy] of [[0,0],[8,0],[-8,0],[0,8],[0,-8]]){const xx=x+ox,yy=y+oy;if(xx>=0&&xx<680&&yy>=0&&yy<540&&pix[(yy*680+xx)*4+3]>80)s++;}if(s>=2)cells.push({x,y})}
+    const pts=[];
+    if(cells.length){pts.push(cells[Math.floor(Math.random()*cells.length)]);
+      while(pts.length<maxSteps){let best=null,score=-1;const sampled=randomize(cells).slice(0,Math.min(180,cells.length));for(const c of sampled){const d=Math.min(...pts.map(p=>(p.x-c.x)**2+(p.y-c.y)**2));if(d>score){score=d;best=c}}if(!best)break;pts.push(best)}
+    }
+    while(pts.length<maxSteps)pts.push({x:300+Math.random()*80,y:250+Math.random()*100});
+    // Mix the discovered distinct areas rather than always reveal the same corner first.
+    state.points=randomize(pts);
+    state.scanner={...(state.points[0]||{x:340,y:270})};
+  }
+  function makeSvg(tag,attrs={}){const el=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,String(v));return el;}
+  function buildMask(){
+    const holes=$('maskHoles');holes.replaceChildren();$('lightRings').replaceChildren();
+    const r={easy:91,normal:69,hard:48}[state.difficulty];
+    const all=state.revealed || (state.mode!=='scanner' && state.step>=maxSteps);
+    if(all){holes.append(makeSvg('rect',{x:0,y:0,width:680,height:540,fill:'white'}));return}
+    if(state.mode==='scanner'){
+      const r={easy:96,normal:72,hard:50}[state.difficulty];
+      holes.append(makeSvg('circle',{cx:state.scanner.x,cy:state.scanner.y,r,fill:'white'}));
+      return;
+    }
+    for(let i=0;i<state.step;i++){
+      const p=state.points[i];if(!p)continue;
+      if(state.mode==='fog'){
+        holes.append(makeSvg('ellipse',{cx:p.x,cy:p.y,rx:r*1.38,ry:r*1.22,fill:'white',filter:'url(#fogEdge)'}));
+        $('lightRings').append(makeSvg('ellipse',{cx:p.x,cy:p.y,rx:r*1.32,ry:r*1.17,fill:'none',stroke:'#d2f6ff',opacity:'.32','stroke-dasharray':'8 13'}));
+      }else{
+        holes.append(makeSvg('circle',{cx:p.x,cy:p.y,r,fill:'white'}));
+        if(state.mode==='scanner')$('lightRings').append(makeSvg('circle',{cx:p.x,cy:p.y,r:r+8}));
+      }
+    }
+  }
+  function paint(){
+    buildMask();
+    stage.className='stage '+state.mode;
+    const all=state.revealed || (state.mode!=='scanner' && state.step>=maxSteps);
+    shadow.style.display='none';
+    glyph.style.opacity='1';glyph.style.filter='none';glyph.setAttribute('mask','url(#revealMask)');
+    if(state.mode==='focus'){
+      glyph.removeAttribute('mask');
+      const blur=[24,18,12,7,3,0][state.step-1];
+      glyph.style.filter=all?'none':`blur(${blur}px)`;
+      glyph.style.opacity=all?'1':'.88';
+    }else if(state.mode==='shadow'){
+      glyph.removeAttribute('mask');shadow.style.display='block';
+      glyph.style.opacity=all?'1':String([.09,.16,.26,.43,.67,1][state.step-1]);
+      glyph.style.filter=all?'none':`blur(${[9,7,5,4,2,0][state.step-1]}px)`;
+    }
+    const dots=$('steps');dots.replaceChildren();for(let i=0;i<maxSteps;i++)dots.append(Object.assign(document.createElement('span'),{className:'dot'+(i<state.step||all?' on':'')}));
+    $('scannerLens').style.display=state.mode==='scanner'&&!all?'':'none';
+    if(state.mode==='scanner'&&!all){
+      const r={easy:96,normal:72,hard:50}[state.difficulty];
+      $('scannerLens').setAttribute('transform',`translate(${state.scanner.x} ${state.scanner.y})`);
+      $('scannerField').setAttribute('r',r);
+      $('scannerInner').setAttribute('r',Math.max(r-12,19));
+      const t=r+19,u=r+4;
+      $('scannerTicks').setAttribute('d',`M-${t} 0h15M${u} 0h15M0 -${t}v15M0 ${u}v15`);
+    }
+    $('steps').style.display=state.mode==='scanner'?'none':'';
+    $('revealBtn').hidden=state.mode==='scanner';
+    $('keyboardHint').innerHTML=state.mode==='scanner'?'Веди мышкой или пальцем по полю · <kbd>→</kbd> следующая':'<kbd>Пробел</kbd> открыть ещё · <kbd>→</kbd> следующая';
+    $('stageCaption').textContent=all?'Буква полностью открыта':state.mode==='scanner'?'Двигай сканер — виден только участок под лучом':`${modeDescriptions[state.mode]} · шаг ${state.step} из ${maxSteps}`;
+    $('revealBtn').disabled=all||state.finished;
+    $('showBtn').disabled=all;
+  }
+  function newSeries(){
+    state.order=randomize(alphabet.filter(l=>state.selected.has(l)));state.index=0;newRound();
+  }
+  function newRound(){
+    state.step=1;state.revealed=false;state.finished=false;
+    const current=state.order[state.index];if(!current)return;
+    configureGlyph(current);
+    $('round').textContent=`${String(state.index+1).padStart(2,'0')} / ${state.order.length}`;
+    $('stageTitle').textContent='Какая буква спрятана?';
+    $('feedback').classList.remove('show');$('feedback').textContent='';
+    $('revealBtn').disabled=false;$('showBtn').disabled=false;
+    $('correctBtn').disabled=false;$('wrongBtn').disabled=false;
+    $('nextBtn').textContent=state.index===state.order.length-1?'Новая серия →':'Следующая →';
+    paint();
+  }
+  function revealMore(){if(state.mode==='scanner'||state.revealed||state.finished)return;if(state.step<maxSteps){state.step++;paint()}}
+  function showLetter(){if(state.revealed)return;state.revealed=true;$('stageTitle').textContent='Это буква «'+state.answer+'»';paint()}
+  function markAnswer(correct){showLetter();state.finished=true;$('correctBtn').disabled=true;$('wrongBtn').disabled=true;$('revealBtn').disabled=true;
+    const chip=$('feedback');chip.textContent=correct?'✓ Верно!':'Ответ: '+state.answer;chip.classList.remove('show');void chip.offsetWidth;chip.classList.add('show');
+  }
+  function next(){if(state.index+1>=state.order.length)newSeries();else{state.index++;newRound()}}
+  // В режиме сканера видно ТОЛЬКО то, что сейчас находится под подвижной линзой.
+  // Координаты переводятся через матрицу SVG, чтобы не было смещения на разных экранах.
+  const scancontainer=document.querySelector('.scancontainer');
+  function pointToSvg(event){
+    const matrix=svg.getScreenCTM();if(!matrix)return null;
+    const p=svg.createSVGPoint();p.x=event.clientX;p.y=event.clientY;
+    const pos=p.matrixTransform(matrix.inverse());
+    return {x:Math.max(0,Math.min(680,pos.x)),y:Math.max(0,Math.min(540,pos.y))};
+  }
+  function moveScanner(event){
+    if(state.mode!=='scanner'||state.revealed||state.finished)return;
+    if(event.pointerType==='touch' && event.type==='pointermove' && !event.buttons)return;
+    const pos=pointToSvg(event);if(!pos)return;
+    state.scanner=pos;
+    buildMask();
+    $('scannerLens').setAttribute('transform',`translate(${pos.x} ${pos.y})`);
+  }
+  scancontainer.addEventListener('pointerdown',event=>{
+    if(state.mode!=='scanner')return;
+    if(event.pointerType!=='mouse'){try{scancontainer.setPointerCapture(event.pointerId)}catch(e){}}
+    moveScanner(event);event.preventDefault();
+  });
+  scancontainer.addEventListener('pointermove',moveScanner);
+  $('revealBtn').addEventListener('click',revealMore);$('showBtn').addEventListener('click',showLetter);
+  $('correctBtn').addEventListener('click',()=>markAnswer(true));$('wrongBtn').addEventListener('click',()=>markAnswer(false));$('nextBtn').addEventListener('click',next);
+  document.querySelectorAll('.modebtn').forEach(btn=>btn.addEventListener('click',()=>{state.mode=btn.dataset.mode;document.querySelectorAll('.modebtn').forEach(b=>{const on=b===btn;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on))});state.step=1;state.revealed=false;state.finished=false;$('correctBtn').disabled=false;$('wrongBtn').disabled=false;$('stageTitle').textContent='Какая буква спрятана?';$('feedback').classList.remove('show');paint()}));
+  $('letterCase').addEventListener('change',newRound);$('fontPick').addEventListener('change',newRound);
+  $('difficulty').addEventListener('change',()=>{state.difficulty=$('difficulty').value;paint()});
+  function renderPicker(){
+    const host=$('lettersGrid');host.replaceChildren();
+    for(const l of alphabet){const wrap=document.createElement('label');const cb=document.createElement('input');cb.type='checkbox';cb.value=l;cb.checked=state.temp.has(l);const sp=document.createElement('span');sp.textContent=l;wrap.append(cb,sp);host.append(wrap);cb.addEventListener('change',()=>{cb.checked?state.temp.add(l):state.temp.delete(l);updatePicker()})}
+    updatePicker();
+  }
+  function updatePicker(){$('selectedCount').textContent=`${state.temp.size} из 33`;$('applyPicker').disabled=state.temp.size===0}
+  function openPicker(){state.temp=new Set(state.selected);renderPicker();$('picker').hidden=false;$('closePicker').focus()}
+  function closePicker(){$('picker').hidden=true;$('openPicker').focus()}
+  $('openPicker').addEventListener('click',openPicker);$('closePicker').addEventListener('click',closePicker);$('cancelPicker').addEventListener('click',closePicker);
+  $('picker').addEventListener('click',e=>{if(e.target===$('picker'))closePicker()});
+  $('allBtn').addEventListener('click',()=>{state.temp=new Set(alphabet);renderPicker()});
+  $('noneBtn').addEventListener('click',()=>{state.temp=new Set();renderPicker()});
+  $('vowelBtn').addEventListener('click',()=>{state.temp=new Set(alphabet.filter(l=>vowelSet.has(l)));renderPicker()});
+  $('consonantBtn').addEventListener('click',()=>{state.temp=new Set(alphabet.filter(l=>!vowelSet.has(l)&&!['Ь','Ъ'].includes(l)));renderPicker()});
+  const pairHost=$('pairs');pairs.forEach(pair=>{const b=document.createElement('button');b.type='button';b.textContent=pair;b.addEventListener('click',()=>{state.temp=new Set(pair.split(' '));renderPicker()});pairHost.append(b)});
+  $('applyPicker').addEventListener('click',()=>{if(!state.temp.size)return;state.selected=new Set(state.temp);$('countLabel').firstChild.nodeValue=state.selected.size===33?'Все 33':`${state.selected.size} из 33`;closePicker();newSeries()});
+  $('fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen()}catch(e){}});
+  document.addEventListener('keydown',e=>{if(!$('picker').hidden){if(e.key==='Escape')closePicker();return}if(['SELECT','INPUT','BUTTON'].includes(document.activeElement.tagName)&&e.key===' ')return;if(e.key===' '){e.preventDefault();revealMore()}if(e.key==='ArrowRight'){e.preventDefault();next()}if(e.key==='Enter'){e.preventDefault();showLetter()}});
+  newSeries();
+})();
+</script>
+
+<!-- Общая навигация, избранное и инструменты педагога NeuroX. -->
+<script src="../assets/menu-data.js"></script>
+<script src="../shared/favorites.js" defer></script>
+<script src="../assets/menu-drawer.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
+
+</body>
+</html>

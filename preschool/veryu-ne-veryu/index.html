@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8"/>
+    <script src="../../shared/theme.js"></script>
+    <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+    <meta content="#1E3F8A" name="theme-color"/>
+    <title>Верю — не верю | NeuroX Beta 7 · Выбор фраз</title>
+    <style>
+      :root {
+        --blue: #1E3F8A;
+        --navy: #122b64;
+        --orange: #FF6A00;
+        --text: #16345c;
+        --paper: #fff;
+        --soft: #eff7ff;
+        --mint: #36aa7b;
+        --red: #f37058;
+        --line: #dce9f5;
+        --shadow: 0 20px 60px rgba(24,66,125,.11);
+        font-synthesis: none;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,body {
+        margin: 0;
+        min-height: 100%;
+      }
+      html {
+        background: #e8f2ff;
+      }
+      body {
+        font-family: 'Trebuchet MS','Arial Rounded MT Bold',Arial,sans-serif;
+        color: var(--text);
+        line-height: 1.35;
+        min-height: 100svh;
+        overflow-x: hidden;
+      }
+      button,select {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+      button:focus-visible {
+        outline: 4px solid #ffae33;
+        outline-offset: 4px;
+      }
+      button:disabled {
+        cursor: default;
+      }
+      button:active:not(:disabled) {
+        transform: translateY(2px);
+      }
+      .hidden {
+        display: none !important;
+      }
+      .app {
+        min-height: 100svh;
+        background: radial-gradient(circle at 5% 78%,#d7f0ff 0,#d7f0ff00 29%),radial-gradient(circle at 97% 23%,#ffebd0 0,#ffebd000 26%),linear-gradient(160deg,#f3f9ff 15%,#e5f3ff 100%);
+        isolation: isolate;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+      .app:before,.app:after {
+        content: "";
+        pointer-events: none;
+        position: fixed;
+        z-index: 0;
+        width: 230px;
+        height: 230px;
+        border: 24px solid #cfeafa;
+        opacity: .64;
+        border-radius: 50%;
+      }
+      .app:before {
+        left: -158px;
+        bottom: 80px;
+      }
+      .app:after {
+        right: -175px;
+        top: 150px;
+        border-color: #fce3bc;
+      }
+      .top {
+        height: 77px;
+        flex-shrink: 0;
+        background: var(--blue);
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 10px max(22px,calc((100vw - 1340px)/2));
+        box-shadow: 0 8px 25px rgba(30,63,138,.18);
+        position: relative;
+        z-index: 2;
+        color: #fff;
+      }
+      .logo {
+        width: 50px;
+        height: 50px;
+        border-radius: 16px;
+        background: var(--orange);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        box-shadow: inset 0 -4px 0 rgba(0,0,0,.12),0 4px 0 rgba(0,0,0,.07);
+      }
+      .logo svg {
+        width: 31px;
+        height: 31px;
+        fill: none;
+        stroke: #fff;
+        stroke-width: 3.3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .brand strong {
+        font-size: 23px;
+        letter-spacing: -.6px;
+        white-space: nowrap;
+      }
+      .brand small {
+        font-size: 12px;
+        opacity: .8;
+        display: block;
+        letter-spacing: 1.7px;
+        font-weight: 800;
+      }
+      .top-spacer {
+        flex: 1;
+      }
+      .status {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .counter {
+        font-weight: 900;
+        background: #ffffff18;
+        border: 1px solid #ffffff26;
+        border-radius: 16px;
+        padding: 9px 16px;
+        white-space: nowrap;
+        font-size: 16px;
+      }
+      .round-btn {
+        height: 44px;
+        min-width: 44px;
+        border: 1px solid #ffffff35;
+        color: #fff;
+        background: #ffffff12;
+        border-radius: 14px;
+        font-weight: 800;
+        padding: 0 14px;
+      }
+      .round-btn:hover {
+        background: #ffffff27;
+      }
+      .main {
+        width: 100%;
+        max-width: 1220px;
+        margin: 0 auto;
+        flex: 1;
+        min-height: 0;
+        padding: clamp(15px,3vh,28px) 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+      }
+      .stage {
+        width: 100%;
+        margin: auto;
+        animation: pop .38s cubic-bezier(.2,.85,.25,1);
+      }
+      @keyframes pop {
+        from {
+          opacity: 0;
+          transform: translateY(12px) scale(.985);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      .hero {
+        width: min(100%,1040px);
+        background: var(--paper);
+        border: 3px solid #fff;
+        outline: 1px solid #d7e8f6;
+        border-radius: 37px;
+        box-shadow: var(--shadow);
+        padding: clamp(22px,4vw,49px);
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero:before {
+        content: "";
+        position: absolute;
+        right: -70px;
+        top: -85px;
+        width: 240px;
+        height: 240px;
+        border-radius: 50%;
+        background: #ffedda;
+        z-index: 0;
+      }
+      .hero:after {
+        content: "";
+        position: absolute;
+        left: -90px;
+        bottom: -128px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: #e8f8ff;
+        z-index: 0;
+      }
+      .hero-inner {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 900;
+        letter-spacing: 1.9px;
+        text-transform: uppercase;
+        font-size: 13px;
+        color: #436994;
+        background: #ecf6ff;
+        border: 1px solid #d8eafa;
+        border-radius: 999px;
+        padding: 9px 17px;
+      }
+      .hero h1 {
+        font-size: clamp(45px,6vw,76px);
+        letter-spacing: -2.5px;
+        color: var(--blue);
+        margin: 15px 0 8px;
+        line-height: 1.06;
+      }
+      .hero h1 em {
+        color: var(--orange);
+        font-style: normal;
+      }
+      .hero p {
+        font-size: clamp(17px,2vw,22px);
+        font-weight: 700;
+        color: #587395;
+        margin: 12px auto 25px;
+      }
+      .trust-tiles {
+        display: flex;
+        justify-content: center;
+        gap: 17px;
+        margin: 20px auto 30px;
+        max-width: 630px;
+      }
+      .trust-tile {
+        flex: 1;
+        max-width: 305px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 13px;
+        border-radius: 22px;
+        padding: 24px 14px;
+        color: white;
+        font-size: clamp(20px,2.3vw,27px);
+        font-weight: 900;
+        box-shadow: inset 0 -6px 0 rgba(0,0,0,.10),0 7px 15px rgba(30,63,138,.12);
+      }
+      .trust-tile span {
+        font-size: 35px;
+        font-family: Arial,sans-serif;
+      }
+      .trust-tile.yes {
+        background: #31b28a;
+        transform: rotate(-2deg);
+      }
+      .trust-tile.no {
+        background: #fa7b65;
+        transform: rotate(2deg);
+      }
+      .setting-title {
+        font-size: 14px;
+        font-weight: 900;
+        letter-spacing: 1.3px;
+        text-transform: uppercase;
+        color: #6682a1;
+        margin: 10px 0 13px;
+      }
+      .rounds {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 23px;
+      }
+      .rounds button {
+        border: 2px solid #dce9f6;
+        border-radius: 15px;
+        background: #f7fbff;
+        color: #31527e;
+        min-width: 102px;
+        padding: 13px 16px;
+        font-size: 18px;
+        font-weight: 900;
+        transition: background .15s,border-color .15s,transform .15s;
+      }
+      .rounds button[aria-pressed=true] {
+        border-color: var(--blue);
+        background: #e9f1ff;
+        color: var(--blue);
+        box-shadow: 0 4px 0 #c4d6f4;
+      }
+      .rounds button:hover {
+        border-color: #9ebbec;
+      }
+      .primary {
+        border: none;
+        border-radius: 18px;
+        background: var(--orange);
+        color: white;
+        font-size: 21px;
+        font-weight: 900;
+        padding: 18px 32px;
+        box-shadow: inset 0 -5px 0 rgba(0,0,0,.12),0 9px 15px rgba(255,106,0,.20);
+        transition: filter .15s;
+        min-width: 270px;
+      }
+      .primary:hover {
+        filter: brightness(1.05);
+      }
+      .primary.blue {
+        background: var(--blue);
+        box-shadow: inset 0 -5px 0 #142c6c,0 8px 15px #19397526;
+      }
+      .soft-link {
+        border: none;
+        background: transparent;
+        color: var(--blue);
+        font-size: 17px;
+        font-weight: 900;
+        padding: 16px;
+      }
+      .soft-link:hover {
+        text-decoration: underline;
+      }
+      .game {
+        width: 100%;
+        max-width: 1120px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin: 0 auto;
+      }
+      .progress-bar {
+        height: 11px;
+        border-radius: 20px;
+        background: #d6e9fb;
+        overflow: hidden;
+        margin: 2px auto 5px;
+        width: calc(100% - 50px);
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        border-radius: 20px;
+        background: linear-gradient(90deg,#2bb99c,#ffad42);
+        transition: width .4s ease;
+      }
+      .question-board {
+        width: 100%;
+        background: white;
+        border-radius: 32px;
+        border: 2px solid #d9eafa;
+        box-shadow: var(--shadow);
+        min-height: min(52vh,420px);
+        padding: 24px 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .question-board:before {
+        content: "";
+        pointer-events: none;
+        position: absolute;
+        top: -80px;
+        left: -75px;
+        width: 180px;
+        height: 180px;
+        background: #f0f9ff;
+        border-radius: 50%;
+      }
+      .question-board:after {
+        content: "";
+        pointer-events: none;
+        position: absolute;
+        right: -70px;
+        bottom: -105px;
+        width: 170px;
+        height: 170px;
+        background: #fff3e5;
+        border-radius: 50%;
+      }
+      .question-content {
+        z-index: 1;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+      }
+      .overline {
+        display: inline-flex;
+        border-radius: 100px;
+        background: #edf5ff;
+        color: #57769c;
+        padding: 7px 15px;
+        font-size: 14px;
+        letter-spacing: 1.3px;
+        font-weight: 900;
+      }
+      .phrase {
+        font-size: clamp(39px,5vw,72px);
+        font-weight: 900;
+        color: #193f7c;
+        text-align: center;
+        line-height: 1.22;
+        max-width: 940px;
+        letter-spacing: -1.5px;
+        overflow-wrap: break-word;
+        margin: 27px 0 20px;
+      }
+      .starburst {
+        position: absolute;
+        color: #ffb22f;
+        font-size: 36px;
+        line-height: 1;
+        font-family: Arial,sans-serif;
+      }
+      .s1 {
+        left: 25px;
+        top: 32px;
+      }
+      .s2 {
+        right: 31px;
+        bottom: 30px;
+        color: #90d8ff;
+      }
+      .prompt {
+        color: #6683a5;
+        font-size: 17px;
+        font-weight: 800;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+      }
+      .answers {
+        display: flex;
+        gap: 17px;
+        max-width: 920px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .choice {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        border: none;
+        color: white;
+        min-height: 96px;
+        border-radius: 25px;
+        font-size: clamp(23px,3vw,33px);
+        font-weight: 900;
+        letter-spacing: .2px;
+        box-shadow: inset 0 -7px 0 rgba(0,0,0,.10),0 9px 18px rgba(36,77,129,.11);
+        transition: filter .15s,transform .15s;
+      }
+      .choice:hover {
+        filter: brightness(1.06);
+      }
+      .choice.true {
+        background: #21aa84;
+      }
+      .choice.false {
+        background: #f47660;
+      }
+      .choice .mark {
+        width: 50px;
+        height: 50px;
+        border-radius: 17px;
+        background: #ffffff30;
+        font-size: 33px;
+        display: grid;
+        place-items: center;
+        font-family: Arial,sans-serif;
+      }
+      .keyhint {
+        text-align: center;
+        color: #7991ac;
+        font-size: 13px;
+        font-weight: 800;
+        min-height: 16px;
+      }
+      .reveal-top {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 0 10px 12px;
+      }
+      .reveal-top .mini-phrase {
+        font-weight: 900;
+        font-size: clamp(16px,1.8vw,22px);
+        color: #254679;
+        line-height: 1.25;
+        text-align: right;
+      }
+      .reveal-board {
+        width: 100%;
+        background: #fff;
+        border: 2px solid #dceaf9;
+        border-radius: 28px;
+        padding: 12px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .picture-wrap {
+        width: min(100%, max(220px, calc((100svh - 300px) * 1.5)));
+        height: auto;
+        aspect-ratio: auto;
+        margin-inline: auto;
+        border-radius: 20px;
+        overflow: visible;
+        background: #fff;
+        display: grid;
+        place-items: center;
+        min-height: 170px;
+      }
+      .picture-wrap img {
+        display: block;
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 70svh;
+        object-fit: contain;
+        object-position: center center;
+        border-radius: 18px;
+      }
+      .picture-wait {
+        font-weight: 900;
+        color: #6682a1;
+        font-size: 20px;
+        text-align: center;
+      }
+      .feedback {
+        display: flex;
+        align-items: center;
+        gap: 17px;
+        margin: 0 auto;
+        max-width: 1090px;
+        width: 100%;
+        padding: 8px 4px 2px;
+      }
+      .feedback-bubble {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        border-radius: 20px;
+        padding: 15px 20px;
+        background: #f5faff;
+        border: 2px solid #d6ebf8;
+      }
+      .feedback-bubble.correct {
+        background: #eafaf4;
+        border-color: #aaead2;
+      }
+      .feedback-bubble.wrong {
+        background: #fff2ec;
+        border-color: #f9cdba;
+      }
+      .feedback-icon {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        background: white;
+        border-radius: 13px;
+        height: 43px;
+        width: 43px;
+        font-size: 25px;
+        font-weight: 900;
+        color: var(--blue);
+      }
+      .feedback-head {
+        font-size: 22px;
+        font-weight: 900;
+        color: var(--blue);
+      }
+      .feedback-sub {
+        font-size: 14px;
+        font-weight: 800;
+        color: #5f7895;
+      }
+      .next {
+        min-width: 230px;
+        font-size: 21px;
+        padding: 21px 24px;
+      }
+      .end-stars {
+        font-size: 58px;
+        color: #ffab23;
+        letter-spacing: 13px;
+        margin: 4px auto;
+      }
+      .end-stats {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 20px auto 29px;
+      }
+      .stat {
+        min-width: 160px;
+        background: #f3f8ff;
+        border: 1px solid #d7e8f6;
+        border-radius: 19px;
+        padding: 14px 22px;
+        color: #577698;
+        font-size: 14px;
+        font-weight: 900;
+      }
+      .stat strong {
+        display: block;
+        color: var(--blue);
+        font-size: 35px;
+        line-height: 1.2;
+      }
+      .end-actions {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+      .bottom {
+        height: 36px;
+        flex-shrink: 0;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 2.3px;
+        color: #a0b3c9;
+        position: relative;
+        z-index: 1;
+        padding: 8px;
+      }
+      .nav-sound {
+        font-size: 22px;
+        width: 46px;
+        padding: 0;
+      }
+      @media (max-width:650px) {
+        .top {
+          height: 66px;
+          padding: 8px 12px;
+          gap: 7px;
+        }
+        .logo {
+          width: 43px;
+          height: 43px;
+          border-radius: 13px;
+        }
+        .brand {
+          gap: 8px;
+        }
+        .brand strong {
+          font-size: 18px;
+        }
+        .brand small {
+          font-size: 10px;
+          letter-spacing: 1px;
+        }
+        .status {
+          gap: 6px;
+        }
+        .counter {
+          padding: 7px 9px;
+          font-size: 13px;
+        }
+        .round-btn {
+          height: 40px;
+          min-width: 39px;
+          padding: 0 8px;
+          font-size: 13px;
+        }
+        .nav-sound {
+          font-size: 19px;
+        }
+        .main {
+          padding: 12px 12px 14px;
+        }
+        .hero {
+          border-radius: 26px;
+          padding: 24px 15px;
+        }
+        .hero h1 {
+          letter-spacing: -1.5px;
+          font-size: clamp(38px,9vw,55px);
+        }
+        .hero p {
+          margin-bottom: 14px;
+          font-size: 16px;
+        }
+        .eyebrow {
+          font-size: 11px;
+          padding: 7px 10px;
+          letter-spacing: 1px;
+        }
+        .trust-tiles {
+          gap: 8px;
+          margin: 16px 0 21px;
+        }
+        .trust-tile {
+          font-size: 19px;
+          gap: 5px;
+          padding: 19px 7px;
+          border-radius: 16px;
+        }
+        .trust-tile span {
+          font-size: 25px;
+        }
+        .setting-title {
+          font-size: 12px;
+        }
+        .rounds {
+          gap: 7px;
+          margin-bottom: 21px;
+        }
+        .rounds button {
+          font-size: 16px;
+          padding: 12px 10px;
+          min-width: 75px;
+          border-radius: 12px;
+        }
+        .primary {
+          font-size: 19px;
+          min-width: 220px;
+        }
+        .game {
+          gap: 12px;
+        }
+        .progress-bar {
+          width: calc(100% - 18px);
+        }
+        .question-board {
+          border-radius: 25px;
+          min-height: clamp(280px,46vh,520px);
+          padding: 18px 15px;
+        }
+        .phrase {
+          font-size: clamp(33px,8vw,57px);
+          letter-spacing: -.8px;
+          margin: 20px 0;
+        }
+        .prompt {
+          font-size: 14px;
+        }
+        .answers {
+          gap: 9px;
+        }
+        .choice {
+          min-height: 82px;
+          border-radius: 18px;
+          font-size: 19px;
+          gap: 7px;
+        }
+        .choice .mark {
+          width: 32px;
+          height: 36px;
+          border-radius: 11px;
+          font-size: 23px;
+        }
+        .reveal-top {
+          padding: 0 2px 5px;
+          gap: 10px;
+        }
+        .reveal-top .mini-phrase {
+          font-size: 16px;
+        }
+        .picture-wrap {
+          width: 100%;
+          height: auto;
+          aspect-ratio: auto;
+          min-height: 130px;
+        }
+        .feedback {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 10px;
+        }
+        .feedback-bubble {
+          padding: 10px 14px;
+        }
+        .feedback-head {
+          font-size: 18px;
+        }
+        .feedback-sub {
+          font-size: 13px;
+        }
+        .next {
+          width: 100%;
+          padding: 17px;
+        }
+        .end-stars {
+          font-size: 37px;
+        }
+        .stat {
+          min-width: 95px;
+          padding: 10px 15px;
+        }
+        .stat strong {
+          font-size: 30px;
+        }
+        .end-actions .primary {
+          width: 100%;
+        }
+        .bottom {
+          height: 26px;
+          padding: 6px;
+        }
+      }
+      @media (min-width:651px) and (max-height:730px) {
+        .top {
+          height: 62px;
+        }
+        .main {
+          padding: 10px 24px;
+        }
+        .question-board {
+          min-height: 38vh;
+        }
+        .picture-wrap {
+          height: 39vh;
+        }
+        .choice {
+          min-height: 75px;
+        }
+        .hero {
+          padding: 20px 34px;
+        }
+        .hero h1 {
+          font-size: 53px;
+        }
+        .hero p {
+          margin-bottom: 9px;
+        }
+        .trust-tiles {
+          margin: 10px auto 15px;
+        }
+        .trust-tile {
+          padding: 16px;
+        }
+        .progress-bar {
+          height: 7px;
+        }
+      }
+      @media (prefers-reduced-motion:reduce) {
+        *,*:before,*:after {
+          animation-duration: 0s !important;
+          transition-duration: 0s !important;
+        }
+      }
+      /* Beta 2: compact mobile header; keep navigation accessible without horizontal scroll. */
+      @media (max-width:650px) {
+        .top {
+          padding: 8px 10px;
+          gap: 4px;
+        }
+        .brand {
+          gap: 6px;
+          min-width: 0;
+        }
+        .brand .logo {
+          width: 36px;
+          height: 36px;
+          border-radius: 11px;
+        }
+        .brand .logo svg {
+          width: 24px;
+          height: 24px;
+        }
+        .brand strong {
+          font-size: clamp(13px,3.65vw,16px);
+          white-space: nowrap;
+          letter-spacing: -.45px;
+        }
+        .brand small {
+          display: none;
+        }
+        .top-spacer {
+          min-width: 0;
+          flex: 1;
+        }
+        .status {
+          gap: 4px;
+          flex-shrink: 0;
+        }
+        .counter {
+          padding: 6px 7px;
+          font-size: 12px;
+          border-radius: 10px;
+        }
+        .round-btn {
+          height: 36px;
+          min-width: 36px;
+          padding: 0 5px;
+        }
+        #soundBtn {
+          min-width: 34px;
+          width: 34px;
+          font-size: 17px;
+        }
+        #homeBtn {
+          font-size: 0;
+          min-width: 34px;
+          width: 34px;
+          position: relative;
+        }
+        #homeBtn:before {
+          content: '⌂';
+          font-size: 25px;
+          line-height: 1;
+          display: block;
+        }
+      }
+      @media (max-width:360px) {
+        .top {
+          padding: 8px 7px;
+        }
+        .brand .logo {
+          height: 32px;
+          width: 32px;
+        }
+        .brand strong {
+          font-size: 13px;
+        }
+      }
+      /* Beta 6: reading controls */
+      .reading-settings {
+        margin: 1px auto 18px;
+        max-width: 580px;
+      }
+      .reading-settings .setting-title {
+        margin: 7px 0 10px;
+      }
+      .reading-toggles {
+        display: flex;
+        justify-content: center;
+        gap: 11px;
+        flex-wrap: wrap;
+      }
+      .reading-toggle {
+        background: #f7fbff;
+        border: 2px solid #dce9f6;
+        border-radius: 15px;
+        padding: 11px 17px;
+        font-size: 16px;
+        font-weight: 900;
+        color: #31527e;
+        min-height: 47px;
+        cursor: pointer;
+        box-shadow: 0 2px 0 #d9e6f4;
+      }
+      .reading-toggle[aria-pressed="true"] {
+        background: #e9f1ff;
+        border-color: var(--blue);
+        color: var(--blue);
+        box-shadow: 0 3px 0 #c4d6f4;
+      }
+      .reading-toggle:hover {
+        border-color: #95b6ed;
+      }
+      .reading-toggle .toggle-mark {
+        margin-right: 7px;
+        color: #6682a1;
+      }
+      .reading-toggle[aria-pressed="true"] .toggle-mark {
+        color: var(--orange);
+      }
+      .reading-switch {
+        position: absolute;
+        right: 20px;
+        top: 100%;
+        z-index: 5;
+        margin-top: 9px;
+        max-width: calc(100vw - 24px);
+        width: 340px;
+        background: white;
+        color: var(--text);
+        border: 2px solid #dce9f6;
+        box-shadow: var(--shadow);
+        border-radius: 18px;
+        padding: 18px 12px;
+      }
+      .reading-switch .setting-title {
+        margin: 0 0 12px;
+        text-align: center;
+      }
+      .reading-switch .reading-toggle {
+        font-size: 14px;
+        padding: 9px 10px;
+      }
+      .phrase.syllable-mode {
+        font-size: clamp(29px,4.25vw,59px);
+        letter-spacing: 0;
+        line-height: 1.4;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+      .mini-phrase.syllable-mode {
+        font-size: clamp(15px,1.6vw,20px);
+        line-height: 1.5;
+      }
+      @media (max-width:650px) {
+        .reading-settings {
+          margin: 0 auto 16px;
+        }
+        .reading-toggle {
+          font-size: 14px;
+          padding: 10px 12px;
+          min-height: 44px;
+        }
+        .reading-switch {
+          right: 7px;
+          top: 100%;
+          width: 290px;
+        }
+        .reading-switch .reading-toggles {
+          gap: 6px;
+        }
+        .reading-switch .reading-toggle {
+          font-size: 13px;
+          padding: 8px;
+        }
+        .phrase.syllable-mode {
+          font-size: clamp(22px,5.7vw,34px);
+          line-height: 1.4;
+        }
+        .mini-phrase.syllable-mode {
+          font-size: 14px;
+        }
+        #readingMenuBtn {
+          font-size: 14px;
+          min-width: 41px;
+        }
+      }
+      @media (max-width:360px) {
+        #readingMenuBtn {
+          min-width: 33px;
+          width: 33px;
+          font-size: 12px;
+          padding: 0 2px;
+        }
+      }
+      /* Beta 7: свободный выбор фраз — без ответов при перелистывании */
+      .browse-start {
+        display: block;
+        margin: 8px auto 0;
+        padding: 10px 18px;
+        border: 2px solid #bfd4ed;
+        border-radius: 14px;
+        background: #eff7ff;
+        color: var(--blue);
+        font-weight: 900;
+        font-size: 18px;
+        min-height: 47px;
+      }
+      .browse-start:hover {
+        background: #dfefff;
+        border-color: var(--blue);
+      }
+      .browse-start-note {
+        font-size: 13px !important;
+        margin: 6px auto 0 !important;
+        font-weight: 700 !important;
+        color: #6e86a1 !important;
+      }
+      .browse-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 920px;
+        width: 100%;
+        margin: 0 auto;
+      }
+      .browse-arrow {
+        flex: 0 0 auto;
+        min-height: 52px;
+        padding: 11px 17px;
+        border-radius: 16px;
+        border: 2px solid #c9dbee;
+        background: #fff;
+        color: var(--blue);
+        font-weight: 900;
+        font-size: 16px;
+        box-shadow: 0 3px 8px rgba(24,66,125,.07);
+      }
+      .browse-arrow:hover {
+        background: #edf5ff;
+        border-color: #7fa7e5;
+      }
+      .browse-chooser {
+        min-width: 0;
+        flex: 1;
+        min-height: 52px;
+        font-weight: 800;
+        font-size: 15px;
+        border: 2px solid #c9dbee;
+        border-radius: 16px;
+        padding: 10px 12px;
+        background: #fff;
+        color: var(--blue);
+        cursor: pointer;
+        text-overflow: ellipsis;
+      }
+      .browse-chooser:focus-visible {
+        outline: 3px solid var(--orange);
+        outline-offset: 2px;
+      }
+      .browse-help {
+        font-size: 13px;
+        font-weight: 800;
+        text-align: center;
+        color: #7891ae;
+        min-height: 17px;
+      }
+      @media (max-width:650px) {
+        .browse-controls {
+          gap: 6px;
+        }
+        .browse-arrow {
+          font-size: 14px;
+          min-height: 46px;
+          padding: 7px 10px;
+        }
+        .browse-chooser {
+          min-height: 46px;
+          padding: 8px 5px;
+          font-size: 13px;
+        }
+        .browse-start {
+          font-size: 16px;
+        }
+      }
+      @media (max-width:360px) {
+        .browse-arrow {
+          font-size: 12px;
+          padding: 5px 7px;
+        }
+        .browse-chooser {
+          font-size: 12px;
+        }
+      }
+    </style>
+    <link href="../../assets/menu-drawer.css" rel="stylesheet"/>
+    <link href="../../shared/unified-topbar.css" rel="stylesheet"/>
+    <link href="../../shared/season-effects.css" rel="stylesheet"/>
+    <link href="../../shared/theme.css" rel="stylesheet"/>
+    <link href="../../shared/favorites.css" rel="stylesheet"/>
+    <link href="../../shared/preschool-new-games.css" rel="stylesheet"/>
+  </head>
+  <body>
+    <div class="app">
+      <header class="top">
+        <div class="brand">
+          <div aria-hidden="true" class="logo"><svg viewbox="0 0 42 42"><path d="M12 9h19a7 7 0 0 1 0 14h-4l-6 6v-6h-9A7 7 0 0 1 12 9Z"></path><path d="m13 16 4 4 9-10"></path></svg></div>
+          <div><strong>Верю — не верю</strong><small>NEUROX · ИГРА</small></div>
+        </div>
+        <div class="top-spacer"></div>
+        <div class="status hidden" id="status">
+          <button aria-controls="readingPopup" aria-expanded="false" aria-label="Настройки чтения" class="round-btn" id="readingMenuBtn" title="Настройки чтения" type="button">Аа</button>
+          <div class="counter" id="topCounter">1 / 10</div>
+          <button aria-label="Включить звук" class="round-btn nav-sound" id="soundBtn" title="Звук выключен" type="button">♪̸</button>
+          <button aria-label="На главную" class="round-btn" id="homeBtn" title="На главную" type="button">Главная</button>
+        </div>
+        <div aria-label="Настройки чтения" class="reading-switch hidden" id="readingPopup" role="group">
+          <div class="setting-title">Как показывать фразы?</div>
+          <div class="reading-toggles">
+            <button aria-pressed="false" class="reading-toggle" data-reading="caps" type="button"><span class="toggle-mark">○</span>ЗАГЛАВНЫМИ</button>
+            <button aria-pressed="false" class="reading-toggle" data-reading="syllables" type="button"><span class="toggle-mark">○</span>По слогам</button>
+          </div>
+        </div>
+      </header>
+      <main class="main">
+        <section aria-label="Начало игры" class="stage" id="startScreen">
+          <div class="hero">
+            <div class="hero-inner">
+              <div class="eyebrow">✦ Игра на чтение и внимание</div>
+              <h1>Верю <em>или</em> не верю?</h1>
+              <p>Прочитай фразу. Реши, правда это или нет!</p>
+              <div aria-hidden="true" class="trust-tiles">
+                <div class="trust-tile yes"><span>✓</span> ВЕРЮ</div>
+                <div class="trust-tile no"><span>×</span> НЕ ВЕРЮ</div>
+              </div>
+              <div class="setting-title">Сколько заданий сыграем?</div>
+              <div aria-label="Длина раунда" class="rounds" id="roundPick" role="group">
+                <button aria-pressed="true" data-rounds="10" type="button">10</button>
+                <button aria-pressed="false" data-rounds="20" type="button">20</button>
+                <button aria-pressed="false" data-rounds="30" type="button">30</button>
+                <button aria-pressed="false" data-rounds="all" id="allBtn" type="button">Все 60</button>
+              </div>
+              <div aria-label="Как показывать фразы" class="reading-settings" role="group">
+                <div class="setting-title">Как показывать фразы?</div>
+                <div class="reading-toggles">
+                  <button aria-pressed="false" class="reading-toggle" data-reading="caps" type="button"><span class="toggle-mark">○</span>ЗАГЛАВНЫМИ</button>
+                  <button aria-pressed="false" class="reading-toggle" data-reading="syllables" type="button"><span class="toggle-mark">○</span>По слогам</button>
+                </div>
+              </div>
+              <button class="primary" id="playBtn" type="button">Играть <span aria-hidden="true">➜</span></button>
+              <button class="browse-start" id="browseStartBtn" type="button">☰ Выбрать фразу</button>
+              <p class="browse-start-note">Можно листать все фразы, не отвечая</p>
+            </div>
+          </div>
+        </section>
+        <section aria-label="Вопрос" class="stage hidden" id="questionScreen">
+          <div class="game">
+            <div aria-label="Пройдено заданий" aria-valuemax="100" aria-valuemin="0" class="progress-bar" role="progressbar">
+              <div class="progress-fill" id="progress1"></div>
+            </div>
+            <div class="question-board">
+              <span aria-hidden="true" class="starburst s1">✦</span>
+              <span aria-hidden="true" class="starburst s2">✦</span>
+              <div class="question-content">
+                <div class="overline" id="questionTag">ФРАЗА 01</div>
+                <div aria-live="polite" class="phrase" id="phrase">Птицы строят гнёзда.</div>
+              </div>
+              <div class="prompt" id="questionPrompt">Выбери ответ</div>
+            </div>
+            <div aria-label="Перелистывание фраз" class="browse-controls hidden" id="browseControls">
+              <button aria-label="Предыдущая фраза" class="browse-arrow" id="prevPhraseBtn" type="button">← Назад</button>
+              <select aria-label="Выбрать любую фразу" class="browse-chooser" id="phrasePicker"></select>
+              <button aria-label="Следующая фраза" class="browse-arrow" id="nextPhraseBtn" type="button">Вперёд →</button>
+            </div>
+            <div class="answers">
+              <button class="choice true" id="yesBtn" type="button"><span aria-hidden="true" class="mark">✓</span> ВЕРЮ</button>
+              <button class="choice false" id="noBtn" type="button"><span aria-hidden="true" class="mark">×</span> НЕ ВЕРЮ</button>
+            </div>
+            <div class="browse-help hidden" id="browseHelp">Листай или выбирай фразу из списка. Ответ необязателен.</div>
+            <div class="keyhint" id="questionHint">Клавиши 1 и 2 тоже работают</div>
+          </div>
+        </section>
+        <section aria-label="Проверка ответа" class="stage hidden" id="revealScreen">
+          <div class="game">
+            <div aria-label="Пройдено заданий" aria-valuemax="100" aria-valuemin="0" class="progress-bar" role="progressbar">
+              <div class="progress-fill" id="progress2"></div>
+            </div>
+            <div class="reveal-board">
+              <div class="reveal-top">
+                <div class="overline" id="revealTag">ФРАЗА 01</div>
+                <div class="mini-phrase" id="revealPhrase"></div>
+              </div>
+              <div class="picture-wrap">
+                <span class="picture-wait" id="pictureWait">Открываем картинку…</span>
+                <img alt="Иллюстрация к фразе" class="hidden" decoding="async" id="picture"/>
+              </div>
+            </div>
+            <div class="feedback">
+              <div class="feedback-bubble" id="feedbackBox">
+                <div class="feedback-icon" id="feedbackIcon">✓</div>
+                <div>
+                  <div class="feedback-head" id="feedbackTitle">Верно!</div>
+                  <div class="feedback-sub" id="feedbackSub">Правильный ответ — «Верю»</div>
+                </div>
+              </div>
+              <button class="primary blue next" id="nextBtn" type="button">Дальше ➜</button>
+            </div>
+            <div class="keyhint">Пробел или Enter — дальше</div>
+          </div>
+        </section>
+        <section aria-label="Итог" class="stage hidden" id="endScreen">
+          <div class="hero">
+            <div class="hero-inner">
+              <div class="eyebrow">✦ Раунд завершён</div>
+              <div aria-hidden="true" class="end-stars" id="endStars">★ ★ ★</div>
+              <h1 id="endTitle">Отличная игра!</h1>
+              <p id="endMessage">Ты справился!</p>
+              <div class="end-stats">
+                <div class="stat"><strong id="endTotal">10</strong>фраз</div>
+                <div class="stat"><strong id="endCorrect">9</strong>верных ответов</div>
+                <div class="stat"><strong id="endMistakes">1</strong>ошибка</div>
+              </div>
+              <div class="end-actions">
+                <button class="primary" id="repeatBtn" type="button">Ещё раунд ➜</button>
+                <button class="soft-link hidden" id="retryBtn" type="button">Повторить ошибки</button>
+                <button class="soft-link" id="finishBtn" type="button">На главную</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+      <footer class="bottom">ЧИТАЙ · ДУМАЙ · ИГРАЙ</footer>
+    </div>
+    <script src="questions.js"></script>
+    <script>
+      (() => {
+          'use strict';
+          const questions = Array.isArray(window.NEUROX_QUESTIONS) ? window.NEUROX_QUESTIONS.filter(q => q && typeof q.text === 'string' && q.text.trim() && typeof q.correct === 'boolean' && typeof q.image === 'string' && q.image.trim()) : [];
+          const $ = id => document.getElementById(id);
+          const screens = ['startScreen', 'questionScreen', 'revealScreen', 'endScreen'];
+          const state = { length: 10, deck: [], index: 0, correct: 0, missed: [], answered: false, stage: 'startScreen', sound: false, retry: false, lastSession: [], browse: false };
+          // Проверенные варианты переносов для слов из исходной базы (без однобуквенных частей).
+          const WORD_TRANSFERS = {
+              "автобус": "ав-то-бус",
+              "арбуз": "ар-буз",
+              "бабочек": "ба-бо-чек",
+              "бабушка": "ба-буш-ка",
+              "бегает": "бе-га-ет",
+              "белки": "бел-ки",
+              "берёзу": "бе-рё-зу",
+              "блины": "бли-ны",
+              "будке": "буд-ке",
+              "букет": "бу-кет",
+              "варенье": "ва-ре-нье",
+              "варят": "ва-рят",
+              "везёт": "ве-зёт",
+              "верблюд": "вер-блюд",
+              "вода": "во-да",
+              "воде": "во-де",
+              "ворона": "во-ро-на",
+              "выгуливает": "вы-гу-ли-ва-ет",
+              "вяжет": "вя-жет",
+              "гнёзда": "гнёз-да",
+              "готовит": "го-то-вит",
+              "греют": "гре-ют",
+              "грызёт": "гры-зёт",
+              "грядке": "гряд-ке",
+              "делают": "де-ла-ют",
+              "дереве": "де-ре-ве",
+              "дереву": "де-ре-ву",
+              "деревьях": "де-ре-вьях",
+              "дети": "де-ти",
+              "длинная": "длин-ная",
+              "добавляют": "до-бав-ля-ют",
+              "дятел": "дя-тел",
+              "ездят": "ез-дят",
+              "жаба": "жа-ба",
+              "живут": "жи-вут",
+              "живёт": "жи-вёт",
+              "жирафа": "жи-ра-фа",
+              "заяц": "за-яц",
+              "зелёная": "зе-лё-ная",
+              "землю": "зем-лю",
+              "землёй": "зем-лёй",
+              "зимой": "зи-мой",
+              "зубы": "зу-бы",
+              "играет": "иг-ра-ет",
+              "играют": "иг-ра-ют",
+              "капает": "ка-па-ет",
+              "катаются": "ка-та-ют-ся",
+              "клубника": "клуб-ни-ка",
+              "кока": "ко-ка",
+              "колой": "ко-лой",
+              "корабли": "ко-ра-бли",
+              "котёнок": "ко-тё-нок",
+              "кошка": "кош-ка",
+              "крана": "кра-на",
+              "кричит": "кри-чит",
+              "курицы": "ку-ри-цы",
+              "лакает": "ла-ка-ет",
+              "лепят": "ле-пят",
+              "летают": "ле-та-ют",
+              "летом": "ле-том",
+              "ловит": "ло-вит",
+              "ловят": "ло-вят",
+              "ложкой": "лож-кой",
+              "лошадь": "ло-шадь",
+              "луна": "лу-на",
+              "лыжах": "лы-жах",
+              "мама": "ма-ма",
+              "мандарины": "ман-да-ри-ны",
+              "медведи": "мед-ве-ди",
+              "микроволновке": "ми-кро-вол-нов-ке",
+              "молоке": "мо-ло-ке",
+              "молоко": "мо-ло-ко",
+              "море": "мо-ре",
+              "морковку": "мор-ков-ку",
+              "морковь": "мор-ковь",
+              "мороженое": "мо-ро-же-ное",
+              "мороз": "мо-роз",
+              "мухи": "му-хи",
+              "мыши": "мы-ши",
+              "мяса": "мя-са",
+              "мячом": "мя-чом",
+              "надевают": "на-де-ва-ют",
+              "наряжают": "на-ря-жа-ют",
+              "неба": "не-ба",
+              "нитками": "нит-ка-ми",
+              "новый": "но-вый",
+              "носки": "нос-ки",
+              "носят": "но-сят",
+              "ночью": "но-чью",
+              "овощей": "ово-щей",
+              "орехи": "оре-хи",
+              "отбирает": "от-би-ра-ет",
+              "палок": "па-лок",
+              "песка": "пес-ка",
+              "петух": "пе-тух",
+              "плавает": "пла-ва-ет",
+              "плавают": "пла-ва-ют",
+              "повар": "по-вар",
+              "подарки": "по-дар-ки",
+              "поезд": "по-езд",
+              "поливают": "по-ли-ва-ют",
+              "птицы": "пти-цы",
+              "пустыне": "пу-сты-не",
+              "пушистый": "пу-шис-тый",
+              "работу": "ра-бо-ту",
+              "радуга": "ра-ду-га",
+              "разогревают": "ра-зо-гре-ва-ют",
+              "растёт": "ра-стёт",
+              "рельсам": "рель-сам",
+              "роет": "ро-ет",
+              "роликах": "ро-ли-ках",
+              "руки": "ру-ки",
+              "рыбы": "ры-бы",
+              "салат": "са-лат",
+              "самолёт": "са-мо-лёт",
+              "сачком": "сач-ком",
+              "светит": "све-тит",
+              "снеговика": "сне-го-ви-ка",
+              "снегу": "сне-гу",
+              "собака": "со-ба-ка",
+              "собирают": "со-би-ра-ют",
+              "совы": "со-вы",
+              "сока": "со-ка",
+              "строят": "стро-ят",
+              "стучит": "сту-чит",
+              "телегу": "те-ле-гу",
+              "течёт": "те-чёт",
+              "убегает": "убе-га-ет",
+              "улетают": "уле-та-ют",
+              "утром": "ут-ром",
+              "фиолетовые": "фио-ле-то-вые",
+              "футбол": "фут-бол",
+              "ходят": "хо-дят",
+              "холодильнике": "хо-ло-диль-ни-ке",
+              "хранят": "хра-нят",
+              "цветы": "цве-ты",
+              "чайнике": "чай-ни-ке",
+              "человека": "че-ло-ве-ка",
+              "черепаха": "че-ре-па-ха",
+              "чистят": "чи-стят",
+              "школу": "шко-лу",
+              "шубу": "шу-бу",
+              "щёткой": "щёт-кой"
+          };
+          const VOWELS = 'аеёиоуыэюя';
+          function isVowel(char) {
+              return VOWELS.includes(char);
+          }
+          function safeTransfer(word) {
+              // Для новых слов: осторожное деление. Не отделяем одну букву, ь/ъ/й и безгласные части.
+              const lower = word.toLocaleLowerCase('ru-RU');
+              if (WORD_TRANSFERS[lower])
+                  return WORD_TRANSFERS[lower];
+              const v = [...lower].reduce((a, c, i) => (isVowel(c) && a.push(i), a), []);
+              if (v.length < 2)
+                  return lower;
+              const cuts = [];
+              for (let i = 0; i < v.length - 1; i++) {
+                  const between = lower.slice(v[i] + 1, v[i + 1]);
+                  let candidate = between.length > 1 ? v[i] + 2 : v[i] + 1;
+                  // ь, ъ, й остаются с предыдущей буквой.
+                  while (candidate < lower.length && 'ьъй'.includes(lower[candidate]))
+                      candidate++;
+                  if (candidate >= 2 && lower.length - candidate >= 2 && (!cuts.length || candidate - cuts[cuts.length - 1] >= 2))
+                      cuts.push(candidate);
+              }
+              const pieces = [], positions = [0, ...cuts, lower.length];
+              for (let i = 1; i < positions.length; i++) {
+                  const piece = lower.slice(positions[i - 1], positions[i]);
+                  if (piece.length < 2 || ![...piece].some(isVowel))
+                      return lower;
+                  pieces.push(piece);
+              }
+              return pieces.join('-');
+          }
+          function splitPhrase(text) {
+              return text.replace(/[А-Яа-яЁё]+/g, word => {
+                  const parts = safeTransfer(word);
+                  const normalized = word === word.toLocaleUpperCase('ru-RU') ? parts.toLocaleUpperCase('ru-RU') : word[0] === word[0].toLocaleUpperCase('ru-RU') ? parts[0].toLocaleUpperCase('ru-RU') + parts.slice(1) : parts;
+                  return normalized;
+              });
+          }
+          function loadReadingSettings() {
+              try {
+                  return JSON.parse(localStorage.getItem('neurox-veryu-reading') || '{}');
+              }
+              catch (e) {
+                  return {};
+              }
+          }
+          const readingConfig = loadReadingSettings();
+          const reading = { caps: readingConfig.caps === true, syllables: readingConfig.syllables === true };
+          function formatPhrase(text) {
+              let result = reading.syllables ? splitPhrase(text) : text;
+              return reading.caps ? result.toLocaleUpperCase('ru-RU') : result;
+          }
+          function syncReadingToggles() {
+              document.querySelectorAll('[data-reading]').forEach(button => {
+                  const enabled = reading[button.dataset.reading];
+                  button.setAttribute('aria-pressed', String(enabled));
+                  button.querySelector('.toggle-mark').textContent = enabled ? '✓' : '○';
+              });
+              for (const id of ['phrase', 'revealPhrase'])
+                  $(id).classList.toggle('syllable-mode', reading.syllables);
+              if (state.deck[state.index]) {
+                  const formatted = formatPhrase(state.deck[state.index].text);
+                  $('phrase').textContent = formatted;
+                  $('revealPhrase').textContent = formatted;
+              }
+          }
+          function saveReadingSettings() {
+              try {
+                  localStorage.setItem('neurox-veryu-reading', JSON.stringify(reading));
+              }
+              catch (e) {
+              }
+          }
+          function hideReadingPopup() {
+              $('readingPopup').classList.add('hidden');
+              $('readingMenuBtn').setAttribute('aria-expanded', 'false');
+          }
+          document.querySelectorAll('[data-reading]').forEach(button => button.addEventListener('click', () => {
+              const name = button.dataset.reading;
+              reading[name] = !reading[name];
+              syncReadingToggles();
+              saveReadingSettings();
+          }));
+          $('readingMenuBtn').addEventListener('click', () => {
+              const willShow = $('readingPopup').classList.contains('hidden');
+              $('readingPopup').classList.toggle('hidden', !willShow);
+              $('readingMenuBtn').setAttribute('aria-expanded', String(willShow));
+          });
+          document.addEventListener('pointerdown', event => {
+              if (!$('readingPopup').contains(event.target) && event.target !== $('readingMenuBtn'))
+                  hideReadingPopup();
+          });
+          syncReadingToggles();
+          let soundContext;
+          const preloadedImages = new Set();
+          function preloadImage(src) {
+              if (!src || preloadedImages.has(src))
+                  return;
+              const im = new Image();
+              im.decoding = 'async';
+              im.loading = 'eager';
+              im.src = src;
+              preloadedImages.add(src);
+          }
+          function playSound(success) {
+              if (!state.sound)
+                  return;
+              try {
+                  const Audio = window.AudioContext || window.webkitAudioContext;
+                  if (!Audio)
+                      return;
+                  soundContext = soundContext || new Audio();
+                  if (soundContext.state === 'suspended')
+                      soundContext.resume();
+                  const start = soundContext.currentTime;
+                  [0, 1].forEach((i) => {
+                      const o = soundContext.createOscillator(), g = soundContext.createGain();
+                      o.type = 'sine';
+                      o.frequency.value = success ? (i ? 690 : 520) : (i ? 290 : 360);
+                      g.gain.setValueAtTime(.0001, start + i * .09);
+                      g.gain.exponentialRampToValueAtTime(.075, start + i * .09 + .013);
+                      g.gain.exponentialRampToValueAtTime(.0001, start + i * .09 + .13);
+                      o.connect(g).connect(soundContext.destination);
+                      o.start(start + i * .09);
+                      o.stop(start + i * .09 + .14);
+                  });
+              }
+              catch (e) {
+                  /* Audio is optional */
+              }
+          }
+          function shuffle(list) {
+              const a = [...list];
+              for (let i = a.length - 1; i > 0; i--) {
+                  let j = Math.floor(Math.random() * (i + 1));
+                  [a[i], a[j]] = [a[j], a[i]];
+              }
+              return a;
+          }
+          function longestRun(a) {
+              let max = 0, run = 0, prev = null;
+              for (const q of a) {
+                  run = q.correct === prev ? run + 1 : 1;
+                  prev = q.correct;
+                  max = Math.max(run, max);
+              }
+              return max;
+          }
+          function deckFor(count) {
+              const yes = shuffle(questions.filter(q => q.correct)), no = shuffle(questions.filter(q => !q.correct));
+              const target = Math.min(questions.length, count);
+              let ny = Math.min(yes.length, Math.floor(target / 2)), nn = Math.min(no.length, Math.floor(target / 2));
+              let left = target - ny - nn;
+              while (left > 0) {
+                  if (yes.length - ny >= no.length - nn && ny < yes.length)
+                      ny++;
+                  else if (nn < no.length)
+                      nn++;
+                  else
+                      ny++;
+                  left--;
+              }
+              let chosen = [...yes.slice(0, ny), ...no.slice(0, nn)];
+              let best = shuffle(chosen);
+              for (let t = 0; t < 120; t++) {
+                  let next = shuffle(chosen);
+                  if (longestRun(next) < longestRun(best))
+                      best = next;
+                  if (longestRun(best) <= 3)
+                      break;
+              }
+              return best;
+          }
+          function show(name) {
+              hideReadingPopup();
+              screens.forEach(id => $(id).classList.toggle('hidden', id !== name));
+              state.stage = name;
+              $('status').classList.toggle('hidden', name === 'startScreen');
+              window.scrollTo?.(0, 0);
+          }
+          function paintStatus() {
+              const amount = state.deck.length;
+              const shown = Math.min(state.index + 1, amount);
+              $('topCounter').textContent = state.browse ? `Выбор: ${shown} / ${amount}` : `${shown} / ${amount}`;
+              const percent = Math.round(100 * (state.stage === 'revealScreen' ? shown : state.index) / Math.max(1, amount));
+              $('progress1').style.width = `${percent}%`;
+              $('progress2').style.width = `${Math.round(shown * 100 / Math.max(1, amount))}%`;
+          }
+          function newGame(useMissed = false) {
+              if (questions.length < 2) {
+                  alert('Добавьте хотя бы два задания в questions.js');
+                  return;
+              }
+              state.browse = false;
+              $('browseControls').classList.add('hidden');
+              $('browseHelp').classList.add('hidden');
+              $('questionHint').classList.remove('hidden');
+              state.retry = useMissed;
+              state.deck = useMissed ? shuffle(state.missed) : deckFor(state.length === 'all' ? questions.length : state.length);
+              state.lastSession = [...state.deck];
+              state.index = 0;
+              state.correct = 0;
+              state.missed = [];
+              state.answered = false;
+              ask();
+          }
+          function startBrowse() {
+              if (!questions.length) {
+                  alert('Не найдены фразы в questions.js');
+                  return;
+              }
+              state.browse = true;
+              state.retry = false;
+              // В алфавитном списке правдивые и абсурдные фразы перемешаны.
+              state.deck = [...questions].sort((a, b) => a.text.localeCompare(b.text, 'ru'));
+              state.index = 0;
+              state.correct = 0;
+              state.missed = [];
+              state.answered = false;
+              const select = $('phrasePicker');
+              select.replaceChildren();
+              state.deck.forEach((q, i) => {
+                  const option = document.createElement('option');
+                  option.value = String(i);
+                  option.textContent = `${i + 1}. ${q.text}`;
+                  select.append(option);
+              });
+              $('browseControls').classList.remove('hidden');
+              $('browseHelp').classList.remove('hidden');
+              $('questionHint').classList.add('hidden');
+              ask();
+          }
+          function browseTo(target) {
+              if (!state.browse || state.stage !== 'questionScreen' || !state.deck.length)
+                  return;
+              // Листание не засчитывает ответ и не загружает картинки.
+              state.index = (target + state.deck.length) % state.deck.length;
+              ask();
+          }
+          function ask() {
+              if (state.index >= state.deck.length) {
+                  if (state.browse) {
+                      state.index = 0;
+                  }
+                  else {
+                      end();
+                      return;
+                  }
+              }
+              state.answered = false;
+              const q = state.deck[state.index];
+              if (!state.browse) {
+                  preloadImage(q.image);
+                  const nextQ = state.deck[state.index + 1];
+                  if (nextQ)
+                      preloadImage(nextQ.image);
+              }
+              $('phrase').textContent = formatPhrase(q.text);
+              $('questionPrompt').textContent = state.browse ? 'Листай фразы или выбери ответ' : 'Выбери ответ';
+              $('questionTag').textContent = (state.browse ? 'ФРАЗА ИЗ СПИСКА ' : 'ФРАЗА ') + String(state.index + 1).padStart(2, '0');
+              if (state.browse)
+                  $('phrasePicker').value = String(state.index);
+              show('questionScreen');
+              paintStatus();
+              if (!state.browse)
+                  $('yesBtn').focus({ preventScroll: true });
+          }
+          function answer(choice) {
+              if (state.stage !== 'questionScreen' || state.answered)
+                  return;
+              state.answered = true;
+              const q = state.deck[state.index], right = choice === q.correct;
+              if (!state.browse) {
+                  if (right)
+                      state.correct++;
+                  else
+                      state.missed.push(q);
+              }
+              playSound(right);
+              $('revealPhrase').textContent = formatPhrase(q.text);
+              $('revealTag').textContent = 'ФРАЗА ' + String(state.index + 1).padStart(2, '0');
+              $('feedbackBox').classList.toggle('correct', right);
+              $('feedbackBox').classList.toggle('wrong', !right);
+              $('feedbackIcon').textContent = right ? '✓' : '↻';
+              $('feedbackTitle').textContent = right ? 'Верно!' : 'Не совсем!';
+              $('feedbackSub').textContent = right ? 'Правильный ответ!' : `Правильный ответ — «${q.correct ? 'Верю' : 'Не верю'}»`;
+              $('nextBtn').textContent = state.browse ? 'Следующая фраза ➜' : state.index === state.deck.length - 1 ? 'Результат ➜' : 'Дальше ➜';
+              const img = $('picture');
+              img.loading = 'eager';
+              img.decoding = 'async';
+              img.fetchPriority = 'high';
+              img.classList.add('hidden');
+              $('pictureWait').classList.remove('hidden');
+              $('pictureWait').textContent = 'Открываем картинку…';
+              img.onload = () => {
+                  img.classList.remove('hidden');
+                  $('pictureWait').classList.add('hidden');
+              };
+              img.onerror = () => {
+                  $('pictureWait').textContent = 'Картинка не загрузилась. Проверьте папку images рядом с index.html и файлы .webp';
+                  img.classList.add('hidden');
+              };
+              img.removeAttribute('src');
+              img.src = q.image;
+              show('revealScreen');
+              paintStatus();
+              $('nextBtn').focus({ preventScroll: true });
+          }
+          function next() {
+              if (state.stage !== 'revealScreen')
+                  return;
+              state.index++;
+              if (state.browse && state.index >= state.deck.length)
+                  state.index = 0;
+              ask();
+          }
+          function end() {
+              show('endScreen');
+              $('topCounter').textContent = state.deck.length + ' / ' + state.deck.length;
+              const total = state.deck.length, miss = total - state.correct;
+              const ratio = state.correct / Math.max(1, total);
+              $('endTitle').textContent = ratio === 1 ? 'Всё правильно!' : ratio >= .7 ? 'Отличная игра!' : 'Сыграем ещё?';
+              $('endMessage').textContent = ratio === 1 ? 'Ни одной ошибки!' : ratio >= .7 ? 'Здорово получилось!' : 'Каждый раунд — новая попытка!';
+              $('endStars').textContent = ratio >= .8 ? '★ ★ ★' : ratio >= .5 ? '★ ★ ☆' : '★ ☆ ☆';
+              $('endTotal').textContent = total;
+              $('endCorrect').textContent = state.correct;
+              $('endMistakes').textContent = miss;
+              $('retryBtn').classList.toggle('hidden', !state.missed.length);
+              $('repeatBtn').focus({ preventScroll: true });
+          }
+          $('roundPick').addEventListener('click', event => {
+              const btn = event.target.closest('button[data-rounds]');
+              if (!btn)
+                  return;
+              state.length = btn.dataset.rounds === 'all' ? 'all' : Number(btn.dataset.rounds);
+              document.querySelectorAll('#roundPick button').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+          });
+          $('allBtn').textContent = 'Все ' + questions.length;
+          $('playBtn').addEventListener('click', () => newGame(false));
+          $('browseStartBtn').addEventListener('click', startBrowse);
+          $('prevPhraseBtn').addEventListener('click', () => browseTo(state.index - 1));
+          $('nextPhraseBtn').addEventListener('click', () => browseTo(state.index + 1));
+          $('phrasePicker').addEventListener('change', e => browseTo(Number(e.target.value)));
+          $('yesBtn').addEventListener('click', () => answer(true));
+          $('noBtn').addEventListener('click', () => answer(false));
+          $('nextBtn').addEventListener('click', next);
+          $('homeBtn').addEventListener('click', () => show('startScreen'));
+          $('repeatBtn').addEventListener('click', () => newGame(false));
+          $('retryBtn').addEventListener('click', () => newGame(true));
+          $('finishBtn').addEventListener('click', () => show('startScreen'));
+          $('soundBtn').addEventListener('click', () => {
+              state.sound = !state.sound;
+              $('soundBtn').textContent = state.sound ? '♪' : '♪̸';
+              $('soundBtn').title = state.sound ? 'Выключить звук' : 'Включить звук';
+              $('soundBtn').setAttribute('aria-label', $('soundBtn').title);
+              if (state.sound)
+                  playSound(true);
+          });
+          document.addEventListener('keydown', e => {
+              if (e.altKey || e.ctrlKey || e.metaKey || e.repeat)
+                  return;
+              const tag = (e.target?.tagName || '').toLowerCase();
+              if (['input', 'textarea', 'select'].includes(tag))
+                  return;
+              if (state.stage === 'questionScreen' && state.browse && ['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                  e.preventDefault();
+                  browseTo(state.index + (e.key === 'ArrowRight' ? 1 : -1));
+              }
+              else if (state.stage === 'questionScreen' && ['1', '2'].includes(e.key)) {
+                  e.preventDefault();
+                  answer(e.key === '1');
+              }
+              else if (state.stage === 'revealScreen' && (['Enter', ' '].includes(e.key))) {
+                  e.preventDefault();
+                  next();
+              }
+          });
+          window.__NEUROX_TEST__ = { questions, state, ask, newGame, answer, next, reading, formatPhrase, splitPhrase, safeTransfer, startBrowse, browseTo };
+          if (!questions.length) {
+              $('playBtn').disabled = true;
+              $('playBtn').textContent = 'Нет заданий — распакуйте весь архив (включая questions.js и папку images)';
+          }
+      })();
+    </script>
+    <script defer="" src="../../assets/menu-data.js"></script>
+    <script defer="" src="../../assets/menu-drawer.js"></script>
+    <script defer="" src="../../shared/favorites.js"></script>
+    <script defer="" src="../../shared/unified-topbar.js"></script>
+    <script defer="" src="../../shared/seasons.js"></script>
+    <script defer="" src="../../shared/accessibility.js"></script>
+    <script defer="" src="../../shared/teacher-panel.js"></script>
+  </body>
+</html>
