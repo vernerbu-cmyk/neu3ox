@@ -1,0 +1,114 @@
+/* NeuroX · единая панель педагога. Не изменяет размеры игровых полей. */
+#nx-teacher-launch,#nx-teacher-panel,#nx-teacher-curtain,#nx-teacher-canvas,#nx-teacher-demo-exit{font-family:'Nunito Sans',Arial,sans-serif!important;box-sizing:border-box}
+#nx-teacher-launch{position:fixed;right:18px;bottom:18px;z-index:2147483000;width:52px;height:52px;border:2px solid #ff6a00;border-radius:16px;background:#1e3f8a;color:white;font-size:25px;box-shadow:0 9px 26px #0b1a3f70;display:grid;place-items:center;cursor:pointer;touch-action:manipulation}
+#nx-teacher-launch:hover{background:#2a56c6}#nx-teacher-launch:focus-visible,.nx-teacher-btn:focus-visible{outline:3px solid #ff6a00;outline-offset:2px}
+#nx-teacher-launch svg{width:27px;height:27px}
+#nx-teacher-panel{position:fixed;right:18px;bottom:80px;z-index:2147483002;width:min(365px,calc(100vw - 24px));max-height:min(75dvh,650px);overflow-y:auto;background:#fff;color:#24324b;border:1px solid #c8d1e6;border-radius:19px;box-shadow:0 14px 46px #071a4369;padding:16px;display:none;text-align:left;font-size:14px;line-height:1.4}
+#nx-teacher-panel.nx-open{display:block}#nx-teacher-panel *{box-sizing:border-box}
+#nx-teacher-panel .nx-teacher-title{font-weight:900;color:#1e3f8a;font-size:17px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+#nx-teacher-panel .nx-teacher-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#nx-teacher-panel .nx-teacher-btn,#nx-teacher-demo-exit{border:1px solid #c9d5ed;border-radius:10px;background:#eff3fb;color:#1e3f8a;font:800 13px 'Nunito Sans',Arial,sans-serif;padding:10px 8px;min-height:40px;cursor:pointer;white-space:normal}
+#nx-teacher-panel .nx-teacher-btn[aria-pressed=true]{background:#1e3f8a;color:#fff;border-color:#1e3f8a}
+#nx-teacher-panel .nx-teacher-btn:hover{border-color:#ff6a00}
+#nx-teacher-panel .nx-teacher-small{font-size:12px;color:#64738b;margin:11px 0 6px}
+#nx-teacher-panel .nx-teacher-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px}
+#nx-teacher-panel input[type=number]{width:65px;background:#fff;color:#24324b;border:1px solid #c9d5ed;border-radius:8px;padding:7px;font:700 14px Arial}
+#nx-teacher-panel input[type=color]{width:37px;height:37px;border:0;padding:0;background:none;cursor:pointer}
+#nx-teacher-panel input[type=range]{max-width:120px;accent-color:#ff6a00}
+#nx-teacher-panel .nx-teacher-clock{font-size:26px;font-weight:900;font-variant-numeric:tabular-nums;color:#1e3f8a;min-width:96px;text-align:center}
+#nx-teacher-panel .nx-teacher-clock.nx-finished{color:#c85100}
+#nx-teacher-panel [hidden]{display:none!important}
+#nx-teacher-curtain{position:fixed;z-index:2147482990;inset:0;display:none;background:#172d62;color:#fff;align-items:center;justify-content:center;text-align:center;padding:24px;cursor:default;user-select:none}
+#nx-teacher-curtain.nx-on{display:flex}#nx-teacher-curtain .nx-curtain-center{max-width:600px;font-weight:800;font-size:clamp(22px,4vw,42px);opacity:.8}
+#nx-teacher-canvas{position:fixed;inset:0;z-index:2147482995;display:none;touch-action:none;cursor:crosshair;width:100vw;height:100dvh}
+#nx-teacher-canvas.nx-on{display:block}
+body.nx-teacher-demo #nx-unified-bar,body.nx-teacher-demo #nx-drawer-btn,body.nx-teacher-demo #nx-drawer,body.nx-teacher-demo #nx-overlay,body.nx-teacher-demo > footer,body.nx-teacher-demo #nx-quick-home,body.nx-teacher-demo #nx-quick-panel{display:none!important}
+#nx-teacher-demo-exit{position:fixed;top:8px;right:9px;z-index:2147483003;background:#1e3f8a;color:white;border-color:#ff6a00;display:none;min-width:105px}
+body.nx-teacher-demo #nx-teacher-demo-exit{display:block}
+body.nx-teacher-demo #nx-teacher-launch{bottom:18px}
+@media(max-width:620px){#nx-teacher-panel{right:8px;bottom:66px;width:calc(100vw - 16px);max-height:calc(100dvh - 84px);padding:13px}#nx-teacher-launch{right:9px;bottom:9px;width:47px;height:47px}#nx-teacher-demo-exit{top:5px;right:5px;padding:8px}}
+@media print{#nx-teacher-launch,#nx-teacher-panel,#nx-teacher-curtain,#nx-teacher-canvas,#nx-teacher-demo-exit{display:none!important}}
+/* Visible countdown when the teacher panel itself is collapsed. */
+#nx-teacher-mini-clock{position:fixed;right:78px;bottom:23px;z-index:2147483000;display:none;border:1px solid #ff6a00;border-radius:12px;background:#1e3f8a;color:#fff;font:800 17px/1 'Nunito Sans',Arial,sans-serif;padding:12px 14px;cursor:pointer;font-variant-numeric:tabular-nums;box-shadow:0 7px 18px #071a4360}
+#nx-teacher-mini-clock.nx-show{display:block}
+@media(max-width:620px){#nx-teacher-mini-clock{right:67px;bottom:13px;padding:11px 12px}}
+@media print{#nx-teacher-mini-clock{display:none!important}}
+
+/* Полноэкранный режим — отдельное действие панели педагога. */
+#nx-teacher-panel .nx-teacher-grid .nx-teacher-wide{
+  grid-column:1 / -1;display:flex;align-items:center;justify-content:center;gap:9px;
+}
+#nx-teacher-panel .nx-teacher-wide svg{width:19px;height:19px;flex:none}
+#nx-teacher-panel #nxt-fullscreen-status{color:#b45309}
+
+/* Beta 2: прожектор, лупа, указка, секундомер. Вся графика только поверх страницы. */
+#nx-teacher-panel .nx-teacher-grid .nx-teacher-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;min-height:64px;padding:9px 5px;line-height:1.2;text-align:center;
+}
+#nx-teacher-panel .nx-teacher-grid .nx-teacher-btn svg{width:21px;height:21px;flex:none}
+#nx-teacher-panel .nx-teacher-options{margin:12px 0 0;padding:10px 11px;border-radius:12px;background:#f4f6fc;border:1px solid #dce4f2}
+#nx-teacher-panel .nx-teacher-options .nx-teacher-small:first-child{margin-top:0}
+#nx-teacher-panel .nx-teacher-options label{display:inline-flex;flex-direction:column;gap:4px;color:#24324b;font-size:12px;font-weight:800;min-width:0}
+#nx-teacher-panel .nx-teacher-options .nx-teacher-check{flex-direction:row;align-items:center;gap:6px}
+#nx-teacher-panel .nx-teacher-options select{background:#fff;border:1px solid #c9d5ed;color:#24324b;padding:7px;border-radius:8px;font-size:13px;max-width:180px}
+#nx-teacher-panel .nx-teacher-options input[type=checkbox]{accent-color:#ff6a00}
+#nx-teacher-panel #nxt-spot-options input[type=range]{width:min(120px,34vw);max-width:100%}
+#nx-teacher-panel .nx-teacher-row[hidden]{display:none!important}
+#nx-teacher-panel #nxt-countdown-fields{margin-top:0}
+#nx-teacher-spotlight{position:fixed;z-index:2147482997;inset:0;display:none;pointer-events:auto;
+  touch-action:none;cursor:crosshair;user-select:none;
+  --nx-spot-x:50vw;--nx-spot-y:50vh;--nx-spot-r:150px;--nx-spot-shade:rgba(8,19,43,.78);
+  background:radial-gradient(circle var(--nx-spot-r) at var(--nx-spot-x) var(--nx-spot-y),
+  transparent 0,transparent calc(var(--nx-spot-r) - 2px),var(--nx-spot-shade) var(--nx-spot-r));
+}
+#nx-teacher-spotlight.nx-on{display:block}
+#nx-teacher-loupe-lens{position:fixed;z-index:2147482999;left:0;top:0;display:none;
+  width:224px;height:224px;border:4px solid #ff6a00;border-radius:50%;background:#fff;
+  box-shadow:0 9px 27px #071a4366;pointer-events:none;object-fit:cover}
+#nx-teacher-loupe-lens.nx-on{display:block}
+#nx-teacher-pointer-layer{position:fixed;z-index:2147482998;inset:0;display:none;pointer-events:none;overflow:hidden}
+#nx-teacher-pointer-layer.nx-on{display:block}
+#nx-teacher-pointer-layer .nx-pointer-dot{position:absolute;display:block;border:3px solid #ff6a00;
+  border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;
+  box-shadow:0 0 0 2px #fff9;will-change:left,top}
+#nx-teacher-pointer-layer .nx-pointer-dot:first-child:after{
+  content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;border-radius:50%;
+  background:var(--nx-pointer-color,#ff6a00);transform:translate(-50%,-50%);
+}
+@media(max-width:620px){
+ #nx-teacher-panel .nx-teacher-grid .nx-teacher-btn{min-height:56px;font-size:12px}
+ #nx-teacher-loupe-lens{width:190px;height:190px}
+}
+@media print{
+ #nx-teacher-spotlight,#nx-teacher-loupe-lens,#nx-teacher-pointer-layer{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){#nx-teacher-pointer-layer .nx-pointer-dot{transition:none!important}}
+
+/* Отдельная шторка для телевизора (видео, а не копия игры). */
+#nx-teacher-panel #nxt-tv-options .nx-teacher-btn{flex:1 1 130px;min-width:0}
+#nx-teacher-panel #nxt-tv-options .nx-tv-curtain-control{background:#1e3f8a;color:#fff;border-color:#ff6a00}
+#nx-teacher-panel #nxt-tv-options .nx-tv-curtain-control[aria-pressed=false]{background:#eff3fb;color:#1e3f8a;border-color:#c9d5ed}
+#nx-teacher-panel #nxt-tv-options button:disabled{opacity:.48;cursor:not-allowed}
+#nx-teacher-panel #nxt-tv-status{font-weight:800;color:#1e3f8a;min-height:30px}
+
+/* Beta 2: чистый экран ребёнка и подтверждённые статусы второго окна. */
+#nx-teacher-panel .nx-tv-indicators{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 5px}
+#nx-teacher-panel .nx-tv-indicators[hidden]{display:none!important}
+#nx-teacher-panel .nx-tv-indicator{display:inline-flex;align-items:center;min-height:29px;padding:5px 8px;border:1px solid #cbd5e1;border-radius:9px;background:#f1f5f9;color:#475569;font-size:11px;font-weight:800}
+#nx-teacher-panel .nx-tv-indicator[data-status="ok"]{border-color:#b7dec6;color:#14532d;background:#e5f7ec}
+#nx-teacher-panel .nx-tv-indicator[data-status="wait"]{border-color:#f5d5a0;color:#92400e;background:#fffbeb}
+#nx-teacher-panel .nx-tv-indicator[data-status="closed"]{border-color:#bfcbf4;color:#1e3f8a;background:#ecf0ff}
+#nx-teacher-panel .nx-tv-field-label{display:block;margin:12px 0 4px;color:#24324b;font-size:12px;font-weight:900}
+#nx-teacher-panel #nxt-tv-region{flex:1 1 210px;min-width:0;max-width:100%;background:#fff;border:1px solid #c9d5ed;border-radius:9px;color:#24324b;padding:9px;font-size:12px;font-weight:750}
+#nx-teacher-panel #nxt-tv-refresh,#nx-teacher-panel #nxt-tv-pick{flex:1 1 120px}
+.nx-tv-pick-shield{position:fixed;inset:0;z-index:2147483050;background:rgba(6,18,47,.10);cursor:crosshair;touch-action:manipulation}
+.nx-tv-pick-outline{position:fixed;z-index:2147483051;pointer-events:none;border:3px solid #ff6a00;border-radius:6px;box-shadow:0 0 0 2px #fff8}
+.nx-tv-pick-hint{position:fixed;z-index:2147483052;top:12px;left:50%;transform:translateX(-50%);max-width:calc(100vw - 20px);border-radius:12px;background:#1e3f8a;color:white;padding:12px 18px;font:800 14px Arial;pointer-events:none}
+@media print{.nx-tv-pick-shield,.nx-tv-pick-outline,.nx-tv-pick-hint{display:none!important}}
+
+#nx-teacher-panel .nx-tv-indicators{position:sticky;top:-16px;z-index:2;padding:6px 0;background:#fff;border-radius:8px}
+#nx-teacher-panel #nxt-tv-options :is(button,select):disabled{opacity:.5;cursor:not-allowed}
+#nx-teacher-launch[data-tv-status="live"]:after,
+#nx-teacher-launch[data-tv-status="connected"]:after{content:"";position:absolute;top:-5px;right:-5px;width:12px;height:12px;border-radius:50%;border:2px solid #fff;background:#16a34a}
+#nx-teacher-launch[data-tv-status="connected"]:after{background:#f59e0b}

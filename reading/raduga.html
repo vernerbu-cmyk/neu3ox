@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script src="../shared/theme.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Радуга - NeuroX</title>
@@ -532,6 +533,9 @@ h1{
 }
 </style>
 <link rel="stylesheet" href="../assets/menu-drawer.css">
+<link rel="stylesheet" href="../shared/unified-topbar.css">
+<link rel="stylesheet" href="../shared/season-effects.css">
+<link rel="stylesheet" href="../shared/theme.css">
 </head>
 
 <body>
@@ -834,7 +838,7 @@ window.onresize=draw;
 function adjustStage(){
   const header = document.querySelector('header');
   if (header){
-    stage.style.top = header.getBoundingClientRect().height + 'px';
+    stage.style.top = header.getBoundingClientRect().bottom + 'px';
   }
 }
 adjustStage();
@@ -848,6 +852,13 @@ window.addEventListener('resize', adjustStage);
 
 
 <script src="../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../shared/favorites.js" defer></script>
+
 <script src="../assets/menu-drawer.js"></script>
+<script src="../shared/unified-topbar.js" defer></script>
+<script src="../shared/seasons.js" defer></script>
+<script src="../shared/accessibility.js" defer></script>
+<script src="../shared/teacher-panel.js" defer></script>
 </body>
 </html>

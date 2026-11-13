@@ -1,0 +1,268 @@
+/* NeuroX Beta 14: mobile ergonomics for the 13 new attention/memory trainers.
+   Scoped to .nx-added-game; no changes to desktop layouts, print, board, or generators. */
+@media (max-width:760px) {
+  body.nx-added-game {max-width:100%; overflow-x:clip; -webkit-text-size-adjust:100%;}
+  body.nx-added-game :is(button,select,input[type=button],input[type=submit]) {touch-action:manipulation;}
+  body.nx-added-game :is(input,select,button) {max-width:100%;}
+  body.nx-added-game .nx-mobile-options-toggle {
+    box-sizing:border-box; display:flex; align-items:center;justify-content:space-between;
+    width:100%;min-height:46px; flex:0 0 auto; gap:10px; text-align:left;
+    background:#1e3f8a;color:#fff; border:0; border-radius:11px;
+    font:800 14px/1.2 system-ui,'Segoe UI',sans-serif;letter-spacing:0;
+    padding:10px 14px; cursor:pointer;
+  }
+  body.nx-added-game .nx-mobile-options-toggle:focus-visible {outline:3px solid #ff6a00;outline-offset:2px;}
+  body.nx-added-game .nx-mobile-options-toggle .nx-mobile-chevron {font-size:19px;line-height:1;transition:transform .2s;}
+  body.nx-added-game .nx-mobile-collapsible:not(.nx-mobile-closed) .nx-mobile-chevron {transform:rotate(180deg);}
+  body.nx-added-game .nx-mobile-collapsible.nx-mobile-closed > :not(.nx-mobile-options-toggle) {display:none!important;}
+  body.nx-added-game .nx-mobile-collapsible.nx-mobile-closed {min-height:0!important;max-height:none!important; overflow:visible!important;}
+  body.nx-added-game .nx-mobile-collapsible {contain:layout style;}
+  body.nx-added-game :is(.sidebar,.side,.settings,.control,.controls) {scrollbar-width:thin;}
+}
+@media (min-width:761px) {
+  body.nx-added-game .nx-mobile-options-toggle {display:none!important;}
+}
+/* RADAR: compact header and stats, controls directly BEFORE the radar on small screens. */
+@media (max-width:720px) {
+  body.nx-game-radar .page {width:calc(100% - 16px); margin:7px auto 28px;}
+  body.nx-game-radar header {gap:8px;padding:10px 12px;}
+  body.nx-game-radar .brand {gap:10px;}
+  body.nx-game-radar .logo {width:39px;height:39px;border-radius:12px;}
+  body.nx-game-radar h1 {font-size:21px;}
+  body.nx-game-radar .brand-line {font-size:10px;letter-spacing:.06em;}
+  body.nx-game-radar .subtitle {display:none;}
+  body.nx-game-radar .header-actions {width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
+  body.nx-game-radar .header-actions .btn {padding:8px 5px;min-height:40px;font-size:12px;}
+  body.nx-game-radar .stats {display:grid;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px;margin:8px 0;}
+  body.nx-game-radar .stat {padding:7px 9px;border-radius:12px;min-width:0;}
+  body.nx-game-radar .stat-label {font-size:10px;line-height:1.2;}
+  body.nx-game-radar .stat-value {font-size:16px;margin-top:1px;}
+  body.nx-game-radar .game-panel {padding:8px;border-radius:16px;}
+  body.nx-game-radar .game-bar {padding:5px 4px 8px;gap:5px;}
+  body.nx-game-radar .status {font-size:13px;}
+  body.nx-game-radar .stage-hint {font-size:11px;line-height:1.3;padding:6px 9px;text-align:center;}
+  body.nx-game-radar .controls {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:3px 0 9px;}
+  body.nx-game-radar .controls .btn {min-width:0;min-height:43px;padding:7px 3px;font-size:12px;flex:none;white-space:normal;}
+  body.nx-game-radar .control-divider {display:none;}
+  /* Hide unavailable secondary commands until the round actually enables them. */
+  body.nx-game-radar .controls .btn:disabled:not(#pauseButton):not(#finishButton) {display:none;}
+
+  body.nx-game-radar .board {height:clamp(320px,56dvh,540px);min-height:320px;border-radius:14px;}
+  body.nx-game-radar .board-top {left:7px;right:7px;top:8px;font-size:9px;letter-spacing:.08em;}
+  body.nx-game-radar .timer-pill {padding:5px 8px;font-size:10px;}
+  body.nx-game-radar .overlay-card {padding:13px 12px;max-width:90%;border-radius:16px;}
+  body.nx-game-radar .overlay-icon {width:43px;height:43px;margin-bottom:6px;font-size:22px;border-radius:12px;}
+  body.nx-game-radar .overlay-title {font-size:18px;}
+  body.nx-game-radar .overlay-help {font-size:12px;}
+  body.nx-game-radar .flight-controls {grid-template-columns:1fr;gap:7px;padding:9px 10px;margin-top:9px;}
+  body.nx-game-radar .speed-caption {flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:5px;}
+  body.nx-game-radar .speed-caption span {font-size:10px;}
+  body.nx-game-radar .speed-display {font-size:15px;padding:5px;}
+  body.nx-game-radar .event-panel {padding:11px 10px;}
+  body.nx-game-radar .event-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+  body.nx-game-radar .event-tile {min-height:64px;padding:8px;}
+  body.nx-game-radar .event-tile small {font-size:10px;}
+  body.nx-game-radar .event-toolbar select {width:100%;}
+  body.nx-game-radar .settings-content {padding:0 12px 12px;}
+  body.nx-game-radar .settings-summary {padding:12px;font-size:15px;}
+  body.nx-game-radar .settings-grid {grid-template-columns:1fr;gap:9px;}
+}
+/* INVISIBLE WALLS: settings can be collapsed; game canvas keeps original ratio. */
+@media(max-width:760px) {
+  body.nx-game-invisible-walls .app {padding:8px;}
+  body.nx-game-invisible-walls .brand {gap:7px;margin-bottom:9px;}
+  body.nx-game-invisible-walls .brand h1 {font-size:20px;}
+  body.nx-game-invisible-walls .brand p {font-size:11px;}
+  body.nx-game-invisible-walls .shell {grid-template-columns:minmax(0,1fr)!important;gap:9px;}
+  body.nx-game-invisible-walls .sidebar {padding:8px;border-radius:14px;gap:10px;}
+  body.nx-game-invisible-walls .play {padding:9px;border-radius:15px;min-width:0;}
+  body.nx-game-invisible-walls .topline {gap:5px;flex-wrap:wrap;}
+  body.nx-game-invisible-walls .topline .tagline {font-size:14px;}
+  body.nx-game-invisible-walls .pills {gap:4px;}
+  body.nx-game-invisible-walls .pill {font-size:10px;padding:4px 6px;}
+  body.nx-game-invisible-walls .screen {padding:3px;border-radius:11px;}
+  body.nx-game-invisible-walls #world {display:block;width:100%;height:auto;max-width:100%;}
+  body.nx-game-invisible-walls .toolbar {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+  body.nx-game-invisible-walls .toolbar .btn {min-width:0;width:100%;min-height:43px;padding:8px 5px;font-size:12px;}
+  body.nx-game-invisible-walls .answers {grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+/* QUIET GLITCH: observe devices before a long configuration form. */
+@media(max-width:760px) {
+  body.nx-game-quiet-glitch .app {padding:8px 8px 28px;}
+  body.nx-game-quiet-glitch .layout {grid-template-columns:minmax(0,1fr)!important;gap:9px;}
+  body.nx-game-quiet-glitch .top {gap:7px;margin-bottom:7px;}
+  body.nx-game-quiet-glitch .settings {border-radius:14px;padding:8px;}
+  body.nx-game-quiet-glitch .settings .setting-sect {padding:9px 10px;}
+  body.nx-game-quiet-glitch .monitor {padding:7px;border-radius:13px;}
+  body.nx-game-quiet-glitch .grid,body.nx-game-quiet-glitch .grid.c5,body.nx-game-quiet-glitch .grid.c3 {grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;}
+  body.nx-game-quiet-glitch .unit {min-width:0;height:clamp(92px,28vw,122px);}
+  body.nx-game-quiet-glitch .actions .action {min-height:44px;flex:1 1 120px;}
+}
+/* PERIPHERAL: main task remains visible without scrolling through options. */
+@media(max-width:760px) {
+  body.nx-game-peripheral .app {padding:8px;}
+  body.nx-game-peripheral .header {margin-bottom:8px;}
+  body.nx-game-peripheral .shell {grid-template-columns:minmax(0,1fr)!important;gap:9px;}
+  body.nx-game-peripheral .side {display:flex;flex-direction:column;gap:10px;padding:8px;border-radius:14px;}
+  body.nx-game-peripheral .main {padding:9px;border-radius:14px;}
+  body.nx-game-peripheral .top {gap:7px;}
+  body.nx-game-peripheral .actions .btn {min-height:44px;flex:1 1 125px;}
+  body.nx-game-peripheral #scene {width:100%;max-width:100%;height:auto;}
+  body.nx-game-peripheral .view {max-width:100%;}
+}
+/* NEGATIVE: keep live controls close to the canvas, not beneath an enormous sidebar. */
+@media(max-width:760px) {
+  body.nx-game-negative .app {padding:8px;}
+  body.nx-game-negative .mast {padding:8px;margin-bottom:8px;gap:8px;}
+  body.nx-game-negative .layout {grid-template-columns:minmax(0,1fr)!important;gap:9px;}
+  body.nx-game-negative .sidebar {grid-column:1!important;grid-row:1!important;position:static!important;padding:8px;border-radius:14px;}
+  body.nx-game-negative .work {grid-column:1!important;grid-row:2!important;}
+  body.nx-game-negative .studio {padding:9px;}
+  body.nx-game-negative .assignment {padding:8px;min-height:0;}
+  body.nx-game-negative .sampleBox {width:112px;height:80px;}
+  body.nx-game-negative .toolbar {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+  body.nx-game-negative .toolbar button {min-width:0;min-height:44px;padding:8px 5px;font-size:12px;}
+  body.nx-game-negative #board {width:100%;height:auto;max-width:100%;}
+}
+/* MEETING POINT: responsive control sizing, safe off-canvas settings. */
+@media(max-width:760px) {
+  body.nx-game-meeting-point {overflow-x:clip;}
+  body.nx-game-meeting-point .shell {padding:8px;}
+  body.nx-game-meeting-point .main {grid-template-columns:minmax(0,1fr)!important;gap:9px;}
+  body.nx-game-meeting-point .panel {padding:8px;}
+  body.nx-game-meeting-point .controls {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+  body.nx-game-meeting-point .controls button {width:100%;min-width:0;min-height:43px;padding:8px 4px;font-size:12px;}
+  body.nx-game-meeting-point .stage {max-width:100%;}
+  body.nx-game-meeting-point .stage canvas {max-width:100%;}
+  body.nx-game-meeting-point .sidebar {max-width:min(100vw,390px);}
+}
+/* DECOY: existing symbol grid is already responsive; make start buttons finger-friendly. */
+@media(max-width:760px) {
+  body.nx-game-decoy .wrap {padding:7px;}
+  body.nx-game-decoy .heading {gap:7px;}
+  body.nx-game-decoy .heading h1 {font-size:22px;}
+  body.nx-game-decoy .main {min-width:0;}
+  body.nx-game-decoy .screen {min-width:0;padding:8px;}
+  body.nx-game-decoy .controls .button {min-height:42px;padding:9px 7px;font-size:12px;flex:1 1 110px;}
+  body.nx-game-decoy .settings {padding:11px;}
+}
+/* EDITOR: the reading surface and answers fit the viewport, without cramped stats. */
+@media(max-width:760px) {
+  body.nx-game-editor .shell {margin:8px auto 24px;padding:0 8px;}
+  body.nx-game-editor .top {padding:10px;gap:8px;}
+  body.nx-game-editor .brand {gap:7px;}
+  body.nx-game-editor .brand h1 {font-size:19px;}
+  body.nx-game-editor .logo {width:40px;height:40px;}
+  body.nx-game-editor .buttons {width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+  body.nx-game-editor .buttons .btn {min-height:42px;padding:8px 4px;font-size:12px;}
+  body.nx-game-editor .stats {grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0;}
+  body.nx-game-editor .stat {padding:8px;}
+  body.nx-game-editor .stage {grid-template-columns:minmax(0,1fr)!important;gap:9px;}
+  body.nx-game-editor .panel,body.nx-game-editor .settings {padding:9px;}
+  body.nx-game-editor .paper {padding:12px;}
+  body.nx-game-editor .reading {max-height:49dvh;min-height:170px;overflow-y:auto;font-size:clamp(17px,var(--size,24px),28px);}
+  body.nx-game-editor .actions .btn {flex:1 1 110px;min-height:43px;}
+  body.nx-game-editor .spotlight-screen {inset:56px 8px 8px;padding:8px;}
+}
+/* RESTORER: start/stop at the top of the sidebar; keep drawing artwork visible. */
+@media(max-width:770px) {
+  body.nx-game-restorer .container {padding:8px;}
+  body.nx-game-restorer .top {margin-bottom:8px;}
+  body.nx-game-restorer .container > h1 {font-size:22px;margin-bottom:5px;}
+  body.nx-game-restorer .lead {font-size:11px;margin-bottom:9px;}
+  body.nx-game-restorer .layout {grid-template-columns:minmax(0,1fr)!important;gap:9px;}
+  body.nx-game-restorer .side {padding:10px;gap:9px;}
+  body.nx-game-restorer .side .buttons {order:-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
+  body.nx-game-restorer .side .buttons button {min-width:0;min-height:43px;padding:8px 4px;}
+  body.nx-game-restorer .presets {grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px;}
+  body.nx-game-restorer .preset {padding:7px 5px;min-width:0;}
+  body.nx-game-restorer .preset strong {font-size:12px;}
+  body.nx-game-restorer .preset span {display:none;}
+  body.nx-game-restorer .work {padding:9px;min-width:0;}
+  body.nx-game-restorer .artwrap {padding:5px;}
+  body.nx-game-restorer .footer-actions button {min-height:42px;}
+}
+/* EVENT COUNTER: fixed offscreen settings panel must not widen the document. */
+@media(max-width:760px) {
+  body.nx-game-counter,body.nx-game-counter #welcome {width:100%;max-width:100vw;overflow-x:clip;}
+  body.nx-game-counter #panel {position:fixed!important;inset:0 0 0 auto!important;
+    width:min(380px,calc(100vw - 12px));max-width:100vw;
+    overflow-y:auto;-webkit-overflow-scrolling:touch;
+  }
+  body.nx-game-counter .wl-title {font-size:clamp(32px,9vw,52px);}
+  body.nx-game-counter .wl-sub {font-size:clamp(13px,3.7vw,17px);max-width:95%;}
+  body.nx-game-counter .screen {max-width:100vw;overflow-x:hidden;}
+  body.nx-game-counter :is(button,.big-btn) {touch-action:manipulation;}
+}
+/* MEMORY · BLIND CELLS: quick start and compact prep; never shrink cells below touch size by force. */
+@media(max-width:760px) {
+  body.nx-game-keys .shell {padding:8px;}
+  body.nx-game-keys .intro {margin:8px 0;}
+  body.nx-game-keys .intro h1 {font-size:23px;}
+  body.nx-game-keys .layout {grid-template-columns:minmax(0,1fr)!important;gap:9px;}
+  body.nx-game-keys .control {padding:10px;gap:10px;}
+  body.nx-game-keys #readyActions {order:-1;}
+  body.nx-game-keys #readyActions .btn {min-height:44px;width:100%;}
+  body.nx-game-keys .board-panel {padding:10px;min-height:330px;gap:10px;}
+  body.nx-game-keys .board-area {min-height:210px;}
+  body.nx-game-keys .metrics {gap:5px;}
+  body.nx-game-keys .metric {padding:7px 6px;}
+  body.nx-game-keys .cells {gap:5px;}
+  body.nx-game-keys .config-grid {gap:7px;}
+  body.nx-game-keys .config-item select {padding:8px 5px;}
+}
+/* MEMORY · LAST FOUR: mode selector in a row, start before extended settings. */
+@media(max-width:760px) {
+  body.nx-game-last-four .wrap {padding:8px;}
+  body.nx-game-last-four .top {padding:9px;}
+  body.nx-game-last-four .title {font-size:24px;margin:7px 0;}
+  body.nx-game-last-four .lead {font-size:12px;margin-bottom:9px;}
+  body.nx-game-last-four .columns {grid-template-columns:minmax(0,1fr)!important;gap:9px;}
+  body.nx-game-last-four .controls {padding:10px;gap:9px;}
+  body.nx-game-last-four .controls .actions {order:-1;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
+  body.nx-game-last-four .controls .actions button {min-width:0;min-height:44px;padding:8px 4px;}
+  body.nx-game-last-four .modes {grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px;}
+  body.nx-game-last-four .modes button {min-width:0;padding:8px 4px;font-size:11px;line-height:1.2;overflow-wrap:anywhere;}
+  body.nx-game-last-four .presets {grid-template-columns:repeat(2,minmax(0,1fr));}
+  body.nx-game-last-four .settings {grid-template-columns:repeat(2,minmax(0,1fr));}
+  body.nx-game-last-four .play-panel {padding:10px;min-height:340px;}
+  body.nx-game-last-four .terminal {min-height:180px;}
+  body.nx-game-last-four .symbol {min-height:55px;}
+  body.nx-game-last-four .slot {height:52px;}
+}
+/* MEMORY · TRANSFORMATION: cells remain square but fill the narrow screen. */
+@media(max-width:760px) {
+  body.nx-game-transformation {padding:8px;}
+  body.nx-game-transformation .container {width:100%;max-width:100%;}
+  body.nx-game-transformation header {padding:9px 10px;margin-bottom:10px;gap:7px;}
+  body.nx-game-transformation h1 {font-size:17px;}
+  body.nx-game-transformation .score-bar {padding:6px 10px;font-size:12px;}
+  body.nx-game-transformation main {min-height:0;}
+  body.nx-game-transformation .panel {padding:12px;border-radius:15px;}
+  body.nx-game-transformation .game-header {margin-bottom:10px;}
+  body.nx-game-transformation .game-header h2 {font-size:20px;}
+  body.nx-game-transformation .board {gap:12px;margin:12px 0;}
+  body.nx-game-transformation .board-side {max-width:100%;min-width:0;}
+  body.nx-game-transformation .mirror-grid {gap:3px;padding:5px;max-width:calc(100vw - 40px);}
+  body.nx-game-transformation .presets {gap:5px;margin-bottom:12px;}
+  body.nx-game-transformation .preset-btn {min-width:0;padding:9px 5px;font-size:12px;}
+  body.nx-game-transformation .size-btn {min-width:0;}
+  body.nx-game-transformation .btn-main {width:100%;min-height:46px;padding:11px;margin-top:13px;}
+  body.nx-game-transformation .mode-row {gap:5px;margin-bottom:12px;}
+  body.nx-game-transformation .mode-btn {font-size:12px;}
+}
+/* Landscape on mobile: give actual canvas most of the height, without forcing a portrait ratio. */
+@media(max-width:950px) and (orientation:landscape) and (max-height:520px) {
+  body.nx-game-radar .board {height:calc(100dvh - 115px);min-height:230px;}
+  body.nx-game-radar .page {margin-top:4px;}
+  body.nx-added-game .nx-mobile-options-toggle {min-height:42px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  body.nx-added-game .nx-mobile-options-toggle .nx-mobile-chevron {transition:none;}
+}
+
+/* Tablet and mobile-landscape: counter's off-canvas panel must not widen the page. */
+@media(max-width:1024px) {
+  html:has(body.nx-game-counter),body.nx-game-counter {overflow-x:clip!important;max-width:100%;}
+  body.nx-game-counter #panel {position:fixed!important;right:0!important;left:auto!important;top:0!important;bottom:0!important;}
+}

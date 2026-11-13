@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#132b63"><title>NeuroX — Экран ребёнка</title>
+<link rel="stylesheet" href="student-screen.css"></head>
+<body>
+<header class="nx-student-header"><div class="nx-student-brand"><span class="nx-student-mark">✦</span><span><b>NeuroX</b><small>Экран ребёнка</small></span></div>
+<div class="nx-student-buttons"><button type="button" id="nx-student-view-mode" aria-pressed="false" title="Показывать изображение в исходном разрешении без растягивания">Размер 1:1</button><button type="button" id="nx-student-fullscreen" title="Развернуть на телевизоре">На весь экран</button></div></header>
+<main><video id="nx-student-video" autoplay muted playsinline aria-label="Изображение задания с компьютера педагога"></video>
+<div id="nx-student-wait" class="nx-student-wait" role="status">Ожидание подключения педагога…</div>
+<div id="nx-student-curtain" class="nx-student-curtain" aria-hidden="false"><span class="nx-student-symbol">✦</span><div>Задание закрыто</div></div>
+</main><script src="student-screen.js"></script></body></html>

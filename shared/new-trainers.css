@@ -1,0 +1,110 @@
+/* NeuroX | оформление интегрированных тренажёров.
+   Не меняет механику, размеры canvas и логику раундов. */
+:root:not([data-theme="dark"]){
+  --blue:#1E3F8A;
+  --blue-dark:#173477;
+  --blue-hover:#173477;
+  --navy:#1E3F8A;
+  --orange:#FF6A00;
+  --orange-dark:#DA5900;
+  --or:#FF6A00;
+  --or-2:#FF8B3D;
+  --or-3:#DF5B00;
+  --bg:#F4F6FB;
+  --page:#F4F6FB;
+  --paper:#FFFFFF;
+  --ink:#182943;
+  --text:#222222;
+  --muted:#64748B;
+  --line:#DFE6F2;
+  --border:#DFE6F2;
+  --edge:#DFE6F2;
+  --pale:#E8EEF9;
+  --blue-light:#E8EEF9;
+  --blue-pale:#E8EEF9;
+  --orange-light:#FFEADB;
+}
+body.nx-added-game:not(.nx-game-counter){
+  font-family:'Nunito Sans','Segoe UI',Arial,sans-serif;
+  background:#F4F6FB;
+  background:var(--bg,#F4F6FB);
+  color:var(--ink,#182943);
+}
+body.nx-added-game button,body.nx-added-game select,
+body.nx-added-game input,body.nx-added-game textarea{font-family:inherit}
+body.nx-added-game button:focus-visible,
+body.nx-added-game a:focus-visible,
+body.nx-added-game select:focus-visible,
+body.nx-added-game input:focus-visible{
+  outline:3px solid #FF8B3D;outline-offset:3px;
+}
+body.nx-added-game:not(.nx-game-counter) header{
+  border-radius:18px;
+}
+body.nx-added-game:not(.nx-game-counter) :is(.panel,.card,.stat,.metric,.score,.result-metric){
+  border-radius:16px;
+}
+body.nx-added-game :is(button,a){-webkit-tap-highlight-color:transparent}
+/* Общая навигация: небольшой несдвигающий поле элемент, включая тренажёры со строгим viewport. */
+.nx-suite-link{
+  position:fixed;bottom:12px;left:12px;z-index:850;
+  display:inline-flex;align-items:center;gap:0;
+  width:40px;height:40px;padding:5px;
+  border-radius:13px;text-decoration:none;overflow:hidden;
+  color:#1E3F8A;background:rgba(255,255,255,.96);
+  border:1px solid rgba(30,63,138,.16);
+  box-shadow:0 5px 20px rgba(22,40,81,.14);
+  font:800 12px/1.25 'Nunito Sans','Segoe UI',sans-serif;
+  opacity:.8;transition:opacity .2s,transform .2s,box-shadow .2s,width .2s,padding .2s;
+  backdrop-filter:blur(8px);
+}
+.nx-suite-link:hover,.nx-suite-link:focus-visible{width:132px;gap:8px;padding-right:12px;opacity:1;transform:translateY(-2px);box-shadow:0 8px 26px rgba(22,40,81,.2)}
+.nx-suite-link__mark{display:grid;place-items:center;width:28px;height:28px;flex:0 0 auto;
+  border-radius:9px;background:#1E3F8A;color:#fff;font-size:17px;font-weight:900;line-height:1}
+.nx-suite-link__section{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#71809F}
+.nx-suite-link__name{display:block;font-size:13px;color:#1E3F8A;letter-spacing:0}
+.nx-suite-link__label{display:none;flex-direction:column;gap:1px;white-space:nowrap}
+.nx-suite-link:hover .nx-suite-link__label,.nx-suite-link:focus-visible .nx-suite-link__label{display:flex}
+body.nx-added-game:not(.nx-game-counter) :is(.panel,.card,.intro,header) {
+  --nx-outline:rgba(30,63,138,.08);
+}
+/* Тренажёр «Трансформация» из исходника имел палитру другого проекта. */
+body.nx-game-transformation{--blue:#1E3F8A;--blue-dark:#173477;--blue-light:#E8EEF9;
+  --orange:#FF6A00;--orange-dark:#DA5900;--orange-light:#FFEADB;
+  --bg:#F4F6FB;--text:#222;--text-muted:#687891;--border:#DFE6F2}
+body.nx-game-transformation :is(.panel,header){box-shadow:0 8px 25px rgba(30,63,138,.07)}
+body.nx-game-transformation h1{letter-spacing:.1px}
+/* Специальный тёмный тренажёр «Счётчик событий»: тёмно-синяя среда вместо коричневой. */
+body.nx-game-counter{
+  --or:#FF6A00;--or-2:#FF8B3D;--or-3:#DF5B00;
+  --bg:#101B2F;--panel:#172740;
+  --txt:#F2F6FF;--txt-dim:#B4C4DA;--txt-dimmer:#8FA4C4;
+  font-family:'Nunito Sans','Segoe UI',sans-serif;
+  background:#101B2F;color:#F2F6FF;
+}
+body.nx-game-counter .screen{background:radial-gradient(ellipse at center,#172D50 0%,#101B2F 76%)}
+body.nx-game-counter #welcome{background:radial-gradient(ellipse at center,#172D50 0%,#101B2F 78%)}
+body.nx-game-counter #panel{border-left:1px solid rgba(130,168,224,.18)}
+body.nx-game-counter .scr-label{color:#AEC3E3}
+body.nx-game-counter .scr-text{color:#E2EDFE}
+body.nx-game-counter .farrow{color:#B8CBE6}
+/* Не подменяем цвета отдельных тренажёров неготовой универсальной тёмной темой.
+   Страницы с собственной тёмной палитрой сохраняют её через --bg/--page. */
+body.nx-added-game.nx-game-last-four{background:var(--page,#F4F6FB)}
+:root[data-theme="dark"] body.nx-added-game.nx-has-native-dark{
+  background:var(--bg,var(--page,#101C30));color:var(--ink,#E9F1FF);
+}
+:root[data-theme="dark"] body.nx-added-game.nx-has-native-dark .nx-suite-link{
+  background:rgba(25,43,71,.98);border-color:#344766;color:#D7E5FF;
+}
+:root[data-theme="dark"] body.nx-added-game.nx-has-native-dark .nx-suite-link__name{color:#E9F1FF}
+@media(max-width:560px){
+  .nx-suite-link{bottom:10px;left:9px;width:38px;height:38px;padding:4px}
+  .nx-suite-link:hover,.nx-suite-link:focus-visible{width:38px;gap:0;padding:4px}
+  .nx-suite-link:hover .nx-suite-link__label,.nx-suite-link:focus-visible .nx-suite-link__label{display:none}
+  .nx-suite-link__mark{width:30px;height:30px}
+}
+@media(prefers-reduced-motion:reduce){
+  .nx-suite-link{transition:none}
+  .nx-suite-link:hover{transform:none}
+}

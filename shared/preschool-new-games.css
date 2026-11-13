@@ -1,0 +1,54 @@
+/* NeuroX · общий каркас двух новых игр для «Дошколят».
+   Нативные игровые кнопки остаются на месте в DOM, но выводятся в общей шапке. */
+#nx-unified-bar .nxub-context:has(#status.hidden) {display:none}
+#nx-unified-bar .nxub-context:has(#status) {position:relative}
+#nx-unified-bar .nxub-context #status {display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#nx-unified-bar .nxub-context #status.hidden {display:none!important}
+#nx-unified-bar .nxub-context .reading-switch {position:absolute;top:calc(100% + 6px);right:0;z-index:5200;max-width:min(320px,calc(100vw - 16px));color:#16345c}
+#nx-unified-bar .nxub-context .reading-switch :is(.reading-toggle,.setting-title) {color:#16345c}
+#nx-unified-bar .nxub-context #status .round-btn {min-height:35px;height:37px;min-width:37px;padding:5px 9px}
+#nx-unified-bar .nxub-context #status .counter {padding:7px 10px;font-size:13px;background:#ffffff20;color:#fff}
+#nx-unified-bar .nxub-context .top-right {display:flex;align-items:center;gap:7px}
+#nx-unified-bar .nxub-context .top-right .counter {padding:9px 11px;font-size:12px;white-space:nowrap;background:#ffffff22;border:1px solid #ffffff35;box-shadow:none;color:#fff}
+#nx-unified-bar .nxub-context .top-right .counter span {color:#ffbc80}
+#nx-unified-bar .nxub-context .top-right .iconbtn {min-width:37px;width:38px;height:38px;border-radius:11px;border:1px solid #ffffff35;background:#ffffff20;color:#fff;box-shadow:none}
+#nx-unified-bar .nxub-context .top-right .iconbtn svg {width:20px;height:20px}
+@media(max-width:940px){
+  #nx-unified-bar .nxub-context:has(#status) {width:100%}
+  #nx-unified-bar .nxub-context:has(.top-right) {width:auto;flex:0 0 auto;order:0}
+}
+@media(max-width:640px){
+  /* Mobile: the freight game's own CSS used to hide the counter. Keep that behavior. */
+  #nx-unified-bar .nxub-context:has(.top-right) {width:auto;flex:0 0 auto}
+  #nx-unified-bar .nxub-context .top-right .counter {display:none}
+  #nx-unified-bar .nxub-context #status {justify-content:center}
+  #nx-unified-bar .nxub-context #status .round-btn {min-width:33px}
+}
+/* Грузовой экспресс: its SVG stage must fit BELOW the shared header. */
+body[data-nx-path="preschool/gruzovoi_express/gruzovoi_express.html"] .game {
+  width:100%;height:calc(100dvh - var(--nx-nav-height,58px));min-height:0;
+}
+body[data-nx-path="preschool/gruzovoi_express/gruzovoi_express.html"].nx-teacher-demo .game {height:100dvh}
+/* «Верю — не верю»: use the available viewport without an empty native header. */
+body[data-nx-path="preschool/veryu-ne-veryu/index.html"] .app {min-height:calc(100svh - var(--nx-nav-height,58px))}
+body[data-nx-path="preschool/veryu-ne-veryu/index.html"].nx-teacher-demo .app {min-height:100svh}
+/* Night theme darkens the surrounding stage, not the reading material or artwork. */
+:root[data-theme="dark"] body[data-nx-path="preschool/veryu-ne-veryu/index.html"] {background:#0b1830}
+:root[data-theme="dark"] body[data-nx-path="preschool/veryu-ne-veryu/index.html"] .app {
+ background:radial-gradient(circle at 12% 80%,#244b6a 0,transparent 35%),linear-gradient(145deg,#101e38,#182d4b);
+}
+:root[data-theme="dark"] body[data-nx-path="preschool/veryu-ne-veryu/index.html"] .bottom {color:#bed0e8}
+:root[data-theme="dark"] body[data-nx-path="preschool/gruzovoi_express/gruzovoi_express.html"] .world {filter:brightness(.72) saturate(.88)}
+:root[data-theme="dark"] body[data-nx-path="preschool/gruzovoi_express/gruzovoi_express.html"] .game {background:#101f38}
+:root[data-theme="dark"] body[data-nx-path="preschool/gruzovoi_express/gruzovoi_express.html"] :is(.activity-label,.hint,.feedback,.dockbar) {
+ background:rgba(23,44,75,.94);border-color:#47648a;color:#e8f1ff;
+}
+:root[data-theme="dark"] body[data-nx-path="preschool/gruzovoi_express/gruzovoi_express.html"] .read-instruction {color:#e2eeff}
+:root[data-theme="dark"] body[data-nx-path="preschool/gruzovoi_express/gruzovoi_express.html"] .feedback.ok {color:#9ee5b9}
+:root[data-theme="dark"] body[data-nx-path="preschool/gruzovoi_express/gruzovoi_express.html"] .feedback.err {color:#ffb3a2}
+:root[data-theme="dark"] body[data-nx-path="preschool/gruzovoi_express/gruzovoi_express.html"] .drawer {background:linear-gradient(#172d4e,#101e34);color:#e5f0ff}
+:root[data-theme="dark"] body[data-nx-path="preschool/gruzovoi_express/gruzovoi_express.html"] :is(.drawer-top,.drawer-foot) {border-color:#385276}
+:root[data-theme="dark"] body[data-nx-path="preschool/gruzovoi_express/gruzovoi_express.html"] .field :is(select,input) {background:#243e62;color:#fff;border-color:#4d6c92}
+:root[data-theme="dark"] body[data-nx-path="preschool/gruzovoi_express/gruzovoi_express.html"] :is(.field small,.teacher-note) {color:#bfd0e7}
+:root[data-theme="dark"] body[data-nx-path="preschool/gruzovoi_express/gruzovoi_express.html"] .teacher-note {background:#274365}
+:root[data-theme="dark"] body[data-nx-path="preschool/gruzovoi_express/gruzovoi_express.html"] .drawer-foot a {color:#b9d7ff!important}

@@ -1313,13 +1313,13 @@ body.season-winter header {
   background: linear-gradient(135deg, #152E68 0%, #1E3F8A 55%, #6E1F2E 100%);
 }
 body.season-spring header {
-  background: linear-gradient(135deg, #2A7A4A 0%, #3A9D6E 55%, #E85A8A 100%);
+  background: linear-gradient(135deg, #1D5B38 0%, #246C48 55%, #99385D 100%);
 }
 body.season-summer header {
-  background: linear-gradient(135deg, #0A84FF 0%, #1E90FF 55%, #FFB300 100%);
+  background: linear-gradient(135deg, #075AAA 0%, #1462A4 55%, #825000 100%);
 }
 body.season-autumn header {
-  background: linear-gradient(135deg, #5C2E0E 0%, #B23A0E 55%, #FFA62B 100%);
+  background: linear-gradient(135deg, #5C2E0E 0%, #8C2E0B 55%, #8A500C 100%);
 }
 
 [data-theme="dark"] body.season-winter header {
@@ -1413,3 +1413,28 @@ body.season-autumn header {
  color:#E96500; cursor:pointer; font:inherit; font-weight:700; }
 .profile-recommendations a:focus-visible, .profile-recommendations button:focus-visible,
 .data-action-btn:focus-visible { outline:3px solid #FF6A00; outline-offset:2px; }
+
+
+/* Внимание: живой взгляд для новой карточки главного экрана. */
+[data-category="attention"] .nx-main-eye,
+[data-category="attention"] .nx-main-pupil { transform-box:fill-box; transform-origin:center; }
+@keyframes nxMainLook { 0%,100% {transform:translateX(-4px)}50% {transform:translateX(4px)} }
+@keyframes nxMainIris { 0%,100% {transform:scale(.88)}50% {transform:scale(1.08)} }
+[data-category="attention"]:hover .nx-main-pupil { animation:nxMainLook 1.6s ease-in-out infinite; }
+[data-category="attention"]:hover .nx-main-eye { animation:nxMainIris 2s ease-in-out infinite; }
+@media (hover:none) { [data-category="attention"] .nx-main-pupil {animation:nxMainLook 3.5s ease-in-out infinite;} }
+@media (prefers-reduced-motion:reduce) { [data-category="attention"] .nx-main-pupil,[data-category="attention"] .nx-main-eye {animation:none!important;} }
+
+/* Seasonal decoration is never printed; reduced motion leaves static ornament only. */
+@media print { #seasonFx, #seasonGarland {display:none!important} }
+@media(prefers-reduced-motion:reduce) {
+ .season-particle,.season-bulb,.season-bulb-glow,.season-spring-leaf,.season-spring-flower,
+ .season-summer-flower,.season-autumn-leaf,.season-btn-active {animation:none!important;transition:none!important}
+}
+
+/* Keep the seasonal button identifiable and readable on every gradient. */
+.icon-btn.season-btn-winter,#nx-unified-bar .nxub-action.season-btn-winter {background:linear-gradient(135deg,#24679b,#1a4c85);color:#fff}
+.icon-btn.season-btn-spring,#nx-unified-bar .nxub-action.season-btn-spring {background:linear-gradient(135deg,#78506f,#35652b);color:#fff}
+.icon-btn.season-btn-summer,#nx-unified-bar .nxub-action.season-btn-summer {background:linear-gradient(135deg,#7d6200,#9b3f00);color:#fff}
+.icon-btn.season-btn-autumn,#nx-unified-bar .nxub-action.season-btn-autumn {background:linear-gradient(135deg,#8c4c13,#792709);color:#fff}
+#nx-unified-bar .nxub-action:focus-visible {outline:3px solid #fff;outline-offset:2px}

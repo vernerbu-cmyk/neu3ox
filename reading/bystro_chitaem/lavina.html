@@ -1,6 +1,8 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script src="../../shared/theme.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Лавина - NeuroX</title>
@@ -221,6 +223,29 @@
     #textSelect:hover { background: var(--orange); }
     #textSelect option { color: #222; background: #fff; }
 
+    /* Выбор двух способов предъявления одного и того же текста */
+    .reading-mode-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    #readingMode {
+      background: rgba(255,255,255,.18);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.23);
+      border-radius: 10px;
+      padding: 9px 11px;
+      font: 800 13px "Nunito Sans",sans-serif;
+      cursor: pointer;
+      outline: none;
+    }
+    #readingMode:focus-visible { outline: 2px solid #FF8B3D; outline-offset: 2px; }
+    #readingMode option { color: #222; background: #fff; }
+
     .sliders {
       display: flex;
       gap: 15px;
@@ -284,11 +309,15 @@
       box-shadow: 0 4px 0 var(--orange-dark);
       transition: background .15s, transform .12s, box-shadow .12s;
     }
-    .controls button:hover { background: var(--orange-soft); }
-    .controls button:active {
+    .controls button:hover:not(:disabled) { background: var(--orange-soft); }
+    .controls button:disabled { opacity: .48; cursor: default; box-shadow: none; }
+    .controls button:active:not(:disabled) {
       transform: translateY(4px);
       box-shadow: 0 1px 0 var(--orange-dark);
     }
+    .controls .secondary-control { background: var(--blue); box-shadow: 0 4px 0 rgba(10,35,85,.3); }
+    .controls .secondary-control:hover:not(:disabled) { background: var(--blue-soft); }
+    .controls [hidden] { display: none !important; }
 
     /* SETTINGS PANEL */
     #settings {
@@ -414,6 +443,39 @@
     [data-theme="dark"] #text {
       box-shadow: 0 6px 0 rgba(0,0,0,.25), 0 14px 26px rgba(0,0,0,.3);
     }
+
+    /* Поток: поле остаётся неподвижным, меняется только слово в центре. */
+    #text.stream-stage {
+      width: min(92vw, 900px);
+      min-height: 350px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.25;
+      padding: 28px 34px;
+    }
+    #text.stream-stage .stream-word {
+      display: block;
+      max-width: 100%;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+    #text.stream-stage .stream-message {
+      display: block;
+      font-family: "Nunito Sans",sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-dim);
+    }
+    #text.stream-stage.showing-full-text {
+      display: block;
+      text-align: left;
+      min-height: 200px;
+      line-height: 1.7;
+    }
+    .stream-auto-row { display: flex; align-items: center; gap: 8px; }
+    .stream-auto-row[hidden] { display: none; }
 
     .highlight {
       background-color: var(--orange-pale);
@@ -583,6 +645,8 @@
         border-radius: 18px;
         margin: 16px 12px;
       }
+      #text.stream-stage { width: calc(100% - 24px); min-height: 250px; padding: 20px 14px; }
+      .reading-mode-control { width: 100%; }
 
       #words, #time { font-size: 12px; padding: 6px 10px; left: 10px; }
       #words { bottom: 10px; }
@@ -590,6 +654,9 @@
     }
   </style>
 <link rel="stylesheet" href="../../assets/menu-drawer.css">
+<link rel="stylesheet" href="../../shared/unified-topbar.css">
+<link rel="stylesheet" href="../../shared/season-effects.css">
+<link rel="stylesheet" href="../../shared/theme.css">
 </head>
 
 <body>
@@ -647,6 +714,14 @@
 
     <select id="textSelect"></select>
 
+    <div class="reading-mode-control">
+      <span>Режим</span>
+      <select id="readingMode" aria-label="Способ предъявления текста">
+        <option value="avalanche">Лавина</option>
+        <option value="stream">Поток</option>
+      </select>
+    </div>
+
     <div class="sliders">
       <div class="slider-item">
         <span>Скорость</span>
@@ -663,8 +738,11 @@
 
 <div class="controls">
   <button id="start">Старт</button>
-  <button id="stop">Стоп</button>
+  <button id="stop">Пауза</button>
+  <button id="streamPrev" type="button" class="secondary-control" hidden>← Слово</button>
+  <button id="streamNext" type="button" class="secondary-control" hidden>Слово →</button>
   <button id="repeat">Повтор</button>
+  <button id="showFullText" type="button" class="secondary-control" hidden>Показать текст</button>
 </div>
 
 <div id="settings">
@@ -677,6 +755,7 @@
   </select>
 
   <label style="margin-top:14px;"><input type="checkbox" id="reverseMode"> реверс</label>
+  <label class="stream-auto-row" id="streamAutoRow" hidden><input type="checkbox" id="streamAuto" checked> Автоматическая смена слов («Поток»)</label>
 
   <hr style="margin:18px 0;border:none;border-top:2px dashed var(--border);">
 
@@ -716,7 +795,8 @@
     <div class="modal-body">
       <p><b>Лавина</b> — тренажёр для расширения поля зрения и увеличения скорости чтения.</p>
       <p>Слова по одному подсвечиваются и исчезают. Задача — успеть прочитать их до исчезновения. Уровни 0.5–4 задают скорость, «Свои» — ваш собственный текст.</p>
-      <p>Горячие клавиши: <b>Space</b> — старт/стоп, <b>R</b> — повтор.</p>
+      <p><b>Поток</b> — слова выбранного текста появляются по одному в неизменной точке экрана, строго по порядку и со знаками препинания. Можно листать слова кнопками или стрелками, выбрать автоматическую либо ручную смену и после завершения открыть весь текст.</p>
+      <p>Горячие клавиши: <b>Space</b> — старт/пауза/продолжить, <b>R</b> — повтор с начала, <b>←/→</b> — предыдущее/следующее слово в режиме «Поток». Пауза сохраняет текущую позицию, время и состояние подсветки.</p>
     </div>
   </div>
 </div>
@@ -777,11 +857,18 @@ let spans = [];
 let originalWords = [];
 let i = 0;
 let running = false;
+let paused = false;
 let timer = null;
 let clock = null;
-let startTime = 0;
+let elapsedMs = 0;
+let clockStartedAt = 0;
+let nextAction = null;
+let remainingMs = 0;
+let actionDeadline = 0;
 let customTexts = [];
 let activeLevel = "level_05";
+let streamCompleted = false;
+let streamFullVisible = false;
 
 const speeds = [2, 1.75, 1.5, 1.25, 1, 0.75, 0.5, 0.4, 0.25, 0.1];
 
@@ -798,6 +885,13 @@ const reverseMode = document.getElementById("reverseMode");
 
 const textSelect = document.getElementById("textSelect");
 const customTextArea = document.getElementById("customTextArea");
+const readingMode = document.getElementById("readingMode");
+const streamAuto = document.getElementById("streamAuto");
+const streamPrevButton = document.getElementById("streamPrev");
+const streamNextButton = document.getElementById("streamNext");
+const showFullTextButton = document.getElementById("showFullText");
+const isStream = () => readingMode.value === "stream";
+const hasText = () => originalWords.length > 0;
 
 document.getElementById("toggleSettings").onclick = () => {
   const s = document.getElementById("settings");
@@ -806,6 +900,9 @@ document.getElementById("toggleSettings").onclick = () => {
 
 speed.oninput = () => {
   speedValue.textContent = speeds[speed.value] + " сек";
+  if (isStream() && running && !paused && streamAuto.checked) {
+    scheduleStep(streamNext, speeds[Number(speed.value)] * 1000);
+  }
 };
 speed.oninput();
 
@@ -844,8 +941,7 @@ document.querySelectorAll("#levelButtons button").forEach(btn => {
 function setLevel(lv) {
   if (!data) return;
 
-  stop();
-  i = 0;
+  resetPlayback();
   activeLevel = lv;
 
   if (lv === "custom") {
@@ -862,6 +958,12 @@ function setLevel(lv) {
     opt.textContent = "Нет текстов";
     textSelect.appendChild(opt);
     textBox.innerHTML = "<em>Добавьте тексты в этот раздел</em>";
+    originalWords = [];
+    spans = [];
+    streamCompleted = false;
+    streamFullVisible = false;
+    wordsBox.textContent = "Слов: 0";
+    updateControls();
     updateLevelButtons();
     return;
   }
@@ -893,27 +995,42 @@ function formatWord(w) {
 }
 
 function showText() {
-  if (!texts || texts.length === 0 || textSelect.value === -1) return;
-
-  const t = texts[textSelect.value].text;
-  originalWords = t.split(/\s+/).filter(w => w.length > 0);
-
-  textBox.innerHTML = originalWords
-    .map(w => `<span>${formatWord(w)}</span>`)
-    .join(" ");
-
-  spans = [...textBox.querySelectorAll("span")];
-
-  spans.forEach(s => s.style.color = "");
-  spans.forEach(s => s.style.backgroundColor = "");
-  spans.forEach(s => s.classList.remove("hidden-word"));
-
+  if (!texts || !texts.length || textSelect.value === "-1") return;
+  const selected = texts[Number(textSelect.value)];
+  if (!selected || typeof selected.text !== "string") return;
+  originalWords = selected.text.split(/\s+/).filter(Boolean);
+  streamCompleted = false;
+  streamFullVisible = false;
+  textBox.classList.toggle("stream-stage", isStream());
+  textBox.classList.remove("showing-full-text");
+  if (isStream()) {
+    spans = [];
+    const hint = document.createElement("span");
+    hint.className = "stream-message";
+    hint.textContent = "Нажмите «Старт», чтобы начать чтение";
+    textBox.replaceChildren(hint);
+    wordsBox.textContent = "Слов: " + originalWords.length;
+  } else {
+    // Создаём только текстовые узлы: собственные тексты не интерпретируются как HTML.
+    textBox.replaceChildren();
+    originalWords.forEach((w, idx) => {
+      if (idx) textBox.append(document.createTextNode(" "));
+      const el = document.createElement("span");
+      el.textContent = formatWord(w);
+      textBox.append(el);
+    });
+    spans = [...textBox.querySelectorAll("span")];
+    wordsBox.textContent = "Слов: " + spans.length;
+  }
   applyStyle();
-  wordsBox.textContent = "Слов: " + spans.length;
+  updateControls();
 }
 
 function applyStyle() {
-  textBox.style.fontSize = fontSize.value + "px";
+  // В «Потоке» отдельное слово крупнее, чем полный текст.
+  textBox.style.fontSize = (isStream() && !streamFullVisible
+    ? Math.round(Number(fontSize.value) * 1.6)
+    : Number(fontSize.value)) + "px";
   textBox.style.fontFamily = fontFamily.value;
 }
 
@@ -921,84 +1038,288 @@ fontSize.oninput = applyStyle;
 fontFamily.onchange = applyStyle;
 
 reverseMode.onchange = () => {
-  if (!running && spans.length > 0) {
-    showText();
-  }
+  if (!running && originalWords.length > 0) showText();
+  else if (isStream()) renderStreamWord();
 };
 
 textSelect.onchange = () => {
-  stop();
-  i = 0;
+  resetPlayback();
   showText();
 };
+
+readingMode.onchange = () => {
+  resetPlayback();
+  document.getElementById("streamAutoRow").hidden = !isStream();
+  streamPrevButton.hidden = !isStream();
+  streamNextButton.hidden = !isStream();
+  showText();
+};
+
+streamAuto.onchange = () => {
+  if (!isStream() || !running) return;
+  clearStepTimer();
+  if (!paused && streamAuto.checked) scheduleStep(streamNext, speeds[Number(speed.value)] * 1000);
+};
+
+// Таймер показа хранит оставшееся время. Пауза не сбрасывает шаг.
+const startButton = document.getElementById("start");
+const pauseButton = document.getElementById("stop");
+const repeatButton = document.getElementById("repeat");
+
+function updateControls() {
+  const available = hasText();
+  startButton.textContent = paused ? "Продолжить" : running ? "Идёт чтение" : "Старт";
+  startButton.disabled = !available || (running && !paused);
+  pauseButton.disabled = !running || paused;
+  repeatButton.disabled = !available;
+  pauseButton.textContent = "Пауза";
+  streamPrevButton.hidden = streamNextButton.hidden = !isStream();
+  streamPrevButton.disabled = (!running && !streamCompleted) || (running && i <= 0);
+  streamNextButton.disabled = !available || (!running && !streamCompleted);
+  showFullTextButton.hidden = !isStream() || !streamCompleted;
+  showFullTextButton.textContent = streamFullVisible ? "Скрыть текст" : "Показать текст";
+}
+
+function elapsedNow() {
+  return elapsedMs + (running && !paused ? performance.now() - clockStartedAt : 0);
+}
+
+function updateClock() {
+  timeBox.textContent = Math.floor(elapsedNow() / 1000) + " сек";
+}
 
 function startClock() {
   clearInterval(clock);
-  startTime = Date.now();
-  clock = setInterval(() => {
-    timeBox.textContent = Math.floor((Date.now() - startTime) / 1000) + " сек";
-  }, 300);
+  clockStartedAt = performance.now();
+  clock = setInterval(updateClock, 200);
+  updateClock();
+}
+
+function clearStepTimer() {
+  clearTimeout(timer);
+  timer = null;
+  nextAction = null;
+  remainingMs = 0;
+  actionDeadline = 0;
+}
+
+function scheduleStep(action, delay) {
+  clearTimeout(timer);
+  timer = null;
+  nextAction = action;
+  remainingMs = Math.max(0, delay);
+  if (!running || paused) return;
+  actionDeadline = performance.now() + remainingMs;
+  timer = setTimeout(() => {
+    timer = null;
+    const task = nextAction;
+    nextAction = null;
+    remainingMs = 0;
+    if (running && !paused && task) task();
+  }, remainingMs);
+}
+
+// Сброс используется только при смене текста/уровня и явном повторе.
+function resetPlayback() {
+  running = false;
+  paused = false;
+  clearStepTimer();
+  clearInterval(clock);
+  clock = null;
+  elapsedMs = 0;
+  clockStartedAt = 0;
+  i = 0;
+  streamCompleted = false;
+  streamFullVisible = false;
+  updateClock();
+  updateControls();
+}
+
+function finishPlayback() {
+  if (running && !paused) elapsedMs = elapsedNow();
+  running = false;
+  paused = false;
+  clearStepTimer();
+  clearInterval(clock);
+  clock = null;
+  clockStartedAt = 0;
+  if (isStream()) {
+    streamCompleted = true;
+    textBox.classList.remove("showing-full-text");
+    textBox.replaceChildren();
+    const message = document.createElement("span");
+    message.className = "stream-message";
+    message.textContent = "Текст прочитан! Можно открыть его целиком.";
+    textBox.append(message);
+    wordsBox.textContent = "Прочитано: " + originalWords.length + " / " + originalWords.length;
+  }
+  updateClock();
+  updateControls();
+}
+
+function renderStreamWord() {
+  if (!isStream() || !hasText() || i < 0 || i >= originalWords.length) return;
+  streamFullVisible = false;
+  textBox.classList.remove("showing-full-text");
+  textBox.replaceChildren();
+  const word = document.createElement("span");
+  word.className = "stream-word";
+  word.textContent = formatWord(originalWords[i]);
+  textBox.append(word);
+  wordsBox.textContent = "Слово: " + (i + 1) + " / " + originalWords.length;
+  applyStyle();
+  updateControls();
+}
+
+function streamNext() {
+  if (!isStream() || !hasText()) return;
+  if (!running) {
+    if (!streamCompleted) startPlayback();
+    return;
+  }
+  clearStepTimer();
+  if (i + 1 >= originalWords.length) {
+    finishPlayback();
+    return;
+  }
+  i++;
+  renderStreamWord();
+  if (!paused && streamAuto.checked) scheduleStep(streamNext, speeds[Number(speed.value)] * 1000);
+}
+
+function streamPrevious() {
+  if (!isStream() || !hasText()) return;
+  // После окончания можно вернуться к последнему слову, не начиная текст сначала.
+  if (streamCompleted) {
+    streamCompleted = false;
+    streamFullVisible = false;
+    running = true;
+    paused = true;
+    i = originalWords.length - 1;
+    renderStreamWord();
+    return;
+  }
+  if (!running || i <= 0) return;
+  clearStepTimer();
+  i--;
+  renderStreamWord();
+  if (!paused && streamAuto.checked) scheduleStep(streamNext, speeds[Number(speed.value)] * 1000);
+}
+
+function toggleFullText() {
+  if (!isStream() || !streamCompleted) return;
+  streamFullVisible = !streamFullVisible;
+  textBox.classList.toggle("showing-full-text",streamFullVisible);
+  textBox.replaceChildren();
+  if (streamFullVisible) {
+    textBox.textContent = originalWords.map(formatWord).join(" ");
+  } else {
+    const message = document.createElement("span");
+    message.className = "stream-message";
+    message.textContent = "Текст прочитан! Можно открыть его целиком.";
+    textBox.append(message);
+  }
+  applyStyle();
+  updateControls();
 }
 
 function disappear() {
-  if (!running || i >= spans.length) return;
-
+  if (!running || paused || i >= spans.length) return;
+  // Первое полупериодное состояние — слово подсвечено.
   spans[i].classList.add("highlight");
-
-  const halfTime = speeds[speed.value] * 500;
-
-  timer = setTimeout(() => {
-    if (!running) return;
-
+  const halfTime = speeds[Number(speed.value)] * 500;
+  scheduleStep(() => {
+    if (!running || paused) return;
+    // Второе состояние — слово исчезло. Не повторяем его при паузе.
     spans[i].classList.add("hidden-word");
     spans[i].classList.remove("highlight");
-
     i++;
     wordsBox.textContent = "Слов: " + (spans.length - i);
-
-    if (i < spans.length) {
-      timer = setTimeout(disappear, halfTime);
-    } else {
-      running = false;
-      clearInterval(clock);
-    }
+    if (i < spans.length) scheduleStep(disappear, halfTime);
+    else finishPlayback();
   }, halfTime);
 }
 
-document.getElementById("start").onclick = () => {
-  stop();
-  i = 0;
-  running = true;
+function startPlayback() {
+  if (paused) { resumePlayback(); return; }
+  if (running || !hasText()) return;
+  // Новый старт начинается с начала только после завершения или явного повтора.
+  resetPlayback();
   showText();
+  running = true;
+  paused = false;
   startClock();
-  disappear();
-};
-
-function stop() {
-  running = false;
-  clearTimeout(timer);
-  clearInterval(clock);
+  if (isStream()) {
+    i = 0;
+    renderStreamWord();
+    if (streamAuto.checked) scheduleStep(streamNext, speeds[Number(speed.value)] * 1000);
+  } else {
+    updateControls();
+    disappear();
+  }
 }
 
-document.getElementById("stop").onclick = stop;
+function pausePlayback() {
+  if (!running || paused) return;
+  paused = true;
+  if (timer !== null) {
+    clearTimeout(timer);
+    timer = null;
+    remainingMs = Math.max(0, actionDeadline - performance.now());
+  }
+  elapsedMs += performance.now() - clockStartedAt;
+  clockStartedAt = 0;
+  clearInterval(clock);
+  clock = null;
+  updateClock();
+  updateControls();
+}
 
-document.getElementById("repeat").onclick = () => {
-  stop();
-  i = 0;
-  running = true;
-  showText();
+function resumePlayback() {
+  if (!running || !paused) return;
+  paused = false;
   startClock();
-  disappear();
-};
+  if (nextAction) scheduleStep(nextAction, remainingMs);
+  else if (isStream() && streamAuto.checked) {
+    // После ручного шага на паузе продолжение возвращает автопоказ.
+    scheduleStep(streamNext, speeds[Number(speed.value)] * 1000);
+  }
+  updateControls();
+}
+
+function repeatPlayback() {
+  if (!hasText()) return;
+  resetPlayback();
+  startPlayback();
+}
+
+startButton.onclick = startPlayback;
+pauseButton.onclick = pausePlayback;
+repeatButton.onclick = repeatPlayback;
+streamPrevButton.onclick = streamPrevious;
+streamNextButton.onclick = streamNext;
+showFullTextButton.onclick = toggleFullText;
 
 document.addEventListener("keydown", (e) => {
-  if (e.code === "Space" && e.target === document.body) {
+  if (e.altKey || e.ctrlKey || e.metaKey || e.repeat) return;
+  const tag = e.target && e.target.tagName;
+  if (["INPUT", "TEXTAREA", "SELECT"].includes(tag)) return;
+  // Не забираем пробел у кнопок меню, настроек и справки.
+  if (tag === "BUTTON" && !e.target.closest(".controls")) return;
+  if (e.code === "Space") {
     e.preventDefault();
-    if (running) stop();
-    else document.getElementById("start").click();
-  }
-  if (e.code === "KeyR" && e.target === document.body) {
-    document.getElementById("repeat").click();
+    if (paused) resumePlayback();
+    else if (running) pausePlayback();
+    else startPlayback();
+  } else if (e.code === "KeyR") {
+    e.preventDefault();
+    repeatPlayback();
+  } else if (isStream() && e.code === "ArrowLeft") {
+    e.preventDefault();
+    streamPrevious();
+  } else if (isStream() && e.code === "ArrowRight") {
+    e.preventDefault();
+    streamNext();
   }
 });
 
@@ -1021,6 +1342,8 @@ document.getElementById("addCustomText").onclick = () => {
 };
 
 speedValue.textContent = speeds[speed.value] + " сек";
+document.getElementById("streamAutoRow").hidden = !isStream();
+updateControls();
 </script>
 
 <!-- ==== БОКОВОЕ МЕНЮ NEUROX ==== -->
@@ -1028,6 +1351,13 @@ speedValue.textContent = speeds[speed.value] + " сек";
 
 
 <script src="../../assets/menu-data.js"></script>
+<link rel="stylesheet" href="../../shared/favorites.css">
+<script src="../../shared/favorites.js" defer></script>
+
 <script src="../../assets/menu-drawer.js"></script>
+<script src="../../shared/unified-topbar.js" defer></script>
+<script src="../../shared/seasons.js" defer></script>
+<script src="../../shared/accessibility.js" defer></script>
+<script src="../../shared/teacher-panel.js" defer></script>
 </body>
 </html>

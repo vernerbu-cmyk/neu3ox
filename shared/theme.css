@@ -1,0 +1,33 @@
+/* Keep printable worksheets and game canvases in their intended colours. */
+:root[data-theme="dark"] {color-scheme:dark}
+:root[data-theme="light"] {color-scheme:light}
+body[data-nx-path="generators/slovo-generator/index.html"] .sheet {color-scheme:light}
+:root[data-theme="dark"] body[data-nx-path="generators/slovo-generator/index.html"] {
+  --bg:#121b2a;--ink:#edf3ff;--panel:#1d2b41;--muted:#bdcbe0;
+  --blue:#9ebeff;--blue-deep:#c6d9ff;--soft:#293e60;--line:#465b78;
+  color:var(--ink);
+}
+:root[data-theme="dark"] body[data-nx-path="generators/slovo-generator/index.html"]
+  :is(.site-header,.panel,.canvas-card,.canvas-toolbar,.quiet-btn,.icon-btn,.print-btn,dialog) {
+  background:#1d2b41;color:#edf3ff;border-color:#465b78;
+}
+:root[data-theme="dark"] body[data-nx-path="generators/slovo-generator/index.html"]
+  :is(select,.segments button:not(.active),.tip,.intro-stamp) {background:#283d59;color:#edf3ff;border-color:#465b78}
+:root[data-theme="dark"] body[data-nx-path="generators/slovo-generator/index.html"]
+  :is(.field-label,.toggle-line strong,.subtitle,.header-note,.pool-hint,.tip,.sheet-label span) {color:#bdcbe0}
+:root[data-theme="dark"] body[data-nx-path="generators/slovo-generator/index.html"] .sheet {
+  --blue:#1e3f8a;--ink:#17243a;--line:#dce5f1;--soft:#eaf0ff;
+  color:#17243a;background:#fff;
+}
+#nx-generation-error {padding:14px 18px;border:2px solid #b74712;border-radius:12px;background:#fff0e6;color:#7c2d0a;font:700 15px/1.5 Arial,sans-serif}
+#nx-generation-error[hidden] {display:none}
+@media print {#nx-generation-error {display:none!important}}
+
+/* Mode selection cards must follow the same dark palette as their surrounding forms. */
+:root[data-theme="dark"] body:is([data-nx-path="generators/primery.html"],[data-nx-path="orfografos/chek.html"],[data-nx-path="orfografos/morfems.html"],[data-nx-path="orfografos/ins/insert.html"]) .mode-card {background:#1c2231;color:#edf3ff}
+:root[data-theme="dark"] body:is([data-nx-path="generators/primery.html"],[data-nx-path="orfografos/chek.html"],[data-nx-path="orfografos/morfems.html"],[data-nx-path="orfografos/ins/insert.html"]) .mode-desc {color:#bdcbe0}
+/* Favourite stars are interactive text, so orange needs sufficient contrast on white. */
+:root[data-theme="light"] .nx-fav-button[aria-pressed="true"] {color:#b74700}
+:root[data-theme="dark"] .nx-fav-button[aria-pressed="true"] {color:#ffb66b}
+body[data-nx-path="generators/words_table.html"] .hint {color:#626262}
+body[data-nx-path="generators/words_table.html"] .sheet-header {opacity:1}

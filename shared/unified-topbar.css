@@ -1,0 +1,162 @@
+/* NeuroX Beta 9 — navigation only. Does not alter individual game toolbars. */
+#nx-unified-bar, #nx-unified-bar * { box-sizing:border-box; }
+#nx-unified-bar {
+  position:relative; isolation:isolate; z-index:5000; width:100%; min-height:58px;
+  padding:8px clamp(12px,2vw,26px); display:flex;align-items:center;justify-content:space-between;
+  gap:15px; color:#fff; background:linear-gradient(110deg,#152e68,#1e3f8a 65%,#2a4a99);
+  box-shadow:0 4px 16px rgba(15,35,80,.13); font:700 14px/1.3 'Nunito Sans',Arial,sans-serif;
+}
+:root[data-theme=dark] #nx-unified-bar { background:linear-gradient(110deg,#131e35,#1c2d50,#273d67); }
+#nx-unified-bar .nxub-left, #nx-unified-bar .nxub-actions, #nx-unified-bar .nxub-brand {display:flex;align-items:center;gap:10px;min-width:0}
+#nx-unified-bar .nxub-left {flex:1}
+#nx-unified-bar .nxub-brand {gap:9px;text-decoration:none;color:inherit;min-width:0}
+#nx-unified-bar .nxub-logo {width:39px;height:39px;border-radius:12px;display:grid;place-items:center;background:rgba(255,106,0,.16);color:#ff8b3d;flex:none}
+#nx-unified-bar .nxub-logo svg{width:28px;height:28px;display:block}
+#nx-unified-bar .nxub-titles{min-width:0}
+#nx-unified-bar .nxub-main {font-size:16px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#nx-unified-bar .nxub-crumb {font-size:11px;font-weight:700;opacity:.78;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#nx-unified-bar .nxub-actions {gap:7px;flex:none}
+#nx-unified-bar .nxub-action {
+  min-width:38px;height:38px;padding:7px 9px;border:1px solid rgba(255,255,255,.28);
+  border-radius:11px;background:rgba(255,255,255,.09);color:#fff;cursor:pointer;
+  font:800 20px/1 'Nunito Sans',Arial,sans-serif;display:grid;place-items:center;text-decoration:none;
+  box-shadow:none;position:static;transform:none;
+}
+#nx-unified-bar .nxub-action:hover, #nx-unified-bar .nxub-action:focus-visible{background:#ff6a00;color:#fff;outline:none;border-color:#ff9a57}
+#nx-unified-bar .nxub-action[aria-pressed=true]{background:#ff6a00;color:#fff}
+#nx-unified-bar .nxub-action svg{width:20px;height:20px;display:block}
+#nx-unified-bar .nxub-section {font-size:12px;font-weight:800;text-decoration:none;padding:8px 11px;border:1px solid rgba(255,255,255,.25);border-radius:10px;color:inherit;white-space:nowrap}
+#nx-unified-bar .nxub-section:hover{background:rgba(255,255,255,.18)}
+body.nx-unified-page #nx-drawer-btn {display:none!important}
+@media(max-width:620px){
+ #nx-unified-bar{gap:5px;padding:7px 9px;min-height:54px}
+ #nx-unified-bar .nxub-logo{width:35px;height:35px}
+ #nx-unified-bar .nxub-logo svg{width:25px;height:25px}
+ #nx-unified-bar .nxub-main{font-size:14px}
+ #nx-unified-bar .nxub-crumb{font-size:10px}
+ #nx-unified-bar .nxub-section{display:none}
+ #nx-unified-bar .nxub-actions{gap:4px}
+ #nx-unified-bar .nxub-action{min-width:34px;height:35px;font-size:18px;padding:6px}
+}
+@media print {#nx-unified-bar{display:none!important}}
+@media(prefers-reduced-motion:reduce){#nx-unified-bar *{transition:none!important}}
+/* Fullscreen event counter has its own HUD: clear the header during the active round. */
+body.nx-game-counter:has(#welcome.hidden) #nx-unified-bar{display:none}
+
+/* Fixed game controls start below the suite navigation. */
+body:is([data-nx-path="other/labyrint.html"],[data-nx-path="other/labyrint2.html"]) #topbar {top:var(--nx-nav-height,58px)}
+body:is([data-nx-path="math/findnumber.html"],[data-nx-path="preschool/findletter.html"]) {
+ display:grid;grid-template-columns:220px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);
+}
+body:is([data-nx-path="math/findnumber.html"],[data-nx-path="preschool/findletter.html"]):has(#panel.closed) {grid-template-columns:0 minmax(0,1fr)}
+body:is([data-nx-path="math/findnumber.html"],[data-nx-path="preschool/findletter.html"]) #nx-unified-bar {grid-column:1/-1;grid-row:1}
+body:is([data-nx-path="math/findnumber.html"],[data-nx-path="preschool/findletter.html"]) #panel {grid-column:1;grid-row:2;min-height:0;overflow:auto}
+body:is([data-nx-path="math/findnumber.html"],[data-nx-path="preschool/findletter.html"]) #wrap {grid-column:2;grid-row:2;min-width:0;min-height:0}
+body:is([data-nx-path="math/findnumber.html"],[data-nx-path="preschool/findletter.html"]) #toggleBtn {top:calc(var(--nx-nav-height,58px) + 12px)}
+body[data-nx-path="preschool/cave/index.html"] #app {height:calc(100dvh - var(--nx-nav-height,58px))}
+body[data-nx-path="preschool/cave/index.html"] #app:fullscreen {height:100dvh}
+@media(max-width:768px) {
+ body:is([data-nx-path="math/findnumber.html"],[data-nx-path="preschool/findletter.html"]),
+ body:is([data-nx-path="math/findnumber.html"],[data-nx-path="preschool/findletter.html"]):has(#panel.closed) {
+  grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);
+ }
+ body:is([data-nx-path="math/findnumber.html"],[data-nx-path="preschool/findletter.html"]) #panel {grid-column:1;grid-row:2;max-height:48dvh}
+ body:is([data-nx-path="math/findnumber.html"],[data-nx-path="preschool/findletter.html"]) #wrap {grid-column:1;grid-row:3}
+ body.nx-game-meeting-point .sidebar {top:var(--nx-nav-height,54px);height:calc(100dvh - var(--nx-nav-height,54px));max-height:calc(100dvh - var(--nx-nav-height,54px))}
+}
+@media print {#nx-drawer,#nx-overlay,#nx-drawer-btn {display:none!important}}
+
+#nx-unified-bar .nxub-action:is(:hover,:focus-visible,[aria-pressed=true]) {background:#b74700}
+
+body:is([data-nx-path="reading/alfabet.html"],[data-nx-path="reading/raduga.html"],[data-nx-path="reading/chitaem/chitalka.html"]) > header {top:var(--nx-nav-height,58px)}
+
+/* Beta 15: native game headings do not repeat the NeuroX navigation bar. */
+body.nx-unified-page .nx-retired-header,
+body.nx-unified-page .nx-duplicated-native {display:none!important;}
+body.nx-unified-page header.nx-native-tools-only:not(#panel) {
+  box-shadow:none!important;
+  border:0!important;
+  background:transparent!important;
+  color:var(--text,var(--ink,#24324b));
+  padding-top:6px!important;
+  padding-bottom:6px!important;
+  margin-top:0!important;
+  margin-bottom:10px!important;
+  min-height:0!important;
+}
+body.nx-unified-page header.nx-native-tools-only:not(#panel) .header-top {
+  justify-content:flex-end!important;
+  gap:8px;
+}
+body.nx-unified-page header.nx-native-tools-only:not(#panel) .header-buttons {
+  margin-left:auto;
+}
+/* Header settings that were moved into the generator's left panel stay visible. */
+body.nx-unified-page .nx-generator-side header.nx-native-tools-only {
+  display:block!important;
+}
+body.nx-unified-page .nx-generator-side header.nx-native-tools-only .header-top {
+  justify-content:flex-end!important;
+  margin-bottom:8px;
+}
+#nx-unified-bar {flex-wrap:wrap;}
+#nx-unified-bar .nxub-context {
+  display:flex;align-items:center;justify-content:flex-end;gap:8px;
+  min-width:0;max-width:100%;flex-wrap:wrap;
+  font-size:12px;font-weight:800;line-height:1.35;
+}
+#nx-unified-bar .nxub-context :is(.header-actions,.head-actions,.buttons,.header-right,.top-actions,.right-top,.righttop,.stats,.counts,.chips,.actions) {
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  margin:0;max-width:100%;
+}
+#nx-unified-bar .nxub-context :is(button,a) {
+  width:auto;min-width:36px;min-height:34px;padding:7px 10px;
+  border-radius:10px;border:1px solid rgba(255,255,255,.25);
+  box-shadow:none;color:#fff;background:rgba(255,255,255,.12);
+  font:800 12px/1.2 'Nunito Sans',Arial,sans-serif;
+  text-decoration:none;cursor:pointer;
+}
+#nx-unified-bar .nxub-context :is(button,a):hover {background:#ff6a00;color:#fff;}
+#nx-unified-bar .nxub-context :is(.score-bar,.stat,.progress,.pill,.version,.score-chip,.stats>div,.counts>div) {
+  white-space:normal;color:#fff;
+}
+#nx-unified-bar .nxub-context .score-bar {padding:6px 12px;}
+@media(max-width:940px){
+  #nx-unified-bar .nxub-context {order:3;width:100%;flex-basis:100%;justify-content:flex-start;}
+}
+@media(max-width:620px){
+  #nx-unified-bar .nxub-context {gap:5px;font-size:11px;}
+  #nx-unified-bar .nxub-context :is(button,a){min-height:34px;padding:7px 8px;font-size:11px;}
+}
+@media print{
+  body.nx-unified-page header.nx-native-tools-only {display:none!important;}
+}
+
+/* Restored contrast: legacy labels were white because their original header was navy. */
+body.nx-unified-page header.nx-native-tools-only:not(#panel) :is(label,.val,output,.speed-box,.hint,.subtitle),
+body.nx-unified-page .nx-generator-side header.nx-native-tools-only :is(label,.val,output,.speed-box,.hint,.subtitle) {
+ color:var(--text,#24324b)!important;
+}
+body.nx-unified-page header.nx-native-tools-only .header-buttons .icon-btn,
+body.nx-unified-page .nx-generator-side header.nx-native-tools-only .header-buttons .icon-btn,
+body.nx-unified-page header.nx-native-tools-only .header-buttons button:not(.nx-duplicated-native) {
+ background:var(--blue-pale,#e8eef9)!important;
+ color:var(--blue,#1e3f8a)!important;
+ border:1px solid rgba(30,63,138,.15)!important;
+}
+body.nx-unified-page header.nx-native-tools-only .header-buttons .icon-btn:hover,
+body.nx-unified-page .nx-generator-side header.nx-native-tools-only .header-buttons .icon-btn:hover {
+ background:var(--orange,#ff6a00)!important;
+ color:#fff!important;
+}
+body.nx-unified-page header.nx-native-tools-only:not(#panel) :is(.header-controls,.controls) {
+ color:var(--text,#24324b)!important;
+}
+
+#nx-unified-bar .nxub-section{display:inline-flex;align-items:center;gap:4px}
+#nx-unified-bar .nxub-back-arrow{font-size:15px;line-height:1}
+@media(max-width:620px){
+ #nx-unified-bar .nxub-section{display:inline-flex;order:0;min-width:34px;height:34px;justify-content:center;padding:6px 8px}
+ #nx-unified-bar .nxub-back-label{display:none}
+ #nx-unified-bar .nxub-left{gap:5px}
+}

@@ -1,0 +1,164 @@
+/* NeuroX • адаптивная автосетка разделов и тренажёров (Beta 7).
+   Работает только на страницах каталогов. Игровые поля и доска не меняются. */
+body.nx-grid-view {
+  --catalog-max: 1500px;
+  --catalog-gap: 18px;
+  --catalog-min-card: 220px;
+  --home-min-card: 240px;
+}
+body.nx-grid-view .container {
+  width: min(100%, var(--catalog-max));
+  max-width: var(--catalog-max);
+  margin: 0 auto;
+  padding: 24px 26px 40px;
+}
+body.nx-grid-view .cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--catalog-min-card)), 1fr));
+  gap: var(--catalog-gap);
+  align-items: stretch;
+}
+body.nx-grid-view .cards > .card {
+  aspect-ratio: 1 / 1;
+  min-width: 0;
+  width: 100%;
+  height: auto;
+  padding: 18px 14px 15px;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 0 rgba(30,63,138,.10), 0 10px 20px rgba(0,0,0,.05);
+  text-align: center;
+}
+body.nx-grid-view .cards > .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 0 rgba(255,106,0,.13), 0 16px 26px rgba(0,0,0,.10);
+}
+body.nx-grid-view .cards > .card > .left {
+  width: 100%; height: 100%; min-width: 0;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  gap: 12px;
+}
+body.nx-grid-view .cards > .card .icon-wrap {
+  width: 72px; height: 72px;
+  border-radius: 21px;
+}
+body.nx-grid-view .cards > .card .icon-wrap svg {width: 48px;height: 48px}
+body.nx-grid-view .cards > .card .card-text {width: 100%;min-width:0}
+body.nx-grid-view .cards > .card .title {
+  display: flex; flex-direction: column;align-items: center;
+  justify-content: center; gap: 4px;
+  font-size: clamp(16px,1.08vw,19px);
+  line-height: 1.2;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+body.nx-grid-view .cards > .card .desc {
+  font-size: 12.5px;
+  line-height: 1.36;
+  margin-top: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 100%;
+}
+body.nx-grid-view .cards > .card .arrow { display:none; }
+body.nx-grid-view .cards > .card .badge {
+  font-size: 10px;
+  padding: 4px 8px;
+  line-height:1.15;
+  letter-spacing:0;
+  max-width:100%;
+}
+body.nx-grid-view .cards > .card > .nx-fav-button {
+  position: absolute;
+  top: 8px; right: 8px; left:auto; bottom:auto;
+  margin:0;
+  width:36px; height:36px;
+  border-radius:12px;
+  font-size:20px;
+  background:var(--card-bg,#fff);
+  border-color:rgba(30,63,138,.15);
+}
+body.nx-grid-view .cards > .card > .nx-fav-button[aria-pressed='true'] {border-color:var(--orange);background:var(--orange-pale)}
+
+body.nx-grid-home {
+  --catalog-max: 1220px;
+}
+body.nx-grid-home .cards {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--home-min-card)), 1fr));
+  gap: 20px;
+}
+body.nx-grid-home .cards > .card { padding: 18px 13px; }
+body.nx-grid-home .cards > .card .icon-wrap {width:82px;height:82px;border-radius:24px}
+body.nx-grid-home .cards > .card .icon-wrap svg {width:54px;height:54px}
+body.nx-grid-home .cards > .card .title {font-size:19px;}
+
+/* Избранное и часто используемые */
+body.nx-grid-home .nx-quick-panel { margin-bottom:22px;padding:16px 18px; }
+body.nx-grid-home .nx-quick-heading {font-size:20px}
+body.nx-grid-home .nx-quick-intro {margin-bottom:10px}
+body.nx-grid-home .nx-quick-panel:has(.nx-quick-group:nth-of-type(2)) {display:block}
+body.nx-grid-home #nx-quick-home {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+body.nx-grid-home .nx-quick-panel .nx-quick-group {display:block;min-width:0}
+body.nx-grid-home .nx-quick-group + .nx-quick-group {margin:0;padding:0 0 0 15px;border:0;border-left:1px solid rgba(30,63,138,.14)}
+body.nx-grid-home .nx-quick-items {grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+body.nx-grid-home .nx-quick-item {min-width:0;gap:4px}
+body.nx-grid-home .nx-quick-link {font-size:12px;min-width:0;padding:7px 9px;gap:5px}
+body.nx-grid-home .nx-quick-link .nx-quick-name {min-width:0}
+body.nx-grid-home .nx-quick-emoji {font-size:16px}
+body.nx-grid-home .nx-quick-item .nx-fav-button {width:28px;height:28px;font-size:17px;border-radius:9px}
+
+@media(max-width:1280px) {
+  body.nx-grid-view { --catalog-min-card: 210px; --catalog-gap: 16px; }
+  body.nx-grid-view .container { padding-left: 22px; padding-right: 22px; }
+  body.nx-grid-view .cards > .card .icon-wrap {width:68px;height:68px}
+  body.nx-grid-view .cards > .card .icon-wrap svg {width:46px;height:46px}
+}
+@media(max-width:900px) {
+  body.nx-grid-view { --catalog-min-card: 190px; --catalog-gap: 14px; }
+  body.nx-grid-home { --home-min-card: 210px; }
+  body.nx-grid-home .cards > .card .icon-wrap {width:70px;height:70px}
+  body.nx-grid-home .cards > .card .icon-wrap svg {width:48px;height:48px}
+}
+@media(max-width:620px) {
+  body.nx-grid-view .container {padding:20px 12px 30px}
+  body.nx-grid-view .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  body.nx-grid-home .cards {grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  body.nx-grid-view .cards > .card {padding:12px 8px;border-radius:18px}
+  body.nx-grid-view .cards > .card .icon-wrap {width:56px;height:56px;border-radius:16px}
+  body.nx-grid-view .cards > .card .icon-wrap svg {width:38px;height:38px}
+  body.nx-grid-view .cards > .card .title {font-size:13px;line-height:1.2}
+  body.nx-grid-view .cards > .card .desc {display:none}
+  body.nx-grid-view .cards > .card > .nx-fav-button {top:5px;right:5px;width:28px;height:28px;font-size:16px;border-radius:8px}
+  body.nx-grid-home .cards > .card .icon-wrap {width:64px;height:64px}
+  body.nx-grid-home .cards > .card .icon-wrap svg {width:44px;height:44px}
+  body.nx-grid-home .cards > .card .title {font-size:15px}
+  body.nx-grid-home #nx-quick-home {grid-template-columns:1fr;gap:10px}
+  body.nx-grid-home .nx-quick-group + .nx-quick-group {margin:0;padding:10px 0 0;border:0;border-top:1px solid rgba(30,63,138,.14)}
+}
+@media(max-width:420px) {
+  body.nx-grid-view .cards > .card .title {font-size:13px}
+  body.nx-grid-home .nx-quick-items {grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){body.nx-grid-view .cards > .card{animation:none;transition:none}}
+
+/* Отсутствующий в исходнике генератор: карточка информационная, без перехода. */
+body.nx-grid-view .cards > .card.nx-unavailable {
+  cursor:default; opacity:.64; border-style:dashed;
+}
+body.nx-grid-view .cards > .card.nx-unavailable:hover {transform:none; box-shadow:0 4px 0 rgba(30,63,138,.10),0 10px 20px rgba(0,0,0,.05)}
+body.nx-grid-view .cards > .card.nx-unavailable .arrow {display:none}
+body.nx-grid-view .nx-unavailable-note {font-size:10px;font-weight:800;color:var(--text-muted);margin-top:3px}
+
+/* Когда подборка частых скрыта, избранное занимает всю ширину панели. */
+body.nx-grid-home #nx-quick-home:has(> .nx-quick-group:only-child){grid-template-columns:minmax(0,1fr)}

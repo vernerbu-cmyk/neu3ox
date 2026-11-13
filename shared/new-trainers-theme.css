@@ -1,0 +1,147 @@
+/* NeuroX Beta 8. Темы интегрированных тренажёров.
+   Настройка общая: localStorage.neurox_theme, атрибут <html data-theme>.
+   Светлые/тёмные цвета только оболочек и контролов; рисунки в canvas,
+   сигналы, состояние раундов и контрастные игровые поля не меняются. */
+
+/* Общая тёмная палитра для старых игр, у которых раньше не было dark CSS. */
+:root[data-theme="dark"] body:is(
+  .nx-game-quiet-glitch,.nx-game-radar,.nx-game-invisible-walls,
+  .nx-game-meeting-point,.nx-game-peripheral,.nx-game-negative,
+  .nx-game-editor,.nx-game-decoy,.nx-game-transformation
+){
+  --bg:#121b2a; --page:#121b2a; --paper:#1d2b41;
+  --card:#1d2b41; --white:#1d2b41;
+  --ink:#edf3ff; --text:#edf3ff; --muted:#abbcd5; --text-muted:#abbcd5;
+  --line:#344760; --edge:#344760; --border:#344760;
+  --pale:#263854; --sky:#253a56; --soft:#263854;
+  --blue:#3e6dcb; --blue-dark:#345bb3; --blue-hover:#426dc0;
+  --blue-soft:#293d60; --blue-light:#293d60; --blue-pale:#293d60;
+  --navy:#486fc1; --navy2:#293c60;
+  --orange:#ff913e; --orange-dark:#e77027; --orange-light:#563621;
+  --orange-soft:#54371f;
+  --shadow:0 10px 30px rgba(0,0,0,.22);
+  color:var(--ink);
+  background:#121b2a;
+  color-scheme:dark;
+}
+/* Кнопки основного действия сохраняют белый текст, выбранные состояния не перезаписываются. */
+:root[data-theme="dark"] body:is(.nx-game-quiet-glitch,.nx-game-radar,.nx-game-invisible-walls,.nx-game-meeting-point,.nx-game-peripheral,.nx-game-negative,.nx-game-editor,.nx-game-decoy,.nx-game-transformation)
+  :is(select,input[type="number"],input[type="text"],textarea){color:var(--ink);background:#22334c;border-color:var(--line)}
+:root[data-theme="dark"] body:is(.nx-game-quiet-glitch,.nx-game-radar,.nx-game-invisible-walls,.nx-game-meeting-point,.nx-game-peripheral,.nx-game-negative,.nx-game-editor,.nx-game-decoy,.nx-game-transformation)
+  :is(.nx-suite-link,.nx-theme-control){color:#edf3ff;background:#243654;border-color:#465d7c}
+:root[data-theme="dark"] body.nx-added-game .nx-suite-link__name{color:#edf3ff}
+:root[data-theme="dark"] body.nx-added-game .nx-suite-link__section{color:#b4c5e0}
+
+/* Тихий сбой: монитор и элементы внутри него намеренно остаются тёмными. */
+:root[data-theme="dark"] body.nx-game-quiet-glitch :is(.settings,.count,.result,.meta span){background:#1d2b41;border-color:var(--line);color:var(--ink)}
+:root[data-theme="dark"] body.nx-game-quiet-glitch :is(.section-title,.help,.setting-sect label){color:#b3c4dd}
+:root[data-theme="dark"] body.nx-game-quiet-glitch :is(.seg button:not(.active),.reset,.setting-sect select,.action:not(.primary):not(.warn)){background:#283b56;color:#e0eaff;border-color:#435b7d}
+:root[data-theme="dark"] body.nx-game-quiet-glitch .game-column:fullscreen{background:#121b2a}
+:root[data-theme="dark"] body.nx-game-quiet-glitch .action.warn{background:#503723;color:#ffc18d;border-color:#875735}
+:root[data-theme="dark"] body.nx-game-quiet-glitch .error{color:#ffbe8c;background:#4d3024;border-color:#805039}
+
+/* Радар: тёмное поле полёта остаётся прежним, а панели следуют общей теме. */
+:root[data-theme="dark"] body.nx-game-radar :is(header,.stat,.game-panel,.settings,.event-panel){background:#1d2b41;border-color:var(--line);color:var(--ink)}
+:root[data-theme="dark"] body.nx-game-radar :is(.btn:not(.primary):not(.orange):not(.reveal):not(.danger),.preset:not(.active),.field select,.event-toolbar select,.speed-display,.event-tile,.selection-line){background:#273a55;color:#edf3ff;border-color:#465a77}
+:root[data-theme="dark"] body.nx-game-radar .field label{color:#b5c6de}
+:root[data-theme="dark"] body.nx-game-radar .flight-controls{background:#243654;border-color:#405778}
+:root[data-theme="dark"] body.nx-game-radar .event-tile:has(input:checked){background:#2c466c;border-color:#6a93d3}
+:root[data-theme="dark"] body.nx-game-radar .session-summary{background:#223c57;color:#d0e4ff;border-color:#426381}
+:root[data-theme="dark"] body.nx-game-radar .btn.reveal{color:#8de4c1;background:#214c42;border-color:#367d6a}
+:root[data-theme="dark"] body.nx-game-radar .btn.danger{color:#ffadb1;background:#482d3d;border-color:#77445a}
+:root[data-theme="dark"] body.nx-game-radar .stage-hint{background:#54371f;color:#ffdbba;border-color:#d7ab83}
+:root[data-theme="dark"] body.nx-game-radar :is(.stat-value,#statusText,.speed-caption strong,.speed-display,.event-head h2,.event-tile strong,.settings-summary){color:#bbd1ff}
+
+/* Невидимые стены: холст остаётся светлым: траектории рисуются JS для светлого фона. */
+:root[data-theme="dark"] body.nx-game-invisible-walls :is(.sidebar,.play,.stat){background:#1d2b41;border-color:var(--line)}
+:root[data-theme="dark"] body.nx-game-invisible-walls :is(.sidefoot,.pill,.quest,.drawControls .hint,.track){background:#293d59;color:#dce7f7;border-color:var(--line)}
+:root[data-theme="dark"] body.nx-game-invisible-walls :is(.field label,.choice .choiceName,.drawControls p,.stat .title,.note,.toggle){color:#b3c5df}
+:root[data-theme="dark"] body.nx-game-invisible-walls :is(.field select,.btn:not(.main):not(.check),.choice:not(.selected):not(.correct):not(.wrong)){background:#2a3d57;color:#edf3ff;border-color:#46607e}
+:root[data-theme="dark"] body.nx-game-invisible-walls .choice.selected{background:#355078;color:#fff}
+:root[data-theme="dark"] body.nx-game-invisible-walls .choice.correct{background:#204b40;color:#bbffdc}
+:root[data-theme="dark"] body.nx-game-invisible-walls .choice.wrong{background:#563943;color:#ffd7dc}
+:root[data-theme="dark"] body.nx-game-invisible-walls .screen .hud{background:#f5f9ff;color:#182943}
+
+/* Точка встречи: динамическое игровое поле сохраняет светлую основу для линий. */
+:root[data-theme="dark"] body.nx-game-meeting-point{background:#121b2a}
+:root[data-theme="dark"] body.nx-game-meeting-point :is(.panel,.sidebar,.side-top){background:#1d2b41;border-color:var(--line)}
+:root[data-theme="dark"] body.nx-game-meeting-point :is(.status,.settings-trigger,.soft,.outline,.answer,.pill,.side-close){background:#273b55;color:#e7f0ff;border-color:#496280}
+:root[data-theme="dark"] body.nx-game-meeting-point :is(.callout,.setting label,.switch label,.switch,.footer){color:#b2c4dd}
+:root[data-theme="dark"] body.nx-game-meeting-point :is(.setting select,.chip:not(.on),.settings-trigger){background:#2b405e;color:#edf3ff;border-color:#496280}
+:root[data-theme="dark"] body.nx-game-meeting-point :is(.chip.on,.pairtag){background:#553821;color:#ffc18a;border-color:#9c6b3b}
+:root[data-theme="dark"] body.nx-game-meeting-point .danger{background:#52342d;color:#ffbbaa}
+:root[data-theme="dark"] body.nx-game-meeting-point .stage{background:#eef5ff;color:#193453}
+:root[data-theme="dark"] body.nx-game-meeting-point :is(.bubble,.timer){color:#304d73}
+
+/* Краем глаза: сцена и canvas сохраняются светлыми для исходной контрастности сигналов. */
+:root[data-theme="dark"] body.nx-game-peripheral :is(.side,.main){background:#1d2b41;border-color:var(--line)}
+:root[data-theme="dark"] body.nx-game-peripheral :is(.ctrl label,.checkline,.asidefoot,.report small,.report div,.settingHint,.footer){color:#b3c4dd}
+:root[data-theme="dark"] body.nx-game-peripheral :is(.ctrl select,.btn:not(.primary):not(.orange),.settingGroup,.pill,.instruction,.tip,.statusHint){background:#283b56;color:#e9f1ff;border-color:#435b79}
+:root[data-theme="dark"] body.nx-game-peripheral :is(.report,.settingGroup){border-color:var(--line)}
+:root[data-theme="dark"] body.nx-game-peripheral .beta{background:#293f60;color:#b6d2ff}
+:root[data-theme="dark"] body.nx-game-peripheral .view{background:#e9f0fc}
+:root[data-theme="dark"] body.nx-game-peripheral .hud{background:#f7faff;color:#1d3455}
+
+/* Негатив: светлая рабочая поверхность не перекрашивается, чтобы ребёнок видел те же признаки. */
+:root[data-theme="dark"] body.nx-game-negative :is(.mast,.studio,.sidebar,.foot){background:#1d2b41;border-color:var(--line)}
+:root[data-theme="dark"] body.nx-game-negative :is(.assignment,.answer,.chip,.btn-soft,.btn-quiet){background:#283c58;color:#e3efff;border-color:#465c77}
+:root[data-theme="dark"] body.nx-game-negative :is(select,.foot){color:#dce9fb;border-color:var(--line)}
+:root[data-theme="dark"] body.nx-game-negative :is(.answer.good){background:#224c40;color:#aeefd2}
+:root[data-theme="dark"] body.nx-game-negative :is(.answer.bad){background:#55363e;color:#ffc3c8}
+:root[data-theme="dark"] body.nx-game-negative :is(.sampleBox,#board){background:#ecf3fb;color:#182943}
+:root[data-theme="dark"] body.nx-game-negative .sampleBox .hide-cover{background:#e9eff9}
+
+/* Редактор: текстовый лист остаётся светлым для корректурной пробы, интерфейс вокруг тёмный. */
+:root[data-theme="dark"] body.nx-game-editor :is(.top,.stat,.panel,.settings){background:#1d2b41;border-color:var(--line);color:var(--ink)}
+:root[data-theme="dark"] body.nx-game-editor :is(.btn:not(.primary):not(.orange):not(.green):not(.red),.preset:not(.active),.field select,.smallpanel){background:#293b56;color:#edf3ff;border-color:#435c7b}
+:root[data-theme="dark"] body.nx-game-editor :is(.field label,.field-head,.check){color:#b8c8df}
+:root[data-theme="dark"] body.nx-game-editor :is(.progress,.group){background:#263751;border-color:var(--line)}
+:root[data-theme="dark"] body.nx-game-editor .pill{background:#573a26;color:#ffd4a2}
+:root[data-theme="dark"] body.nx-game-editor .btn.green{background:#204b40;color:#9fefd0}
+:root[data-theme="dark"] body.nx-game-editor .btn.red{background:#553641;color:#ffc9d0}
+:root[data-theme="dark"] body.nx-game-editor :is(.paper,.spotlight-screen){background:#fff;color:#182945}
+:root[data-theme="dark"] body.nx-game-editor .overlay{background:rgba(16,27,44,.94);color:#edf3ff}
+:root[data-theme="dark"] body.nx-game-editor .result{background:#203e37;color:#c0ffdd;border-color:#437467}
+:root[data-theme="dark"] body.nx-game-editor .result-list span{background:#2b4059;color:#edf3ff;border-color:var(--line)}
+
+/* Приманка: синий экран и игровые плитки остаются без изменений. */
+:root[data-theme="dark"] body.nx-game-decoy :is(.stat,.settings,.feedback){background:#1d2b41;border-color:var(--line);color:var(--ink)}
+:root[data-theme="dark"] body.nx-game-decoy :is(.choice:not(.on),.button:not(.primary):not(.accent)){background:#293e58;color:#e5efff;border-color:#45607e}
+:root[data-theme="dark"] body.nx-game-decoy .button.accent{background:#513a28;color:#ffc28e;border-color:#805838}
+:root[data-theme="dark"] body.nx-game-decoy .main:fullscreen{background:#121b2a}
+:root[data-theme="dark"] body.nx-game-decoy .kv b{color:#ffb476}
+
+/* Трансформация: отдельно затемняем и сетку, и настройки. */
+:root[data-theme="dark"] body.nx-game-transformation{
+  --blue:#3766c1; --blue-dark:#2753a5; --blue-light:#2a3f61;
+  --orange:#ff9140; --orange-dark:#e7792d; --orange-light:#523621;
+  --bg:#121b2a; --text:#edf3ff; --text-muted:#aec0da; --border:#394c66;
+  --purple-light:#42345b; --green:#55c998; --red:#f08a94;
+}
+:root[data-theme="dark"] body.nx-game-transformation :is(header,.panel){background:#1d2b41;color:#edf3ff;border-color:var(--border)}
+:root[data-theme="dark"] body.nx-game-transformation :is(.preset-btn:not(.active),.size-btn:not(.active),.mode-btn:not(.active),.mirror-cell:not(.on):not(.result-missed):not(.result-correct):not(.result-wrong)){background:#293d58;color:#e9f1ff;border-color:var(--border)}
+:root[data-theme="dark"] body.nx-game-transformation :is(.mirror-grid){border-color:var(--border)}
+:root[data-theme="dark"] body.nx-game-transformation .mirror-cell.result-missed{background:#53402d;color:#ffcf99}
+:root[data-theme="dark"] body.nx-game-transformation .mirror-cell.result-correct{background:#205744;color:#bbffdf}
+:root[data-theme="dark"] body.nx-game-transformation .mirror-cell.result-wrong{background:#573842;color:#ffc3d0}
+
+/* Счётчик событий специально использует тёмный фон для быстрого потока.
+   В светлой теме корпус светлее; в тёмной — глубокий тёмно-синий.
+   Не изменяем пиксели canvas или временные сигналы. */
+:root:not([data-theme="dark"]) body.nx-game-counter{
+  --bg:#1f3554; --panel:#274365;
+  --txt:#f5f8ff; --txt-dim:#c3d2e5; --txt-dimmer:#95abc5;
+  --line-soft:rgba(222,236,255,.20);
+  background:#1f3554;
+}
+:root:not([data-theme="dark"]) body.nx-game-counter .screen{background:radial-gradient(ellipse at center,#345278 0%,#203653 80%)}
+:root:not([data-theme="dark"]) body.nx-game-counter #welcome{background:radial-gradient(ellipse at center,#345278 0%,#203653 78%)}
+:root:not([data-theme="dark"]) body.nx-game-counter :is(.seg,.panel-actions button:not(.primary),.fld select){background:#233d60}
+:root:not([data-theme="dark"]) body.nx-game-counter .ans-field input{background:#1c3453}
+:root[data-theme="dark"] body.nx-game-counter{--bg:#0b1527;--panel:#172740;--txt:#f2f6ff;--txt-dim:#b4c4da;--txt-dimmer:#8fa4c4;background:#0b1527;color-scheme:dark}
+:root[data-theme="dark"] body.nx-game-counter .screen{background:radial-gradient(ellipse at center,#172d50 0%,#0b1527 78%)}
+:root[data-theme="dark"] body.nx-game-counter #welcome{background:radial-gradient(ellipse at center,#172d50 0%,#0b1527 78%)}
+:root[data-theme="dark"] body.nx-game-counter :is(.seg,.panel-actions button:not(.primary),.fld select){background:#20314d}
+:root[data-theme="dark"] body.nx-game-counter .ans-field input{background:#14223a}
+
+/* Отдельные нативные тёмные темы уже реализованы в файлах Keys, Last Four, Restorer. */

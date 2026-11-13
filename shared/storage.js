@@ -2,6 +2,10 @@
    Менеджер резервных копий и точечного сброса. Без сетевых запросов. */
 (function () {
   'use strict';
+  // One UTF-8 limit for downloads, file selection and parsing. Board snapshots
+  // can legitimately exceed 2 MB; do not reject them with a smaller record cap.
+  const MAX_BACKUP_BYTES = 16 * 1024 * 1024;
+  const MAX_BACKUP_ENTRIES = 500;
 
   const exact = new Set([
     'theme', 'board-autosave', 'arenaRecords', 'escapeScore',
@@ -9,10 +13,11 @@
     'escapeCfg', 'historyCfg', 'idCfg', 'newsCfg', 'reflectionCfg',
     'retellCfg', 'simonCfg', 'towerCfg', 'caveSettings',
     'fillwordCfg2', 'readingGame_settings_v1', 'findletter.settings.v2',
-    'tochkiAch', 'tochkiV4'
+    'word-picture-sheets-v1', 'neurox.gruzovoi-express.animals.v1',
+    'tochkiAch', 'tochkiV4', 'transformationMode', 'transformationCfg', 'eventCounterStats'
   ]);
   const prefixes = [
-    'neurox_', 'nx-', 'nr_', 'vlom', 'maze_', 'readingGame_', 'findletter.'
+    'neurox_', 'neurox-', 'nx-', 'nr_', 'vlom', 'maze_', 'readingGame_', 'findletter.'
   ];
 
   function isManagedKey(key) {
@@ -35,7 +40,10 @@
       createdAt: new Date().toISOString(),
       values
     };
-    const blob = new Blob([JSON.stringify(backup, null, 2)], {type: 'application/json'});
+    const text = JSON.stringify(backup, null, 2);
+    // Never offer a successful download which this same app cannot import.
+    parseBackup(text);
+    const blob = new Blob([text], {type: 'application/json'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -48,7 +56,8 @@
   }
 
   function parseBackup(text) {
-    if (text.length > 5 * 1024 * 1024) throw new Error('Файл слишком большой (более 5 МБ).');
+    if (typeof text !== 'string') throw new Error('Файл не является корректным JSON.');
+    if (new Blob([text]).size > MAX_BACKUP_BYTES) throw new Error('Файл слишком большой (более 16 МБ).');
     let data;
     try { data = JSON.parse(text); } catch (_) { throw new Error('Файл не является корректным JSON.'); }
     if (!data || data.format !== 'NeuroX.localStorage' || data.version !== 1 ||
@@ -56,8 +65,8 @@
       throw new Error('Это не резервная копия NeuroX поддерживаемого формата.');
     }
     const entries = Object.entries(data.values);
-    if (!entries.length || entries.length > 500 || entries.some(([k, v]) =>
-      !isManagedKey(k) || typeof v !== 'string' || v.length > 2 * 1024 * 1024)) {
+    if (!entries.length || entries.length > MAX_BACKUP_ENTRIES || entries.some(([k, v]) =>
+      !isManagedKey(k) || typeof v !== 'string')) {
       throw new Error('В копии нет данных NeuroX или содержатся посторонние/некорректные записи.');
     }
     return entries;
@@ -67,13 +76,22 @@
     const entries = parseBackup(text);
     // Снимок делается до первой записи; при ошибке квоты откатываем изменения.
     const original = new Map(entries.map(([key]) => [key, localStorage.getItem(key)]));
+    const written = [];
     try {
-      entries.forEach(([key, value]) => localStorage.setItem(key, value));
+      entries.forEach(([key, value]) => { localStorage.setItem(key, value); written.push(key); });
     } catch (e) {
-      original.forEach((old, key) => {
-        try { if (old === null) localStorage.removeItem(key); else localStorage.setItem(key, old); } catch (_) {}
+      // Free the incoming values before restoring old ones. Otherwise a newly
+      // imported large value can prevent rollback of an earlier, larger record.
+      let restored = true;
+      for (const key of written) {
+        try { localStorage.removeItem(key); } catch (_) { restored = false; }
+      }
+      written.forEach(key => {
+        const old = original.get(key);
+        if (old !== null) try { localStorage.setItem(key, old); } catch (_) { restored = false; }
       });
-      throw new Error('Не удалось записать все данные (возможно, заполнена память браузера).');
+      throw new Error('Не удалось записать все данные (возможно, заполнена память браузера). ' +
+        (restored ? 'Исходные данные сохранены.' : 'Не удалось полностью вернуть исходные данные. Используйте сохранённую резервную копию.'));
     }
     return entries.length;
   }
@@ -85,5 +103,5 @@
     return keys.length;
   }
 
-  window.NeuroXStorage = Object.freeze({ isManagedKey, collect, exportData, parseBackup, importData, resetData });
+  window.NeuroXStorage = Object.freeze({ isManagedKey, collect, exportData, parseBackup, importData, resetData, maxBackupBytes: MAX_BACKUP_BYTES });
 })();

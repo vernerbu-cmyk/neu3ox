@@ -9,21 +9,32 @@
   const LS_SEASONS_ENABLED_KEY = 'neurox_seasons_enabled';
 
   const SEASON_ORDER = ['', 'autumn', 'winter', 'spring', 'summer'];
+  function readPreference(key) {try {return localStorage.getItem(key);} catch (_) {return null;}}
+  function writePreference(key,value) {try {localStorage.setItem(key,value);return true;} catch (_) {return false;}}
+  function savedSeason() {
+    const value = readPreference(LS_SEASON_KEY) || '';
+    if (SEASON_ORDER.includes(value)) return value;
+    writePreference(LS_SEASON_KEY,'');
+    return '';
+  }
 
+
+  // Иконки сезонного оформления намеренно не повторяют солнце/луну
+  // кнопки светлой и тёмной темы в общей шапке.
   const SEASON_ICONS = {
-    off: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
-    winter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/><path d="M12 5l-2 -2M12 5l2 -2M12 19l-2 2M12 19l2 2"/><path d="M5 12l-2 -2M5 12l-2 2M19 12l2 -2M19 12l2 2"/></svg>',
-    spring: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><path d="M12 9.5c0-3 1-4.5 3-4.5s3 1.5 3 3.5"/><path d="M12 9.5c0-3-1-4.5-3-4.5S6 6.5 6 8.5"/><path d="M12 14.5c0 3 1 4.5 3 4.5s3-1.5 3-3.5"/><path d="M12 14.5c0 3-1 4.5-3 4.5S6 17.5 6 15.5"/></svg>',
-    summer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1l2.1-2.1M17 7l2.1-2.1"/></svg>',
-    autumn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/></svg>'
+    off: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="2.2"/><path d="M12 9.4C8.7 8.7 7.8 6.8 8.7 4.8c2.2-.1 3.5 1.1 3.3 4.6Z" fill="#9CCB78" stroke="#9CCB78"/><path d="M14.6 12C15.3 8.7 17.2 7.8 19.2 8.7c.1 2.2-1.1 3.5-4.6 3.3Z" fill="#F2C65D" stroke="#F2C65D"/><path d="M12 14.6c3.3.7 4.2 2.6 3.3 4.6-2.2.1-3.5-1.1-3.3-4.6Z" fill="#D98A52" stroke="#D98A52"/><path d="M9.4 12C8.7 15.3 6.8 16.2 4.8 15.3c-.1-2.2 1.1-3.5 4.6-3.3Z" fill="#8FC9EB" stroke="#8FC9EB"/></svg>',
+    winter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93 4.93 19.07"/><path d="m9 4 3 3 3-3M9 20l3-3 3 3M4 9l3 3-3 3M20 9l-3 3 3 3M8.4 8.4l3.6 1.2 3.6-1.2M8.4 15.6l3.6-1.2 3.6 1.2"/></svg>',
+    spring: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 13v9M12 18c-2.8-2.8-4.7-2.5-6-1.1 1.4 2.4 3.1 2.9 6 1.1Zm0-2c2.8-2.8 4.7-2.5 6-1.1-1.4 2.4-3.1 2.9-6 1.1Z" stroke="#6EAA62"/><ellipse cx="12" cy="5.7" rx="2.1" ry="3" fill="#FFB8D9" stroke="#E883AC"/><ellipse cx="16" cy="8.6" rx="2.1" ry="3" transform="rotate(72 16 8.6)" fill="#F7D5E6" stroke="#E883AC"/><ellipse cx="14.4" cy="13" rx="2.1" ry="3" transform="rotate(144 14.4 13)" fill="#FFB8D9" stroke="#E883AC"/><ellipse cx="9.6" cy="13" rx="2.1" ry="3" transform="rotate(-144 9.6 13)" fill="#F7D5E6" stroke="#E883AC"/><ellipse cx="8" cy="8.6" rx="2.1" ry="3" transform="rotate(-72 8 8.6)" fill="#FFB8D9" stroke="#E883AC"/><circle cx="12" cy="9.5" r="1.8" fill="#FFD35B" stroke="#D59A23"/></svg>',
+    summer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5a9 9 0 0 1 18 0H3Z" fill="#FFD66B" stroke="#FFF0B5"/><path d="M3 11.5c1.5 1.5 3 1.5 4.5 0 1.5 1.5 3 1.5 4.5 0 1.5 1.5 3 1.5 4.5 0 1.5 1.5 3 1.5 4.5 0" stroke="#E58A24"/><path d="M12 11.5v8.2c0 1.4 1 2.3 2.4 2.3"/></svg>',
+    autumn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" fill="#E79A48" stroke="#F7C16B"/><path d="M3 21c2-4 5-6.5 11-10"/></svg>'
   };
 
   const SEASON_TITLES = {
-    '': 'Времена года (клик — переключить)',
-    winter: 'Зима ❄️ — клик, чтобы сменить',
-    spring: 'Весна 🌸 — клик, чтобы сменить',
-    summer: 'Лето ☀️ — клик, чтобы сменить',
-    autumn: 'Осень 🍂 — клик, чтобы сменить'
+    '': 'Сезонное оформление выключено — нажмите, чтобы включить',
+    winter: 'Зима ❄️ — нажмите, чтобы сменить сезон',
+    spring: 'Весна 🌸 — нажмите, чтобы сменить сезон',
+    summer: 'Лето 🏖️ — нажмите, чтобы сменить сезон',
+    autumn: 'Осень 🍂 — нажмите, чтобы сменить сезон'
   };
 
   /* ============================================================
@@ -335,6 +346,7 @@
      ============================================================ */
 
   function applySeason(season) {
+    season = SEASON_ORDER.includes(season) ? season : '';
     const body = document.body;
 
     SEASON_ORDER.forEach(s => {
@@ -345,14 +357,17 @@
 
     const btn = document.getElementById('seasonBtn');
     if (btn) {
-      btn.classList.remove('season-btn-winter', 'season-btn-spring', 'season-btn-summer', 'season-btn-autumn', 'season-btn-active');
+      btn.classList.remove('season-btn-off', 'season-btn-winter', 'season-btn-spring', 'season-btn-summer', 'season-btn-autumn', 'season-btn-active');
       if (season) {
         btn.classList.add('season-btn-' + season, 'season-btn-active');
         btn.innerHTML = SEASON_ICONS[season];
       } else {
+        btn.classList.add('season-btn-off');
         btn.innerHTML = SEASON_ICONS.off;
       }
       btn.title = SEASON_TITLES[season] || SEASON_TITLES[''];
+      btn.setAttribute('aria-label',btn.title);
+      btn.setAttribute('aria-pressed',String(!!season));
     }
 
     seasonBuildParticles(season);
@@ -367,12 +382,12 @@
     }
   }
 
-  function cycleSeason() {
-    const current = localStorage.getItem(LS_SEASON_KEY) || '';
-    const idx = SEASON_ORDER.indexOf(current);
-    const next = SEASON_ORDER[(idx + 1) % SEASON_ORDER.length];
-    localStorage.setItem(LS_SEASON_KEY, next);
-    applySeason(next);
+  function cycleSeason(event) {
+    event?.stopPropagation();
+    if (!isSeasonsEnabled()) {applySeasonsFeature();return;}
+    const current = savedSeason();
+    const next = SEASON_ORDER[(SEASON_ORDER.indexOf(current) + 1) % SEASON_ORDER.length];
+    if (writePreference(LS_SEASON_KEY,next)) applySeason(next);
   }
 
   /* ============================================================
@@ -380,36 +395,32 @@
      ============================================================ */
 
   function isSeasonsEnabled() {
-    return localStorage.getItem(LS_SEASONS_ENABLED_KEY) === '1';
+    return readPreference(LS_SEASONS_ENABLED_KEY) === '1';
   }
 
   function syncSeasonsSwitch() {
     const sw = document.getElementById('seasonsSwitch');
     if (!sw) return;
     const row = sw.closest('.settings-row');
-    if (row) row.classList.toggle('theme-switch-on', isSeasonsEnabled());
+    const enabled = isSeasonsEnabled();
+    if (row) row.classList.toggle('theme-switch-on', enabled);
+    sw.setAttribute('role', 'switch');
+    sw.setAttribute('tabindex', '0');
+    sw.setAttribute('aria-checked', String(enabled));
+    sw.setAttribute('aria-label', 'Включить сезонное оформление');
   }
 
   function applySeasonsFeature() {
     const enabled = isSeasonsEnabled();
-    const btn = document.getElementById('seasonBtn');
-    if (btn) btn.style.display = enabled ? '' : 'none';
-
+    const button = document.getElementById('seasonBtn');
+    if (button) button.style.display = enabled ? '' : 'none';
     syncSeasonsSwitch();
-
-    if (!enabled) {
-      localStorage.setItem(LS_SEASON_KEY, '');
-      applySeason('');
-    } else {
-      const saved = localStorage.getItem(LS_SEASON_KEY) || '';
-      if (saved) applySeason(saved);
-    }
+    applySeason(enabled ? savedSeason() : '');
   }
 
   function toggleSeasonsFeature() {
     const enabled = !isSeasonsEnabled();
-    localStorage.setItem(LS_SEASONS_ENABLED_KEY, enabled ? '1' : '0');
-    applySeasonsFeature();
+    if (writePreference(LS_SEASONS_ENABLED_KEY, enabled ? '1' : '0')) applySeasonsFeature();
   }
 
   /* ============================================================
@@ -422,7 +433,18 @@
       const fx = document.createElement('div');
       fx.className = 'season-fx';
       fx.id = 'seasonFx';
+      fx.setAttribute('aria-hidden','true');
       document.body.insertBefore(fx, document.body.firstChild);
+    }
+
+    // Контейнер гирлянды: в каталогах его создаёт общая шапка, на отдельных страницах — topbar.
+    if (!document.getElementById('seasonGarland')) {
+      const host = document.getElementById('nx-unified-bar') || document.querySelector('header');
+      if (host) {
+        const garland = document.createElement('div');
+        garland.className = 'season-garland'; garland.id = 'seasonGarland';
+        garland.setAttribute('aria-hidden', 'true'); host.appendChild(garland);
+      }
     }
 
     // Кнопка
@@ -438,18 +460,24 @@
 
   let seasonResizeTimer = null;
   window.addEventListener('resize', () => {
-    const season = localStorage.getItem(LS_SEASON_KEY) || '';
-    if (!isSeasonsEnabled()) return;
-    if (season !== 'winter' && season !== 'spring' &&
-        season !== 'summer' && season !== 'autumn') return;
     clearTimeout(seasonResizeTimer);
+    if (!isSeasonsEnabled()) return;
     seasonResizeTimer = setTimeout(() => {
+      if (!isSeasonsEnabled()) return;
+      const season = savedSeason();
+      if (!season) return;
+      seasonBuildParticles(season);
       if (season === 'winter')      seasonBuildGarland();
       else if (season === 'spring') seasonBuildSpringGarland();
       else if (season === 'summer') seasonBuildSummerGarland();
       else if (season === 'autumn') seasonBuildAutumnGarland();
     }, 180);
   });
+
+  window.addEventListener('storage', event => {
+    if (event.key === null || event.key === LS_SEASON_KEY || event.key === LS_SEASONS_ENABLED_KEY) applySeasonsFeature();
+  });
+  window.addEventListener('pageshow',event => {if (event.persisted) applySeasonsFeature();});
 
   // Экспортируем наружу
   window.syncSeasonsSwitch = syncSeasonsSwitch;

@@ -1,0 +1,15 @@
+/* NeuroX: подразделы в основных каталогах. Никаких изменений игрового поля. */
+.nx-section-filters{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 21px}
+.nx-section-filter{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:43px;padding:9px 15px;border-radius:14px;border:1px solid #cfdaed;background:var(--card-bg,#fff);color:var(--blue,#1e3f8a);font:800 13px/1.3 'Nunito Sans',Arial,sans-serif;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.nx-section-filter span{font-size:11px;font-weight:900;opacity:.72}
+.nx-section-filter:hover{border-color:#ff8c42}
+.nx-section-filter.is-active{background:#1e3f8a;color:#fff;border-color:#1e3f8a}
+.nx-section-filter:focus-visible{outline:3px solid #ff6a00;outline-offset:3px}
+body.nx-grid-view .cards > .nx-section-group-title{grid-column:1/-1;margin:8px 0 0;padding:2px 0 4px;color:var(--blue,#1e3f8a);display:flex;align-items:center;gap:10px;font:900 clamp(18px,2vw,24px)/1.3 'Nunito Sans',Arial,sans-serif}
+body.nx-grid-view .cards > .nx-section-group-title:not(:first-child){margin-top:20px}
+.nx-section-group-title span{font-size:12px;font-weight:800;color:var(--text-muted,#7183a0);white-space:nowrap}
+body.nx-grid-view .cards > .card[hidden],body.nx-grid-view .cards > .nx-section-group-title[hidden]{display:none!important}
+:root[data-theme=dark] .nx-section-filter{background:#182a46;color:#e9f2ff;border-color:#435979}
+:root[data-theme=dark] .nx-section-filter.is-active{background:#ff6a00;border-color:#ff6a00;color:#162548}
+:root[data-theme=dark] body.nx-grid-view .cards > .nx-section-group-title{color:#e6efff}
+@media(max-width:600px){.nx-section-filters{gap:7px;margin-bottom:16px}.nx-section-filter{font-size:12px;padding:9px 12px;min-height:40px}.nx-section-group-title span{font-size:11px}}

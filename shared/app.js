@@ -145,6 +145,8 @@
   }
 
   function closeSettings() {
+    const frequencyConfirm=document.getElementById('nx-frequency-confirm');
+    if (frequencyConfirm) frequencyConfirm.hidden=true;
     const m = document.getElementById('settingsModal');
     if (m) m.classList.remove('open');
     hideResetConfirm();
@@ -193,10 +195,11 @@
     const file = input.files && input.files[0];
     input.value = '';
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      showDataStatus('Размер файла превышает 5 МБ.', true); return;
-    }
     try {
+      if (!window.NeuroXStorage) throw new Error('Менеджер данных недоступен.');
+      if (file.size > window.NeuroXStorage.maxBackupBytes) {
+        showDataStatus('Размер файла превышает 16 МБ.', true); return;
+      }
       const text = await file.text();
       const entries = window.NeuroXStorage.parseBackup(text);
       const overlaps = entries.filter(([key]) => localStorage.getItem(key) !== null).length;
@@ -608,8 +611,18 @@
     if (themeRow) themeRow.addEventListener('click', toggleTheme);
 
     const seasonsToggleRow = document.getElementById('seasonsToggleRow');
+    const seasonsSwitch = document.getElementById('seasonsSwitch');
     if (seasonsToggleRow && typeof window.toggleSeasonsFeature === 'function') {
       seasonsToggleRow.addEventListener('click', window.toggleSeasonsFeature);
+      if (seasonsSwitch) {
+        seasonsSwitch.addEventListener('keydown', e => {
+          if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();
+            e.stopPropagation();
+            window.toggleSeasonsFeature();
+          }
+        });
+      }
     }
 
     const profileEditBtn = document.getElementById('profileEditBtn');
@@ -740,6 +753,11 @@
     renderRecommendations();
     if (location.hash === '#profile') {
       openWelcome();
+      history.replaceState(null, '', location.pathname + location.search);
+      return;
+    }
+    if (location.hash === '#settings') {
+      showSettings();
       history.replaceState(null, '', location.pathname + location.search);
       return;
     }

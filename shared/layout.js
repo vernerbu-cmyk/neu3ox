@@ -292,7 +292,7 @@
             <div class="settings-row" id="seasonsToggleRow">
               <div class="settings-row__label">
                 Времена года
-                <small>Кнопка смены сезона в шапке</small>
+                <small>Сезонные украшения и эффекты во всех разделах</small>
               </div>
               <div class="teacher-toggle__switch" id="seasonsSwitch"></div>
             </div>
@@ -302,6 +302,35 @@
             <h4>Профиль</h4>
             <p class="settings-hint">Имя, режим педагога и учебные уровни можно изменить без сброса результатов.</p>
             <button type="button" class="data-action-btn" id="profileEditBtn">👤 Изменить профиль</button>
+          </div>
+
+          <div class="settings-section" id="nx-trainer-settings">
+            <h4>Мои тренажёры</h4>
+            <p class="settings-hint">Здесь можно управлять избранным и историей открытий. Эти действия не удаляют результаты занятий или профиль.</p>
+            <label class="nx-hide-frequency-row" for="nx-hide-frequency">
+              <input id="nx-hide-frequency" type="checkbox">
+              <span><b>Скрыть «Часто используемые»</b><small>Убирает подборку с главной и из бокового меню. История открытий сохраняется.</small></span>
+            </label>
+            <div class="nx-manage-block">
+              <details class="nx-manage-details" id="nx-manage-favorites-details">
+                <summary><span>★ Избранное</span> <span class="nx-manage-total" id="nx-manage-favs-total">0</span></summary>
+                <div class="nx-manage-list" id="nx-manage-favs"></div>
+              </details>
+              <details class="nx-manage-details" id="nx-manage-frequency-details" open>
+                <summary><span>↗ Часто используемые</span> <span class="nx-manage-total" id="nx-manage-uses-total">0</span></summary>
+                <p class="nx-manage-note">Считаются открытия тренажёров. После удаления счётчика новый запуск снова попадёт в историю.</p>
+                <div class="nx-manage-list" id="nx-manage-uses"></div>
+                <button type="button" class="nx-manage-reset" id="nx-reset-frequency">Обнулить все открытия</button>
+                <div class="nx-manage-confirm" id="nx-frequency-confirm" hidden>
+                  <p>Обнулить статистику открытий всех тренажёров? Избранное, профиль и результаты занятий сохранятся.</p>
+                  <div class="nx-manage-confirm-actions">
+                    <button type="button" id="nx-frequency-cancel">Отмена</button>
+                    <button type="button" id="nx-frequency-yes">Да, обнулить</button>
+                  </div>
+                </div>
+              </details>
+            </div>
+            <p class="nx-manage-status" id="nx-manage-status" role="status" aria-live="polite"></p>
           </div>
 
           <div class="settings-section">

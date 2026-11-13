@@ -1,0 +1,93 @@
+/* NeuroX — сезонные эффекты для страниц отдельных тренажёров.
+   Используется вместе с unified-topbar.css и seasons.js. */
+.season-fx {
+  position: fixed; inset: 0; pointer-events: none; z-index: 90;
+  overflow: hidden; display: none;
+}
+body.season-on .season-fx { display: block; }
+.season-particle {
+  position: absolute; top: -30px; pointer-events: none;
+  animation-name: seasonFall; animation-timing-function: linear;
+  animation-iteration-count: infinite; will-change: transform;
+}
+@keyframes seasonFall {
+  0% { transform: translate(0,-30px) rotate(0deg); opacity:0; }
+  10%,90% { opacity:1; }
+  100% { transform:translate(var(--drift,0px),105vh) rotate(var(--spin,360deg)); opacity:0; }
+}
+.season-particle.p-summer { animation-name:seasonFloatUp; }
+@keyframes seasonFloatUp {
+  0% { transform:translate(0,105vh) rotate(0deg);opacity:0; }
+  10%,90% { opacity:1; }
+  100% { transform:translate(var(--drift,0px),-40px) rotate(var(--spin,360deg));opacity:0; }
+}
+.season-garland {
+  position:absolute; top:100%; left:0; right:0; height:90px; margin-top:-16px;
+  pointer-events:none; z-index:5; display:none; overflow:visible;
+}
+body.season-winter .season-garland,
+body.season-spring .season-garland,
+body.season-summer .season-garland,
+body.season-autumn .season-garland { display:block; }
+.season-bulb,.season-bulb-glow { transform-box:fill-box; transform-origin:center; }
+.season-bulb { animation:seasonBulbPulse 2.4s ease-in-out infinite; }
+.season-bulb-glow { animation:seasonBulbGlowPulse 2.4s ease-in-out infinite; }
+@keyframes seasonBulbPulse { 0%,100%{opacity:1}50%{opacity:.5} }
+@keyframes seasonBulbGlowPulse { 0%,100%{opacity:.4}50%{opacity:.06} }
+.season-spring-leaf { transform-box:fill-box;transform-origin:0% 50%;animation:seasonLeafBloom 1.8s cubic-bezier(.34,1.56,.64,1) backwards; }
+@keyframes seasonLeafBloom { 0%{transform:scale(0);opacity:0}55%{opacity:1}100%{transform:scale(1);opacity:1} }
+.season-spring-flower { transform-box:fill-box;transform-origin:50% 50%;animation:seasonFlowerBloom 2s cubic-bezier(.34,1.56,.64,1) backwards; }
+@keyframes seasonFlowerBloom { 0%{transform:scale(0) rotate(-180deg);opacity:0}55%{opacity:1}100%{transform:scale(1) rotate(0);opacity:1} }
+.season-summer-flower { transform-box:fill-box;transform-origin:50% 0%;animation:seasonFlowerSway 4.5s ease-in-out infinite; }
+@keyframes seasonFlowerSway { 0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)} }
+.season-autumn-leaf { transform-box:fill-box;transform-origin:50% 0%;animation:seasonLeafSway 3.6s ease-in-out infinite; }
+@keyframes seasonLeafSway { 0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)} }
+#nx-unified-bar { position:relative; overflow:visible; }
+#nx-unified-bar .season-garland { top:100%; }
+#nx-unified-bar .nxub-action.season-btn-active { animation:seasonBtnGlow 2.6s ease-in-out infinite; }
+@keyframes seasonBtnGlow { 0%,100%{box-shadow:0 0 12px rgba(255,255,255,.45)}50%{box-shadow:0 0 24px rgba(255,255,255,.85)} }
+.nxub-action.season-btn-winter { background:linear-gradient(135deg,#7EC8FF,#3A7BD5);color:#fff; }
+.nxub-action.season-btn-spring { background:linear-gradient(135deg,#FFB8D9,#7ED957);color:#fff; }
+.nxub-action.season-btn-summer { background:linear-gradient(135deg,#FFD60A,#FF6A00);color:#fff; }
+.nxub-action.season-btn-autumn { background:linear-gradient(135deg,#FFA62B,#B23A0E);color:#fff; }
+body.season-winter #nx-unified-bar { background:linear-gradient(110deg,#152E68 0%,#1E3F8A 55%,#6E1F2E 100%); }
+body.season-spring #nx-unified-bar { background:linear-gradient(110deg,#1D5B38 0%,#246C48 55%,#99385D 100%); }
+body.season-summer #nx-unified-bar { background:linear-gradient(110deg,#075AAA 0%,#1462A4 55%,#825000 100%); }
+body.season-autumn #nx-unified-bar { background:linear-gradient(110deg,#5C2E0E 0%,#8C2E0B 55%,#8A500C 100%); }
+:root[data-theme="dark"] body.season-winter #nx-unified-bar { background:linear-gradient(110deg,#12193A 0%,#1A2440 55%,#4A1520 100%); }
+:root[data-theme="dark"] body.season-spring #nx-unified-bar { background:linear-gradient(110deg,#143A24 0%,#1E4A34 55%,#6E1F3C 100%); }
+:root[data-theme="dark"] body.season-summer #nx-unified-bar { background:linear-gradient(110deg,#0A1A3A 0%,#153A6E 55%,#6E4A00 100%); }
+:root[data-theme="dark"] body.season-autumn #nx-unified-bar { background:linear-gradient(110deg,#2A1505 0%,#4A1E0A 55%,#7A4A10 100%); }
+.season-particle.p-winter { background:#fff;border-radius:50%;box-shadow:0 0 6px rgba(255,255,255,.9); }
+.season-particle.p-spring { background:radial-gradient(circle at 30% 30%,#FFD7E9 0%,#FF8BC0 60%,#E85A8A 100%);border-radius:50% 0 50% 50%; }
+.season-particle.p-summer { background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 40'%3E%3Cg stroke='rgba(150,170,205,0.95)' stroke-width='0.9' stroke-linecap='round'%3E%3Cline x1='16' y1='14' x2='16' y2='3'/%3E%3Cline x1='16' y1='14' x2='9' y2='5'/%3E%3Cline x1='16' y1='14' x2='23' y2='5'/%3E%3Cline x1='16' y1='14' x2='5' y2='9'/%3E%3Cline x1='16' y1='14' x2='27' y2='9'/%3E%3Cline x1='16' y1='14' x2='3' y2='15'/%3E%3Cline x1='16' y1='14' x2='29' y2='15'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat; }
+.season-particle.p-autumn { background:linear-gradient(135deg,#FFA62B 0%,#C84E1E 100%);border-radius:50% 0 50% 0; }
+@media print { .season-fx,#nx-unified-bar .season-garland {display:none!important} }
+@media(prefers-reduced-motion:reduce) {
+  .season-particle,.season-bulb,.season-bulb-glow,.season-spring-leaf,.season-spring-flower,.season-summer-flower,.season-autumn-leaf,
+  #nx-unified-bar .season-btn-active { animation:none!important; }
+}
+
+/* Seasonal decoration is never printed; reduced motion leaves static ornament only. */
+@media print { #seasonFx, #seasonGarland {display:none!important} }
+@media(prefers-reduced-motion:reduce) {
+ .season-particle,.season-bulb,.season-bulb-glow,.season-spring-leaf,.season-spring-flower,
+ .season-summer-flower,.season-autumn-leaf,.season-btn-active {animation:none!important;transition:none!important}
+}
+
+/* Keep the seasonal button identifiable and readable on every gradient. */
+.icon-btn.season-btn-winter,#nx-unified-bar .nxub-action.season-btn-winter {background:linear-gradient(135deg,#24679b,#1a4c85);color:#fff}
+.icon-btn.season-btn-spring,#nx-unified-bar .nxub-action.season-btn-spring {background:linear-gradient(135deg,#78506f,#35652b);color:#fff}
+.icon-btn.season-btn-summer,#nx-unified-bar .nxub-action.season-btn-summer {background:linear-gradient(135deg,#7d6200,#9b3f00);color:#fff}
+.icon-btn.season-btn-autumn,#nx-unified-bar .nxub-action.season-btn-autumn {background:linear-gradient(135deg,#8c4c13,#792709);color:#fff}
+#nx-unified-bar .nxub-action:focus-visible {outline:3px solid #fff;outline-offset:2px}
+
+/* Сезонная кнопка имеет собственную пиктограмму, не похожую на солнце/луну темы. */
+#nx-unified-bar .nxub-action.nxub-theme-action { background:rgba(255,255,255,.09); }
+#nx-unified-bar .nxub-action.nxub-theme-action svg { width:21px;height:21px; }
+#nx-unified-bar .nxub-action.nxub-season-action svg { width:22px;height:22px; }
+#nx-unified-bar .nxub-action.season-btn-off {
+  background:linear-gradient(135deg,#294b78 0%,#376d72 48%,#87533c 100%);
+  color:#fff;
+}
+#nx-unified-bar .nxub-action.season-btn-off svg { filter:drop-shadow(0 1px 1px rgba(0,0,0,.18)); }

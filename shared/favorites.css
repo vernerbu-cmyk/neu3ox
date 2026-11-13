@@ -1,0 +1,107 @@
+
+/* NeuroX: Избранное и часто используемые, единый вид во всех темах. */
+.nx-fav-button { width:40px;height:40px;display:grid;place-items:center;flex-shrink:0;border-radius:13px;border:1.5px solid var(--blue,#1E3F8A);background:var(--card-bg,#fff);color:var(--blue,#1E3F8A);font-family:Arial,sans-serif;font-size:24px;line-height:1;cursor:pointer;transition:transform .15s,background .15s,color .15s,border-color .15s;z-index:1; }
+.nx-fav-button:hover,.nx-fav-button:focus-visible {transform:scale(1.08);outline:2px solid #FF6A00;outline-offset:2px;border-color:#FF6A00}
+.nx-fav-button[aria-pressed="true"] {color:#FF6A00;background:var(--orange-pale,#fff0e5);border-color:#FF6A00}
+.nx-fav-button:active {transform:scale(.94)}
+.card > .nx-fav-button {margin-left:auto;margin-right:12px}
+.nx-quick-panel {margin:0 0 26px;padding:19px 20px 20px;border:1px solid rgba(30,63,138,.20);border-radius:23px;background:var(--card-bg,#fff);box-shadow:0 8px 24px rgba(18,41,88,.055)}
+.nx-quick-heading {font:700 22px 'Fredoka','Nunito Sans',sans-serif;color:var(--blue,#1E3F8A);margin:0 0 5px}
+.nx-quick-intro {font:600 13px/1.5 'Nunito Sans',sans-serif;color:var(--text-muted,#667);margin:0 0 17px}
+.nx-quick-group + .nx-quick-group {border-top:1px solid rgba(30,63,138,.13);padding-top:16px;margin-top:17px}
+.nx-quick-title {font:800 16px 'Nunito Sans',sans-serif;color:var(--blue,#1E3F8A);margin:0 0 11px;display:flex;align-items:center;gap:8px}
+.nx-quick-items {display:grid;gap:9px}
+.nx-quick-item {display:flex;align-items:center;gap:9px;min-width:0}
+.nx-quick-link {display:flex;gap:10px;align-items:center;flex:1;min-width:0;border:1px solid rgba(30,63,138,.16);background:var(--blue-pale,#f2f5fc);color:var(--text,#222);border-radius:13px;padding:10px 12px;text-decoration:none;font:800 14px 'Nunito Sans',sans-serif;transition:border-color .15s,transform .15s}
+.nx-quick-link:hover,.nx-quick-link:focus-visible {border-color:#FF6A00;transform:translateX(2px);outline:none}
+.nx-quick-link .nx-quick-name {overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nx-quick-emoji {font-size:20px;line-height:1}
+.nx-quick-empty {font:600 13px/1.45 'Nunito Sans',sans-serif;color:var(--text-muted,#667);padding:9px 0}
+.nx-quick-item .nx-fav-button {width:36px;height:36px;font-size:21px;border-radius:11px}
+.nx-quick-count {font:800 11px 'Nunito Sans',sans-serif;color:var(--orange,#FF6A00);margin-left:auto;white-space:nowrap}
+/* В боковом меню используем компактный каталог без вмешательства в игры. */
+#nx-quick-drawer {margin:5px 0 14px;padding:0 0 11px;border-bottom:1px solid rgba(30,63,138,.16)}
+#nx-quick-drawer .nx-quick-title {font-size:14px;margin:8px 0}
+#nx-quick-drawer .nx-quick-group + .nx-quick-group {margin-top:9px;padding-top:8px}
+#nx-quick-drawer .nx-quick-items {gap:5px}
+#nx-quick-drawer .nx-quick-link {font-size:12px;padding:7px 9px;border-radius:9px}
+#nx-quick-drawer .nx-quick-count {font-size:10px}
+#nx-quick-drawer .nx-quick-empty {font-size:12px}
+#nx-quick-drawer .nx-quick-item .nx-fav-button {width:29px;height:29px;font-size:19px;border-radius:8px}
+.nx-current-favorite {display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,106,0,.07);padding:8px 10px;margin:0 0 10px;border-radius:10px;font-size:13px;font-weight:700}
+.nx-current-favorite .nx-fav-button {width:34px;height:34px;font-size:22px}
+@media(max-width:700px){.card>.nx-fav-button{margin-left:auto;margin-right:8px;width:35px;height:35px;font-size:21px}.nx-quick-panel{padding:16px 13px}.nx-quick-link{font-size:13px;padding:9px}}
+@media(max-width:390px){.card>.nx-fav-button{width:31px;height:31px;margin-right:6px}.card .arrow{width:34px;height:34px}}
+@media(prefers-reduced-motion:reduce){.nx-fav-button,.nx-quick-link{transition:none}}
+
+/* Beta 10: управление подборками внутри родных настроек NeuroX. */
+#nx-trainer-settings .nx-manage-block{display:grid;gap:10px}
+#nx-trainer-settings .nx-manage-details{border:1.5px solid var(--blue-pale,#dce6f6);border-radius:14px;background:var(--input-bg,var(--card-bg,#fff));padding:10px 12px}
+#nx-trainer-settings .nx-manage-details summary{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;list-style:none;color:var(--blue,#1E3F8A);font-weight:800;font-size:14px}
+#nx-trainer-settings .nx-manage-details summary::-webkit-details-marker{display:none}
+#nx-trainer-settings .nx-manage-details summary::before{content:'▸';font-size:16px;color:var(--orange,#ff6a00)}
+#nx-trainer-settings .nx-manage-details[open] summary::before{content:'▾'}
+#nx-trainer-settings .nx-manage-total{margin-left:auto;padding:2px 8px;border-radius:12px;color:var(--blue,#1e3f8a);background:var(--blue-pale,#e7effc);font-size:12px}
+#nx-trainer-settings .nx-manage-note{margin:8px 0;font-size:12px;line-height:1.4;color:var(--text-muted,#778);font-weight:600}
+#nx-trainer-settings .nx-manage-list{display:grid;gap:7px;max-height:245px;overflow:auto;margin:10px 0}
+#nx-trainer-settings .nx-manage-row{display:flex;gap:7px;align-items:center;padding:7px 8px;border-radius:11px;background:var(--card-bg,#fff);border:1px solid var(--blue-pale,#e2e6ef);color:var(--text,#333)}
+#nx-trainer-settings .nx-manage-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;font-weight:800;flex:1}
+#nx-trainer-settings .nx-manage-count{color:var(--text-muted,#789);font-size:11px;white-space:nowrap;font-weight:800}
+#nx-trainer-settings .nx-manage-remove{flex:none;background:transparent;border:1px solid var(--blue-pale,#d5dfef);color:var(--blue,#1E3F8A);border-radius:9px;padding:7px 9px;min-height:32px;font-size:12px;font-weight:800;cursor:pointer}
+#nx-trainer-settings .nx-manage-remove:hover{border-color:var(--orange,#ff6a00);color:var(--orange,#ff6a00)}
+#nx-trainer-settings .nx-manage-reset{display:block;border:1px solid var(--orange,#ff6a00);background:var(--card-bg,#fff);color:var(--orange,#d95800);border-radius:10px;padding:10px 12px;font-weight:800;font-size:12px;cursor:pointer;max-width:100%}
+#nx-trainer-settings .nx-manage-reset:disabled{opacity:.45;cursor:not-allowed}
+#nx-trainer-settings .nx-manage-confirm{margin-top:10px;padding:12px;border:1px dashed var(--orange,#ff6a00);border-radius:11px;color:var(--text,#333)}
+#nx-trainer-settings .nx-manage-confirm[hidden]{display:none}
+#nx-trainer-settings .nx-manage-confirm p{font-size:12px;line-height:1.45;margin:0 0 9px}
+#nx-trainer-settings .nx-manage-confirm-actions{display:flex;gap:8px;flex-wrap:wrap}
+#nx-trainer-settings .nx-manage-confirm-actions button{border:1px solid var(--blue-pale,#d7e5fa);background:var(--card-bg,#fff);color:var(--blue,#1e3f8a);border-radius:9px;padding:7px 12px;cursor:pointer;font-weight:800}
+#nx-trainer-settings #nx-frequency-yes{background:var(--orange,#ff6a00);color:#fff;border-color:var(--orange,#ff6a00)}
+#nx-trainer-settings .nx-manage-empty,#nx-trainer-settings .nx-manage-status{font-size:12px;color:var(--text-muted,#667);line-height:1.4;margin:8px 0}
+#nx-trainer-settings :is(summary,button):focus-visible{outline:3px solid var(--orange,#ff6a00);outline-offset:2px}
+@media(max-width:430px){#nx-trainer-settings .nx-manage-details{padding:9px}#nx-trainer-settings .nx-manage-remove{font-size:11px;padding:6px}}
+
+/* Скрытие блока частых запусков: только интерфейс, статистика остаётся. */
+#nx-trainer-settings .nx-hide-frequency-row{display:flex;align-items:flex-start;gap:11px;padding:11px 12px;margin:0 0 12px;background:var(--input-bg,var(--card-bg,#fff));border:1.5px solid var(--blue-pale,#dce6f6);border-radius:12px;color:var(--text,#333);cursor:pointer}
+#nx-trainer-settings .nx-hide-frequency-row input{flex:0 0 auto;width:19px;height:19px;margin:2px 0 0;accent-color:var(--orange,#ff6a00);cursor:pointer}
+#nx-trainer-settings .nx-hide-frequency-row span{display:flex;flex-direction:column;gap:4px;min-width:0}
+#nx-trainer-settings .nx-hide-frequency-row b{font-size:13px;line-height:1.3}
+#nx-trainer-settings .nx-hide-frequency-row small{font-size:11px;line-height:1.35;color:var(--text-muted,#778)}
+#nx-trainer-settings .nx-hide-frequency-row:focus-within{outline:2px solid var(--orange,#ff6a00);outline-offset:2px}
+
+
+/* Beta 12.6: явные размеры SVG вне боковой панели. */
+.nx-fav-button .nx-line-icon { width:20px;height:20px;display:block;flex:none;overflow:visible; }
+.nx-quick-title .nx-line-icon { width:18px;height:18px;display:block;flex:none;overflow:visible;color:var(--blue,#1E3F8A); }
+.nx-quick-emoji { display:inline-flex;align-items:center;justify-content:center;flex:none; }
+.nx-manage-name .nx-line-icon { width:16px;height:16px;display:block; }
+html[data-theme="dark"] .nx-quick-title .nx-line-icon { color:#DDE7FA; }
+@media(max-width:620px) { .nx-fav-button .nx-line-icon { width:18px;height:18px; } .nx-quick-title .nx-line-icon { width:17px;height:17px; } }
+
+/* Отдельный вход в генераторы: справа от заголовка блока «Мои тренажёры». */
+#nx-quick-access .nx-quick-header {
+  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+  margin-bottom:12px;
+}
+#nx-quick-access .nx-quick-copy {flex:1;min-width:0}
+#nx-quick-access .nx-quick-intro {margin-bottom:0}
+#nx-quick-access .nx-generators-link {
+  display:inline-flex;flex:none;align-items:center;justify-content:center;gap:10px;
+  min-height:46px;min-width:46px;padding:10px 16px;
+  border:2px solid #1E3F8A;border-radius:14px;
+  background:#1E3F8A;color:#fff;
+  font:800 14px/1.2 'Nunito Sans',sans-serif;
+  text-decoration:none;white-space:nowrap;
+  box-shadow:0 3px 0 rgba(30,63,138,.14);
+  transition:background .16s,border-color .16s,transform .16s;
+}
+#nx-quick-access .nx-generators-link svg {width:23px;height:23px;flex:none;display:block}
+#nx-quick-access .nx-generators-link:hover {background:#2A56C6;border-color:#2A56C6;transform:translateY(-2px)}
+#nx-quick-access .nx-generators-link:focus-visible {outline:3px solid #FF6A00;outline-offset:3px}
+#nx-quick-access .nx-generators-link:active {transform:translateY(0)}
+@media(max-width:620px) {
+  #nx-quick-access .nx-quick-header {align-items:flex-start;gap:10px;margin-bottom:13px}
+  #nx-quick-access .nx-generators-link {padding:10px;width:46px;height:46px;border-radius:13px}
+  #nx-quick-access .nx-generators-text {display:none}
+}
+@media(prefers-reduced-motion:reduce){#nx-quick-access .nx-generators-link {transition:none}}
