@@ -766,7 +766,7 @@ document.getElementById('toggleBtn').onclick = () => {
     render();
   }
 
-  // Все выбранные типы собираем в ОДНУ таблицу, а не в несколько блоков.
+  // Все выбранные типы выводим на общих листах; оси всегда фиксированы.
   // Любая выбранная гласная может стоять перед Й, в том числе ЁЙ. После Й допустимы только А, О, У, Е.
   const VOWELS_AFTER_Y = new Set(['А','О','У','Е']);
   const MAX_DATA_COLUMNS = 9;
@@ -794,38 +794,23 @@ document.getElementById('toggleBtn').onclick = () => {
     };
 
     if ((open || closed) && vowels.length && (consonants.length || hasY)) {
+      // ФИКСИРОВАННЫЕ ОСИ: согласные всегда слева, гласные всегда сверху.
+      // Не меняем местами строки и столбцы в зависимости от числа выбранных букв.
+      // При 10 гласных разбиваем таблицу на два блока, сохраняя ориентацию.
       const allCons = [...consonants, ...(hasY ? ['Й'] : [])];
-      // Когда согласных больше, переносим гласные в левый столбец.
-      // При обратном соотношении получаем строки: РА РО..., АР ОР..., АЙ ОЙ...
-      if (allCons.length > vowels.length) {
-        chunk(allCons).forEach(group => {
-          pushHeader('', group, 'consonant');
-          vowels.forEach(v => {
-            if (open) {
-              pushRow(v, group.map(c => c === 'Й' ? (VOWELS_AFTER_Y.has(v) ? 'Й' + v : '') : c + v));
-            }
-            // Закрытые сочетания (в том числе АЙ, ЁЙ) только при выборе «Закрытый».
-            if (closed) {
-              pushRow(v, group.map(c => v + c));
-            }
-          });
-        });
-      } else {
-        pushHeader('', vowels);
-        consonants.forEach(c => {
-          if (open) pushRow(c, vowels.map(v => c + v));
-          if (closed) pushRow(c, vowels.map(v => v + c));
-        });
-        if (hasY) {
-          // Только выбранные типы. Открытый: ЙА/ЙО/ЙУ/ЙЕ. Закрытый: АЙ/ОЙ/ЁЙ и др.
+      chunk(vowels).forEach(group => {
+        pushHeader('', group);
+        allCons.forEach(c => {
           if (open) {
-            pushRow('Й', vowels.map(v => VOWELS_AFTER_Y.has(v) ? 'Й' + v : ''));
+            pushRow(c, group.map(v => c === 'Й'
+              ? (VOWELS_AFTER_Y.has(v) ? 'Й' + v : '')
+              : c + v));
           }
           if (closed) {
-            pushRow('Й', vowels.map(v => v + 'Й'));
+            pushRow(c, group.map(v => v + c));
           }
-        }
-      }
+        });
+      });
     }
 
     if (state.types.includes('C_SIGN')) {
@@ -847,12 +832,14 @@ document.getElementById('toggleBtn').onclick = () => {
     }
 
     if (state.types.includes('CVC')) {
+      // СГС: по-прежнему согласная слева и гласная сверху.
+      // Разные конечные согласные показываем отдельными блоками: …М, …Н и т. д.
       const endingsBase = sortRu([...state.endConsonants]);
       const endings = state.shuffle ? shuffle(endingsBase) : endingsBase;
-      chunk(endings).forEach(group => {
-        pushHeader('СГС', group, 'consonant');
-        consonants.forEach(c => {
-          vowels.forEach(v => pushRow(c + v, group.map(end => c + v + end)));
+      endings.forEach(end => {
+        chunk(vowels).forEach(group => {
+          pushHeader('…' + end, group);
+          consonants.forEach(c => pushRow(c, group.map(v => c + v + end)));
         });
       });
     }

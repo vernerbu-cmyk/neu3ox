@@ -15,7 +15,7 @@ try {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1E3F8A">
-<title>Радар v6 — NeuroX · Внимание</title>
+<title>Радар v6.3 — NeuroX · Внимание</title>
 <style>
 :root{
   --blue:#1E3F8A;
@@ -126,7 +126,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
 .speed-display small{display:block;font-size:10px;font-weight:700;color:var(--muted);margin-top:2px}
 @media(max-width:720px){.flight-controls{grid-template-columns:1fr;gap:12px}.speed-display{width:100%}}
 
-/* Семь событий в раунде: учитель управляет включением механик и ручным запуском. */
+/* Дополнительные события: учитель управляет включением механик и ручным запуском. */
 .event-panel{margin-top:15px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px 18px;box-shadow:var(--shadow)}
 .event-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:12px}
 .event-head h2{margin:0;color:var(--blue);font-size:19px}
@@ -148,6 +148,9 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
 @media(max-width:1000px){.event-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:540px){.event-grid{grid-template-columns:1fr}.event-toast{white-space:normal;text-align:center;top:60px}}
 
+/* Новые механики слежения: подсветка коридора и пояснение эха. */
+.nx-new-event{border-color:#bbd8f6;background:#f7fbff}
+.nx-new-event strong::after{content:' НОВОЕ';font-size:9px;font-weight:900;letter-spacing:.06em;color:#cb5e12}
 /* Быстрый запуск без длинного перечня параметров */
 .nx-radar-quick{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:14px 0;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);padding:13px 16px;border-radius:18px}
 .nx-radar-quick-title{display:flex;flex-direction:column;gap:2px;min-width:180px;flex:1}
@@ -185,7 +188,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
       </div>
       <div>
         <div class="brand-line">NeuroX · Внимание</div>
-        <h1>Радар</h1>
+        <h1>Радар <span style="font-size:14px;font-weight:800;color:#7b90ac;vertical-align:middle">6.3</span></h1>
         <p class="subtitle">Запомни самолёты-цели, проследи за ними и выбери правильные после остановки</p>
       </div>
     </div>
@@ -234,7 +237,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
 
     <div class="flight-controls" aria-label="Управление скоростью полёта">
       <div class="speed-caption"><strong>Скорость полёта</strong><span>Изменяется прямо во время игры</span></div>
-      <div class="speed-slider-row"><span class="speed-bound">Медленно</span><input type="range" id="speedInput" min="80" max="520" step="10" value="260" aria-label="Скорость полёта"><span class="speed-bound">Быстро</span></div>
+      <div class="speed-slider-row"><span class="speed-bound">Медленно</span><input type="range" id="speedInput" min="80" max="1000" step="10" value="260" aria-label="Скорость полёта"><span class="speed-bound">Очень быстро</span></div>
       <output class="speed-display" for="speedInput" id="speedValue">260<small>ед./с</small></output>
     </div>
     <div class="controls" aria-label="Управление тренажёром">
@@ -250,7 +253,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
     </div>
 
     <div class="selection-line" id="selectionInfo">После остановки можно выбрать самолётики кликом по полю.</div>
-    <p class="note">Ползунок скорости работает прямо во время раунда. Самолёты держат дистанцию между манёврами, но могут кратко сближаться при перехватах. После остановки ребёнок показывает ответ, а педагог отмечает самолёты кликами.</p>
+    <p class="note">Скорость 80–1000 ед./с меняется прямо во время раунда. Самолёты держат дистанцию между манёврами, но могут кратко сближаться при перехватах. После остановки ребёнок показывает ответ, а педагог отмечает самолёты кликами.</p>
     <div class="session-summary hidden" id="sessionSummary"></div>
   </main>
 
@@ -274,19 +277,24 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
     <div class="event-head"><div><h2>Дополнительные события в полёте</h2><span class="event-sub">Включай нужные механики отдельно. Автособытия происходят во время полёта, ручные кнопки работают только в полёте.</span></div></div>
     <div class="event-grid" id="eventGrid">
       <label class="event-tile"><input type="checkbox" data-event="squad"><span><strong>Эскадрилья</strong><small>Сближение в строй и разлёт</small></span></label>
-      <label class="event-tile"><input type="checkbox" data-event="blackout"><span><strong>Радиомолчание</strong><small>Краткое исчезновение всех отметок</small></span></label>
+      <label class="event-tile"><input type="checkbox" data-event="blackout"><span><strong>Радиомолчание</strong><small>Краткое исчезновение без скрытого движения и смены цветов</small></span></label>
       <label class="event-tile"><input type="checkbox" data-event="reinforcement"><span><strong>Подкрепление</strong><small>Новые самолёты с краёв поля</small></span></label>
       <label class="event-tile"><input type="checkbox" data-event="blind"><span><strong>Слепая зона</strong><small>Непрозрачный сектор карты</small></span></label>
       <label class="event-tile"><input type="checkbox" data-event="switch"><span><strong>Смена задания</strong><small>Добавить или исключить цель</small></span></label>
       <label class="event-tile"><input type="checkbox" data-event="turbulence"><span><strong>Турбулентность</strong><small>Зона виражей и порывов</small></span></label>
       <label class="event-tile"><input type="checkbox" data-event="decoy"><span><strong>Ложный сигнал</strong><small>Отвлекающий импульс на самолёте</small></span></label>
+      <label class="event-tile nx-new-event"><input type="checkbox" data-event="corridor"><span><strong>Воздушный коридор</strong><small>Сближение, параллельный полёт и разлёт</small></span></label>
+      <label class="event-tile nx-new-event"><input type="checkbox" data-event="zoom"><span><strong>Смена масштаба</strong><small>Плавное приближение и отдаление карты</small></span></label>
+      <label class="event-tile nx-new-event"><input type="checkbox" data-event="mirror"><span><strong>Зеркальные маршруты</strong><small>Две синхронные отражённые траектории</small></span></label>
+      <label class="event-tile nx-new-event"><input type="checkbox" data-event="echo"><span><strong>Эхо радара</strong><small>Полупрозрачные следы прежних положений</small></span></label>
     </div>
     <div class="event-toolbar">
       <button type="button" class="btn small" id="enableAllEvents">Включить все</button>
       <button type="button" class="btn small" id="disableAllEvents">Выключить все</button>
+      <button type="button" class="btn small" id="onlyNewEvents">Только 4 новых</button>
       <label for="eventIntensity" class="field-label" style="font-size:13px;font-weight:800;color:var(--muted)">Интенсивность</label>
       <select id="eventIntensity"><option value="calm">Редко</option><option value="normal" selected>Обычно</option><option value="chaos">Максимум</option></select>
-      <span class="event-sub" id="eventCount">События: 0/7</span>
+      <span class="event-sub" id="eventCount">События: 0/11</span>
     </div>
     <div class="event-manual" id="manualEvents">
       <button type="button" class="btn" data-trigger="squad" disabled>Эскадрилья</button>
@@ -296,8 +304,12 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
       <button type="button" class="btn" data-trigger="switch" disabled>Смена цели</button>
       <button type="button" class="btn" data-trigger="turbulence" disabled>Турбулентность</button>
       <button type="button" class="btn" data-trigger="decoy" disabled>Ложный сигнал</button>
+      <button type="button" class="btn" data-trigger="corridor" disabled>Воздушный коридор</button>
+      <button type="button" class="btn" data-trigger="zoom" disabled>Смена масштаба</button>
+      <button type="button" class="btn" data-trigger="mirror" disabled>Зеркальные маршруты</button>
+      <button type="button" class="btn" data-trigger="echo" disabled>Эхо радара</button>
     </div>
-    <p class="event-note">«Смена задания» меняет количество целей: зелёная рамка + знак «+» добавляет, синяя перечёркнутая рамка убирает. Подкрепление не становится целью. Для честного слежения радиомолчание и смена цели не накладываются друг на друга.</p>
+    <p class="event-note">«Смена задания» меняет количество целей: зелёная рамка + знак «+» добавляет, синяя перечёркнутая рамка убирает. Подкрепление не становится целью. Коридор и зеркальные маршруты меняют движение без скачков, смена масштаба не уводит самолёты за край поля, а полупрозрачное эхо показывает прошлое положение, не дополнительные цели. Сложные события не перекрывают друг друга.</p>
   </section>
       <p class="settings-note" id="settingsNote">Скорость можно менять в любой момент ползунком под игровым полем. В раунде все самолёты имеют одинаковую форму. В цветных режимах окраска не закрепляется за самолётом: следи за траекторией, а не за цветом.</p>
     </div>
@@ -327,7 +339,7 @@ const PRESET_EVENTS = {
   normal: { enabled: ['squad','turbulence'], intensity:'calm' },
   hard: { enabled: ['squad','blackout','turbulence','decoy'], intensity:'normal' }
 };
-const SPEED_MIN = 80, SPEED_MAX = 520;
+const SPEED_MIN = 80, SPEED_MAX = 1000;
 // Дистанции относятся к центрам самолётов в виртуальном поле 1080 × 640.
 const SPACING = { wide: 205, balanced: 160, tight: 123 };
 const ALTITUDE = { off: [1, 1], soft: [.90, 1.14], strong: [.72, 1.37] };
@@ -340,8 +352,11 @@ const PLANE_PALETTE = [
   {light:'#DCCBFF',mid:'#A997E8',deep:'#7461BD',highlight:'#F5F0FF'},
   {light:'#FFBBD5',mid:'#F28BB5',deep:'#C45489',highlight:'#FFF0F6'}
 ];
-const EVENT_KEYS = ['squad','blackout','reinforcement','blind','switch','turbulence','decoy'];
-const DEFAULT_EVENTS = {squad:true, blackout:false, reinforcement:false, blind:false, switch:false, turbulence:true, decoy:false};
+const EVENT_KEYS = ['squad','blackout','reinforcement','blind','switch','turbulence','decoy',
+                    'corridor','zoom','mirror','echo'];
+const DEFAULT_EVENTS = {squad:true, blackout:false, reinforcement:false, blind:false,
+  switch:false, turbulence:true, decoy:false,
+  corridor:false, zoom:false, mirror:false, echo:false};
 const PLAIN_PAINT = {light:'#D7EAF8',mid:'#B0D7F1',deep:'#8CBDE4',highlight:'#FFFFFF'};
 const MOTION = {
   straight: { turn: 2.8, retargetMin: 1.45, retargetMax: 2.35, centerChance: 0.02, oppositeChance: 0.55, jitter: 0.03 },
@@ -379,7 +394,9 @@ const state = {
   maneuver: null, maneuverDelay: 0, flightTime: 0, colorTimer: 0, colorEvents: 0,
   eventEnabled:{ ...DEFAULT_EVENTS }, eventIntensity:'calm', eventCooldown:2, eventTurn:0,
   eventCounts:{}, blackoutTime:0, blindZone:null, turbulenceZone:null, decoy:null,
-  squad:null, switchCue:null, toastTime:0, history:[], extrasAdded:0, switchDone:false
+  squad:null, switchCue:null, toastTime:0, history:[], extrasAdded:0, switchDone:false,
+   corridor:null, mirror:null, zoom:null, echo:null,
+   traceHistory:new Map(), traceLast:-1, eventUiTime:0
 };
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
@@ -450,7 +467,7 @@ function refreshRadarLevel(){
 function syncEvents() {
   document.querySelectorAll('[data-event]').forEach(el => { el.checked=!!state.eventEnabled[el.dataset.event]; });
   $('eventIntensity').value=state.eventIntensity;
-  $('eventCount').textContent=`События: ${EVENT_KEYS.filter(k=>state.eventEnabled[k]).length}/7`;
+  $('eventCount').textContent=`События: ${EVENT_KEYS.filter(k=>state.eventEnabled[k]).length}/${EVENT_KEYS.length}`;
   refreshRadarLevel();
   document.querySelectorAll('[data-trigger]').forEach(btn => {
     const name=btn.dataset.trigger;
@@ -596,6 +613,8 @@ function startRound(repeat = false) {
   state.blackoutTime=0;state.blindZone=null;state.turbulenceZone=null;state.decoy=null;
   state.squad=null;state.switchCue=null;state.toastTime=0;state.extrasAdded=0;
   state.switchDone=false;state.history=[];state.eventCounts={};state.eventTurn=0;
+  state.corridor=null;state.mirror=null;state.zoom=null;state.echo=null;
+  state.traceHistory=new Map();state.traceLast=-1;state.eventUiTime=0;
   state.eventCooldown=nextEventDelay();
   $('eventToast').hidden=true;
   state.round += 1;
@@ -635,6 +654,7 @@ function stopRound(completed) {
   if (completed) state.completed += 1;
   state.blackoutTime=0;state.decoy=null;state.switchCue=null;
   state.squad=null;state.blindZone=null;state.turbulenceZone=null;
+  state.corridor=null;state.mirror=null;state.zoom=null;state.echo=null;
   updateUI();
   render();
 }
@@ -790,7 +810,7 @@ function updateColors(dt) {
   state.colorEvents++;
   state.colorTimer=scheduleColorTimer();
 }
-// ========= События раунда (семь независимых механик) =========
+// ========= События раунда (11 механизмов, честное визуальное слежение) =========
 function nextEventDelay() {
   const t=state.eventIntensity;
   return t==='chaos'?rand(.95,1.65):t==='calm'?rand(3.8,5.3):rand(2.2,3.4);
@@ -800,20 +820,214 @@ function toast(message,seconds=1.45) {
   $('eventToast').hidden=false;
   state.toastTime=seconds;
 }
+// Коридор и зеркало: все положения задаются непрерывными кривыми.
+// Во время события выбираем реальные самолёты, но не меняем их id или статус цели.
+function sampleBezier(a,b,c,d,t){
+  return {x:cubic(a.x,b.x,c.x,d.x,t),y:cubic(a.y,b.y,c.y,d.y,t),
+    vx:cubicDerivative(a.x,b.x,c.x,d.x,t),
+    vy:cubicDerivative(a.y,b.y,c.y,d.y,t)};
+}
+function flightVector(p){
+  const len=Math.hypot(p.vx,p.vy);
+  return len>1?{x:p.vx/len,y:p.vy/len}:{x:Math.cos(p.angle),y:Math.sin(p.angle)};
+}
+function makeCorridor(){
+  const group=state.planes.slice().sort(()=>Math.random()-.5).slice(0,Math.min(state.planes.length,state.planes.length>=8?4:3));
+  if(group.length<3)return false;
+  const cx=WORLD.w*.50+rand(-45,45),cy=WORLD.h*.51+rand(-45,45);
+  const heading=(Math.random()<.5?0:Math.PI)+rand(-.14,.14);
+  const along={x:Math.cos(heading),y:Math.sin(heading)};
+  const side={x:-along.y,y:along.x};
+  group.sort((a,b)=>(a.x*side.x+a.y*side.y)-(b.x*side.x+b.y*side.y));
+  const m=WORLD.margin+35, lanes=group.length;
+  const halfLength=RADAR_PORTRAIT_PHONE?170:200;
+  const paths=group.map((p,i)=>{
+    const offset=(i-(lanes-1)/2)*48;
+    const entry={x:cx-along.x*halfLength+side.x*offset,y:cy-along.y*halfLength+side.y*offset};
+    const exit={x:cx+along.x*halfLength+side.x*offset,y:cy+along.y*halfLength+side.y*offset};
+    const end={x:clamp(exit.x+along.x*100+side.x*offset*.70,m,WORLD.w-m),
+      y:clamp(exit.y+along.y*100+side.y*offset*.70,m,WORLD.h-m)};
+    const from={x:p.x,y:p.y},d=flightVector(p);
+    const c1={x:from.x+d.x*70,y:from.y+d.y*70};
+    const c2={x:entry.x-along.x*78,y:entry.y-along.y*78};
+    const c3={x:exit.x+along.x*75,y:exit.y+along.y*75};
+    const c4={x:end.x-along.x*62-side.x*offset*.12,y:end.y-along.y*62-side.y*offset*.12};
+    return {id:p.id,from,entry,exit,end,c1,c2,c3,c4};
+  });
+  state.corridor={elapsed:0,duration:3.15,paths,ids:new Set(group.map(p=>p.id)),
+    cx,cy,angle:heading,length:halfLength*2,width:lanes*48+35};
+  toast('✈ Воздушный коридор',1.2);
+  return true;
+}
+function corridorPosition(path,t){
+  let a,b,c,d,u,unit;
+  if(t<.32){a=path.from;b=path.c1;c=path.c2;d=path.entry;u=t/.32;unit=.32;}
+  else if(t<.70){a=path.entry;b={x:a.x+(path.exit.x-a.x)/3,y:a.y+(path.exit.y-a.y)/3};
+    c={x:a.x+2*(path.exit.x-a.x)/3,y:a.y+2*(path.exit.y-a.y)/3};d=path.exit;u=(t-.32)/.38;unit=.38;}
+  else{a=path.exit;b=path.c3;c=path.c4;d=path.end;u=(t-.70)/.30;unit=.30;}
+  const value=sampleBezier(a,b,c,d,u);
+  value.vx/=unit;value.vy/=unit;
+  return value;
+}
+function makeMirror(){
+  if(state.planes.length<2)return false;
+  const group=state.planes.slice().sort(()=>Math.random()-.5).slice(0,2).sort((a,b)=>a.x-b.x);
+  const cy=rand(WORLD.h*.38,WORLD.h*.61);
+  const cx=WORLD.w/2,span=Math.min(WORLD.w*.235,240);
+  const paths=group.map((p,i)=>{
+    const sign=i===0?-1:1,from={x:p.x,y:p.y};
+    const anchor={x:cx+sign*span,y:cy};
+    const startD=flightVector(p);
+    const loopTangent={x:sign*46,y:82};
+    const exit={x:clamp(anchor.x+sign*78,WORLD.margin+40,WORLD.w-WORLD.margin-40),
+      y:clamp(cy+(i===0?-68:70),WORLD.margin+40,WORLD.h-WORLD.margin-40)};
+    return {id:p.id,sign,from,anchor,exit,
+      c1:{x:from.x+startD.x*66,y:from.y+startD.y*66},
+      c2:{x:anchor.x-loopTangent.x*.84,y:anchor.y-loopTangent.y*.84},
+      c3:{x:anchor.x+loopTangent.x*.84,y:anchor.y+loopTangent.y*.84},
+      c4:{x:exit.x-sign*60,y:exit.y-20}};
+  });
+  state.mirror={elapsed:0,duration:3.25,paths,ids:new Set(group.map(p=>p.id)),cx};
+  toast('⇆ Зеркальные маршруты',1.2);
+  return true;
+}
+function mirrorPosition(path,t){
+  if(t<.30){const v=sampleBezier(path.from,path.c1,path.c2,path.anchor,t/.30);
+    v.vx/=.30;v.vy/=.30;return v;}
+  if(t<.74){const u=(t-.30)/.44,theta=2*Math.PI*u;
+    const dx=46*Math.sin(theta),dy=82*Math.sin(theta), arc=18*(1-Math.cos(theta));
+    return {x:path.anchor.x+path.sign*(dx+arc),y:path.anchor.y+dy,
+      vx:path.sign*(46*Math.cos(theta)+18*Math.sin(theta))*2*Math.PI/.44,
+      vy:82*Math.cos(theta)*2*Math.PI/.44};}
+  const v=sampleBezier(path.anchor,path.c3,path.c4,path.exit,(t-.74)/.26);
+  v.vx/=.26;v.vy/=.26;return v;
+}
+function moveScripted(name,dt,m,locked){
+  const script=state[name];if(!script)return;
+  // Скорость влияет на постановочный манёвр, но не ускоряет его до рывков
+  // и не растягивает событие до конца короткого раунда.
+  const tempo=clamp(state.settings.speed/260,.85,2.85);
+  script.elapsed=Math.min(script.duration,script.elapsed+dt*tempo);
+  const t=script.elapsed/script.duration;
+  for(const path of script.paths){
+    const p=state.planes.find(q=>q.id===path.id);if(!p)continue;
+    locked.add(p.id);
+    const v=name==='corridor'?corridorPosition(path,t):mirrorPosition(path,t);
+    const oldX=p.x,oldY=p.y;
+    p.x=clamp(v.x,m,WORLD.w-m);p.y=clamp(v.y,m,WORLD.h-m);
+    p.vx=(p.x-oldX)/Math.max(dt,.001);
+    p.vy=(p.y-oldY)/Math.max(dt,.001);
+    if(Math.hypot(p.vx,p.vy)>1)p.angle=Math.atan2(p.vy,p.vx);
+  }
+  if(t>=1){
+    state[name]=null;
+    for(const path of script.paths){const p=state.planes.find(q=>q.id===path.id);if(p)chooseDestination(p);}
+  }
+}
+function makeZoom(){
+  state.zoom={elapsed:0,duration:3.35};
+  toast('⊕ Смена масштаба',1.1);
+  return true;
+}
+function cameraZoom(){
+  const event=state.zoom;if(!event)return 1;
+  const t=clamp(event.elapsed/event.duration,0,1);
+  const desired=t<.54
+    ?1-.14*Math.sin(Math.PI*t/.54)
+    :1+.13*Math.sin(Math.PI*(t-.54)/.46);
+  if(desired<=1)return desired;
+  // Запрещаем скрывать самолёты за краями при приближении: динамически
+  // ограничиваем масштаб по положениям ВСЕХ самолётов, включая подкрепление.
+  const cx=WORLD.w/2,cy=WORLD.h/2,edge=67;
+  let maxZ=1.25;
+  for(const p of state.planes){
+    maxZ=Math.min(maxZ,(cx-edge)/Math.max(1,Math.abs(p.x-cx)));
+    maxZ=Math.min(maxZ,(cy-edge)/Math.max(1,Math.abs(p.y-cy)));
+  }
+  return Math.max(1,Math.min(desired,maxZ));
+}
+function makeEcho(){
+  const group=state.planes.slice().sort(()=>Math.random()-.5)
+    .slice(0,Math.min(state.planes.length,Math.max(2,Math.ceil(state.planes.length*.40))));
+  state.echo={elapsed:0,duration:3.0,ids:new Set(group.map(p=>p.id))};
+  toast('◌ Эхо радара',1.1);
+  return true;
+}
+function rememberTraces(){
+  if(state.flightTime-state.traceLast<.09)return;
+  state.traceLast=state.flightTime;
+  for(const p of state.planes){
+    let samples=state.traceHistory.get(p.id);
+    if(!samples){samples=[];state.traceHistory.set(p.id,samples);}
+    samples.push({t:state.flightTime,x:p.x,y:p.y,angle:p.angle,scale:p.scale||1});
+    if(samples.length>24)samples.splice(0,samples.length-24);
+  }
+}
+function drawEchoes(){
+  if(!state.echo||state.phase!=='tracking')return;
+  ctx.save();
+  const opacity=Math.min(1,(state.echo.duration-state.echo.elapsed)/.42);
+  for(const id of state.echo.ids){
+    const history=state.traceHistory.get(id)||[];
+    for(let i=3;i>=1;i--){
+      const t=state.flightTime-i*.24;
+      let found=null;
+      for(let j=history.length-1;j>=0;j--)if(history[j].t<=t){found=history[j];break;}
+      if(!found)continue;
+      const a=(4-i)*.12*opacity;
+      ctx.save();ctx.translate(found.x,found.y);ctx.rotate(found.angle);
+      ctx.scale(Math.min(1.12,found.scale),Math.min(1.12,found.scale));
+      ctx.strokeStyle=`rgba(163,213,255,${a.toFixed(3)})`;
+      ctx.fillStyle=`rgba(118,184,238,${(a*.23).toFixed(3)})`;
+      ctx.lineWidth=2;ctx.setLineDash([5,5]);
+      ctx.beginPath();ctx.moveTo(26,0);ctx.lineTo(-15,-16);ctx.lineTo(-10,0);
+      ctx.lineTo(-15,16);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.restore();
+    }
+  }
+  ctx.restore();
+}
+function drawCorridor(){
+  const e=state.corridor;if(!e)return;
+  const fade=Math.min(1,e.elapsed/.42,(e.duration-e.elapsed)/.46);
+  ctx.save();ctx.translate(e.cx,e.cy);ctx.rotate(e.angle);
+  ctx.strokeStyle=`rgba(111,185,255,${(.32*Math.max(0,fade)).toFixed(3)})`;
+  ctx.fillStyle=`rgba(94,153,227,${(.06*Math.max(0,fade)).toFixed(3)})`;
+  ctx.lineWidth=2;ctx.setLineDash([13,10]);
+  ctx.fillRect(-e.length/2,-e.width/2,e.length,e.width);
+  ctx.strokeRect(-e.length/2,-e.width/2,e.length,e.width);
+  ctx.restore();
+}
+function drawMirrorAxis(){
+  const e=state.mirror;if(!e)return;
+  ctx.save();ctx.strokeStyle='rgba(122,199,245,.22)';ctx.lineWidth=2;
+  ctx.setLineDash([7,14]);ctx.beginPath();ctx.moveTo(e.cx,85);ctx.lineTo(e.cx,WORLD.h-85);ctx.stroke();ctx.restore();
+}
+
 function eventAvailable(name) {
   const n=state.planes.length, duration=state.settings.duration;
+  // Пока идёт один из четырёх новых эффектов, другие события не стартуют.
+  // Иначе автоматические отвлечения могут сделать траекторию непроверяемой.
+  if(state.corridor || state.mirror || state.zoom || state.echo)return false;
   if (name==='reinforcement') return state.extrasAdded<2 && n<14;
   if (name==='switch') return !state.switchDone && !state.switchCue && state.targets.size>0 && n>state.targets.size;
   if (name==='decoy') return n>state.targets.size && !state.decoy;
-  if (name==='squad') return n>=3 && !state.squad && !state.maneuver;
-  if (name==='blackout') return !state.blackoutTime && !state.switchCue;
-  if (name==='blind') return !state.blindZone;
-  if (name==='turbulence') return !state.turbulenceZone;
+  if (name==='squad') return n>=3 && !state.squad && !state.maneuver && !state.corridor && !state.mirror && !state.zoom;
+  if (name==='blackout') return !state.blackoutTime && !state.switchCue && !state.corridor && !state.mirror && !state.zoom && !state.echo;
+  if (name==='blind') return !state.blindZone && !state.zoom && !state.corridor && !state.mirror;
+  if (name==='turbulence') return !state.turbulenceZone && !state.corridor && !state.mirror;
+  const scripted=!!(state.corridor||state.mirror||state.zoom||state.echo||state.squad||state.maneuver);
+  if (name==='corridor') return n>=3 && !scripted && !state.blackoutTime && !state.blindZone && !state.switchCue;
+  if (name==='mirror') return n>=2 && !scripted && !state.blackoutTime && !state.blindZone && !state.switchCue;
+  if (name==='zoom') return !scripted && !state.blackoutTime && !state.blindZone && !state.switchCue;
+  if (name==='echo') return n>=2 && !scripted && !state.blackoutTime && !state.blindZone && !state.switchCue;
   return false;
 }
 function canTriggerEvent(name) {
   if (!eventAvailable(name)) return false;
   if (name==='switch' && (state.blackoutTime>0 || state.phaseLeft<2.3)) return false;
+  const needed={corridor:3.75,mirror:3.85,zoom:3.40,echo:3.10};
+  if(needed[name] && state.phaseLeft<needed[name])return false;
   return true;
 }
 function pickRandom(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
@@ -898,6 +1112,10 @@ function triggerEvent(name,manual=false) {
   else if(name==='switch')success=switchTarget();
   else if(name==='turbulence')success=makeTurbulence();
   else if(name==='decoy')success=fakeSignal();
+  else if(name==='corridor')success=makeCorridor();
+  else if(name==='zoom')success=makeZoom();
+  else if(name==='mirror')success=makeMirror();
+  else if(name==='echo')success=makeEcho();
   if (success){
     state.eventCounts[name]=(state.eventCounts[name]||0)+1;
     state.history.push({name,at:Math.round(state.flightTime*10)/10,manual});
@@ -912,10 +1130,17 @@ function updateEvents(dt) {
     if(state.toastTime===0)$('eventToast').hidden=true;
   }
   if(state.blackoutTime>0)state.blackoutTime=Math.max(0,state.blackoutTime-dt);
+  for(const name of ['zoom','echo']){
+    const e=state[name];if(!e)continue;
+    e.elapsed=Math.min(e.duration,e.elapsed+dt);
+    if(e.elapsed>=e.duration)state[name]=null;
+  }
   for(const k of ['blindZone','turbulenceZone','decoy','switchCue']) {
     const e=state[k];if(!e)continue;
     e.elapsed+=dt;if(e.elapsed>=e.duration)state[k]=null;
   }
+  state.eventUiTime+=dt;
+  if(state.eventUiTime>=.22){state.eventUiTime=0;syncEvents();}
   state.eventCooldown-=dt;
   if(state.eventCooldown>0)return;
   const options=EVENT_KEYS.filter(k=>state.eventEnabled[k] && canTriggerEvent(k));
@@ -997,14 +1222,21 @@ function drawEventZones() {
 }
 
 function movePlanes(dt) {
+  // При потере сигнала нельзя проверять ребёнка на угадывание невидимых
+  // перемещений и одновременно перекрашивать самолёты. Фиксируем состояние
+  // на ВСЁ время blackout, в том числе на кадре его появления и исчезновения.
+  // При этом раундовый таймер продолжает идти, а после восстановления сигнала
+  // полёт возобновляется точно из прежних координат и с прежними цветами.
+  const wasBlackout = state.blackoutTime > 0;
   updateEvents(dt);
+  if (wasBlackout || state.blackoutTime > 0) return;
   updateColors(dt);
   const mode = MOTION[state.settings.motion];
   const minGap = desiredSpacing();
   const m = WORLD.margin + 18;
   state.flightTime += dt;
   state.maneuverDelay -= dt;
-  if (!state.maneuver && state.maneuverDelay <= 0) {
+  if (!state.maneuver && !state.squad && !state.corridor && !state.mirror && state.maneuverDelay <= 0) {
     makeManeuver();
     state.maneuverDelay = state.settings.motion === 'active' ? rand(2.4, 3.4) : rand(3.5, 5.1);
   }
@@ -1014,6 +1246,8 @@ function movePlanes(dt) {
   }
   const squadLocked=updateSquad(dt,m);
   const locked = new Set([...(state.maneuver ? state.maneuver.ids : []),...squadLocked]);
+  moveScripted('corridor',dt,m,locked);
+  moveScripted('mirror',dt,m,locked);
   // Каждый свободный самолёт старается занять собственную часть поля.
   for (const p of state.planes) {
     if (locked.has(p.id)) continue;
@@ -1086,7 +1320,8 @@ function movePlanes(dt) {
   }
   // Финальное мягкое разведение. Исключение: пары, которые сейчас участвуют
   // в одной постановочной перестановке. Они вправе ненадолго сблизиться.
-  const scripted = new Set([...(state.maneuver?.ids || []),...(state.squad?.starts.map(p=>p.id)||[])]);
+  const scripted = new Set([...(state.maneuver?.ids || []),...(state.squad?.starts.map(p=>p.id)||[]),
+     ...locked]);
   for (let pass=0;pass<2;pass++) {
     for (let i=0;i<state.planes.length;i++) for(let j=i+1;j<state.planes.length;j++) {
       const a=state.planes[i],b=state.planes[j];
@@ -1105,6 +1340,7 @@ function movePlanes(dt) {
       b.y=clamp(b.y+uy*push*bPart,m,WORLD.h-m);
     }
   }
+  rememberTraces();
 }
 function updateCounters() {
   const phase = state.phase;
@@ -1211,7 +1447,15 @@ function updateUI() {
 }
 function resizeCanvas() {
   const rect = C.getBoundingClientRect();
-  const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+  // Векторные самолёты рисуем с запасом пикселей даже при DPR=1.
+  // Размер canvas ограничен бюджетом, чтобы не перегружать старые ПК и ТВ.
+  const cssArea = Math.max(1, rect.width * rect.height);
+  const pixelBudget = 10_000_000;
+  const dpr = Math.max(1, Math.min(
+    3,
+    Math.max(2, window.devicePixelRatio || 1),
+    Math.sqrt(pixelBudget / cssArea)
+  ));
   const width = Math.max(1, Math.round(rect.width * dpr));
   const height = Math.max(1, Math.round(rect.height * dpr));
   if (C.width !== width || C.height !== height) {
@@ -1379,6 +1623,10 @@ function render() {
   ctx.fillStyle = '#101E3E';
   ctx.fillRect(0,0,w,h);
   ctx.setTransform(scale,0,0,scale,offsetX,offsetY);
+  const zoom=cameraZoom();
+  ctx.translate(WORLD.w/2,WORLD.h/2);
+  ctx.scale(zoom,zoom);
+  ctx.translate(-WORLD.w/2,-WORLD.h/2);
   const bg = ctx.createRadialGradient(WORLD.w*0.52, WORLD.h*0.42, 60, WORLD.w*0.5, WORLD.h*0.48, WORLD.w*0.62);
   bg.addColorStop(0, '#17365C');
   bg.addColorStop(1, '#0A1633');
@@ -1408,6 +1656,9 @@ function render() {
     ctx.fill();
   }
   if(state.blackoutTime<=0){
+    drawCorridor();
+    drawMirrorAxis();
+    drawEchoes();
     state.planes.forEach(p=>{if(!inBlindZone(p))drawPlane(p);});
     drawEventZones();
   } else {
@@ -1429,7 +1680,11 @@ function tick(timestamp) {
     }
   } else if (state.phase === 'tracking') {
     const allowed = Math.min(dt, state.phaseLeft);
-    movePlanes(allowed);
+    // Малые подшаги сохраняют непрерывность манёвров при скорости до 1000.
+    // Особенно важно при сближениях, движении у границ и новых событиях.
+    const n = Math.max(1, Math.ceil(allowed / (1 / 120)));
+    const step = allowed / n;
+    for (let i = 0; i < n; i++) movePlanes(step);
     state.phaseLeft = Math.max(0, state.phaseLeft - dt);
     if (state.phaseLeft <= 0) stopRound(true);
   }
@@ -1525,6 +1780,12 @@ $('enableAllEvents').addEventListener('click',()=>{
 });
 $('disableAllEvents').addEventListener('click',()=>{
   EVENT_KEYS.forEach(k=>state.eventEnabled[k]=false);saveEvents();syncEvents();
+});
+$('onlyNewEvents').addEventListener('click',()=>{
+  const newOnes=new Set(['corridor','zoom','mirror','echo']);
+  EVENT_KEYS.forEach(k=>state.eventEnabled[k]=newOnes.has(k));
+  state.eventCooldown=Math.min(state.eventCooldown,nextEventDelay());
+  saveEvents();syncEvents();
 });
 $('eventIntensity').addEventListener('change',e=>{
   state.eventIntensity=e.target.value;state.eventCooldown=Math.min(state.eventCooldown,nextEventDelay());saveEvents();syncEvents();

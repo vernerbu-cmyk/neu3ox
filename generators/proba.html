@@ -139,6 +139,16 @@ input[type=range]{
   border-color:var(--orange-dark);
 }
 
+/* Геометрические значки: единый шрифт для поля и палитры. */
+#shapePicker .letter-chip{
+  font-family:"Segoe UI Symbol","DejaVu Sans",sans-serif;
+  font-size:18px; font-weight:600;
+}
+.correction-field.shape-mode .cell{
+  font-family:"Segoe UI Symbol","DejaVu Sans",sans-serif;
+  font-weight:600;
+}
+
 /* ===== СПИСОК ЗАДАЧ ===== */
 .tasks-rows{display:flex;flex-direction:column;gap:4px;}
 .task-row{
@@ -486,9 +496,11 @@ input[type=range]{
 </style>
 <link rel="stylesheet" href="../assets/menu-drawer.css">
 <link rel="stylesheet" href="../shared/unified-topbar.css">
-<link rel="stylesheet" href="../shared/generator-sidebar.css">
 <link rel="stylesheet" href="../shared/season-effects.css">
 <link rel="stylesheet" href="../shared/theme.css">
+<link rel="stylesheet" href="../shared/favorites.css">
+<link rel="stylesheet" href="../shared/generator-sidebar.css">
+
 </head>
 <body>
 
@@ -566,7 +578,7 @@ input[type=range]{
 
     <div class="field full" id="letterPickerField">
       <label>Что искать — отметьте буквы</label>
-      <div class="letter-picker" id="letterPicker" tabindex="0" role="group" aria-label="Выбор букв для задания"></div>
+      <div class="letter-picker" id="letterPicker"></div>
     </div>
 
     <div class="field full" id="shapePickerField" style="display:none;">
@@ -702,8 +714,19 @@ const MARK_LABEL = {circle:'в кружок',square:'в квадрат',cross:'�
 const MARK_ICON  = {circle:'◯',square:'□',cross:'✕',underline:'‗',strike:'—'};
 const MARK_COLOR = {circle:'var(--mark-circle)',square:'var(--mark-square)',cross:'var(--mark-cross)',underline:'var(--mark-underline)',strike:'var(--mark-strike)'};
 
-const LETTERS = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯ'.split('');
-const SHAPES  = '●■▲★◆○□△'.split('');
+const LETTERS = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.split('');
+// Закрашенные и контурные пары: круг, квадрат, треугольники, ромб, звезда.
+const SHAPES  = '●○■□▲△▼▽◀◁▶▷◆◇★☆'.split('');
+const SHAPE_NAMES = {
+  '●':'Круг закрашенный','○':'Круг контурный',
+  '■':'Квадрат закрашенный','□':'Квадрат контурный',
+  '▲':'Треугольник вверх закрашенный','△':'Треугольник вверх контурный',
+  '▼':'Треугольник вниз закрашенный','▽':'Треугольник вниз контурный',
+  '◀':'Треугольник влево закрашенный','◁':'Треугольник влево контурный',
+  '▶':'Треугольник вправо закрашенный','▷':'Треугольник вправо контурный',
+  '◆':'Ромб закрашенный','◇':'Ромб контурный',
+  '★':'Звезда закрашенная','☆':'Звезда контурная'
+};
 
 /* Каждая задача: {char, mark}. Отдельные списки для букв и значков. */
 const state = {
@@ -733,6 +756,7 @@ function buildPicker(container, chars, mode){
     const el = document.createElement('div');
     el.className = 'letter-chip';
     el.textContent = ch;
+    if (mode === 'shapes') el.title = SHAPE_NAMES[ch] || ch;
     el.onclick = () => toggleChar(ch, mode);
     container.appendChild(el);
   });
@@ -843,6 +867,7 @@ function generateField(){
   const taskChars = list.map(t => t.char);
   const others = pool.filter(c => !taskChars.includes(c));
 
+  field.classList.toggle('shape-mode', modeSelect.value === 'shapes');
   field.style.setProperty('--cols', cols);
   const cellSize = Math.max(26,Math.min(48,+fontSizeEl.value+16));
   const cellFont = +fontSizeEl.value + 'px';
@@ -981,7 +1006,9 @@ function renderFieldPNG(){
     ctx.stroke();
 
     ctx.fillStyle = '#111827';
-    ctx.font = `700 ${fontSize}px "Courier New", monospace`;
+    ctx.font = modeSelect.value === 'shapes'
+      ? `600 ${fontSize}px "Segoe UI Symbol", "DejaVu Sans", sans-serif`
+      : `700 ${fontSize}px "Courier New", monospace`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(cell.dataset.char || cell.textContent || '',cx,cy+0.8);
@@ -1173,14 +1200,12 @@ refreshAll();
 </script>
 
 
-<script src="../assets/menu-data.js"></script>
-<link rel="stylesheet" href="../shared/favorites.css">
+<script src="../assets/menu-data.js" defer></script>
+<script src="../assets/menu-drawer.js" defer></script>
 <script src="../shared/favorites.js" defer></script>
-
-<script src="../assets/menu-drawer.js"></script>
+<script src="../shared/generator-sidebar.js" defer></script>
 <script src="../shared/unified-topbar.js" defer></script>
 <script src="../shared/seasons.js" defer></script>
-<script src="../shared/generator-sidebar.js" defer></script>
 <script src="../shared/accessibility.js" defer></script>
 <script src="../shared/teacher-panel.js" defer></script>
 </body>

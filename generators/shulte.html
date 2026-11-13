@@ -1184,34 +1184,32 @@ function drawTable(canvas, values, cfg){
   }
 
   if (star){
+    const isOdd = size % 2 === 1;
     const cx = gridX + gridW / 2;
     const cy = gridY + gridH / 2;
-    const r = cellSize * 0.5;
-    drawStar(ctx, cx, cy, r, pal.star);
+    // В нечётных таблицах контур звезды охватывает цифру в центральной клетке.
+    // В чётных таблицах звезда находится на пересечении четырёх клеток.
+    const r = isOdd ? cellSize * 0.52 : cellSize * 0.34;
+    drawStar(ctx, cx, cy, r, pal.star, 0.40);
   }
 }
 
-function drawStar(ctx, cx, cy, r, strokeColor){
-  const spikes = 5;
-  const outer = r;
-  const inner = r * 0.45;
-
+function drawStar(ctx, cx, cy, r, strokeColor, innerRatio = 0.69){
+  // Только прозрачный контур: цифры и фон под звездой остаются видимыми.
   ctx.save();
   ctx.beginPath();
-  for (let i = 0; i < spikes * 2; i++){
-    const angle = (Math.PI / spikes) * i - Math.PI / 2;
-    const rad = i % 2 === 0 ? outer : inner;
-    const x = cx + Math.cos(angle) * rad;
-    const y = cy + Math.sin(angle) * rad;
+  for (let i = 0; i < 10; i++){
+    const angle = i * Math.PI / 5 - Math.PI / 2;
+    const radius = i % 2 === 0 ? r : r * innerRatio;
+    const x = cx + Math.cos(angle) * radius;
+    const y = cy + Math.sin(angle) * radius;
     if (i === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
   }
   ctx.closePath();
-
   ctx.strokeStyle = strokeColor;
-  ctx.lineWidth = Math.max(2, r * 0.06);
+  ctx.lineWidth = Math.max(2, r * 0.045);
   ctx.lineJoin = 'round';
-  ctx.lineCap = 'round';
   ctx.stroke();
   ctx.restore();
 }

@@ -1,0 +1,110 @@
+/* NeuroX / Слово и картинка: presentation only; story / picture logic untouched. */
+:root{
+  --ink:#24324B;--ink-strong:#1E3F8A;--accent:#FF6A00;--accent-soft:#FFEADB;
+  --soft:#EDF3FF;--line:#DAE4F3;--paper:#FFFFFF;--page:#F4F6FB;
+  --nx-muted:#687894;--nx-field:#FFFFFF;--nx-dot:rgba(30,63,138,.075);
+  font-family:"Nunito Sans","Segoe UI",sans-serif;color:var(--ink);
+  background:var(--page);
+}
+:root[data-theme="dark"]{
+  --ink:#E8EEF9;--ink-strong:#A5C0FB;--accent:#FF8B3D;--accent-soft:#523822;
+  --soft:#263955;--line:#3B4E6D;--paper:#1C283C;--page:#111B2B;
+  --nx-muted:#B2C0DA;--nx-field:#24334A;--nx-dot:rgba(159,186,241,.08);
+}
+html,body{font-family:"Nunito Sans","Segoe UI",sans-serif;background-color:var(--page);color:var(--ink)}
+body{background-image:radial-gradient(circle,var(--nx-dot) 1.4px,transparent 1.5px);background-size:26px 26px}
+button,select,input,textarea{font-family:inherit}
+.nx-topbar{height:72px;min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:10px 28px 10px 22px;background:linear-gradient(120deg,#12285c,#1E3F8A 62%,#3156a6);color:white;position:relative;z-index:50;box-shadow:0 5px 20px rgba(14,37,85,.22)}
+:root[data-theme="dark"] .nx-topbar{background:linear-gradient(120deg,#0b1532,#18284a 62%,#24395e)}
+.nx-topbar-brand,.nx-topbar-right{display:flex;align-items:center;gap:13px;min-width:0}
+.nx-back,.nx-theme-btn{width:39px;height:39px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.12);color:#fff;text-decoration:none;padding:8px;cursor:pointer;transition:background .15s,transform .15s}
+.nx-back:hover,.nx-theme-btn:hover{background:#FF6A00;transform:translateY(-1px);color:#fff;border-color:#FF6A00}
+.nx-back svg,.nx-theme-btn svg{display:block;width:23px;height:23px}
+.nx-page-icon{width:43px;height:43px;display:grid;place-items:center;border-radius:13px;background:rgba(255,255,255,.95);flex-shrink:0;box-shadow:0 2px 9px #12265418}
+.nx-page-icon img{display:block;width:34px;height:34px}
+.nx-heading{display:flex;flex-direction:column;gap:1px;min-width:0}
+.nx-eyebrow{font-size:9px;font-weight:900;letter-spacing:1.8px;color:#BED0F0}
+.nx-heading strong{font-size:23px;line-height:1.12;font-family:"Fredoka","Nunito Sans",sans-serif;font-weight:700;letter-spacing:.25px;white-space:nowrap}
+.nx-heading em{color:#FFA65C;font-style:normal}
+.nx-topbar-detail{font-size:12px;font-weight:800;letter-spacing:.1px;color:#DCE7FC;white-space:nowrap}
+.nx-topbar-detail b{color:#FF9A4D;padding:0 7px}
+.app-layout{height:calc(100vh - 72px);height:calc(100dvh - 72px);grid-template-columns:356px minmax(0,1fr)}
+.settings-pane{background:var(--paper);border-right:1px solid var(--line)}
+.settings-pane .controls{padding:23px 20px 17px;border-bottom:1px solid var(--line);background:var(--paper)}
+.settings-pane .controls h1{font-family:"Fredoka","Nunito Sans",sans-serif;font-size:25px;line-height:1.1;letter-spacing:-.4px;color:var(--ink-strong);margin:0 0 8px}
+.settings-pane .intro{font-size:12px;color:var(--nx-muted);line-height:1.55;margin:0 0 17px}
+.settings-grid{gap:8px}
+.settings-pane fieldset{background:transparent;border:0;border-top:1px solid var(--line);border-radius:0;margin:0;padding:18px 0 13px}
+.settings-pane legend{font-size:13px;font-weight:900;letter-spacing:.1px;color:var(--ink-strong);padding:0 10px 0 0}
+.settings-pane label{font-size:12px;font-weight:800;margin:8px 0 5px;color:var(--ink)}
+.settings-pane select,.settings-pane textarea,.settings-pane input[type=text],.settings-pane input[type=search],dialog input[type=search]{width:100%;padding:9px 11px;min-height:40px;background:var(--nx-field);border:1px solid var(--line);color:var(--ink);border-radius:10px;font-size:12px;font-weight:700;outline:none;transition:border-color .15s,box-shadow .15s}
+.settings-pane textarea{min-height:128px;line-height:1.55;resize:vertical;font-weight:500}
+.settings-pane select:focus,.settings-pane textarea:focus,.settings-pane input:focus,dialog input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,106,0,.13)}
+.settings-pane select option{background:var(--nx-field);color:var(--ink)}
+.settings-pane .format-grid{gap:14px}
+.settings-pane #size{accent-color:var(--accent);margin:0}
+.settings-pane .chips{margin-top:12px;gap:7px}
+.settings-pane .chips label{width:100%;padding:10px 11px;display:flex;min-height:41px;align-items:center;gap:10px;border:1px solid var(--line);background:var(--nx-field);border-radius:10px;color:var(--ink);font-size:12px;margin:0;transition:.15s}
+.settings-pane .chips label:hover{border-color:var(--ink-strong);background:var(--soft)}
+.settings-pane .chips label:has(input:checked){border-color:#A8BEE8;background:var(--soft);color:var(--ink-strong)}
+:root[data-theme="dark"] .settings-pane .chips label:has(input:checked){border-color:#6588CA}
+.settings-pane input[type=checkbox]{accent-color:#1E3F8A;width:15px;height:15px;flex-shrink:0}
+.settings-pane .note{color:var(--nx-muted);font-size:11px;line-height:1.55}
+.settings-pane summary{color:var(--ink-strong);font-size:12px;font-weight:800}
+.settings-pane details{background:transparent;margin-top:10px}
+.settings-pane .controls>.actions{gap:8px;grid-template-columns:1fr 1fr;padding-top:10px}
+.settings-pane button,.picture-choice,dialog button{min-height:39px;padding:9px 12px;border-radius:10px;font-size:12px;font-weight:800;background:var(--nx-field);border:1px solid var(--line);color:var(--ink-strong);transition:.15s}
+.settings-pane button:hover,.picture-choice:hover,dialog button:hover{background:var(--soft);border-color:#90AADE}
+.settings-pane button.primary{background:#1E3F8A;border-color:#1E3F8A;color:white}
+.settings-pane button.primary:hover{background:#2C57B3;border-color:#2C57B3}
+.settings-pane #print{background:#FF6A00;color:white;border-color:#FF6A00;font-weight:900}
+.settings-pane #print:hover{background:#E95A00;border-color:#E95A00}
+.settings-pane #generate{background:#1E3F8A;color:#fff;border-color:#1E3F8A}
+.settings-pane #generate:hover{background:#2953AD}
+.settings-pane #generateSecond,.settings-pane #fitSheet{background:var(--soft)}
+.settings-pane .status{color:var(--ink-strong);font-size:11px;font-weight:800;margin-top:10px;line-height:1.55}
+.settings-pane .collection{background:var(--paper);border:1px solid var(--line);border-radius:14px;margin:15px 16px;padding:17px}
+.settings-pane .collection h2{font-family:"Fredoka","Nunito Sans",sans-serif;font-size:19px;color:var(--ink-strong)}
+.settings-pane .save-row{margin:14px 0;gap:8px}
+.settings-pane .save-row>div{width:100%}
+.settings-pane .saved-card{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--ink)}
+.settings-pane .saved-card small{color:var(--nx-muted)}
+.settings-pane .foot{color:var(--nx-muted);margin:16px;padding:0 0 20px}
+.settings-pane .foot p{margin-top:0}
+.preview-pane{max-width:none;margin:0;padding:0 30px 35px;background:transparent}
+.preview-pane .toolbar{top:0;border-bottom:1px solid var(--line);background:var(--page);color:var(--nx-muted);padding:17px 4px 15px;gap:10px;line-height:1.5}
+.preview-pane .toolbar #counter{color:var(--ink-strong);font-weight:900;font-size:13px}
+.preview-pane .toolbar #manualHint{font-size:11px;text-align:right}
+.preview-pane .sheet-wrap{padding:29px 0 15px}
+.preview-pane .paper{color:#141414;background:#fff;width:210mm;max-width:100%;padding:12mm;min-height:240mm;box-shadow:0 15px 46px #1D305A24;border:1px solid #E1E7F0;overflow:visible}
+.preview-pane .paper .eyebrow{color:#717171}
+.preview-pane .paper h2,.preview-pane .paper .story,.preview-pane .paper .questions{color:#161616}
+.preview-pane .paper .story{line-height:2.1}
+.preview-pane .paper .pic:hover{background:#FFEADB}
+.preview-pane .paper .learning-word:hover{background:#FFEADB}
+.preview-pane .paper .legend{border-color:#ccc}
+.preview-pane .paper .illustrated{background:#fff}
+:root[data-theme="dark"] .preview-pane .paper,:root[data-theme="dark"] .preview-pane .paper .illustrated{color-scheme:light;background:#fff;color:#000}
+:root[data-theme="dark"] .settings-pane .collection input{background:var(--nx-field);color:var(--ink)}
+.mobile-bar{background:var(--paper);color:var(--ink);border-color:var(--line)}
+.mobile-bar button{border-color:var(--line);background:var(--soft);color:var(--ink-strong);font-weight:800}
+dialog{background:var(--paper);color:var(--ink);border-color:var(--line);box-shadow:0 15px 45px #0E244F50}
+dialog::backdrop{background:#0E244FAD}
+dialog .picker-top h2{color:var(--ink-strong)}
+dialog .picture-choice{background:var(--nx-field)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(max-width:1020px){.app-layout{grid-template-columns:320px minmax(0,1fr)}.nx-topbar-detail{display:none}.preview-pane{padding:0 16px 30px}}
+@media(max-width:760px){.nx-topbar{height:65px;min-height:65px;padding:9px 14px;gap:8px}.nx-heading strong{font-size:18px}.nx-eyebrow{font-size:8px;letter-spacing:1.1px}.nx-page-icon{width:35px;height:35px}.nx-page-icon img{width:28px;height:28px}.nx-back,.nx-theme-btn{width:34px;height:34px;border-radius:10px}.nx-topbar-brand{gap:8px}.mobile-bar{height:50px}.app-layout{height:calc(100vh - 115px);height:calc(100dvh - 115px)}.settings-open .settings-pane{top:115px;height:calc(100vh - 115px);height:calc(100dvh - 115px)}.settings-open .settings-backdrop:not([hidden]){inset:115px 0 0;height:calc(100% - 115px)}.preview-pane{padding:0 10px 22px}.preview-pane .sheet-wrap{padding:16px 0}.preview-pane .paper{padding:6mm;min-height:180mm}.preview-pane .toolbar{padding:10px 2px}.preview-pane .toolbar #manualHint{max-width:45%}}
+@media(max-width:390px){.nx-page-icon{display:none}.nx-heading strong{font-size:17px}}
+/* Print only worksheet, never header, navigation or UI. */
+@media print{
+  :root, :root[data-theme="dark"]{color-scheme:light!important;--paper:#fff!important;--page:#fff!important}
+  html,body{height:auto!important;overflow:visible!important;background:#fff!important;background-image:none!important}
+  .nx-topbar,#nx-drawer-btn,#nx-drawer,#nx-overlay,#nx-teacher-launch,#nx-teacher-panel{display:none!important}
+  .app-layout{display:block!important;height:auto!important;overflow:visible!important}
+  .preview-pane{height:auto!important;overflow:visible!important;max-width:none!important;padding:0!important;background:#fff!important}
+  .preview-pane .paper{width:100%!important;max-width:none!important;min-height:0!important;border:none!important;box-shadow:none!important;padding:2mm!important;margin:0!important}
+  .preview-pane .sheet-wrap{padding:0!important}
+  .preview-pane .toolbar,.settings-pane,.mobile-bar,.settings-backdrop{display:none!important}
+  .preview-pane .paper .story{line-height:2.1}
+}

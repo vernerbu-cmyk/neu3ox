@@ -329,6 +329,11 @@
     .card-14:hover .nx-column-mark,.card-14:focus-visible .nx-column-mark{animation:nx-column-pulse 1.5s ease-in-out infinite}
     @keyframes nx-column-pulse{0%,100%{opacity:1}50%{opacity:.35}}
     @media(prefers-reduced-motion:reduce){.card-14:hover .nx-column-mark,.card-14:focus-visible .nx-column-mark{animation:none}}
+    /* 15. СЛОВО И КАРТИНКА */
+    .card-15 .picture-sun {transform-box:fill-box;transform-origin:center}
+    .card-15:hover .picture-sun,.card-15:focus-visible .picture-sun{animation:pictureSun 2.3s ease-in-out infinite}
+    @keyframes pictureSun{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+    @media(prefers-reduced-motion:reduce){.card-15:hover .picture-sun,.card-15:focus-visible .picture-sun{animation:none}}
   </style>
 <link rel="stylesheet" href="../shared/square-grid.css" />
 <link rel="stylesheet" href="../shared/theme.css">
@@ -768,6 +773,28 @@
       </div>
       <div class="arrow">›</div>
     </div>
+    <!-- 15. СЛОВО И КАРТИНКА -->
+    <div class="card card-15" role="link" tabindex="0"
+         onclick="openTrainer('slovo-i-kartinka/index.html')"
+         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openTrainer('slovo-i-kartinka/index.html')}">
+      <div class="left">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+              <rect x="5" y="7" width="38" height="34" rx="5"/>
+              <path d="M24 7v34M10 36h9M29 36h9"/>
+              <path d="m10 25 5-5 4 4 3-4" stroke="#FF6A00" stroke-width="2.4"/>
+              <circle class="picture-sun" cx="15" cy="15" r="3.5" stroke="#FF6A00" stroke-width="2.2"/>
+              <path d="M28 16h11M28 22h9M28 29h11"/>
+              <path d="m33 27 2 2-2 2" stroke="#FF6A00" stroke-width="2"/>
+            </svg>
+        </div>
+        <div class="card-text">
+          <div class="title">Слово и картинка</div>
+          <div class="desc">Рассказы с иллюстрациями · 100 сюжетов · листы А4</div>
+        </div>
+      </div>
+      <div class="arrow">›</div>
+    </div>
   </div>
 </div>
 
@@ -786,7 +813,7 @@
     if (h1) h1.textContent = 'Генераторы листов';
 
     const subtitle = document.getElementById('headerSubtitle');
-    if (subtitle) subtitle.textContent = 'NeuroX · 14 генераторов';
+    if (subtitle) subtitle.textContent = 'NeuroX · 15 генераторов';
   }
 
   if (document.readyState === 'loading') {

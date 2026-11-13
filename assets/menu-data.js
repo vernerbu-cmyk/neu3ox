@@ -20,6 +20,8 @@ window.NEUROX_MENU = [
       { icon: 'climb', title: 'Слоголаз',      file: 'preschool/slogolaz.html' },
       { icon: 'gem', title: 'Кристальная пещера', file: 'preschool/cave/index.html' },
       { icon: 'alphabet', title: 'Построй слово', file: 'preschool/iskorka/syllablebuilder.html' },
+      { icon: 'check', title: 'Верю — не верю', file: 'preschool/veryu-ne-veryu/index.html' },
+      { icon: 'train', title: 'Грузовой экспресс (тест)', file: 'preschool/gruzovoi_express/gruzovoi_express.html' },
       { icon: 'hash', title: 'Мир чисел', file: 'preschool/iskorka/numbers.html' },
       { icon: 'scale', title: 'Где больше?', file: 'preschool/iskorka/moreless.html' },
       { icon: 'calculator', title: 'Математическая мастерская', file: 'preschool/iskorka/mathworkshop.html' },
@@ -129,6 +131,7 @@ window.NEUROX_MENU = [
       { icon: 'alphabet', title: 'Слово в порядке', file: 'generators/slovo-generator/index.html' },
       { icon: 'search', title: 'Найди букву', file: 'generators/naidi_bukvu.html' },
       { icon: 'printer', title: 'Столбики+', file: 'generators/stolbiki_plus.html' },
+      { icon: 'picturebook', title: 'Слово и картинка', file: 'generators/slovo-i-kartinka/index.html' },
     ]
   },
   {
@@ -150,6 +153,7 @@ window.NEUROX_MENU = [
     alphabet: '<path d="M4 19 10 5l6 14M7 14h7"/><path d="M16 19h4M18 17v4"/>',
     search: '<circle cx="10.8" cy="10.8" r="6.3"/><path d="m16 16 4.5 4.5"/>',
     image: '<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="m5 17 5-5 3 3 2-2 4 4"/>',
+    picturebook: '<rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="M12 4v16M5.5 15l2.5-3 2.5 2.5M14.5 8h4m-4 4h4m-4 4h3"/><circle cx="7.5" cy="8" r="1.5"/>',
     sprout: '<path d="M12 20v-8"/><path d="M12 13C5 13 4 8 4 5c5 0 8 2 8 8ZM12 16c0-6 4-9 8-9 0 5-2 9-8 9Z"/>',
     route: '<circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h3a3 3 0 0 0 3-3v-3a3 3 0 0 1 3-3h1"/>',
     climb: '<path d="m4 20 5-8 3 3 4-8 4 13"/><circle cx="16" cy="4.5" r="1.8"/><path d="m10 12 2-4 3 1"/>',
@@ -197,6 +201,7 @@ window.NEUROX_MENU = [
     spiral: '<path d="M12 12c0-2 3-2 3 0s-2 4-5 4-6-2-6-6 4-8 9-8 9 4 9 9-3 8-7 9"/>',
     cards: '<rect x="5" y="4" width="13" height="16" rx="2"/><path d="M9 2h10a2 2 0 0 1 2 2v13M9 9h5m-5 4h5"/>',
     traffic: '<path d="M9 3h6l2 3v12l-2 3H9l-2-3V6z"/><circle cx="12" cy="8" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="16" r="1.6"/>',
+    train: '<path d="M5 17V7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2Z"/><path d="M5 12h14M9 16h.01M15 16h.01M7 22l3-3m7 3-3-3"/>',
     puzzle: '<path d="M4 4h6a2 2 0 1 1 4 0h6v6a2 2 0 1 0 0 4v6h-6a2 2 0 1 1-4 0H4v-6a2 2 0 1 0 0-4z"/>',
     printer: '<path d="M7 8V3h10v5M6 17H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M7 14h10v7H7zM18 11h.01"/>',
     shuffle: '<path d="m3 7 3 0c5 0 7 10 12 10h3m-3-3 3 3-3 3M3 17h3c2 0 3-2 4-4m4-6c1-1 2-2 4-2h3m-3-3 3 3-3 3"/>',
