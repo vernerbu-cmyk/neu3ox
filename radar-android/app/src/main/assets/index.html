@@ -409,6 +409,41 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
 }
 
 
+/* Saved custom configurations — independent of the five progressive levels. */
+.settings-tabs button{font-size:12px;padding-left:2px;padding-right:2px}
+.my-modes-panel{flex-direction:column;gap:10px;color:var(--blue);border:1px solid #DFE7F3;border-radius:15px;padding:14px;background:#F8FAFE}
+.my-modes-panel.settings-panel.is-current{display:flex!important}
+.my-modes-heading{display:flex;flex-direction:column;gap:4px}
+.my-modes-heading strong{font-size:19px}
+.my-modes-heading small,.my-modes-hint{font-size:12px;line-height:1.45;color:#607393}
+.my-modes-hint{margin:0}
+.my-modes-current{padding:11px;border-radius:11px;background:#EAF1FB;border:1px solid #D2E0F0;font-size:12px;font-weight:800;line-height:1.4}
+.my-modes-label{font-weight:800;font-size:12px}
+.my-modes-create{display:flex;gap:8px;align-items:stretch}
+.my-modes-create input,.my-mode-rename-input{flex:1;min-width:0;min-height:44px;border-radius:10px;border:1px solid #C9D8EC;background:#fff;color:#153361;padding:10px;font-size:14px}
+.my-modes-create .btn{min-width:113px;padding:8px 11px;font-size:12px}
+.my-modes-update{align-self:stretch;min-height:41px;white-space:normal;font-size:12px}
+.my-modes-feedback{min-height:16px;color:#216752;font-weight:750;font-size:12px;line-height:1.3}
+.my-modes-list{display:flex;flex-direction:column;gap:9px}
+.my-mode-card{border:1px solid #D5E2F2;background:#fff;border-radius:14px;padding:11px;display:flex;flex-direction:column;gap:8px}
+.my-mode-card.is-active{border-color:#FF9348;background:#FFF9F1}
+.my-mode-card-title{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:900;font-size:14px;overflow-wrap:anywhere}
+.my-mode-card-title span{min-width:0}
+.my-mode-card-title small{font-size:10px;flex:0 0 auto;color:#BF600D;background:#FFF0E1;padding:4px 6px;border-radius:7px}
+.my-mode-card-summary{color:#526884;line-height:1.5;font-size:12px}
+.my-mode-card-actions{display:flex;gap:6px;flex-wrap:wrap}
+.my-mode-card-actions .btn{min-height:37px;font-size:12px;padding:7px 10px}
+.my-mode-card-actions .btn.danger{margin-left:auto}
+.my-mode-rename{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.my-mode-rename .btn{min-height:37px;font-size:12px;padding:8px}
+.my-modes-empty{border:1px dashed #B7C9E1;border-radius:12px;padding:18px 12px;text-align:center;font-size:13px;color:#637994}
+@media (max-width:720px) and (orientation:portrait){
+  .settings.my-modes-active #mobileSpeedSlot{display:none}
+  .settings-tabs button{font-size:11px}
+  .my-modes-panel{padding:10px;gap:9px}
+  .my-mode-card-actions .btn{font-size:11px;flex:1}
+  .my-modes-create .btn{min-width:105px;padding-left:7px;padding-right:7px}
+}
 /* Optional, pressure-free promotion after two consecutive successful rounds. */
 .round-result.visible.has-level-up{flex-wrap:wrap}
 .target-promotion{flex:1 0 100%;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid #B9E2D2;padding-top:9px;margin-top:2px}
@@ -433,13 +468,14 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
       </div>
       <div>
         <div class="brand-line">NeuroX · Внимание</div>
-        <h1>Радар <span style="font-size:14px;font-weight:800;color:#7b90ac;vertical-align:middle">7.1.6</span></h1>
+        <h1>Радар <span style="font-size:14px;font-weight:800;color:#7b90ac;vertical-align:middle">7.1.7</span></h1>
         <p class="subtitle">Запомни самолёты-цели и следи за ними. Начни с одного — игра предложит больше, когда будешь готов!</p>
       </div>
     </div>
     <div class="header-actions">
       <button class="btn small" id="recordsButton" type="button" aria-label="Рекорды">🏆</button>
       <button class="btn small" id="speedQuickButton" type="button" aria-label="Быстрая настройка скорости" aria-expanded="false">⏱</button>
+      <button class="btn small" id="myModesQuickButton" type="button" aria-label="Мои режимы — сохранить или выбрать" title="Мои режимы">★</button>
       <button class="btn small" id="settingsButton" type="button" aria-label="Открыть настройки" aria-expanded="false">⚙ <span class="header-action-label">Настройки</span></button>
       <button class="btn small" id="fullscreenButton" type="button" aria-label="На весь экран">⛶ <span class="header-action-label">На весь экран</span></button>
     </div>
@@ -529,6 +565,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
         <button type="button" class="active" data-settings-tab="main">Основные</button>
         <button type="button" data-settings-tab="motion">Движение</button>
         <button type="button" data-settings-tab="events">События</button>
+        <button type="button" data-settings-tab="mymodes">Мои режимы</button>
       </nav>
       <div class="settings-grid">
         <div class="field"><label for="objectsInput">Количество самолётов</label><select id="objectsInput"><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></div>
@@ -545,6 +582,16 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
         <label class="pref-option"><span>🔊 Звуковые сигналы<small class="pref-description" style="display:block">Без музыки и голоса</small></span><input type="checkbox" id="soundToggle" checked></label>
         <label class="pref-option"><span>📳 Вибрация<small class="pref-description" style="display:block">Если телефон поддерживает</small></span><input type="checkbox" id="vibrationToggle"></label>
       </div>
+      <section class="my-modes-panel settings-panel" data-panel="mymodes" id="myModesPanel" aria-label="Сохранённые режимы">
+        <div class="my-modes-heading"><strong>★ Мои режимы</strong><small>Сохраняй настройки, чтобы включать их одним нажатием.</small></div>
+        <div class="my-modes-current" id="myModesCurrentInfo" aria-live="polite">Текущие параметры ещё не сохранены как режим.</div>
+        <label class="my-modes-label" for="myModeNameInput">Название нового режима</label>
+        <div class="my-modes-create"><input type="text" id="myModeNameInput" maxlength="40" autocomplete="off" placeholder="Например, Средний — 2 цели" aria-label="Название своего режима"><button type="button" class="btn primary" id="myModeSaveNew">＋ Сохранить</button></div>
+        <button type="button" id="myModeUpdateCurrent" class="btn my-modes-update" disabled>Обновить выбранный режим текущими настройками</button>
+        <div class="my-modes-feedback" id="myModesFeedback" role="status" aria-live="polite"></div>
+        <div id="myModesList" class="my-modes-list" aria-label="Список сохранённых режимов"></div>
+        <p class="my-modes-hint">Каждый режим хранит скорость, цели, внешний вид, движение и все события. Изменения ползунков не затрагивают сохранённый вариант, пока ты сам не нажмёшь «Обновить».</p>
+      </section>
       <section class="event-panel" aria-label="Дополнительные режимы">
     <div class="event-head"><div><h2>Дополнительные события в полёте</h2><span class="event-sub">Включай нужные механики отдельно. Автособытия происходят во время полёта, ручные кнопки работают только в полёте.</span></div></div>
     <div class="event-grid" id="eventGrid">
@@ -783,6 +830,195 @@ function presetForLevel(level){
   const count=saved ? Math.min(maxAutomaticTargets(level),Math.max(1,saved.targets)) : 1;
   return {...PRESETS[level],targets:count};
 }
+// Saved personal presets: self-contained snapshots, never altered by game progression.
+const MY_MODES_KEY='neurox_radar_my_modes_v1';
+const MY_ACTIVE_MODE_KEY='neurox_radar_active_my_mode_v1';
+const MY_MODES_LIMIT=30;
+function cleanMyModeName(value){
+  return String(value ?? '').replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,40);
+}
+function normalizeMyModeSettings(input){
+  if(!input||typeof input!=='object'||Array.isArray(input))return null;
+  const result={};
+  for(const [key,field] of Object.entries(fields)){
+    if(key==='speed')continue;
+    const allowed=[...field.options].map(x=>String(x.value));
+    const value=String(input[key]);
+    if(!allowed.includes(value))return null;
+    result[key]=['motion','spacing','altitude','planeStyle','colorMode'].includes(key)?value:Number(value);
+  }
+  const speed=Number(input.speed);
+  if(!Number.isFinite(speed)||speed<SPEED_MIN||speed>SPEED_MAX)return null;
+  result.speed=Math.round(speed/10)*10;
+  if(result.targets>result.objects)return null;
+  return result;
+}
+function myModeSettingsSnapshot(){
+  return {...Object.fromEntries(Object.keys(fields).map(k=>[k,state.settings[k]])),speed:state.settings.speed};
+}
+function myModeEventSnapshot(){
+  return Object.fromEntries(EVENT_KEYS.map(k=>[k,Boolean(state.eventEnabled[k])]));
+}
+function myModeSnapshot(){
+  return {settings:myModeSettingsSnapshot(),events:myModeEventSnapshot(),intensity:state.eventIntensity};
+}
+function myModeEqual(snapshot){
+  return !!snapshot && Object.entries(snapshot.settings).every(([k,v])=>String(state.settings[k])===String(v)) &&
+    snapshot.intensity===state.eventIntensity && EVENT_KEYS.every(k=>snapshot.events[k]===Boolean(state.eventEnabled[k]));
+}
+function activeMyMode(){return game.myModes.find(m=>m.id===game.activeMyModeId)||null;}
+function isMyModeLocked(){return isActive()||game.mode==='challenge';}
+function setActiveMyMode(id){
+  game.activeMyModeId=id;
+  try{
+    if(id)localStorage.setItem(MY_ACTIVE_MODE_KEY,id);
+    else localStorage.removeItem(MY_ACTIVE_MODE_KEY);
+  }catch(_){}
+}
+function saveMyModes(){
+  try{localStorage.setItem(MY_MODES_KEY,JSON.stringify(game.myModes));return true;}
+  catch(_){showMyModeMessage('Не удалось сохранить: память устройства недоступна.',true);return false;}
+}
+function loadMyModes(){
+  const stored=readStore(MY_MODES_KEY);
+  const seen=new Set();
+  game.myModes=[];
+  if(Array.isArray(stored))for(const entry of stored.slice(0,100)){
+    if(game.myModes.length>=MY_MODES_LIMIT)break;
+    const name=cleanMyModeName(entry?.name);
+    const id=typeof entry?.id==='string'?entry.id:'';
+    const settings=normalizeMyModeSettings(entry?.settings);
+    if(!name||!id||id.length>90||seen.has(id)||!settings)continue;
+    seen.add(id);
+    const events=Object.fromEntries(EVENT_KEYS.map(k=>[k,entry.events?.[k]===true]));
+    const intensity=['calm','normal','chaos'].includes(entry.intensity)?entry.intensity:'normal';
+    game.myModes.push({id,name,settings,events,intensity});
+  }
+  try{
+    const active=localStorage.getItem(MY_ACTIVE_MODE_KEY);
+    game.activeMyModeId=game.myModes.some(x=>x.id===active)?active:null;
+  }catch(_){game.activeMyModeId=null;}
+  renderMyModes();
+}
+function showMyModeMessage(msg,error=false){
+  $('myModesFeedback').textContent=msg;
+  $('myModesFeedback').style.color=error?'#B64B32':'#216752';
+}
+function syncMyModeState(){
+  const current=activeMyMode();
+  const dirty=current&&!myModeEqual(current);
+  const locked=isMyModeLocked();
+  $('myModesCurrentInfo').textContent=current
+    ?`Выбран «${current.name}»${dirty?' · параметры изменены, сохранённый вариант не затронут':' · параметры сохранены'}`
+    :'Текущие параметры ещё не сохранены как выбранный режим.';
+  $('myModeSaveNew').disabled=locked||game.myModes.length>=MY_MODES_LIMIT;
+  $('myModeNameInput').disabled=locked;
+  $('myModeUpdateCurrent').disabled=locked||!current||!dirty;
+  $('myModesQuickButton').disabled=false;
+}
+function renderMyModes(){
+  syncMyModeState();
+  const list=$('myModesList');list.replaceChildren();
+  if(!game.myModes.length){appendText('div','my-modes-empty','Пока нет своих режимов. Настрой игру и сохрани первый!',list);return;}
+  for(const item of game.myModes){
+    const card=appendText('div','my-mode-card','',list);
+    if(item.id===game.activeMyModeId)card.classList.add('is-active');
+    const title=appendText('div','my-mode-card-title','',card);
+    appendText('span','',item.name,title);
+    if(item.id===game.activeMyModeId)appendText('small','',myModeEqual(item)?'АКТИВЕН':'ИЗМЕНЁН',title);
+    const enabled=EVENT_KEYS.filter(k=>item.events[k]).length;
+    appendText('div','my-mode-card-summary',
+      `${item.settings.objects} самолётов · ${item.settings.targets} ${item.settings.targets===1?'цель':item.settings.targets<5?'цели':'целей'} · `+
+      `${item.settings.speed} ед./с · ${item.settings.duration} с · событий ${enabled}/${EVENT_KEYS.length}`,card);
+    const buttons=appendText('div','my-mode-card-actions','',card);
+    const apply=appendText('button','btn primary','▶ Включить',buttons);apply.type='button';apply.disabled=isMyModeLocked();
+    apply.addEventListener('click',()=>applyMyMode(item.id));
+    const rename=appendText('button','btn','✎ Имя',buttons);rename.type='button';rename.disabled=isMyModeLocked();
+    rename.addEventListener('click',()=>beginRenameMyMode(item.id,card));
+    const remove=appendText('button','btn danger','Удалить',buttons);remove.type='button';remove.disabled=isMyModeLocked();
+    remove.addEventListener('click',()=>deleteMyMode(item.id));
+  }
+}
+function saveNewMyMode(){
+  if(isMyModeLocked())return;
+  const name=cleanMyModeName($('myModeNameInput').value);
+  if(!name){showMyModeMessage('Напиши название режима.',true);$('myModeNameInput').focus();return;}
+  if(game.myModes.length>=MY_MODES_LIMIT){showMyModeMessage(`Можно сохранить до ${MY_MODES_LIMIT} режимов.`,true);return;}
+  if(game.myModes.some(m=>m.name.toLowerCase()===name.toLowerCase())){
+    showMyModeMessage('Такое название уже есть. Придумай другое.',true);return;
+  }
+  const id='my-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
+  const entry={id,name,...myModeSnapshot()};
+  game.myModes.push(entry);
+  if(!saveMyModes()){game.myModes.pop();return;}
+  setActiveMyMode(id);
+  $('myModeNameInput').value='';
+  showMyModeMessage(`«${name}» сохранён. Можно запускать в любой момент.`);
+  refreshRadarLevel();renderMyModes();
+}
+function applyMyMode(id){
+  if(isMyModeLocked())return;
+  const item=game.myModes.find(m=>m.id===id);if(!item)return;
+  const validated=normalizeMyModeSettings(item.settings);if(!validated)return;
+  state.settings={...validated};
+  EVENT_KEYS.forEach(k=>state.eventEnabled[k]=item.events[k]===true);
+  state.eventIntensity=item.intensity;
+  state.snapshot=null;
+  setActiveMyMode(id);
+  saveSettings();saveEvents();
+  syncFields();syncEvents();buildQuickEvents();updateUI();
+  showMyModeMessage(`Включён режим «${item.name}».`);
+  renderMyModes();
+  $('settings').open=false;
+}
+function updateMyMode(){
+  if(isMyModeLocked())return;
+  const item=activeMyMode();if(!item||myModeEqual(item))return;
+  askConfirm('Обновить сохранённый режим?',`Заменить параметры режима «${item.name}» текущими настройками?`,
+    'Обновить',()=>{
+      const previous={settings:item.settings,events:item.events,intensity:item.intensity};
+      Object.assign(item,myModeSnapshot());
+      if(!saveMyModes()){Object.assign(item,previous);return;}
+      showMyModeMessage(`Параметры «${item.name}» обновлены.`);
+      refreshRadarLevel();renderMyModes();
+    });
+}
+function beginRenameMyMode(id,card){
+  if(isMyModeLocked())return;
+  const item=game.myModes.find(m=>m.id===id);if(!item)return;
+  const old=card.querySelector('.my-mode-rename');if(old)old.remove();
+  const wrap=appendText('div','my-mode-rename','',card);
+  const input=appendText('input','my-mode-rename-input','',wrap);
+  input.type='text';input.maxLength=40;input.value=item.name;input.setAttribute('aria-label','Новое название режима');
+  const save=appendText('button','btn primary','Сохранить',wrap);save.type='button';
+  const cancel=appendText('button','btn','Отмена',wrap);cancel.type='button';
+  cancel.addEventListener('click',()=>wrap.remove());
+  const commit=()=>{
+    const name=cleanMyModeName(input.value);
+    if(!name){showMyModeMessage('Название не может быть пустым.',true);return;}
+    if(game.myModes.some(m=>m.id!==id&&m.name.toLowerCase()===name.toLowerCase())){
+      showMyModeMessage('Название уже занято.',true);return;
+    }
+    const oldName=item.name;item.name=name;
+    if(!saveMyModes()){item.name=oldName;return;}
+    showMyModeMessage(`Режим переименован: «${name}».`);refreshRadarLevel();renderMyModes();
+  };
+  save.addEventListener('click',commit);
+  input.addEventListener('keydown',e=>{if(e.key==='Enter')commit();if(e.key==='Escape'){e.stopPropagation();wrap.remove();}});
+  input.focus();input.select();
+}
+function deleteMyMode(id){
+  if(isMyModeLocked())return;
+  const item=game.myModes.find(m=>m.id===id);if(!item)return;
+  askConfirm('Удалить свой режим?',`Режим «${item.name}» исчезнет из списка. Рекорды и общие настройки останутся.`,
+    'Удалить',()=>{
+      const before=game.myModes;
+      game.myModes=before.filter(m=>m.id!==id);
+      if(!saveMyModes()){game.myModes=before;return;}
+      if(game.activeMyModeId===id)setActiveMyMode(null);
+      showMyModeMessage(`Режим «${item.name}» удалён.`);refreshRadarLevel();renderMyModes();
+    });
+}
 function saveLevelProgress(){safeStore(LEVEL_PROGRESS_KEY,game.levelProgress);}
 function loadLevelProgress(){
   const data=readStore(LEVEL_PROGRESS_KEY);
@@ -816,7 +1052,7 @@ function migratePresetSpeeds716(){
   }catch(_){}
 }
 function updateTargetProgress(result){
-  if(game.mode!=='free')return;
+  if(game.mode!=='free'||game.activeMyModeId)return;
   const level=result.level;
   if(!Object.hasOwn(PRESETS,level))return;
   const progress=game.levelProgress[level];
@@ -879,6 +1115,7 @@ function saveEvents() {
   try { localStorage.setItem('neurox_radar_events_v6',JSON.stringify({enabled:state.eventEnabled,intensity:state.eventIntensity})); } catch (_) {}
 }
 function currentRadarLevel(){
+  if(game.activeMyModeId)return '';
   return Object.keys(PRESETS).find(level => {
     const sameSettings=Object.entries(presetForLevel(level)).every(([key,value])=>key==='planeStyle'||String(state.settings[key])===String(value));
     const spec=PRESET_EVENTS[level];
@@ -895,13 +1132,16 @@ function refreshRadarLevel(){
     const word=p.targets===1?'цель':p.targets<5?'цели':'целей';
     descriptions[level]=`${p.objects} самолётов · ${p.targets} ${word} · ${p.speed} ед./с · ${additions[level]}`;
   }
-  const text=descriptions[active]||'Своя конфигурация · можно изменить параметры вручную';
+  const custom=activeMyMode();
+  const text=custom?`★ ${custom.name}${myModeEqual(custom)?'':' · не сохранено'}`:
+    descriptions[active]||'Своя конфигурация · можно изменить параметры вручную';
   presetsEls.forEach(btn=>{
     const label=btn.textContent.trim();
     btn.title=label+': '+(descriptions[btn.dataset.preset]||'');
     btn.setAttribute('aria-label',btn.title);
   });
   $('radarLevelInfo').textContent=text;
+  syncMyModeState();
 }
 function syncEvents() {
   document.querySelectorAll('[data-event]').forEach(el => { el.checked=!!state.eventEnabled[el.dataset.event]; });
@@ -933,6 +1173,8 @@ function updateSettingsLock() {
   Object.values(fields).forEach(el => el.disabled = lock);
   presetsEls.forEach(el => el.disabled = lock || game.mode==='challenge');
   document.querySelectorAll('[data-event],#eventIntensity,#enableAllEvents,#disableAllEvents,#onlyNewEvents').forEach(el=>el.disabled=lock||game.mode==='challenge');
+  syncMyModeState();
+  if($('settings').open && $('myModesPanel').classList.contains('is-current'))renderMyModes();
   $('settingsNote').textContent = lock
     ? 'Во время активного раунда настройки заблокированы. Скорость полёта по-прежнему можно менять ползунком.'
     : 'На среднем уровне самолёты обмениваются цветами, на сложном перекрашиваются чаще. Цвет не определяет правильный ответ: следи за самим самолётом.';
@@ -1144,6 +1386,7 @@ const PREF_KEY = 'neurox_radar_mobile_preferences_v2';
 const CHALLENGE_CHECKPOINT_KEY = 'neurox_radar_challenge_checkpoint_v1';
 const game = {
   mode:'free', roundCommitted:false, openingPanel:null,pendingTargetOffer:null,levelProgress:{},
+  myModes:[], activeMyModeId:null,
   challenge:{length:5,index:0,scores:[],active:false,done:false},
   prefs:{sound:true,vibration:false,challengeLength:5},
   db:{rounds:[],challenges:[],streak:0,bestStreak:0,totalRounds:0,totalPerfect:0,maxTargets:0}
@@ -1478,6 +1721,8 @@ function configureTabs(){
 function selectSettingsTab(tab){
   document.querySelectorAll('[data-settings-tab]').forEach(btn=>btn.classList.toggle('active',btn.dataset.settingsTab===tab));
   document.querySelectorAll('.settings-panel').forEach(e=>e.classList.toggle('is-current',e.dataset.panel===tab));
+  $('settings').classList.toggle('my-modes-active',tab==='mymodes');
+  if(tab==='mymodes')renderMyModes();
   if(RADAR_MOBILE())$('settings').scrollTop=0;
 }
 function handleSettingsOpened(open){
@@ -1486,6 +1731,7 @@ function handleSettingsOpened(open){
   if(open){
     closeQuickEvents();closeSpeedPopover();
     if(RADAR_MOBILE() && isPlaying()){modalAutoPause='settings';pause();}
+    if($('myModesPanel').classList.contains('is-current'))renderMyModes();
     if(RADAR_MOBILE())$('settings').scrollTop=0;
   }else{
     if(modalAutoPause==='settings' && state.phase==='paused')resume();
@@ -2637,6 +2883,7 @@ $('speedPopoverClose').addEventListener('click',closeSpeedPopover);
 presetsEls.forEach(btn=>btn.addEventListener('click',()=>{
   if(game.mode==='challenge')return;
   const currentStyle=state.settings.planeStyle,level=btn.dataset.preset;
+  setActiveMyMode(null);
   state.settings={...presetForLevel(level),planeStyle:currentStyle};
   const spec=PRESET_EVENTS[level];
   EVENT_KEYS.forEach(k=>{state.eventEnabled[k]=spec.enabled.includes(k)});
@@ -2671,6 +2918,13 @@ $('radarCustomButton').addEventListener('click',()=>{
   $('settings').open=true;
   if(!RADAR_MOBILE())$('settings').scrollIntoView({block:'nearest',behavior:'smooth'});
 });
+$('myModesQuickButton').addEventListener('click',()=>{
+  selectSettingsTab('mymodes');
+  $('settings').open=true;
+});
+$('myModeSaveNew').addEventListener('click',saveNewMyMode);
+$('myModeNameInput').addEventListener('keydown',e=>{if(e.key==='Enter')saveNewMyMode();});
+$('myModeUpdateCurrent').addEventListener('click',updateMyMode);
 $('settingsButton').addEventListener('click',()=>{
   $('settings').open=!$('settings').open;
   if($('settings').open&&!RADAR_MOBILE())$('settings').scrollIntoView({block:'nearest',behavior:'smooth'});
@@ -2782,7 +3036,7 @@ try{
   if(window.Capacitor?.Plugins?.App?.addListener)window.Capacitor.Plugins.App.addListener('backButton',()=>handleBack());
 }catch(e){}
 configureTabs();
-loadSettings();migrateOldLevelScale();loadProgress();loadLevelProgress();migratePresetSpeeds716();syncFields();syncEvents();buildQuickEvents();syncModeUI();updateUI();resizeCanvas();
+loadSettings();migrateOldLevelScale();loadProgress();loadLevelProgress();migratePresetSpeeds716();loadMyModes();syncFields();syncEvents();buildQuickEvents();syncModeUI();updateUI();resizeCanvas();
 state.lastFrame=performance.now();requestAnimationFrame(tick);
 })();
 </script>
