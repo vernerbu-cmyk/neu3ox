@@ -408,6 +408,15 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
  .rotate-hint{display:flex;position:fixed;inset:0;z-index:100;background:#10244A;color:white;align-items:center;justify-content:center;text-align:center;padding:22px;font-weight:850;font-size:19px}
 }
 
+
+/* Optional, pressure-free promotion after two consecutive successful rounds. */
+.round-result.visible.has-level-up{flex-wrap:wrap}
+.target-promotion{flex:1 0 100%;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid #B9E2D2;padding-top:9px;margin-top:2px}
+.target-promotion strong{font-size:13px;font-weight:850;white-space:normal;line-height:1.35;flex:1 1 190px}
+.target-promotion span{font-size:13px;font-weight:750;color:#08755D}
+.target-promotion-actions{display:flex;gap:7px;flex:0 0 auto}
+.target-promotion-actions .btn{padding:9px 11px;min-height:38px;font-size:12px;white-space:nowrap}
+@media(max-width:420px){.target-promotion-actions{width:100%}.target-promotion-actions .btn{flex:1;min-width:0}}
 </style>
 </head>
 <body class="nx-added-game nx-game-radar" data-nx-section="attention">
@@ -424,8 +433,8 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
       </div>
       <div>
         <div class="brand-line">NeuroX · Внимание</div>
-        <h1>Радар <span style="font-size:14px;font-weight:800;color:#7b90ac;vertical-align:middle">7.1.5</span></h1>
-        <p class="subtitle">Запомни самолёты-цели, проследи за ними и выбери правильные после остановки</p>
+        <h1>Радар <span style="font-size:14px;font-weight:800;color:#7b90ac;vertical-align:middle">7.1.6</span></h1>
+        <p class="subtitle">Запомни самолёты-цели и следи за ними. Начни с одного — игра предложит больше, когда будешь готов!</p>
       </div>
     </div>
     <div class="header-actions">
@@ -456,7 +465,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
 
   <section class="stats" aria-label="Статистика занятия">
     <div class="stat"><span class="stat-label">Раунд</span><span class="stat-value" id="roundStat">0</span></div>
-    <div class="stat"><span class="stat-label">Самолётов / целей</span><span class="stat-value" id="objectsStat">6 / 2</span></div>
+    <div class="stat"><span class="stat-label">Самолётов / целей</span><span class="stat-value" id="objectsStat">6 / 1</span></div>
     <div class="stat"><span class="stat-label">До остановки</span><span class="stat-value" id="countStat">6,0 с</span></div>
     <div class="stat"><span class="stat-label">Время игры</span><span class="stat-value" id="sessionStat">00:00</span></div>
   </section>
@@ -470,7 +479,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
     <div class="board" id="board" role="img" aria-label="Поле радара с самолётиками. После остановки можно выбрать правильные самолётики кликом.">
       <canvas id="radarCanvas"></canvas>
       <div class="board-gloss"></div>
-      <div class="board-top"><span class="board-brand">NEUROX / RADAR</span><span class="mobile-board-info" id="mobileBoardInfo">Раунд 0 · 2 цели</span><span class="timer-pill" id="boardTimer">ГОТОВО</span></div>
+      <div class="board-top"><span class="board-brand">NEUROX / RADAR</span><span class="mobile-board-info" id="mobileBoardInfo">Раунд 0 · 1 цель</span><span class="timer-pill" id="boardTimer">ГОТОВО</span></div>
       <div class="event-toast" id="eventToast" hidden></div>
       <div class="overlay" id="overlay">
         <div class="overlay-card">
@@ -616,11 +625,11 @@ const WORLD = { w: RADAR_PORTRAIT_PHONE ? 600 : 1080,
                 margin: 44, size: 19 };
 // Five distinct game experiences. Even Novice has maneuvers and visible events.
 const PRESETS = {
-  novice: { objects: 4, targets: 1, speed: 160, duration: 8, preview: 2.5, motion: 'smooth', spacing: 'wide', altitude: 'soft', planeStyle: 'airliner', colorMode: 'off' },
-  easy:   { objects: 5, targets: 2, speed: 200, duration: 8, preview: 2.5, motion: 'smooth', spacing: 'wide', altitude: 'soft', planeStyle: 'airliner', colorMode: 'slow' },
-  normal: { objects: 6, targets: 2, speed: 270, duration: 10, preview: 2.0, motion: 'active', spacing: 'balanced', altitude: 'soft', planeStyle: 'airliner', colorMode: 'swap' },
-  hard:   { objects: 8, targets: 3, speed: 350, duration: 10, preview: 2.0, motion: 'active', spacing: 'balanced', altitude: 'strong', planeStyle: 'airliner', colorMode: 'swap' },
-  expert: { objects: 10, targets: 4, speed: 420, duration: 12, preview: 1.5, motion: 'active', spacing: 'tight', altitude: 'strong', planeStyle: 'airliner', colorMode: 'chaos' }
+  novice: { objects: 4, targets: 1, speed: 140, duration: 8, preview: 2.5, motion: 'smooth', spacing: 'wide', altitude: 'soft', planeStyle: 'airliner', colorMode: 'off' },
+  easy:   { objects: 5, targets: 1, speed: 260, duration: 8, preview: 2.5, motion: 'smooth', spacing: 'wide', altitude: 'soft', planeStyle: 'airliner', colorMode: 'slow' },
+  normal: { objects: 6, targets: 1, speed: 480, duration: 10, preview: 2.0, motion: 'active', spacing: 'balanced', altitude: 'soft', planeStyle: 'airliner', colorMode: 'swap' },
+  hard:   { objects: 8, targets: 1, speed: 700, duration: 10, preview: 2.0, motion: 'active', spacing: 'balanced', altitude: 'strong', planeStyle: 'airliner', colorMode: 'swap' },
+  expert: { objects: 10, targets: 1, speed: 900, duration: 12, preview: 1.5, motion: 'active', spacing: 'tight', altitude: 'strong', planeStyle: 'airliner', colorMode: 'chaos' }
 };
 // Скорость в условных единицах виртуального игрового поля в секунду.
 const PRESET_EVENTS = {
@@ -761,6 +770,106 @@ function migrateOldLevelScale(){
     localStorage.setItem(marker,'yes');
   }catch(e){}
 }
+// Per-level, local, independent target progression (free play only).
+const LEVEL_PROGRESS_KEY='neurox_radar_level_progress_v1';
+const LEVEL_SCALE_MIGRATION_KEY='neurox_radar_preset_speed_716';
+const LEVEL_WINS_TO_OFFER=2;
+function maxAutomaticTargets(level){
+  // Keep at least one non-target plane, even at the easiest difficulty.
+  return Math.min(4,PRESETS[level].objects-1);
+}
+function presetForLevel(level){
+  const saved=game.levelProgress[level];
+  const count=saved ? Math.min(maxAutomaticTargets(level),Math.max(1,saved.targets)) : 1;
+  return {...PRESETS[level],targets:count};
+}
+function saveLevelProgress(){safeStore(LEVEL_PROGRESS_KEY,game.levelProgress);}
+function loadLevelProgress(){
+  const data=readStore(LEVEL_PROGRESS_KEY);
+  for(const level of Object.keys(PRESETS)){
+    const item=data && data[level];
+    game.levelProgress[level]={
+      targets:Number.isInteger(item?.targets)?Math.min(maxAutomaticTargets(level),Math.max(1,item.targets)):1,
+      wins:Number.isInteger(item?.wins)?Math.min(LEVEL_WINS_TO_OFFER,Math.max(0,item.wins)):0
+    };
+  }
+}
+function migratePresetSpeeds716(){
+  try{
+    if(localStorage.getItem(LEVEL_SCALE_MIGRATION_KEY)==='yes')return;
+    const old={
+      novice:{...PRESETS.novice,speed:160,targets:1},
+      easy:{...PRESETS.easy,speed:200,targets:2},
+      normal:{...PRESETS.normal,speed:270,targets:2},
+      hard:{...PRESETS.hard,speed:350,targets:3},
+      expert:{...PRESETS.expert,speed:420,targets:4}
+    };
+    const level=Object.keys(old).find(k=>
+      Object.entries(old[k]).every(([key,value])=>key==='planeStyle'||String(state.settings[key])===String(value)) &&
+      state.eventIntensity===PRESET_EVENTS[k].intensity &&
+      EVENT_KEYS.every(e=>!!state.eventEnabled[e]===PRESET_EVENTS[k].enabled.includes(e)));
+    if(level){
+      state.settings={...presetForLevel(level),planeStyle:state.settings.planeStyle};
+      saveSettings();
+    }
+    localStorage.setItem(LEVEL_SCALE_MIGRATION_KEY,'yes');
+  }catch(_){}
+}
+function updateTargetProgress(result){
+  if(game.mode!=='free')return;
+  const level=result.level;
+  if(!Object.hasOwn(PRESETS,level))return;
+  const progress=game.levelProgress[level];
+  if(!progress||result.speedStart!==PRESETS[level].speed ||
+     result.speedMin<PRESETS[level].speed ||
+     state.roundMetrics?.startingTargets!==progress.targets)return;
+  progress.wins=result.perfect?Math.min(LEVEL_WINS_TO_OFFER,progress.wins+1):0;
+  saveLevelProgress();
+  if(result.perfect && progress.wins>=LEVEL_WINS_TO_OFFER &&
+     progress.targets<maxAutomaticTargets(level))showTargetOffer(level);
+}
+function answerTargetOffer(accepted){
+  const level=game.pendingTargetOffer;
+  if(!level)return;
+  game.pendingTargetOffer=null;
+  const progress=game.levelProgress[level];
+  progress.wins=0;
+  if(accepted){
+    progress.targets=Math.min(maxAutomaticTargets(level),progress.targets+1);
+    if(game.mode==='free'){
+      state.settings.targets=progress.targets;
+      state.snapshot=null;
+      saveSettings();syncFields();
+    }
+    playSignal('success');
+  }
+  saveLevelProgress();
+  const offer=$('roundResult').querySelector('.target-promotion');
+  if(offer){
+    offer.replaceChildren();
+    appendText('span','',accepted
+      ?`✈ Отлично! В следующем раунде следи за ${progress.targets} самолётами.`
+      :`Хорошо! Пока продолжим с ${progress.targets} ${progress.targets===1?'самолётом':'самолётами'}.`,offer);
+  }
+  refreshRadarLevel();
+  updateUI();
+}
+function showTargetOffer(level){
+  if(game.pendingTargetOffer)return;
+  const next=game.levelProgress[level].targets+1;
+  game.pendingTargetOffer=level;
+  const box=$('roundResult');box.classList.add('has-level-up');
+  const offer=appendText('div','target-promotion','',box);
+  appendText('strong','',`✈ Отлично получается! Готов попробовать следить за ${next} самолётами?`,offer);
+  const controls=appendText('div','target-promotion-actions','',offer);
+  const yes=appendText('button','btn primary','Да, попробую!',controls);
+  const no=appendText('button','btn','Пока нет',controls);
+  yes.type=no.type='button';
+  yes.addEventListener('click',()=>answerTargetOffer(true));
+  no.addEventListener('click',()=>answerTargetOffer(false));
+}
+function dismissTargetOffer(){if(game.pendingTargetOffer)answerTargetOffer(false);}
+
 function saveSettings() {
   if(game.mode==='challenge')return;
   try { localStorage.setItem('neurox_radar_settings', JSON.stringify(state.settings)); } catch (_) {}
@@ -771,7 +880,7 @@ function saveEvents() {
 }
 function currentRadarLevel(){
   return Object.keys(PRESETS).find(level => {
-    const sameSettings=Object.entries(PRESETS[level]).every(([key,value])=>key==='planeStyle'||String(state.settings[key])===String(value));
+    const sameSettings=Object.entries(presetForLevel(level)).every(([key,value])=>key==='planeStyle'||String(state.settings[key])===String(value));
     const spec=PRESET_EVENTS[level];
     return sameSettings && state.eventIntensity===spec.intensity && EVENT_KEYS.every(key=>!!state.eventEnabled[key]===spec.enabled.includes(key));
   })||'';
@@ -779,13 +888,13 @@ function currentRadarLevel(){
 function refreshRadarLevel(){
   const active=currentRadarLevel();
   presetsEls.forEach(btn=>{const on=btn.dataset.preset===active;btn.classList.toggle('active',on);btn.setAttribute('aria-pressed',String(on))});
-  const descriptions={
-    novice:'4 самолёта · 1 цель · 8 с · строй и масштаб',
-    easy:'5 самолётов · 2 цели · 8 с · манёвры и коридор',
-    normal:'6 самолётов · 2 цели · 10 с · 5 видов событий',
-    hard:'8 самолётов · 3 цели · 10 с · 9 видов событий',
-    expert:'10 самолётов · 4 цели · 12 с · все 11 событий'
-  };
+  const descriptions={};
+  const additions={novice:'строй и масштаб',easy:'манёвры и коридор',normal:'5 видов событий',hard:'9 видов событий',expert:'все 11 событий'};
+  for(const level of Object.keys(PRESETS)){
+    const p=presetForLevel(level);
+    const word=p.targets===1?'цель':p.targets<5?'цели':'целей';
+    descriptions[level]=`${p.objects} самолётов · ${p.targets} ${word} · ${p.speed} ед./с · ${additions[level]}`;
+  }
   const text=descriptions[active]||'Своя конфигурация · можно изменить параметры вручную';
   presetsEls.forEach(btn=>{
     const label=btn.textContent.trim();
@@ -928,6 +1037,7 @@ function beginSession() {
 }
 function startRound(repeat = false) {
   if (isActive()) return;
+  dismissTargetOffer();
   if (game.mode === 'challenge') {
     if (game.challenge.done) restartChallengeState();
     if (!game.challenge.active) { game.challenge.active = true; game.challenge.index=0; game.challenge.scores=[]; }
@@ -1033,7 +1143,7 @@ const DB_KEY = 'neurox_radar_mobile_progress_v2';
 const PREF_KEY = 'neurox_radar_mobile_preferences_v2';
 const CHALLENGE_CHECKPOINT_KEY = 'neurox_radar_challenge_checkpoint_v1';
 const game = {
-  mode:'free', roundCommitted:false, openingPanel:null,
+  mode:'free', roundCommitted:false, openingPanel:null,pendingTargetOffer:null,levelProgress:{},
   challenge:{length:5,index:0,scores:[],active:false,done:false},
   prefs:{sound:true,vibration:false,challengeLength:5},
   db:{rounds:[],challenges:[],streak:0,bestStreak:0,totalRounds:0,totalPerfect:0,maxTargets:0}
@@ -1043,15 +1153,15 @@ let audioContext=null, confirmAction=null, confirmAutoPause=false, modalAutoPaus
 // Every stage contains real, visible events, including the opening stage.
 const CHALLENGE_STAGES = [
   {...PRESETS.novice, events:PRESET_EVENTS.novice.enabled, intensity:'calm'},
-  {...PRESETS.novice, speed:180, events:PRESET_EVENTS.novice.enabled, intensity:'calm'},
-  {...PRESETS.easy, events:PRESET_EVENTS.easy.enabled, intensity:'calm'},
-  {...PRESETS.easy, speed:230, events:['squad','corridor','turbulence','zoom'], intensity:'calm'},
-  {...PRESETS.normal, events:PRESET_EVENTS.normal.enabled, intensity:'normal'},
-  {...PRESETS.normal, objects:7, speed:300, events:PRESET_EVENTS.normal.enabled, intensity:'normal'},
-  {...PRESETS.hard, events:PRESET_EVENTS.hard.enabled, intensity:'normal'},
-  {...PRESETS.hard, objects:9, speed:380, duration:12, events:PRESET_EVENTS.hard.enabled, intensity:'normal'},
-  {...PRESETS.expert, speed:400, events:PRESET_EVENTS.expert.enabled, intensity:'normal'},
-  {...PRESETS.expert, objects:11, speed:460, events:PRESET_EVENTS.expert.enabled, intensity:'normal'}
+  {...PRESETS.novice, speed:200, events:PRESET_EVENTS.novice.enabled, intensity:'calm'},
+  {...PRESETS.easy, speed:260, targets:1, events:PRESET_EVENTS.easy.enabled, intensity:'calm'},
+  {...PRESETS.easy, speed:360, targets:2, events:['squad','corridor','turbulence','zoom'], intensity:'calm'},
+  {...PRESETS.normal, speed:480, targets:2, events:PRESET_EVENTS.normal.enabled, intensity:'normal'},
+  {...PRESETS.normal, objects:7, speed:580, targets:2, events:PRESET_EVENTS.normal.enabled, intensity:'normal'},
+  {...PRESETS.hard, speed:700, targets:3, events:PRESET_EVENTS.hard.enabled, intensity:'normal'},
+  {...PRESETS.hard, objects:9, speed:780, targets:3, duration:12, events:PRESET_EVENTS.hard.enabled, intensity:'normal'},
+  {...PRESETS.expert, speed:850, targets:4, events:PRESET_EVENTS.expert.enabled, intensity:'normal'},
+  {...PRESETS.expert, objects:11, speed:900, targets:4, events:PRESET_EVENTS.expert.enabled, intensity:'normal'}
 ];
 function safeStore(key,value){ try {localStorage.setItem(key,JSON.stringify(value));}catch(e){} }
 function readStore(key){try{return JSON.parse(localStorage.getItem(key)||'null');}catch(e){return null;}}
@@ -1149,6 +1259,7 @@ function restoreFreeSettings(){
 }
 function setGameMode(mode){
   if(state.sessionLive && game.mode!==mode)return;
+  dismissTargetOffer();
   if(mode===game.mode)return;
   game.mode=mode;
   if(mode==='challenge'){
@@ -1225,6 +1336,7 @@ function recordRound(){
   appendText('small','',perfect?'Все цели найдены!':`Лишних: ${wrong} · пропущено: ${missed}`,left);
   const right=appendText('span','',perfect?`✓ Верно · серия ${game.db.streak}`:'Продолжай тренировку',box);
   right.setAttribute('aria-label',perfect?'Ответ правильный':'Ответ с ошибками');
+  updateTargetProgress(result);
   playSignal(perfect?'success':'error');
   if(game.mode==='challenge' && game.challenge.scores.length===game.challenge.length) completeChallenge();
 }
@@ -1396,6 +1508,7 @@ function handleBack(){
 }
 
 function finishSession() {
+  dismissTargetOffer();
   if (!state.sessionLive) return;
   closeQuickEvents();closeSpeedPopover();
   if(game.mode==='challenge'){
@@ -2461,8 +2574,9 @@ let lastVisualPaint = 0;
 function tick(timestamp) {
   // Small simulation steps maintain collision quality; allow limited catch-up if a
   // frame was delayed (old 50 ms cap made rounds run in slow motion on phones).
-  // Allow actual frame intervals on slower phones, without unbounded catch-up.
-  // The previous 0.10 s cap dropped real time below 10 FPS and made flight slow down.
+  // Allow real frame intervals on 5–10 FPS phones; the old 0.10 cap dropped
+  // elapsed time, making both planes and the round timer run in slow motion.
+  // 0.30 s also bounds catch-up after a genuine UI/rendering stall.
   let dt = Math.min((timestamp - state.lastFrame) / 1000, 0.30);
   if (!Number.isFinite(dt) || dt < 0) dt = 0;
   state.lastFrame = timestamp;
@@ -2523,7 +2637,7 @@ $('speedPopoverClose').addEventListener('click',closeSpeedPopover);
 presetsEls.forEach(btn=>btn.addEventListener('click',()=>{
   if(game.mode==='challenge')return;
   const currentStyle=state.settings.planeStyle,level=btn.dataset.preset;
-  state.settings={...PRESETS[level],planeStyle:currentStyle};
+  state.settings={...presetForLevel(level),planeStyle:currentStyle};
   const spec=PRESET_EVENTS[level];
   EVENT_KEYS.forEach(k=>{state.eventEnabled[k]=spec.enabled.includes(k)});
   state.eventIntensity=spec.intensity;
@@ -2584,8 +2698,14 @@ $('recordsButton').addEventListener('click',showRecords);
 $('recordsClose').addEventListener('click',closeRecords);
 $('recordsDone').addEventListener('click',closeRecords);
 $('recordsOverlay').addEventListener('click',e=>{if(e.target===$('recordsOverlay'))closeRecords();});
-$('clearRecordsButton').addEventListener('click',()=>askConfirm('Удалить результаты?','История раундов, серии и рекорды испытаний будут удалены с этого устройства.','Удалить',()=>{
-  game.db={rounds:[],challenges:[],streak:0,bestStreak:0,totalRounds:0,totalPerfect:0,maxTargets:0};saveProgress();renderRecords();
+$('clearRecordsButton').addEventListener('click',()=>askConfirm('Удалить результаты?','История раундов, рекорды и продвижение по уровням будут сброшены на этом устройстве.','Удалить',()=>{
+  const previousLevel=game.mode==='free'?currentRadarLevel():'';
+  game.db={rounds:[],challenges:[],streak:0,bestStreak:0,totalRounds:0,totalPerfect:0,maxTargets:0};
+  game.levelProgress={};
+  for(const level of Object.keys(PRESETS))game.levelProgress[level]={targets:1,wins:0};
+  game.pendingTargetOffer=null;
+  if(previousLevel){state.settings.targets=1;saveSettings();}
+  saveProgress();saveLevelProgress();syncFields();updateUI();renderRecords();
 }));
 $('confirmCancel').addEventListener('click',()=>closeConfirm(false));
 $('confirmAccept').addEventListener('click',()=>closeConfirm(true));
@@ -2662,7 +2782,7 @@ try{
   if(window.Capacitor?.Plugins?.App?.addListener)window.Capacitor.Plugins.App.addListener('backButton',()=>handleBack());
 }catch(e){}
 configureTabs();
-loadSettings();migrateOldLevelScale();loadProgress();syncFields();syncEvents();buildQuickEvents();syncModeUI();updateUI();resizeCanvas();
+loadSettings();migrateOldLevelScale();loadProgress();loadLevelProgress();migratePresetSpeeds716();syncFields();syncEvents();buildQuickEvents();syncModeUI();updateUI();resizeCanvas();
 state.lastFrame=performance.now();requestAnimationFrame(tick);
 })();
 </script>
