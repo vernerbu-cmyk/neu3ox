@@ -2246,16 +2246,27 @@ function drawPlane(p) {
   const reveal=state.phase==='revealed';
   // Кольца и метки рисуются ПОД самолётом, а не поверх него.
   if (state.userSelected.has(p.id)) {
-    ctx.strokeStyle='#FF9A45';ctx.lineWidth=3.5;
-    ctx.shadowColor='#FF9A45';ctx.shadowBlur=14;
-    ctx.beginPath();ctx.arc(0,0,38,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;
+    ctx.save();
+    ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.strokeStyle='#FF9A45';ctx.lineWidth=3.4;ctx.globalAlpha=.96;
+    ctx.beginPath();ctx.arc(0,0,38.5,0,Math.PI*2);ctx.stroke();
+    ctx.strokeStyle='rgba(255,217,179,.62)';ctx.lineWidth=1.5;ctx.globalAlpha=1;
+    ctx.beginPath();ctx.arc(0,0,44.5,0,Math.PI*2);ctx.stroke();
+    ctx.restore();
   }
   if ((preview||reveal)&&isTarget) {
     const color=reveal?'#52E9B3':'#FF9A45';
-    ctx.strokeStyle=color;ctx.lineWidth=4.2;ctx.shadowColor=color;ctx.shadowBlur=16;
-    ctx.beginPath();ctx.arc(0,0,39,0,Math.PI*2);ctx.stroke();
-    ctx.shadowBlur=0;ctx.strokeStyle=reveal?'#B8FFE5':'#FFD9B3';ctx.lineWidth=1.8;
-    ctx.beginPath();ctx.arc(0,0,46,0,Math.PI*2);ctx.stroke();
+    const soft=reveal?'rgba(82,233,179,.09)':'rgba(255,154,69,.08)';
+    const outer=reveal?'rgba(184,255,229,.88)':'rgba(255,217,179,.88)';
+    ctx.save();
+    ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.fillStyle=soft;
+    ctx.beginPath();ctx.arc(0,0,43.5,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=color;ctx.lineWidth=4.1;
+    ctx.beginPath();ctx.arc(0,0,39.5,0,Math.PI*2);ctx.stroke();
+    ctx.strokeStyle=outer;ctx.lineWidth=1.6;
+    ctx.beginPath();ctx.arc(0,0,45.5,0,Math.PI*2);ctx.stroke();
+    ctx.restore();
   }
   if (reveal&&state.userSelected.has(p.id)&&!isTarget) {
     ctx.strokeStyle='#FF6C6C';ctx.lineWidth=3.5;
@@ -2298,9 +2309,10 @@ const showNumber = state.phase === 'preview' || (state.phase === 'paused' && sta
     markerY = Math.max(RADAR_PORTRAIT_PHONE ? 26 : 18,
                        Math.min(WORLD.h - (RADAR_PORTRAIT_PHONE ? 26 : 18), markerY));
     ctx.save();
-    ctx.beginPath();ctx.arc(markerX, markerY, RADAR_PORTRAIT_PHONE ? 23 : 17, 0, Math.PI * 2);
+    ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.beginPath();ctx.arc(markerX, markerY, RADAR_PORTRAIT_PHONE ? 23.5 : 17.5, 0, Math.PI * 2);
     ctx.fillStyle = '#132951';ctx.fill();
-    ctx.strokeStyle = '#FF9A45';ctx.lineWidth = 2.5;ctx.stroke();
+    ctx.strokeStyle = '#FF9A45';ctx.lineWidth = 2.4;ctx.stroke();
     ctx.fillStyle = '#FFFFFF';ctx.font = RADAR_PORTRAIT_PHONE ? '800 26px Arial, sans-serif' : '800 19px Arial, sans-serif';
     ctx.textAlign = 'center';ctx.textBaseline = 'middle';
     ctx.fillText(String(p.id + 1), markerX, markerY + 1);
