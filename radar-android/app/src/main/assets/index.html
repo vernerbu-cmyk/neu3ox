@@ -424,7 +424,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
       </div>
       <div>
         <div class="brand-line">NeuroX · Внимание</div>
-        <h1>Радар <span style="font-size:14px;font-weight:800;color:#7b90ac;vertical-align:middle">7.1.4</span></h1>
+        <h1>Радар <span style="font-size:14px;font-weight:800;color:#7b90ac;vertical-align:middle">7.1.5</span></h1>
         <p class="subtitle">Запомни самолёты-цели, проследи за ними и выбери правильные после остановки</p>
       </div>
     </div>
@@ -2461,7 +2461,9 @@ let lastVisualPaint = 0;
 function tick(timestamp) {
   // Small simulation steps maintain collision quality; allow limited catch-up if a
   // frame was delayed (old 50 ms cap made rounds run in slow motion on phones).
-  let dt = Math.min((timestamp - state.lastFrame) / 1000, 0.10);
+  // Allow actual frame intervals on slower phones, without unbounded catch-up.
+  // The previous 0.10 s cap dropped real time below 10 FPS and made flight slow down.
+  let dt = Math.min((timestamp - state.lastFrame) / 1000, 0.30);
   if (!Number.isFinite(dt) || dt < 0) dt = 0;
   state.lastFrame = timestamp;
   if (state.phase === 'preview') {
