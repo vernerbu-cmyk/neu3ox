@@ -82,7 +82,7 @@ public final class MainActivity extends Activity {
 
     @Override
     protected void onPause() {
-        if (webView != null) webView.onPause();
+        if (webView != null) {\n            webView.evaluateJavascript(\"window.NeuroXRadarLifecycle?.pauseForBackground?.()\", null);\n            webView.onPause();\n        }
         super.onPause();
     }
 
