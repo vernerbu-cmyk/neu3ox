@@ -453,57 +453,87 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
 .target-promotion-actions .btn{padding:9px 11px;min-height:38px;font-size:12px;white-space:nowrap}
 @media(max-width:420px){.target-promotion-actions{width:100%}.target-promotion-actions .btn{flex:1;min-width:0}}
 
-/* v7.2.1 — Readable review and nearest-pair fallback. Review does not change the underlying game state. */
+/* v7.2.3 — Replay visual refresh: larger stage, cleaner controls, better focus on key moments. */
 #replayButton{display:none}
 .page[data-phase="revealed"] #replayButton{display:inline-flex}
-.replay-overlay{display:none;position:fixed;inset:0;z-index:85;background:rgba(5,15,35,.84);padding:12px;overflow:auto;overscroll-behavior:contain;align-items:flex-start;justify-content:center}
+.replay-overlay{display:none;position:fixed;inset:0;z-index:85;background:radial-gradient(circle at top,#1a3b6c 0%,#0b1838 33%,rgba(3,8,20,.98) 100%);padding:0;overflow:auto;overscroll-behavior:contain;align-items:flex-start;justify-content:center}
 .replay-overlay.open{display:flex}
-.replay-dialog{width:min(950px,100%);margin:auto;background:#F8FBFF;border-radius:21px;border:1px solid #91B5D9;box-shadow:0 22px 60px #0008;padding:14px;color:#142E53;display:flex;flex-direction:column;gap:10px;max-height:calc(100dvh - 24px);overflow-y:auto}
-.replay-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
-.replay-head strong{font-size:20px;color:var(--blue)}
-.replay-head small{display:block;font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4}
-.replay-stage{position:relative;display:flex;align-items:center;justify-content:center;min-height:0;background:#0A1633;border:2px solid #6482A3;border-radius:16px;overflow:hidden;padding:2px}
-#replayCanvas{display:block;width:100%;height:auto;max-height:52dvh;object-fit:contain}
-.replay-seek-row{display:flex;align-items:center;gap:10px;font-weight:850;font-size:13px}
-#replaySeek{min-width:0;flex:1;accent-color:var(--orange);height:30px;touch-action:pan-y}
-#replayClock{min-width:78px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.replay-dialog{width:min(1120px,100%);margin:auto;background:linear-gradient(180deg,#fbfdff 0%,#eef5fb 100%);border-radius:24px;border:1px solid #9eb9da;box-shadow:0 30px 90px rgba(0,0,0,.38);padding:14px;color:#142E53;display:flex;flex-direction:column;gap:12px;max-height:100dvh;min-height:100dvh;overflow-y:auto}
+.replay-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:4px 2px 0;position:sticky;top:0;background:linear-gradient(180deg,rgba(250,253,255,.96) 0%,rgba(250,253,255,.92) 78%,rgba(250,253,255,0) 100%);backdrop-filter:blur(8px);z-index:2}
+.replay-head strong{font-size:22px;color:var(--blue)}
+.replay-head small{display:block;font-size:12px;color:#57708f;margin-top:4px;line-height:1.45;max-width:620px}
+.replay-stage-wrap{display:flex;flex-direction:column;gap:10px}
+.replay-stage{position:relative;display:flex;align-items:center;justify-content:center;min-height:58dvh;background:radial-gradient(circle at 50% 45%,#193a63 0%,#12284f 34%,#0a1633 100%);border:2px solid #7690b0;border-radius:20px;overflow:hidden;padding:3px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),0 14px 34px rgba(2,10,25,.22)}
+.replay-stage::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at center,transparent 0 34%,rgba(255,255,255,.03) 34.5% 35.2%,transparent 35.7% 69%,rgba(255,255,255,.03) 69.5% 70.1%,transparent 70.7% 100%);pointer-events:none;opacity:.8}
+#replayCanvas{display:block;width:100%;height:auto;max-height:70dvh;object-fit:contain}
+.replay-panel{display:flex;flex-direction:column;gap:10px}
+.replay-seek-row,.replay-actions,.replay-legend,.replay-markers,.replay-note,.replay-moment{background:#fff;border:1px solid #d6e1ee;border-radius:14px;padding:10px 12px}
+.replay-seek-row{display:flex;align-items:center;gap:10px;font-weight:900;font-size:14px;box-shadow:0 4px 14px rgba(20,46,83,.06)}
+#replaySeek{min-width:0;flex:1;accent-color:var(--orange);height:36px;touch-action:pan-y}
+#replayClock{min-width:104px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:#27486c;font-weight:900}
 .replay-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.replay-actions .btn{min-height:40px;padding:8px 12px;font-size:13px}
-.replay-actions label{font-size:12px;font-weight:850;display:flex;align-items:center;gap:6px;margin-left:auto}
-.replay-markers{display:flex;gap:7px;overflow-x:auto;min-height:0;padding-bottom:4px}
-.replay-markers button{flex:0 0 auto;border:1px solid #C8D9EA;border-radius:10px;background:white;color:#173C6E;font-weight:800;font-size:12px;padding:8px 10px;min-height:37px}
-.replay-markers button:hover{background:#E9F4FF}
-.replay-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;font-weight:800;color:#28466C}
-.replay-legend span{display:inline-flex;align-items:center;gap:5px}
-.replay-dot{display:inline-block;width:10px;height:10px;border-radius:50%}
-.replay-note{color:#516A8A;font-size:11px;line-height:1.4;margin:0}
-.replay-moment{display:flex;align-items:center;justify-content:space-between;gap:9px;background:#FFF3DA;border:1px solid #DFA84A;border-radius:12px;padding:9px 10px;color:#553B17}
-.replay-moment strong{display:block;font-size:14px;line-height:1.3}
-.replay-moment span{display:block;font-size:12px;line-height:1.4;margin-top:3px}
-.replay-moment .btn{flex:0 0 auto;background:#BD6313;border-color:#BD6313;color:white;font-size:13px;font-weight:900;min-height:43px}
-.replay-alert{position:absolute;z-index:2;top:9px;left:50%;transform:translateX(-50%);max-width:96%;white-space:nowrap;border:2px solid #FFC86A;background:rgba(32,27,26,.93);border-radius:10px;padding:5px 10px;color:#FFDE9E;font-size:14px;font-weight:900;pointer-events:none;box-shadow:0 3px 14px #0009}
+.replay-actions .btn{min-height:44px;padding:9px 14px;font-size:13px;border-radius:12px}
+.replay-actions label{font-size:12px;font-weight:850;display:flex;align-items:center;gap:6px;margin-left:auto;color:#315173}
+.replay-markers{display:flex;gap:8px;overflow-x:auto;min-height:0;padding-bottom:8px;scrollbar-width:thin;background:linear-gradient(180deg,#fff 0%,#f7fbff 100%)}
+.replay-marker{flex:0 0 auto;border-radius:999px;font-weight:900;font-size:12px;padding:9px 12px;min-height:39px;line-height:1;border:1px solid transparent;box-shadow:0 3px 10px rgba(14,35,64,.08)}
+.replay-marker:hover{filter:brightness(.98)}
+.replay-marker.encounter{background:#fff2d8;border-color:#e5ae4f;color:#5b3b0e}
+.replay-marker.event{background:#edf6ff;border-color:#c4daf0;color:#173c6e}
+.replay-marker.empty{background:#f6f8fb;border-color:#d9e3ee;color:#587390;font-weight:800}
+.replay-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;font-weight:800;color:#28466C;background:linear-gradient(180deg,#f8fbff 0%,#f2f7fc 100%)}
+.replay-legend span{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#fff;border:1px solid #d7e2ee}
+.replay-dot{display:inline-block;width:11px;height:11px;border-radius:50%}
+.replay-note{color:#516A8A;font-size:11px;line-height:1.45;margin:0}
+.replay-moment{display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(180deg,#fff6e3 0%,#fff0cf 100%);border-color:#e0ad59;color:#553B17;box-shadow:0 3px 12px rgba(140,88,15,.08)}
+.replay-moment strong{display:block;font-size:15px;line-height:1.3}
+.replay-moment span{display:block;font-size:12px;line-height:1.45;margin-top:3px}
+.replay-moment .btn{flex:0 0 auto;background:#bd6313;border-color:#bd6313;color:white;font-size:13px;font-weight:900;min-height:44px;border-radius:12px}
+.replay-alert{position:absolute;z-index:2;top:12px;left:50%;transform:translateX(-50%);max-width:96%;white-space:nowrap;border:2px solid #FFC86A;background:rgba(32,27,26,.95);border-radius:999px;padding:8px 16px;color:#FFDE9E;font-size:14px;font-weight:900;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.58)}
 .replay-alert[hidden]{display:none}
 .replay-overlay.large{padding:0}
-.replay-overlay.large .replay-dialog{width:100%;max-width:100%;height:100dvh;max-height:100dvh;border-radius:0;padding:8px;overflow:hidden;gap:6px}
-.replay-overlay.large .replay-head small,.replay-overlay.large .replay-legend,.replay-overlay.large .replay-markers,.replay-overlay.large .replay-note{display:none}
-.replay-overlay.large .replay-stage{flex:1;max-height:none;min-height:0}
+.replay-overlay.large .replay-dialog{width:100%;max-width:100%;height:100dvh;max-height:100dvh;border-radius:0;padding:8px 8px 8px;overflow:hidden;gap:8px}
+.replay-overlay.large .replay-head{padding-top:0}
+.replay-overlay.large .replay-head small,.replay-overlay.large .replay-note,.replay-overlay.large .replay-legend{display:none}
+.replay-overlay.large .replay-stage-wrap{flex:1;min-height:0}
+.replay-overlay.large .replay-stage{flex:1;min-height:0;max-height:none}
 .replay-overlay.large #replayCanvas{height:100%;width:100%;max-height:100%;object-fit:contain}
-.replay-overlay.large .replay-moment{padding:6px 8px}
+.replay-overlay.large .replay-panel{gap:8px;position:sticky;bottom:0;background:linear-gradient(180deg,rgba(250,253,255,0) 0%,rgba(250,253,255,.88) 14%,rgba(250,253,255,.97) 100%);padding-bottom:2px}
+.replay-overlay.large .replay-markers{padding-top:8px;padding-bottom:8px}
+.replay-overlay.large .replay-moment{padding:8px 10px}
 .replay-overlay.large .replay-moment span{font-size:11px}
-@media(max-width:370px){.replay-moment{padding:7px;gap:6px}.replay-moment strong{font-size:12px}.replay-moment span{font-size:11px}.replay-moment .btn{font-size:12px;padding:7px}.replay-alert{font-size:12px}}
+@media(max-width:370px){.replay-moment{padding:8px;gap:7px}.replay-moment strong{font-size:13px}.replay-moment span{font-size:11px}.replay-moment .btn{font-size:12px;padding:7px 9px}.replay-alert{font-size:12px}.replay-marker{font-size:11px;padding:8px 10px}}
 @media(max-width:720px){
  .page[data-phase="revealed"] #replayButton{display:inline-flex;grid-column:1/-1;order:1}
  .page[data-phase="revealed"] #repeatButton{order:2}
  .page[data-phase="revealed"] #finishButton{order:3}
- .replay-overlay{padding:6px}
- .replay-dialog{padding:10px;border-radius:15px;gap:7px;max-height:calc(100dvh - 12px)}
- .replay-head strong{font-size:17px}
- #replayCanvas{max-height:47dvh}
+ .replay-overlay{padding:0}
+ .replay-dialog{padding:8px 6px 8px;border-radius:0;gap:8px;max-height:100dvh;min-height:100dvh}
+ .replay-head strong{font-size:18px}
+ .replay-head small{font-size:11px}
+ .replay-stage{min-height:64dvh;border-radius:18px}
+ #replayCanvas{max-height:72dvh}
  .replay-actions{gap:6px}
- .replay-actions .btn{font-size:12px;min-height:38px;padding:7px 9px}
+ .replay-actions .btn{font-size:12px;min-height:40px;padding:8px 10px}
  .replay-actions label{flex:1 0 100%;margin-left:0}
- .replay-note{font-size:10px}
+ .replay-legend{gap:6px;padding:8px 9px}
+ .replay-legend span{padding:5px 8px}
+ .replay-seek-row,.replay-actions,.replay-legend,.replay-markers,.replay-note,.replay-moment{padding:10px 10px;border-radius:13px}
 }
+@media(min-width:900px){
+ .replay-stage{min-height:64dvh}
+ #replayCanvas{max-height:76dvh}
+}
+/* Special free-play missions: self-contained, no extra global settings. */
+.mission-selector{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 10px;padding:7px 9px;border:1px solid #D6E4F2;border-radius:13px;background:#F4F9FF}
+.mission-selector>strong{font-size:12px;color:#375372;margin-right:5px}
+.mission-choice{border:1px solid #C8D9EB;color:#244F7D;background:white;border-radius:10px;padding:8px 10px;min-height:34px;font-size:12px;font-weight:850}
+.mission-choice.active{background:#16487F;border-color:#16487F;color:white}
+.mission-choice:disabled{opacity:.55}
+.mission-note{font-size:11px;color:#627D9A;flex:1 0 100%;line-height:1.35}
+.page[data-mode="challenge"] .mission-selector{display:none}
+.page[data-checkpoint="1"] #answerButton{background:#147E91;color:white;border-color:#147E91}
+.page[data-checkpoint="1"] #pauseButton{display:none}
+@media(max-width:720px){.mission-selector{padding:5px 6px;gap:5px;margin-bottom:5px}.mission-selector>strong{width:100%}.mission-choice{flex:1;min-height:34px;padding:7px 3px;font-size:10.5px}.mission-note{font-size:10px}}
 </style>
 </head>
 <body class="nx-added-game nx-game-radar" data-nx-section="attention">
@@ -520,7 +550,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
       </div>
       <div>
         <div class="brand-line">NeuroX · Внимание</div>
-        <h1>Радар <span style="font-size:14px;font-weight:800;color:#7b90ac;vertical-align:middle">7.2.1</span></h1>
+        <h1>Радар <span style="font-size:14px;font-weight:800;color:#7b90ac;vertical-align:middle">7.3.0</span></h1>
         <p class="subtitle">Запомни самолёты-цели и следи за ними. Начни с одного — игра предложит больше, когда будешь готов!</p>
       </div>
     </div>
@@ -551,6 +581,13 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
     <button class="nx-radar-custom" type="button" id="radarCustomButton">⚙ Свои настройки</button>
   </section>
 
+  <div class="mission-selector" id="missionSelector" aria-label="Тип задания">
+    <strong>Задание</strong>
+    <button type="button" class="mission-choice active" data-variant="classic">✈ Наблюдение</button>
+    <button type="button" class="mission-choice" data-variant="checkpoint">⌖ Контрольная точка</button>
+    <button type="button" class="mission-choice" data-variant="encounter">↔ Сближение</button>
+    <span class="mission-note" id="missionNote">Классическое слежение за выбранными самолётами.</span>
+  </div>
   <section class="stats" aria-label="Статистика занятия">
     <div class="stat"><span class="stat-label">Раунд</span><span class="stat-value" id="roundStat">0</span></div>
     <div class="stat"><span class="stat-label">Самолётов / целей</span><span class="stat-value" id="objectsStat">6 / 1</span></div>
@@ -705,13 +742,17 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
   <div class="replay-overlay" id="replayOverlay" role="dialog" aria-modal="true" aria-label="Разбор полёта" aria-hidden="true">
     <div class="replay-dialog">
       <div class="replay-head"><div><strong>↻ Разбор полёта</strong><small id="replaySummary">Повтор последнего раунда по записанным координатам.</small></div><button type="button" class="btn" id="replayClose" aria-label="Закрыть разбор">✕</button></div>
-      <div class="replay-stage"><canvas id="replayCanvas" aria-label="Запись движения самолётов с выделенными траекториями целей и ошибок"></canvas><div class="replay-alert" id="replayAlert" hidden aria-live="off"></div></div>
-      <div class="replay-moment" id="replayMoment"><div><strong id="replayMomentTitle">↔ Ближайшая пара</strong><span id="replayMomentDetails">Находим момент минимального расстояния.</span></div><button type="button" class="btn" id="replayMomentJump">⌖ Показать</button></div>
-      <div class="replay-seek-row"><label for="replaySeek">Время</label><input id="replaySeek" type="range" min="0" max="10" step="0.01" value="0" aria-label="Положение воспроизведения"><output id="replayClock">0,0 / 10,0</output></div>
-      <div class="replay-actions"><button type="button" class="btn primary" id="replayPlay">▶ Смотреть</button><button type="button" class="btn" id="replaySpeed">1×</button><button type="button" class="btn" id="replayLarge" aria-pressed="false">🔎 Увеличить</button><label><input type="checkbox" id="replayTrails" checked> Показывать траектории и правильные цели</label></div>
-      <div class="replay-legend"><span><i class="replay-dot" style="background:#42E3A6"></i>Правильная цель</span><span><i class="replay-dot" style="background:#FF7777"></i>Ошибочный выбор</span><span><i class="replay-dot" style="background:#FFC16E"></i>Близкое сближение</span></div>
-      <div class="replay-markers" id="replayMarkers" aria-label="События и сближения полёта"></div>
-      <p class="replay-note" id="replayNote">Кнопка «Показать» ведёт к самому близкому моменту. Если самолёты не сближались тесно, это будет обозначено отдельно. Игра не определяет, когда игрок потерял цель.</p>
+      <div class="replay-stage-wrap">
+        <div class="replay-stage"><canvas id="replayCanvas" aria-label="Запись движения самолётов с выделенными траекториями целей и ошибок"></canvas><div class="replay-alert" id="replayAlert" hidden aria-live="off"></div></div>
+        <div class="replay-legend"><span><i class="replay-dot" style="background:#42E3A6"></i>Правильная цель</span><span><i class="replay-dot" style="background:#FF7777"></i>Ошибочный выбор</span><span><i class="replay-dot" style="background:#FFC16E"></i>Сближение / ближайшая пара</span></div>
+      </div>
+      <div class="replay-panel">
+        <div class="replay-moment" id="replayMoment"><div><strong id="replayMomentTitle">↔ Ближайшая пара</strong><span id="replayMomentDetails">Покажем место, где самолёты сблизились сильнее всего.</span></div><button type="button" class="btn" id="replayMomentJump">⌖ Показать</button></div>
+        <div class="replay-seek-row"><label for="replaySeek">Время</label><input id="replaySeek" type="range" min="0" max="10" step="0.01" value="0" aria-label="Положение воспроизведения"><output id="replayClock">0,0 / 10,0</output></div>
+        <div class="replay-actions"><button type="button" class="btn primary" id="replayPlay">▶ Смотреть</button><button type="button" class="btn" id="replaySpeed">1×</button><button type="button" class="btn" id="replayLarge" aria-pressed="false">⛶ Во весь экран</button><label><input type="checkbox" id="replayTrails" checked> Показывать траектории и правильные цели</label></div>
+        <div class="replay-markers" id="replayMarkers" aria-label="События и сближения полёта"></div>
+        <p class="replay-note" id="replayNote">Кнопка «Показать» ведёт к самому близкому моменту. Если самолёты не сближались тесно, это будет обозначено отдельно. Игра не определяет, когда игрок потерял цель.</p>
+      </div>
     </div>
   </div>
   <div class="confirm-overlay" id="confirmOverlay" role="dialog" aria-modal="true" aria-label="Подтверждение" aria-hidden="true">
@@ -807,13 +848,13 @@ const state = {
   squad:null, switchCue:null, toastTime:0, history:[], extrasAdded:0, switchDone:false,
    corridor:null, mirror:null, zoom:null, echo:null,
    traceHistory:new Map(), traceLast:-1, eventUiTime:0, roundMetrics:null,
-   replayCapture:null, lastReplay:null
+   replayCapture:null, lastReplay:null, checkpoint:null, encounterPlan:null
 };
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 const rand = (a, b) => a + Math.random() * (b - a);
 const nowSeconds = () => performance.now() / 1000;
-const isActive = () => ['preview', 'tracking', 'paused'].includes(state.phase);
+const isActive = () => ['preview', 'tracking', 'paused'].includes(state.phase) || !!state.checkpoint?.waiting;
 const isPlaying = () => ['preview', 'tracking'].includes(state.phase);
 const canSelect = () => state.phase === 'stopped';
 const formatClock = seconds => {
@@ -1118,7 +1159,7 @@ function migratePresetSpeeds716(){
   }catch(_){}
 }
 function updateTargetProgress(result){
-  if(game.mode!=='free'||game.activeMyModeId)return;
+  if(game.mode!=='free'||game.variant!=='classic'||game.activeMyModeId)return;
   const level=result.level;
   if(!Object.hasOwn(PRESETS,level))return;
   const progress=game.levelProgress[level];
@@ -1332,6 +1373,65 @@ function createPlanes() {
   }
   return { planes, targets: ids.slice(0, +state.settings.targets) };
 }
+function setRadarVariant(variant){
+  if(game.mode!=='free'||state.sessionLive||isActive()||state.phase==='stopped'||state.phase==='revealed')return;
+  if(!['classic','checkpoint','encounter'].includes(variant))return;
+  game.variant=variant;
+  state.snapshot=null;
+  safeStore('neurox_radar_variant_v73',variant);
+  updateUI();
+}
+function beginEncounterManeuver(){
+  if(game.variant!=='encounter'||game.mode!=='free'||!state.encounterPlan||state.maneuver||state.squad)return;
+  const target=state.planes.find(p=>p.id===state.encounterPlan.targetId);
+  if(!target)return;
+  const other=state.planes.filter(p=>p.id!==target.id)
+    .sort((a,b)=>Math.abs(Math.hypot(a.x-target.x,a.y-target.y)-WORLD.w*.55)-Math.abs(Math.hypot(b.x-target.x,b.y-target.y)-WORLD.w*.55))[0];
+  if(!other)return;
+  const dx=other.x-target.x,dy=other.y-target.y,dist=Math.hypot(dx,dy);
+  if(dist<100){state.encounterPlan.nextAt+=.30;return;}
+  const nx=-dy/dist,ny=dx/dist;
+  // Two synchronized curved flights intersect at the midpoint; a target is always involved.
+  const side=12;
+  const startA={x:target.x,y:target.y},startB={x:other.x,y:other.y};
+  const routes=[
+    {id:target.id,startX:startA.x,startY:startA.y,endX:startB.x,endY:startB.y,
+      c1x:startA.x+dx*.32+nx*side,c1y:startA.y+dy*.32+ny*side,
+      c2x:startA.x+dx*.68+nx*side,c2y:startA.y+dy*.68+ny*side},
+    {id:other.id,startX:startB.x,startY:startB.y,endX:startA.x,endY:startA.y,
+      c1x:startB.x-dx*.32-nx*side,c1y:startB.y-dy*.32-ny*side,
+      c2x:startB.x-dx*.68-nx*side,c2y:startB.y-dy*.68-ny*side}
+  ];
+  const duration=clamp(dist/Math.max(140,state.settings.speed)*1.12,1.2,2.7);
+  state.maneuver={elapsed:0,duration,baseSpeed:state.settings.speed,routes,ids:new Set([target.id,other.id])};
+  state.encounterPlan.done=true;
+  state.maneuverDelay=999;
+  state.eventCounts.guaranteedEncounter=(state.eventCounts.guaranteedEncounter||0)+1;
+  // Record this as a game event; the replay also calculates the exact closest point.
+  state.history.push({at:state.flightTime,name:'guaranteedEncounter'});
+}
+function enterCheckpoint(){
+  const cp=state.checkpoint;
+  if(!cp||cp.done||cp.waiting||state.phase!=='tracking')return;
+  cp.waiting=true;cp.targetCount=state.targets.size;
+  state.history.push({at:+state.settings.duration-state.phaseLeft,name:'checkpoint'});
+  state.phase='stopped'; // Use existing click-to-select behavior without revealing the answer.
+  state.userSelected=new Set();
+  closeQuickEvents();closeSpeedPopover();
+  playSignal('stopped');updateUI();render();
+}
+function continueCheckpoint(){
+  const cp=state.checkpoint;
+  if(!cp?.waiting || state.userSelected.size!==state.targets.size)return;
+  cp.selected=[...state.userSelected];
+  cp.correct=cp.selected.filter(id=>state.targets.has(id)).length;
+  cp.wrong=cp.selected.filter(id=>!state.targets.has(id)).length;
+  cp.done=true;cp.waiting=false;
+  state.userSelected=new Set();
+  state.phase='tracking';
+  state.lastFrame=performance.now();
+  updateUI();render();
+}
 function beginSession() {
   if (state.sessionLive) return;
   state.sessionLive = true;
@@ -1358,7 +1458,7 @@ function startRound(repeat = false) {
   $('challengeFinish').classList.remove('visible');
   $('roundResult').className = 'round-result';
   $('roundResult').replaceChildren();
-  state.replayCapture=null;state.lastReplay=null;
+  state.replayCapture=null;state.lastReplay=null;state.checkpoint=null;state.encounterPlan=null;
   closeQuickEvents();
   closeSpeedPopover();
   let data;
@@ -1372,6 +1472,8 @@ function startRound(repeat = false) {
   applyCurrentSpeed();
   state.targets = new Set(data.targets);
   state.userSelected = new Set();
+  if(game.mode==='free'&&game.variant==='checkpoint')state.checkpoint={at:state.settings.duration*.5,waiting:false,done:false,selected:[],correct:0,wrong:0};
+  if(game.mode==='free'&&game.variant==='encounter')state.encounterPlan={nextAt:Math.min(1.35,state.settings.duration*.22),done:false,targetId:data.targets[0]};
   state.maneuver = null;
   state.maneuverDelay = state.settings.motion === 'active' ? rand(1.7, 2.3) : rand(3.0, 4.2);
   state.flightTime = 0;
@@ -1387,12 +1489,12 @@ function startRound(repeat = false) {
   state.corridor=null;state.mirror=null;state.zoom=null;state.echo=null;
   state.traceHistory=new Map();state.traceLast=-1;state.eventUiTime=0;
   // A short round must not end before its first event has a chance to happen.
-  state.eventCooldown=enabledRoundEvents.length?Math.min(nextEventDelay(),Math.max(1.2,+state.settings.duration*.22)):nextEventDelay();
+  state.eventCooldown=game.mode==='free'&&game.variant==='encounter'?Math.min(4,+state.settings.duration*.64):(enabledRoundEvents.length?Math.min(nextEventDelay(),Math.max(1.2,+state.settings.duration*.22)):nextEventDelay());
   state.roundMetrics={
     initialSpeed:state.settings.speed, minSpeed:state.settings.speed, maxSpeed:state.settings.speed,
     speedIntegral:0, flightSeconds:0, pauses:0, pauseAt:0, pausedSeconds:0,
     startingObjects:state.planes.length, startingTargets:state.targets.size,
-    level:game.mode==='challenge'?'challenge':(currentRadarLevel()||'custom'),
+    level:game.mode==='challenge'?'challenge':(currentRadarLevel()||'custom'), variant:game.mode==='free'?game.variant:'classic',
     motion:state.settings.motion, spacing:state.settings.spacing,
     enabledEvents:enabledRoundEvents.slice(), eventIntensity:state.eventIntensity
   };
@@ -1436,7 +1538,7 @@ function resume() {
   render();
 }
 function stopRound(completed) {
-  if(completed)finalizeReplayCapture();else state.replayCapture=null;
+  if(completed)finalizeReplayCapture();else{state.replayCapture=null;if(state.checkpoint)state.checkpoint.waiting=false;}
   state.phase = 'stopped';
   state.phaseLeft = 0;
   if (completed) { state.completed += 1; playSignal('stopped'); }
@@ -1451,7 +1553,7 @@ function stopRound(completed) {
 // Replay uses actual frame snapshots, not a new random flight. Only the last
 // successfully finished round is kept in RAM. It does not alter stored records.
 const replayPlayer={open:false,playing:false,at:0,speed:1,lastStamp:0,lastDraw:0,painting:false,frame:null,token:0,focus:null};
-const REPLAY_EVENT_NAMES={squad:'Эскадрилья',blackout:'Радиомолчание',reinforcement:'Подкрепление',blind:'Слепая зона',switch:'Смена цели',turbulence:'Турбулентность',decoy:'Ложный сигнал',corridor:'Коридор',zoom:'Масштаб',mirror:'Зеркальные маршруты',echo:'Эхо'};
+const REPLAY_EVENT_NAMES={checkpoint:'Контрольная точка',guaranteedEncounter:'Заданное сближение',squad:'Эскадрилья',blackout:'Радиомолчание',reinforcement:'Подкрепление',blind:'Слепая зона',switch:'Смена цели',turbulence:'Турбулентность',decoy:'Ложный сигнал',corridor:'Коридор',zoom:'Масштаб',mirror:'Зеркальные маршруты',echo:'Эхо'};
 function beginReplayCapture(){
   state.replayCapture={version:1,frames:[],events:[],encounters:[],duration:+state.settings.duration,
     world:{w:WORLD.w,h:WORLD.h},settings:{...state.settings},initialTargets:[...state.targets],
@@ -1537,31 +1639,32 @@ function openFlightReplay(){
   closeQuickEvents();closeSpeedPopover();
   $('settings').open=false;
   const correct=rec.selected.filter(id=>rec.finalTargets.includes(id)).length;
-  $('replaySummary').textContent=`Последний раунд: ${correct} из ${rec.finalTargets.length} · ${rec.events.length} событий · просмотр можно увеличить`;
+  $('replaySummary').textContent=`Последний раунд: ${correct} из ${rec.finalTargets.length} · ${rec.events.length} событий · кинематичный крупный просмотр`; 
   $('replaySeek').max=String(rec.duration);
   $('replayTrails').checked=true;
   $('replayOverlay').classList.add('open');$('replayOverlay').setAttribute('aria-hidden','false');
   replayPlayer.open=true;replayPlayer.playing=false;replayPlayer.at=0;replayPlayer.speed=1;replayPlayer.lastStamp=0;replayPlayer.lastDraw=0;replayPlayer.focus=null;
-  $('replayOverlay').classList.remove('large');$('replayLarge').setAttribute('aria-pressed','false');$('replayLarge').textContent='🔎 Увеличить';
+  const autoLarge=window.matchMedia('(max-width: 720px)').matches;
+  $('replayOverlay').classList.toggle('large',autoLarge);$('replayLarge').setAttribute('aria-pressed',String(autoLarge));$('replayLarge').textContent=autoLarge?'⛶ Обычный вид':'⛶ Во весь экран';
   const near=rec.nearest;
-  $('replayMomentTitle').textContent=near?(near.isClose?'⚠ Было близкое сближение':'↔ Самая близкая пара в раунде'):'Сближений не найдено';
+  $('replayMomentTitle').textContent=near?(near.isClose?'⚠ Было близкое сближение':'↔ Ключевой момент раунда'):'Сближений не найдено';
   $('replayMomentDetails').textContent=near?`Самолёты №${near.pair[0]+1} и №${near.pair[1]+1} · ${near.t.toFixed(1).replace('.',',')} с${near.isClose?'':' · без тесного сближения'}`:'Недостаточно данных для сравнения';
   $('replayMomentJump').disabled=!near;
   $('replaySpeed').textContent='1×';
   const markerBox=$('replayMarkers');markerBox.replaceChildren();
   for(const ep of rec.encounters){
-    const btn=document.createElement('button');btn.type='button';
+    const btn=document.createElement('button');btn.type='button';btn.className='replay-marker encounter';
     btn.textContent=`⚠ ${ep.t.toFixed(1).replace('.',',')} с · №${ep.pair[0]+1} и №${ep.pair[1]+1}`;
     btn.title='Близкое сближение — нажми, чтобы перейти';
     btn.addEventListener('click',()=>jumpFlightReplayToMoment(ep));markerBox.appendChild(btn);
   }
   for(const ev of rec.events){
-    const btn=document.createElement('button');btn.type='button';
+    const btn=document.createElement('button');btn.type='button';btn.className='replay-marker event';
     btn.textContent=`• ${ev.at.toFixed(1).replace('.',',')} с · ${REPLAY_EVENT_NAMES[ev.name]||ev.name}`;
     btn.addEventListener('click',()=>{replayPlayer.playing=false;seekFlightReplay(ev.at);});markerBox.appendChild(btn);
   }
-  if(!rec.encounters.length && near){const msg=document.createElement('span');msg.textContent='⚠ Тесных сближений не было. Показана ближайшая пара.';msg.style.fontSize='12px';markerBox.prepend(msg);}
-  if(!markerBox.children.length){const msg=document.createElement('span');msg.textContent='Событий нет. Используй кнопку «Показать» для ближайшей пары.';markerBox.appendChild(msg);}
+  if(!rec.encounters.length && near){const msg=document.createElement('span');msg.className='replay-marker empty';msg.textContent='⚠ Тесных сближений не было. Показана ближайшая пара.';markerBox.prepend(msg);}
+  if(!markerBox.children.length){const msg=document.createElement('span');msg.className='replay-marker empty';msg.textContent='Событий нет. Используй кнопку «Показать» для ближайшей пары.';markerBox.appendChild(msg);}
   seekFlightReplay(0);
   $('replayClose').focus();
 }
@@ -1590,7 +1693,7 @@ function toggleReplayLarge(){
   if(!replayPlayer.open)return;
   const large=$('replayOverlay').classList.toggle('large');
   $('replayLarge').setAttribute('aria-pressed',String(large));
-  $('replayLarge').textContent=large?'🔎 Уменьшить':'🔎 Увеличить';
+  $('replayLarge').textContent=large?'⛶ Обычный вид':'⛶ Во весь экран';
   // Canvas has fixed bitmap dimensions; it rescales crisp annotations to fit.
   paintFlightReplay();
 }
@@ -1604,7 +1707,7 @@ function seekFlightReplay(t){
   const focus=replayPlayer.focus;
   const visible=focus && Math.abs(replayPlayer.at-focus.t)<=.75;
   $('replayAlert').hidden=!visible;
-  if(visible)$('replayAlert').textContent=focus.isClose?'⚠ БЛИЗКОЕ СБЛИЖЕНИЕ':'↔ БЛИЖАЙШАЯ ПАРА';
+  if(visible)$('replayAlert').textContent=focus.isClose?'⚠ КЛЮЧЕВОЕ СБЛИЖЕНИЕ':'↔ КЛЮЧЕВОЙ МОМЕНТ';
   paintFlightReplay();
 }
 function toggleFlightReplay(){
@@ -1721,20 +1824,28 @@ function drawReplayAnnotations(rec,index,frame){
     const a=frame.planes.find(p=>p.id===focus.pair[0]);
     const b=frame.planes.find(p=>p.id===focus.pair[1]);
     if(a&&b){
+      const pulse=0.82+0.18*Math.sin(frame.t*8);
       ctx.save();ctx.setLineDash([]);
       ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
-      ctx.strokeStyle='#091327';ctx.lineWidth=13;ctx.stroke();
-      ctx.strokeStyle='#FFCB51';ctx.lineWidth=7;ctx.stroke();
+      ctx.strokeStyle='rgba(9,19,39,.92)';ctx.lineWidth=16;ctx.stroke();
+      ctx.strokeStyle='rgba(255,203,81,.92)';ctx.lineWidth=8;ctx.stroke();
+      ctx.setLineDash([12,8]);ctx.strokeStyle='rgba(255,245,214,.92)';ctx.lineWidth=3;ctx.stroke();ctx.setLineDash([]);
       for(const p of [a,b]){
-        ctx.fillStyle='rgba(255,204,75,.22)';ctx.strokeStyle='#07152B';ctx.lineWidth=12;
-        ctx.beginPath();ctx.arc(p.x,p.y,50*(p.scale||1),0,Math.PI*2);ctx.fill();ctx.stroke();
+        const r=54*(p.scale||1);
+        ctx.fillStyle='rgba(255,204,75,.12)';
+        ctx.beginPath();ctx.arc(p.x,p.y,r*1.55*pulse,0,Math.PI*2);ctx.fill();
+        ctx.strokeStyle='rgba(255,228,141,.42)';ctx.lineWidth=6;
+        ctx.beginPath();ctx.arc(p.x,p.y,r*1.26*pulse,0,Math.PI*2);ctx.stroke();
+        ctx.fillStyle='rgba(255,204,75,.24)';ctx.strokeStyle='#07152B';ctx.lineWidth=12;
+        ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fill();ctx.stroke();
         ctx.strokeStyle='#FFDD77';ctx.lineWidth=8;
-        ctx.beginPath();ctx.arc(p.x,p.y,50*(p.scale||1),0,Math.PI*2);ctx.stroke();
-        const markY=p.y<110?p.y+74:p.y-74;
+        ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.stroke();
+        const markY=p.y<110?p.y+78:p.y-78;
+        const labelW=54,labelH=34;
         ctx.fillStyle='#06172E';ctx.strokeStyle='#FFD16F';ctx.lineWidth=4;
-        ctx.beginPath();ctx.arc(p.x,markY,23,0,Math.PI*2);ctx.fill();ctx.stroke();
-        ctx.fillStyle='#FFFFFF';ctx.font='bold 26px Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-        ctx.fillText(String(p.id+1),p.x,markY+1);
+        ctx.beginPath();ctx.roundRect(p.x-labelW/2,markY-labelH/2,labelW,labelH,12);ctx.fill();ctx.stroke();
+        ctx.fillStyle='#FFFFFF';ctx.font='bold 24px Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText('№'+String(p.id+1),p.x,markY+1);
       }
       ctx.restore();
     }
@@ -1747,7 +1858,7 @@ const DB_KEY = 'neurox_radar_mobile_progress_v2';
 const PREF_KEY = 'neurox_radar_mobile_preferences_v2';
 const CHALLENGE_CHECKPOINT_KEY = 'neurox_radar_challenge_checkpoint_v1';
 const game = {
-  mode:'free', roundCommitted:false, openingPanel:null,pendingTargetOffer:null,levelProgress:{},
+  mode:'free', variant:'classic', roundCommitted:false, openingPanel:null,pendingTargetOffer:null,levelProgress:{},
   myModes:[], activeMyModeId:null,
   challenge:{length:5,index:0,scores:[],active:false,done:false},
   prefs:{sound:true,vibration:false,challengeLength:5},
@@ -1781,6 +1892,8 @@ function loadProgress(){
     game.db.totalPerfect=Number.isFinite(db.totalPerfect)?db.totalPerfect:game.db.rounds.filter(x=>x.perfect).length;
     game.db.maxTargets=Number.isFinite(db.maxTargets)?db.maxTargets:Math.max(0,...game.db.rounds.map(x=>x.targets||0));
   }
+  const chosenVariant=readStore('neurox_radar_variant_v73');
+  game.variant=['classic','checkpoint','encounter'].includes(chosenVariant)?chosenVariant:'classic';
   const pref=readStore(PREF_KEY);
   if(pref && typeof pref==='object'){
     game.prefs.sound=pref.sound!==false;
@@ -1882,6 +1995,8 @@ function setGameMode(mode){
 }
 function syncModeUI(){
   $('page').dataset.mode=game.mode;
+  document.querySelectorAll('[data-variant]').forEach(btn=>{btn.classList.toggle('active',btn.dataset.variant===game.variant);btn.disabled=state.sessionLive||game.mode==='challenge'||isActive()||['stopped','revealed'].includes(state.phase);btn.setAttribute('aria-pressed',String(btn.dataset.variant===game.variant));});
+  $('missionNote').textContent=game.variant==='checkpoint'?'Одна остановка в середине полёта: отметь цели без подсказки и продолжай.':game.variant==='encounter'?'Цель и другой самолёт гарантированно пересекутся в ходе манёвра.':'Классическое слежение за выбранными самолётами.';
   $('page').dataset.challengeDone=game.challenge.done?'1':'0';
   document.querySelectorAll('[data-mode-select]').forEach(btn=>{
     btn.classList.toggle('active',btn.dataset.modeSelect===game.mode);
@@ -1909,8 +2024,9 @@ function recordRound(){
   const correct=[...state.userSelected].filter(id=>state.targets.has(id)).length;
   const wrong=[...state.userSelected].filter(id=>!state.targets.has(id)).length;
   const missed=[...state.targets].filter(id=>!state.userSelected.has(id)).length;
-  const perfect=wrong===0 && missed===0;
-  const result={date:new Date().toISOString(),mode:game.mode,challengeLength:game.mode==='challenge'?game.challenge.length:null,
+  const perfect=wrong===0 && missed===0 && (!state.checkpoint?.done || state.checkpoint.correct===state.checkpoint.selected.length); 
+  const result={date:new Date().toISOString(),mode:game.mode,variant:game.mode==='free'?game.variant:'classic',
+    checkpoint:state.checkpoint?.done?{correct:state.checkpoint.correct,wrong:state.checkpoint.wrong,targets:state.checkpoint.targetCount}:null,challengeLength:game.mode==='challenge'?game.challenge.length:null,
     stage:game.mode==='challenge'?game.challenge.index+1:null,correct,wrong,missed,perfect,
     targets:state.targets.size,objects:state.planes.length,
     speed:state.settings.speed,duration:state.settings.duration,
@@ -1941,6 +2057,7 @@ function recordRound(){
   const left=appendText('div','', '',box);
   appendText('strong','',`${correct} из ${state.targets.size}`,left);
   appendText('small','',perfect?'Все цели найдены!':`Лишних: ${wrong} · пропущено: ${missed}`,left);
+  if(state.checkpoint?.done)appendText('small','',`Контрольная точка: ${state.checkpoint.correct} из ${state.checkpoint.targetCount}`,left);
   const right=appendText('span','',perfect?`✓ Верно · серия ${game.db.streak}`:'Продолжай тренировку',box);
   right.setAttribute('aria-label',perfect?'Ответ правильный':'Ответ с ошибками');
   updateTargetProgress(result);
@@ -1985,7 +2102,8 @@ function renderRecords(){
   if(!rounds.length)appendText('span','', 'Пока нет результатов. Пройди первый раунд!',history);
   else rounds.slice(0,12).forEach(r=>{
     const el=appendText('div','record-item','',history),a=appendText('div','','',el);
-    appendText('span','',`${r.mode==='challenge'?'Испытание '+r.stage+'/'+r.challengeLength:'Свободная игра'} · ${localDate(r.date)}`,a);
+    const missionName=r.variant==='checkpoint'?'Контрольная точка':r.variant==='encounter'?'Сближение':'Свободная игра';
+    appendText('span','',`${r.mode==='challenge'?'Испытание '+r.stage+'/'+r.challengeLength:missionName} · ${localDate(r.date)}`,a);
     const speedText=(Number.isFinite(r.speedMin)&&Number.isFinite(r.speedMax) && r.speedMin!==r.speedMax)
       ?`${r.speedMin}–${r.speedMax} ед./с (средняя ${r.speedAverage})`
       :`${r.speed} ед./с`;
@@ -2712,8 +2830,9 @@ function movePlanes(dt) {
   const minGap = desiredSpacing();
   const m = WORLD.margin + 18;
   state.flightTime += dt;
+  if(state.encounterPlan&&!state.encounterPlan.done&&state.flightTime>=state.encounterPlan.nextAt)beginEncounterManeuver();
   state.maneuverDelay -= dt;
-  if (!state.maneuver && !state.squad && !state.corridor && !state.mirror && state.maneuverDelay <= 0) {
+  if (!state.maneuver && !state.squad && !state.corridor && !state.mirror && state.maneuverDelay <= 0 && !state.encounterPlan) {
     makeManeuver();
     state.maneuverDelay = state.settings.motion === 'active' ? rand(2.4, 3.4) : rand(3.5, 5.1);
   }
@@ -2825,7 +2944,10 @@ function updateCounters() {
   const phase = state.phase;
   const activeTime = state.sessionLive && phase !== 'paused' ? nowSeconds() - state.sessionStart : 0;
   $('sessionStat').textContent = formatClock(state.sessionElapsed + activeTime);
-  if (phase === 'preview' || (phase === 'paused' && state.priorPhase === 'preview')) {
+  if (state.checkpoint?.waiting){
+    $('countStat').textContent=Math.max(0,state.phaseLeft).toFixed(1).replace('.',',')+' с';
+    $('boardTimer').textContent='КОНТРОЛЬ';
+  } else if (phase === 'preview' || (phase === 'paused' && state.priorPhase === 'preview')) {
     $('countStat').textContent = (+state.settings.preview).toFixed(1).replace('.', ',') + ' с';
     $('boardTimer').textContent = 'ЦЕЛИ • ' + Math.ceil(state.phaseLeft) + ' С';
   } else if (phase === 'tracking' || (phase === 'paused' && state.priorPhase === 'tracking')) {
@@ -2863,6 +2985,7 @@ function updateSelectionInfo() {
     return;
   }
   if (state.phase === 'stopped') {
+    if(state.checkpoint?.waiting){info.textContent=`Контрольная точка: отмечено ${count} из ${targetCount}. Правильные ответы узнаешь в конце полёта.`;return;}
     info.textContent = `Выбрано: ${count} из ${targetCount}. ${count === targetCount ? 'Теперь проверь ответ!' : 'Нажми на нужные самолёты.'}`;
     return;
   }
@@ -2903,11 +3026,12 @@ function updateUI() {
     stopped: ['Выбери ответ', 'Кликай по самолётикам, которые были целями'],
     revealed: ['Ответ показан', 'Зелёные кольца — правильные цели, красные метки — ошибки выбора']
   };
-  $('statusText').textContent = labels[phase][0];
-  $('instruction').textContent = labels[phase][1];
+  $('statusText').textContent = state.checkpoint?.waiting?'Контрольная точка':labels[phase][0];
+  $('instruction').textContent = state.checkpoint?.waiting?'Отметь цели и продолжай. Ответ узнаешь только после завершения полёта.':labels[phase][1];
   $('statusDot').className = 'status-dot ' + (phase === 'preview' ? 'preview' : phase === 'tracking' ? 'tracking' : phase === 'stopped' || phase === 'revealed' ? 'stopped' : '');
   $('page').dataset.phase=phase;
-  $('mobileBoardInfo').textContent = `${game.mode==='challenge'?'Этап '+Math.min(game.challenge.index+1,game.challenge.length):'Раунд '+state.round} · ${state.targets.size || state.settings.targets} ${((state.targets.size || state.settings.targets) === 1) ? 'цель' : ((state.targets.size || state.settings.targets) < 5) ? 'цели' : 'целей'}`;
+  $('page').dataset.checkpoint=state.checkpoint?.waiting?'1':'0';
+  $('mobileBoardInfo').textContent = `${state.checkpoint?.waiting?'Контрольная точка':game.mode==='challenge'?'Этап '+Math.min(game.challenge.index+1,game.challenge.length):'Раунд '+state.round} · ${state.targets.size || state.settings.targets} ${((state.targets.size || state.settings.targets) === 1) ? 'цель' : ((state.targets.size || state.settings.targets) < 5) ? 'цели' : 'целей'}`;
   $('roundStat').textContent = state.round;
   $('objectsStat').textContent = state.planes.length ? `${state.planes.length} / ${state.targets.size}` : `${state.settings.objects} / ${state.settings.targets}`;
   $('startButton').textContent = phase === 'paused' ? '▶ Продолжить' : '▶ Начать';
@@ -2918,7 +3042,7 @@ function updateUI() {
   $('repeatButton').disabled = !state.snapshot || isActive() || game.mode==='challenge';
   $('nextButton').disabled = phase !== 'revealed';
   $('answerButton').disabled = !canSelect() || state.userSelected.size!==state.targets.size;
-  $('answerButton').textContent = phase === 'revealed' ? '✓ Проверено' : '✓ Проверить ответ';
+  $('answerButton').textContent = state.checkpoint?.waiting?'▶ Продолжить полёт':(phase === 'revealed' ? '✓ Проверено' : '✓ Проверить ответ');
   $('replayButton').disabled = phase!=='revealed' || !state.lastReplay?.frames?.length;
   $('clearButton').disabled = !canSelect() || state.userSelected.size === 0;
   $('nextButton').textContent=game.mode==='challenge' ? (game.challenge.done?'↻ Новое испытание':'➜ Следующий этап'):'➜ Следующий раунд';
@@ -3219,6 +3343,7 @@ function tick(timestamp) {
     state.phaseLeft = Math.max(0, state.phaseLeft - allowed);
     captureReplayFrame(+state.settings.duration - state.phaseLeft, state.phaseLeft<=0);
     if (state.phaseLeft <= 0) {stopRound(true);closeQuickEvents();closeSpeedPopover();}
+    else if(state.checkpoint&&!state.checkpoint.done&&!state.checkpoint.waiting&&state.blackoutTime<=0&&(+state.settings.duration-state.phaseLeft)>=state.checkpoint.at)enterCheckpoint();
   }
   // Avoid painting twice as often on 90/120 Hz Android screens.
   if ((state.phase==='preview'||state.phase==='tracking') && timestamp-lastVisualPaint>=14.5) {
@@ -3283,6 +3408,7 @@ $('replaySeek').addEventListener('input',e=>{replayPlayer.playing=false;replayPl
 $('clearButton').addEventListener('click',clearSelection);
 $('answerButton').addEventListener('click',()=>{
   if(!canSelect() || state.userSelected.size!==state.targets.size)return;
+  if(state.checkpoint?.waiting){continueCheckpoint();return;}
   state.phase='revealed';recordRound();updateUI();render();
 });
 $('quickEventsButton').addEventListener('click',()=>{
@@ -3320,6 +3446,7 @@ $('settings').addEventListener('toggle',()=>handleSettingsOpened($('settings').o
 $('settingsBackdrop').addEventListener('click',()=>{$('settings').open=false;});
 document.querySelectorAll('[data-settings-tab]').forEach(btn=>btn.addEventListener('click',()=>selectSettingsTab(btn.dataset.settingsTab)));
 document.querySelectorAll('[data-mode-select]').forEach(btn=>btn.addEventListener('click',()=>setGameMode(btn.dataset.modeSelect)));
+document.querySelectorAll('[data-variant]').forEach(btn=>btn.addEventListener('click',()=>setRadarVariant(btn.dataset.variant)));
 $('challengeLength').addEventListener('change',()=>{
   if(state.sessionLive)return;
   game.prefs.challengeLength=+$('challengeLength').value===10?10:5;
