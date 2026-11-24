@@ -37,7 +37,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: NeuroX-Radar-Unsigned-7.3.0-and-Signer
+          name: NeuroX-Radar-Unsigned-7.3.1-and-Signer
           path: |
             radar-android/app/build/outputs/apk/release/app-release-unsigned.apk
             radar-android/apksigner.jar
