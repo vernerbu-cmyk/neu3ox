@@ -453,7 +453,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
 .target-promotion-actions .btn{padding:9px 11px;min-height:38px;font-size:12px;white-space:nowrap}
 @media(max-width:420px){.target-promotion-actions{width:100%}.target-promotion-actions .btn{flex:1;min-width:0}}
 
-/* v7.2 — Last-flight review. Review does not change the underlying game state. */
+/* v7.2.1 — Readable review and nearest-pair fallback. Review does not change the underlying game state. */
 #replayButton{display:none}
 .page[data-phase="revealed"] #replayButton{display:inline-flex}
 .replay-overlay{display:none;position:fixed;inset:0;z-index:85;background:rgba(5,15,35,.84);padding:12px;overflow:auto;overscroll-behavior:contain;align-items:flex-start;justify-content:center}
@@ -462,7 +462,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
 .replay-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
 .replay-head strong{font-size:20px;color:var(--blue)}
 .replay-head small{display:block;font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4}
-.replay-stage{display:flex;align-items:center;justify-content:center;min-height:0;background:#0A1633;border:1px solid #314B74;border-radius:16px;overflow:hidden;padding:4px}
+.replay-stage{position:relative;display:flex;align-items:center;justify-content:center;min-height:0;background:#0A1633;border:2px solid #6482A3;border-radius:16px;overflow:hidden;padding:2px}
 #replayCanvas{display:block;width:100%;height:auto;max-height:52dvh;object-fit:contain}
 .replay-seek-row{display:flex;align-items:center;gap:10px;font-weight:850;font-size:13px}
 #replaySeek{min-width:0;flex:1;accent-color:var(--orange);height:30px;touch-action:pan-y}
@@ -473,10 +473,24 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
 .replay-markers{display:flex;gap:7px;overflow-x:auto;min-height:0;padding-bottom:4px}
 .replay-markers button{flex:0 0 auto;border:1px solid #C8D9EA;border-radius:10px;background:white;color:#173C6E;font-weight:800;font-size:12px;padding:8px 10px;min-height:37px}
 .replay-markers button:hover{background:#E9F4FF}
-.replay-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;font-weight:800;color:#425C7B}
+.replay-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;font-weight:800;color:#28466C}
 .replay-legend span{display:inline-flex;align-items:center;gap:5px}
 .replay-dot{display:inline-block;width:10px;height:10px;border-radius:50%}
-.replay-note{color:#60728C;font-size:11px;line-height:1.4;margin:0}
+.replay-note{color:#516A8A;font-size:11px;line-height:1.4;margin:0}
+.replay-moment{display:flex;align-items:center;justify-content:space-between;gap:9px;background:#FFF3DA;border:1px solid #DFA84A;border-radius:12px;padding:9px 10px;color:#553B17}
+.replay-moment strong{display:block;font-size:14px;line-height:1.3}
+.replay-moment span{display:block;font-size:12px;line-height:1.4;margin-top:3px}
+.replay-moment .btn{flex:0 0 auto;background:#BD6313;border-color:#BD6313;color:white;font-size:13px;font-weight:900;min-height:43px}
+.replay-alert{position:absolute;z-index:2;top:9px;left:50%;transform:translateX(-50%);max-width:96%;white-space:nowrap;border:2px solid #FFC86A;background:rgba(32,27,26,.93);border-radius:10px;padding:5px 10px;color:#FFDE9E;font-size:14px;font-weight:900;pointer-events:none;box-shadow:0 3px 14px #0009}
+.replay-alert[hidden]{display:none}
+.replay-overlay.large{padding:0}
+.replay-overlay.large .replay-dialog{width:100%;max-width:100%;height:100dvh;max-height:100dvh;border-radius:0;padding:8px;overflow:hidden;gap:6px}
+.replay-overlay.large .replay-head small,.replay-overlay.large .replay-legend,.replay-overlay.large .replay-markers,.replay-overlay.large .replay-note{display:none}
+.replay-overlay.large .replay-stage{flex:1;max-height:none;min-height:0}
+.replay-overlay.large #replayCanvas{height:100%;width:100%;max-height:100%;object-fit:contain}
+.replay-overlay.large .replay-moment{padding:6px 8px}
+.replay-overlay.large .replay-moment span{font-size:11px}
+@media(max-width:370px){.replay-moment{padding:7px;gap:6px}.replay-moment strong{font-size:12px}.replay-moment span{font-size:11px}.replay-moment .btn{font-size:12px;padding:7px}.replay-alert{font-size:12px}}
 @media(max-width:720px){
  .page[data-phase="revealed"] #replayButton{display:inline-flex;grid-column:1/-1;order:1}
  .page[data-phase="revealed"] #repeatButton{order:2}
@@ -506,7 +520,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
       </div>
       <div>
         <div class="brand-line">NeuroX · Внимание</div>
-        <h1>Радар <span style="font-size:14px;font-weight:800;color:#7b90ac;vertical-align:middle">7.2.0</span></h1>
+        <h1>Радар <span style="font-size:14px;font-weight:800;color:#7b90ac;vertical-align:middle">7.2.1</span></h1>
         <p class="subtitle">Запомни самолёты-цели и следи за ними. Начни с одного — игра предложит больше, когда будешь готов!</p>
       </div>
     </div>
@@ -691,12 +705,13 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
   <div class="replay-overlay" id="replayOverlay" role="dialog" aria-modal="true" aria-label="Разбор полёта" aria-hidden="true">
     <div class="replay-dialog">
       <div class="replay-head"><div><strong>↻ Разбор полёта</strong><small id="replaySummary">Повтор последнего раунда по записанным координатам.</small></div><button type="button" class="btn" id="replayClose" aria-label="Закрыть разбор">✕</button></div>
-      <div class="replay-stage"><canvas id="replayCanvas" aria-label="Запись движения самолётов с выделенными траекториями целей и ошибок"></canvas></div>
+      <div class="replay-stage"><canvas id="replayCanvas" aria-label="Запись движения самолётов с выделенными траекториями целей и ошибок"></canvas><div class="replay-alert" id="replayAlert" hidden aria-live="off"></div></div>
+      <div class="replay-moment" id="replayMoment"><div><strong id="replayMomentTitle">↔ Ближайшая пара</strong><span id="replayMomentDetails">Находим момент минимального расстояния.</span></div><button type="button" class="btn" id="replayMomentJump">⌖ Показать</button></div>
       <div class="replay-seek-row"><label for="replaySeek">Время</label><input id="replaySeek" type="range" min="0" max="10" step="0.01" value="0" aria-label="Положение воспроизведения"><output id="replayClock">0,0 / 10,0</output></div>
-      <div class="replay-actions"><button type="button" class="btn primary" id="replayPlay">▶ Смотреть</button><button type="button" class="btn" id="replaySpeed">1×</button><label><input type="checkbox" id="replayTrails" checked> Показывать траектории и правильные цели</label></div>
+      <div class="replay-actions"><button type="button" class="btn primary" id="replayPlay">▶ Смотреть</button><button type="button" class="btn" id="replaySpeed">1×</button><button type="button" class="btn" id="replayLarge" aria-pressed="false">🔎 Увеличить</button><label><input type="checkbox" id="replayTrails" checked> Показывать траектории и правильные цели</label></div>
       <div class="replay-legend"><span><i class="replay-dot" style="background:#42E3A6"></i>Правильная цель</span><span><i class="replay-dot" style="background:#FF7777"></i>Ошибочный выбор</span><span><i class="replay-dot" style="background:#FFC16E"></i>Близкое сближение</span></div>
       <div class="replay-markers" id="replayMarkers" aria-label="События и сближения полёта"></div>
-      <p class="replay-note" id="replayNote">Отметки сближений показывают потенциально трудные участки, а не момент, когда игрок потерял цель. Это разбор игры, не диагностика внимания.</p>
+      <p class="replay-note" id="replayNote">Кнопка «Показать» ведёт к самому близкому моменту. Если самолёты не сближались тесно, это будет обозначено отдельно. Игра не определяет, когда игрок потерял цель.</p>
     </div>
   </div>
   <div class="confirm-overlay" id="confirmOverlay" role="dialog" aria-modal="true" aria-label="Подтверждение" aria-hidden="true">
@@ -1435,7 +1450,7 @@ function stopRound(completed) {
 
 // Replay uses actual frame snapshots, not a new random flight. Only the last
 // successfully finished round is kept in RAM. It does not alter stored records.
-const replayPlayer={open:false,playing:false,at:0,speed:1,lastStamp:0,lastDraw:0,painting:false,frame:null,token:0};
+const replayPlayer={open:false,playing:false,at:0,speed:1,lastStamp:0,lastDraw:0,painting:false,frame:null,token:0,focus:null};
 const REPLAY_EVENT_NAMES={squad:'Эскадрилья',blackout:'Радиомолчание',reinforcement:'Подкрепление',blind:'Слепая зона',switch:'Смена цели',turbulence:'Турбулентность',decoy:'Ложный сигнал',corridor:'Коридор',zoom:'Масштаб',mirror:'Зеркальные маршруты',echo:'Эхо'};
 function beginReplayCapture(){
   state.replayCapture={version:1,frames:[],events:[],encounters:[],duration:+state.settings.duration,
@@ -1470,17 +1485,35 @@ function finalizeReplayCapture(){
   capture.events=state.history.map(e=>({...e,at:clamp(e.at,0,capture.duration)}));
   capture.traceHistory=state.traceHistory;
   capture.encounters=findReplayEncounters(capture);
+  capture.nearest=findReplayNearestPair(capture);
   state.lastReplay=capture;
   state.replayCapture=null;
 }
+function replayCloseDistance(rec){return Math.min(122,Math.max(75,(SPACING[rec.settings.spacing]||160)*.76));}
+function findReplayNearestPair(rec){
+  let nearest=null;
+  // Full scan: even when no pair crossed the close-approach threshold, show the actual
+  // closest TARGET-related pair. Do not invent an encounter.
+  for(const frame of rec.frames){
+    if(frame.blackout)continue;
+    for(let a=0;a<frame.planes.length;a++)for(let b=a+1;b<frame.planes.length;b++){
+      const x=frame.planes[a],y=frame.planes[b];
+      if(!x.visible||!y.visible||(!frame.targets.includes(x.id)&&!frame.targets.includes(y.id)))continue;
+      const d=Math.hypot(x.x-y.x,x.y-y.y);
+      if(!nearest || d<nearest.d){nearest={t:frame.t,d,pair:[x.id,y.id],x:(x.x+y.x)/2,y:(x.y+y.y)/2};}
+    }
+  }
+  if(nearest)nearest.isClose=nearest.d<replayCloseDistance(rec);
+  return nearest;
+}
 function findReplayEncounters(rec){
-  const threshold=Math.min(122,Math.max(75,(SPACING[rec.settings.spacing]||160)*.76));
+  const threshold=replayCloseDistance(rec);
   const episodes=new Map(),out=[];
   for(let i=0;i<rec.frames.length;i++){
     const f=rec.frames[i],present=new Set();
     for(let a=0;a<f.planes.length;a++)for(let b=a+1;b<f.planes.length;b++){
       const x=f.planes[a],y=f.planes[b];
-      if(!f.targets.includes(x.id)&&!f.targets.includes(y.id))continue;
+      if(f.blackout||!x.visible||!y.visible||(!f.targets.includes(x.id)&&!f.targets.includes(y.id)))continue;
       const dist=Math.hypot(x.x-y.x,x.y-y.y);
       if(dist>=threshold)continue;
       const key=`${Math.min(x.id,y.id)}-${Math.max(x.id,y.id)}`;
@@ -1504,31 +1537,38 @@ function openFlightReplay(){
   closeQuickEvents();closeSpeedPopover();
   $('settings').open=false;
   const correct=rec.selected.filter(id=>rec.finalTargets.includes(id)).length;
-  $('replaySummary').textContent=`Последний раунд: ${correct} из ${rec.finalTargets.length} · ${rec.frames.length} записанных кадров · ${rec.events.length} событий`;
+  $('replaySummary').textContent=`Последний раунд: ${correct} из ${rec.finalTargets.length} · ${rec.events.length} событий · просмотр можно увеличить`;
   $('replaySeek').max=String(rec.duration);
   $('replayTrails').checked=true;
   $('replayOverlay').classList.add('open');$('replayOverlay').setAttribute('aria-hidden','false');
-  replayPlayer.open=true;replayPlayer.playing=false;replayPlayer.at=0;replayPlayer.speed=1;replayPlayer.lastStamp=0;replayPlayer.lastDraw=0;
+  replayPlayer.open=true;replayPlayer.playing=false;replayPlayer.at=0;replayPlayer.speed=1;replayPlayer.lastStamp=0;replayPlayer.lastDraw=0;replayPlayer.focus=null;
+  $('replayOverlay').classList.remove('large');$('replayLarge').setAttribute('aria-pressed','false');$('replayLarge').textContent='🔎 Увеличить';
+  const near=rec.nearest;
+  $('replayMomentTitle').textContent=near?(near.isClose?'⚠ Было близкое сближение':'↔ Самая близкая пара в раунде'):'Сближений не найдено';
+  $('replayMomentDetails').textContent=near?`Самолёты №${near.pair[0]+1} и №${near.pair[1]+1} · ${near.t.toFixed(1).replace('.',',')} с${near.isClose?'':' · без тесного сближения'}`:'Недостаточно данных для сравнения';
+  $('replayMomentJump').disabled=!near;
   $('replaySpeed').textContent='1×';
   const markerBox=$('replayMarkers');markerBox.replaceChildren();
   for(const ep of rec.encounters){
     const btn=document.createElement('button');btn.type='button';
     btn.textContent=`⚠ ${ep.t.toFixed(1).replace('.',',')} с · №${ep.pair[0]+1} и №${ep.pair[1]+1}`;
     btn.title='Близкое сближение — нажми, чтобы перейти';
-    btn.addEventListener('click',()=>{replayPlayer.playing=false;seekFlightReplay(ep.t);});markerBox.appendChild(btn);
+    btn.addEventListener('click',()=>jumpFlightReplayToMoment(ep));markerBox.appendChild(btn);
   }
   for(const ev of rec.events){
     const btn=document.createElement('button');btn.type='button';
     btn.textContent=`• ${ev.at.toFixed(1).replace('.',',')} с · ${REPLAY_EVENT_NAMES[ev.name]||ev.name}`;
     btn.addEventListener('click',()=>{replayPlayer.playing=false;seekFlightReplay(ev.at);});markerBox.appendChild(btn);
   }
-  if(!markerBox.children.length){const msg=document.createElement('span');msg.textContent='За этот раунд не было отмеченных сближений и событий.';markerBox.appendChild(msg);}
+  if(!rec.encounters.length && near){const msg=document.createElement('span');msg.textContent='⚠ Тесных сближений не было. Показана ближайшая пара.';msg.style.fontSize='12px';markerBox.prepend(msg);}
+  if(!markerBox.children.length){const msg=document.createElement('span');msg.textContent='Событий нет. Используй кнопку «Показать» для ближайшей пары.';markerBox.appendChild(msg);}
   seekFlightReplay(0);
   $('replayClose').focus();
 }
 function closeFlightReplay(){
   if(!replayPlayer.open)return;
-  replayPlayer.open=false;replayPlayer.playing=false;replayPlayer.lastStamp=0;replayPlayer.lastDraw=0;replayPlayer.token++;
+  replayPlayer.open=false;replayPlayer.playing=false;replayPlayer.focus=null;replayPlayer.lastStamp=0;replayPlayer.lastDraw=0;replayPlayer.token++;
+  $('replayOverlay').classList.remove('large');
   replayPlayer.painting=false;replayPlayer.frame=null;
   $('replayOverlay').classList.remove('open');$('replayOverlay').setAttribute('aria-hidden','true');
   render();
@@ -1540,6 +1580,20 @@ function nearestReplayFrame(rec,t){
   while(low<high){const mid=(low+high)>>1;if(frames[mid].t<t)low=mid+1;else high=mid;}
   return low>0&&Math.abs(frames[low-1].t-t)<Math.abs(frames[low].t-t)?low-1:low;
 }
+function jumpFlightReplayToMoment(ep){
+  if(!replayPlayer.open||!ep)return;
+  replayPlayer.playing=false;replayPlayer.lastStamp=0;
+  replayPlayer.focus=ep;
+  seekFlightReplay(ep.t);
+}
+function toggleReplayLarge(){
+  if(!replayPlayer.open)return;
+  const large=$('replayOverlay').classList.toggle('large');
+  $('replayLarge').setAttribute('aria-pressed',String(large));
+  $('replayLarge').textContent=large?'🔎 Уменьшить':'🔎 Увеличить';
+  // Canvas has fixed bitmap dimensions; it rescales crisp annotations to fit.
+  paintFlightReplay();
+}
 function seekFlightReplay(t){
   const rec=state.lastReplay;
   if(!replayPlayer.open||!rec)return;
@@ -1547,12 +1601,17 @@ function seekFlightReplay(t){
   $('replaySeek').value=String(replayPlayer.at);
   $('replayClock').textContent=`${replayPlayer.at.toFixed(1).replace('.',',')} / ${rec.duration.toFixed(1).replace('.',',')} с`;
   $('replayPlay').textContent=replayPlayer.playing?'Ⅱ Пауза':'▶ Смотреть';
+  const focus=replayPlayer.focus;
+  const visible=focus && Math.abs(replayPlayer.at-focus.t)<=.75;
+  $('replayAlert').hidden=!visible;
+  if(visible)$('replayAlert').textContent=focus.isClose?'⚠ БЛИЗКОЕ СБЛИЖЕНИЕ':'↔ БЛИЖАЙШАЯ ПАРА';
   paintFlightReplay();
 }
 function toggleFlightReplay(){
   if(!replayPlayer.open)return;
   if(replayPlayer.playing){replayPlayer.playing=false;replayPlayer.lastStamp=0;seekFlightReplay(replayPlayer.at);return;}
   if(replayPlayer.at>=state.lastReplay.duration-.01)replayPlayer.at=0;
+  replayPlayer.focus=null;
   replayPlayer.playing=true;replayPlayer.lastStamp=0;
   seekFlightReplay(replayPlayer.at);
   const token=++replayPlayer.token;
@@ -1595,7 +1654,27 @@ function paintFlightReplay(){
     if($('replayTrails').checked)drawReplayAnnotations(rec,index,f);
     const canvas=$('replayCanvas');
     if(canvas.width!==C.width||canvas.height!==C.height){canvas.width=C.width;canvas.height=C.height;}
-    const g=canvas.getContext('2d');g.clearRect(0,0,canvas.width,canvas.height);g.drawImage(C,0,0);
+    const g=canvas.getContext('2d');g.clearRect(0,0,canvas.width,canvas.height);
+    // Truly enlarge the recorded aircraft, not just the container. Camera follows
+    // the two selected aircraft for the focused moment, without altering positions.
+    const activeFocus=replayPlayer.focus&&Math.abs(replayPlayer.focus.t-f.t)<.78?replayPlayer.focus:null;
+    const enlarged=$('replayOverlay').classList.contains('large');
+    const factor=activeFocus?(enlarged?2:1.55):(enlarged?1.38:1);
+    if(factor<=1){g.drawImage(C,0,0);}else{
+      let centerX=WORLD.w/2,centerY=WORLD.h/2;
+      if(activeFocus){
+        const a=f.planes.find(p=>p.id===activeFocus.pair[0]);
+        const b=f.planes.find(p=>p.id===activeFocus.pair[1]);
+        if(a&&b){centerX=(a.x+b.x)/2;centerY=(a.y+b.y)/2;}
+      }
+      const tf=worldTransform(),frameZoom=f.zoom;
+      const cx=tf.offsetX+tf.scale*(WORLD.w/2+(centerX-WORLD.w/2)*frameZoom);
+      const cy=tf.offsetY+tf.scale*(WORLD.h/2+(centerY-WORLD.h/2)*frameZoom);
+      const sourceW=C.width/factor,sourceH=C.height/factor;
+      const sx=clamp(cx-sourceW/2,0,C.width-sourceW);
+      const sy=clamp(cy-sourceH/2,0,C.height-sourceH);
+      g.drawImage(C,sx,sy,sourceW,sourceH,0,0,canvas.width,canvas.height);
+    }
   }finally{
     Object.assign(state,original);
     replayPlayer.painting=false;replayPlayer.frame=null;
@@ -1609,21 +1688,56 @@ function drawReplayAnnotations(rec,index,frame){
   ctx.translate(WORLD.w/2,WORLD.h/2);ctx.scale(zoom,zoom);ctx.translate(-WORLD.w/2,-WORLD.h/2);
   const paths=[...new Set([...rec.finalTargets,...rec.selected.filter(id=>!rec.finalTargets.includes(id))])];
   for(const id of paths){
-    const good=rec.finalTargets.includes(id),col=good?'#42E3A6':'#FF7777';
-    ctx.beginPath();let began=false;
-    for(let i=0;i<=index;i+=Math.max(1,Math.floor(index/160))){
-      const plane=rec.frames[i].planes.find(p=>p.id===id);if(!plane)continue;
-      if(!began){ctx.moveTo(plane.x,plane.y);began=true;}else ctx.lineTo(plane.x,plane.y);
+    const good=rec.finalTargets.includes(id),col=good?'#45FFB9':'#FF7373';
+    const points=[];
+    for(let i=0;i<=index;i+=Math.max(1,Math.floor(index/180))){
+      const plane=rec.frames[i].planes.find(p=>p.id===id);
+      if(plane)points.push(plane);
     }
-    const p=frame.planes.find(p=>p.id===id);
-    if(p){if(!began)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);}
-    ctx.strokeStyle=col;ctx.lineWidth=3.5;ctx.globalAlpha=.65;ctx.stroke();ctx.globalAlpha=1;
-    if(p&&p.visible){ctx.strokeStyle=col;ctx.lineWidth=3.5;ctx.beginPath();ctx.arc(p.x,p.y,41*(p.scale||1),0,Math.PI*2);ctx.stroke();}
+    const current=frame.planes.find(p=>p.id===id);
+    if(current)points.push(current);
+    if(!points.length)continue;
+    ctx.save();ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+    ctx.globalAlpha=.83;ctx.strokeStyle='#04162A';ctx.lineWidth=10;ctx.stroke();
+    ctx.strokeStyle=col;ctx.lineWidth=5.8;ctx.stroke();ctx.globalAlpha=1;
+    if(current&&current.visible){
+      ctx.fillStyle=good?'rgba(42,240,163,.17)':'rgba(255,100,100,.17)';
+      ctx.strokeStyle='#07152C';ctx.lineWidth=10;
+      ctx.beginPath();ctx.arc(current.x,current.y,49*(current.scale||1),0,Math.PI*2);ctx.fill();ctx.stroke();
+      ctx.strokeStyle=col;ctx.lineWidth=6;
+      ctx.beginPath();ctx.arc(current.x,current.y,49*(current.scale||1),0,Math.PI*2);ctx.stroke();
+    }
+    ctx.restore();
   }
+  // Every recorded tight approach gets a visible marker for a longer interval.
   for(const ep of rec.encounters){
-    if(Math.abs(ep.t-frame.t)>.28)continue;
-    ctx.strokeStyle='#FFC16E';ctx.lineWidth=3;ctx.setLineDash([7,6]);
-    ctx.beginPath();ctx.arc(ep.x,ep.y,54,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+    if(Math.abs(ep.t-frame.t)>.70 || (replayPlayer.focus&&Math.abs(ep.t-replayPlayer.focus.t)<.55))continue;
+    ctx.save();ctx.strokeStyle='#FFD06A';ctx.lineWidth=5;ctx.setLineDash([10,7]);
+    ctx.beginPath();ctx.arc(ep.x,ep.y,65,0,Math.PI*2);ctx.stroke();ctx.restore();
+  }
+  const focus=replayPlayer.focus;
+  if(focus&&Math.abs(focus.t-frame.t)<=.75){
+    const a=frame.planes.find(p=>p.id===focus.pair[0]);
+    const b=frame.planes.find(p=>p.id===focus.pair[1]);
+    if(a&&b){
+      ctx.save();ctx.setLineDash([]);
+      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+      ctx.strokeStyle='#091327';ctx.lineWidth=13;ctx.stroke();
+      ctx.strokeStyle='#FFCB51';ctx.lineWidth=7;ctx.stroke();
+      for(const p of [a,b]){
+        ctx.fillStyle='rgba(255,204,75,.22)';ctx.strokeStyle='#07152B';ctx.lineWidth=12;
+        ctx.beginPath();ctx.arc(p.x,p.y,50*(p.scale||1),0,Math.PI*2);ctx.fill();ctx.stroke();
+        ctx.strokeStyle='#FFDD77';ctx.lineWidth=8;
+        ctx.beginPath();ctx.arc(p.x,p.y,50*(p.scale||1),0,Math.PI*2);ctx.stroke();
+        const markY=p.y<110?p.y+74:p.y-74;
+        ctx.fillStyle='#06172E';ctx.strokeStyle='#FFD16F';ctx.lineWidth=4;
+        ctx.beginPath();ctx.arc(p.x,markY,23,0,Math.PI*2);ctx.fill();ctx.stroke();
+        ctx.fillStyle='#FFFFFF';ctx.font='bold 26px Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(String(p.id+1),p.x,markY+1);
+      }
+      ctx.restore();
+    }
   }
   ctx.restore();
 }
@@ -2923,7 +3037,7 @@ function drawPropeller(paint) {
 function drawPlane(p) {
   const scale=p.scale||1;
   ctx.save();ctx.translate(p.x,p.y);
-  ctx.rotate(p.angle);ctx.scale(scale,scale);
+  ctx.rotate(p.angle);ctx.scale(scale*(replayPlayer.painting?1.20:1),scale*(replayPlayer.painting?1.20:1));
   const isTarget=state.targets.has(p.id);
   const preview=state.phase==='preview'||(state.phase==='paused'&&state.priorPhase==='preview');
   const reveal=state.phase==='revealed';
@@ -2977,7 +3091,7 @@ function drawPlane(p) {
   // Номера видны только при первоначальном показе и после остановки.
   // ID остаётся привязанным к самолёту даже при манёврах и смене цвета.
   
-const showNumber = state.phase === 'preview' || (state.phase === 'paused' && state.priorPhase === 'preview') || state.phase === 'stopped' || state.phase === 'revealed';
+const showNumber = replayPlayer.painting || state.phase === 'preview' || (state.phase === 'paused' && state.priorPhase === 'preview') || state.phase === 'stopped' || state.phase === 'revealed';
 
   if (showNumber) {
     const markerX = Math.max(RADAR_PORTRAIT_PHONE ? 26 : 18,
@@ -3162,8 +3276,10 @@ $('replayClose').addEventListener('click',closeFlightReplay);
 $('replayOverlay').addEventListener('click',e=>{if(e.target===$('replayOverlay'))closeFlightReplay();});
 $('replayPlay').addEventListener('click',toggleFlightReplay);
 $('replaySpeed').addEventListener('click',cycleReplaySpeed);
+$('replayLarge').addEventListener('click',toggleReplayLarge);
+$('replayMomentJump').addEventListener('click',()=>jumpFlightReplayToMoment(state.lastReplay?.nearest));
 $('replayTrails').addEventListener('change',paintFlightReplay);
-$('replaySeek').addEventListener('input',e=>{replayPlayer.playing=false;seekFlightReplay(+e.target.value);});
+$('replaySeek').addEventListener('input',e=>{replayPlayer.playing=false;replayPlayer.focus=null;seekFlightReplay(+e.target.value);});
 $('clearButton').addEventListener('click',clearSelection);
 $('answerButton').addEventListener('click',()=>{
   if(!canSelect() || state.userSelected.size!==state.targets.size)return;
