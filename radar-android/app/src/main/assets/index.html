@@ -524,16 +524,16 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
  #replayCanvas{max-height:76dvh}
 }
 /* Special free-play missions: self-contained, no extra global settings. */
-.mission-selector{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 10px;padding:7px 9px;border:1px solid #D6E4F2;border-radius:13px;background:#F4F9FF}
+.mission-selector{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:0 0 10px;padding:9px 10px;border:1px solid #D6E4F2;border-radius:14px;background:#F4F9FF}
 .mission-selector>strong{font-size:12px;color:#375372;margin-right:5px}
-.mission-choice{border:1px solid #C8D9EB;color:#244F7D;background:white;border-radius:10px;padding:8px 10px;min-height:34px;font-size:12px;font-weight:850}
-.mission-choice.active{background:#16487F;border-color:#16487F;color:white}
+.mission-choice{border:1px solid #C8D9EB;color:#244F7D;background:white;border-radius:11px;padding:8px 10px;min-height:42px;font-size:12px;font-weight:850;line-height:1.25;white-space:normal;text-align:center;transition:background .18s,border-color .18s}
+.mission-choice.active{background:#16487F;border-color:#16487F;color:white;box-shadow:0 3px 10px #16487F25}
 .mission-choice:disabled{opacity:.55}
 .mission-note{font-size:11px;color:#627D9A;flex:1 0 100%;line-height:1.35}
 .page[data-mode="challenge"] .mission-selector{display:none}
 .page[data-checkpoint="1"] #answerButton{background:#147E91;color:white;border-color:#147E91}
 .page[data-checkpoint="1"] #pauseButton{display:none}
-@media(max-width:720px){.mission-selector{padding:5px 6px;gap:5px;margin-bottom:5px}.mission-selector>strong{width:100%}.mission-choice{flex:1;min-height:34px;padding:7px 3px;font-size:10.5px}.mission-note{font-size:10px}}
+@media(max-width:720px){.mission-selector{padding:7px;gap:6px;margin-bottom:5px}.mission-selector>strong{width:100%}.mission-choice{flex:1 1 0;min-width:0;min-height:45px;padding:7px 4px;font-size:11.5px}.mission-note{font-size:11px}}
 </style>
 </head>
 <body class="nx-added-game nx-game-radar" data-nx-section="attention">
@@ -550,7 +550,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
       </div>
       <div>
         <div class="brand-line">NeuroX · Внимание</div>
-        <h1>Радар <span style="font-size:14px;font-weight:800;color:#7b90ac;vertical-align:middle">7.3.0</span></h1>
+        <h1>Радар <span style="font-size:14px;font-weight:800;color:#7b90ac;vertical-align:middle">7.3.1</span></h1>
         <p class="subtitle">Запомни самолёты-цели и следи за ними. Начни с одного — игра предложит больше, когда будешь готов!</p>
       </div>
     </div>
@@ -749,7 +749,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
       <div class="replay-panel">
         <div class="replay-moment" id="replayMoment"><div><strong id="replayMomentTitle">↔ Ближайшая пара</strong><span id="replayMomentDetails">Покажем место, где самолёты сблизились сильнее всего.</span></div><button type="button" class="btn" id="replayMomentJump">⌖ Показать</button></div>
         <div class="replay-seek-row"><label for="replaySeek">Время</label><input id="replaySeek" type="range" min="0" max="10" step="0.01" value="0" aria-label="Положение воспроизведения"><output id="replayClock">0,0 / 10,0</output></div>
-        <div class="replay-actions"><button type="button" class="btn primary" id="replayPlay">▶ Смотреть</button><button type="button" class="btn" id="replaySpeed">1×</button><button type="button" class="btn" id="replayLarge" aria-pressed="false">⛶ Во весь экран</button><label><input type="checkbox" id="replayTrails" checked> Показывать траектории и правильные цели</label></div>
+        <div class="replay-actions"><button type="button" class="btn primary" id="replayPlay">▶ Смотреть</button><button type="button" class="btn" id="replayClip">↺ Момент ±2 c</button><button type="button" class="btn" id="replaySpeed">1×</button><button type="button" class="btn" id="replayLarge" aria-pressed="false">⛶ Во весь экран</button><label><input type="checkbox" id="replayTrails" checked> Показывать траектории и правильные цели</label></div>
         <div class="replay-markers" id="replayMarkers" aria-label="События и сближения полёта"></div>
         <p class="replay-note" id="replayNote">Кнопка «Показать» ведёт к самому близкому моменту. Если самолёты не сближались тесно, это будет обозначено отдельно. Игра не определяет, когда игрок потерял цель.</p>
       </div>
@@ -1374,10 +1374,11 @@ function createPlanes() {
   return { planes, targets: ids.slice(0, +state.settings.targets) };
 }
 function setRadarVariant(variant){
-  if(game.mode!=='free'||state.sessionLive||isActive()||state.phase==='stopped'||state.phase==='revealed')return;
+  if(game.mode!=='free'||isActive()||state.phase==='stopped')return;
   if(!['classic','checkpoint','encounter'].includes(variant))return;
   game.variant=variant;
   state.snapshot=null;
+  if(state.phase==='revealed'){$('roundResult').classList.add('mission-switched');}
   safeStore('neurox_radar_variant_v73',variant);
   updateUI();
 }
@@ -1552,7 +1553,7 @@ function stopRound(completed) {
 
 // Replay uses actual frame snapshots, not a new random flight. Only the last
 // successfully finished round is kept in RAM. It does not alter stored records.
-const replayPlayer={open:false,playing:false,at:0,speed:1,lastStamp:0,lastDraw:0,painting:false,frame:null,token:0,focus:null};
+const replayPlayer={open:false,playing:false,at:0,speed:1,lastStamp:0,lastDraw:0,painting:false,frame:null,token:0,focus:null,clipEnd:null};
 const REPLAY_EVENT_NAMES={checkpoint:'Контрольная точка',guaranteedEncounter:'Заданное сближение',squad:'Эскадрилья',blackout:'Радиомолчание',reinforcement:'Подкрепление',blind:'Слепая зона',switch:'Смена цели',turbulence:'Турбулентность',decoy:'Ложный сигнал',corridor:'Коридор',zoom:'Масштаб',mirror:'Зеркальные маршруты',echo:'Эхо'};
 function beginReplayCapture(){
   state.replayCapture={version:1,frames:[],events:[],encounters:[],duration:+state.settings.duration,
@@ -1643,13 +1644,14 @@ function openFlightReplay(){
   $('replaySeek').max=String(rec.duration);
   $('replayTrails').checked=true;
   $('replayOverlay').classList.add('open');$('replayOverlay').setAttribute('aria-hidden','false');
-  replayPlayer.open=true;replayPlayer.playing=false;replayPlayer.at=0;replayPlayer.speed=1;replayPlayer.lastStamp=0;replayPlayer.lastDraw=0;replayPlayer.focus=null;
+  replayPlayer.open=true;replayPlayer.playing=false;replayPlayer.at=0;replayPlayer.speed=1;replayPlayer.lastStamp=0;replayPlayer.lastDraw=0;replayPlayer.focus=null;replayPlayer.clipEnd=null;
   const autoLarge=window.matchMedia('(max-width: 720px)').matches;
   $('replayOverlay').classList.toggle('large',autoLarge);$('replayLarge').setAttribute('aria-pressed',String(autoLarge));$('replayLarge').textContent=autoLarge?'⛶ Обычный вид':'⛶ Во весь экран';
   const near=rec.nearest;
   $('replayMomentTitle').textContent=near?(near.isClose?'⚠ Было близкое сближение':'↔ Ключевой момент раунда'):'Сближений не найдено';
   $('replayMomentDetails').textContent=near?`Самолёты №${near.pair[0]+1} и №${near.pair[1]+1} · ${near.t.toFixed(1).replace('.',',')} с${near.isClose?'':' · без тесного сближения'}`:'Недостаточно данных для сравнения';
   $('replayMomentJump').disabled=!near;
+  $('replayClip').disabled=!near;
   $('replaySpeed').textContent='1×';
   const markerBox=$('replayMarkers');markerBox.replaceChildren();
   for(const ep of rec.encounters){
@@ -1670,7 +1672,7 @@ function openFlightReplay(){
 }
 function closeFlightReplay(){
   if(!replayPlayer.open)return;
-  replayPlayer.open=false;replayPlayer.playing=false;replayPlayer.focus=null;replayPlayer.lastStamp=0;replayPlayer.lastDraw=0;replayPlayer.token++;
+  replayPlayer.open=false;replayPlayer.playing=false;replayPlayer.focus=null;replayPlayer.lastStamp=0;replayPlayer.lastDraw=0;replayPlayer.clipEnd=null;replayPlayer.token++;
   $('replayOverlay').classList.remove('large');
   replayPlayer.painting=false;replayPlayer.frame=null;
   $('replayOverlay').classList.remove('open');$('replayOverlay').setAttribute('aria-hidden','true');
@@ -1685,9 +1687,23 @@ function nearestReplayFrame(rec,t){
 }
 function jumpFlightReplayToMoment(ep){
   if(!replayPlayer.open||!ep)return;
-  replayPlayer.playing=false;replayPlayer.lastStamp=0;
+  replayPlayer.playing=false;replayPlayer.lastStamp=0;replayPlayer.clipEnd=null;
   replayPlayer.focus=ep;
   seekFlightReplay(ep.t);
+}
+function replayKeyMomentClip(){
+  const rec=state.lastReplay,near=rec?.nearest;
+  if(!replayPlayer.open||!near||!rec)return;
+  replayPlayer.playing=false;
+  replayPlayer.clipEnd=Math.min(rec.duration,near.t+2);
+  replayPlayer.at=Math.max(0,near.t-2);
+  replayPlayer.focus=near;
+  replayPlayer.speed=.5;
+  $('replaySpeed').textContent='0,5×';
+  replayPlayer.playing=true;replayPlayer.lastStamp=0;
+  seekFlightReplay(replayPlayer.at);
+  const token=++replayPlayer.token;
+  requestAnimationFrame(stamp=>runFlightReplay(stamp,token));
 }
 function toggleReplayLarge(){
   if(!replayPlayer.open)return;
@@ -1712,9 +1728,9 @@ function seekFlightReplay(t){
 }
 function toggleFlightReplay(){
   if(!replayPlayer.open)return;
-  if(replayPlayer.playing){replayPlayer.playing=false;replayPlayer.lastStamp=0;seekFlightReplay(replayPlayer.at);return;}
+  if(replayPlayer.playing){replayPlayer.playing=false;replayPlayer.lastStamp=0;replayPlayer.clipEnd=null;seekFlightReplay(replayPlayer.at);return;}
   if(replayPlayer.at>=state.lastReplay.duration-.01)replayPlayer.at=0;
-  replayPlayer.focus=null;
+  replayPlayer.focus=null;replayPlayer.clipEnd=null;
   replayPlayer.playing=true;replayPlayer.lastStamp=0;
   seekFlightReplay(replayPlayer.at);
   const token=++replayPlayer.token;
@@ -1725,7 +1741,7 @@ function runFlightReplay(stamp,token){
   if(replayPlayer.lastStamp){replayPlayer.at=Math.min(state.lastReplay.duration,replayPlayer.at+
     Math.min(.10,(stamp-replayPlayer.lastStamp)/1000)*replayPlayer.speed);}
   replayPlayer.lastStamp=stamp;
-  if(replayPlayer.at>=state.lastReplay.duration){replayPlayer.playing=false;replayPlayer.lastStamp=0;}
+  if(replayPlayer.at>=state.lastReplay.duration || (replayPlayer.clipEnd!==null&&replayPlayer.at>=replayPlayer.clipEnd)){replayPlayer.playing=false;replayPlayer.lastStamp=0;replayPlayer.clipEnd=null;}
   if(!replayPlayer.playing || stamp-replayPlayer.lastDraw>=35){seekFlightReplay(replayPlayer.at);replayPlayer.lastDraw=stamp;}
   if(replayPlayer.playing)requestAnimationFrame(next=>runFlightReplay(next,token));
 }
@@ -1760,7 +1776,7 @@ function paintFlightReplay(){
     const g=canvas.getContext('2d');g.clearRect(0,0,canvas.width,canvas.height);
     // Truly enlarge the recorded aircraft, not just the container. Camera follows
     // the two selected aircraft for the focused moment, without altering positions.
-    const activeFocus=replayPlayer.focus&&Math.abs(replayPlayer.focus.t-f.t)<.78?replayPlayer.focus:null;
+    const activeFocus=replayPlayer.focus&&Math.abs(replayPlayer.focus.t-f.t)<(replayPlayer.clipEnd===null?.78:1.35)?replayPlayer.focus:null;
     const enlarged=$('replayOverlay').classList.contains('large');
     const factor=activeFocus?(enlarged?2:1.55):(enlarged?1.38:1);
     if(factor<=1){g.drawImage(C,0,0);}else{
@@ -1995,7 +2011,7 @@ function setGameMode(mode){
 }
 function syncModeUI(){
   $('page').dataset.mode=game.mode;
-  document.querySelectorAll('[data-variant]').forEach(btn=>{btn.classList.toggle('active',btn.dataset.variant===game.variant);btn.disabled=state.sessionLive||game.mode==='challenge'||isActive()||['stopped','revealed'].includes(state.phase);btn.setAttribute('aria-pressed',String(btn.dataset.variant===game.variant));});
+  document.querySelectorAll('[data-variant]').forEach(btn=>{btn.classList.toggle('active',btn.dataset.variant===game.variant);btn.disabled=game.mode==='challenge'||isActive()||state.phase==='stopped';btn.setAttribute('aria-pressed',String(btn.dataset.variant===game.variant));});
   $('missionNote').textContent=game.variant==='checkpoint'?'Одна остановка в середине полёта: отметь цели без подсказки и продолжай.':game.variant==='encounter'?'Цель и другой самолёт гарантированно пересекутся в ходе манёвра.':'Классическое слежение за выбранными самолётами.';
   $('page').dataset.challengeDone=game.challenge.done?'1':'0';
   document.querySelectorAll('[data-mode-select]').forEach(btn=>{
@@ -2057,7 +2073,12 @@ function recordRound(){
   const left=appendText('div','', '',box);
   appendText('strong','',`${correct} из ${state.targets.size}`,left);
   appendText('small','',perfect?'Все цели найдены!':`Лишних: ${wrong} · пропущено: ${missed}`,left);
-  if(state.checkpoint?.done)appendText('small','',`Контрольная точка: ${state.checkpoint.correct} из ${state.checkpoint.targetCount}`,left);
+  if(state.checkpoint?.done){
+    appendText('small','',`Проверка в середине: ${state.checkpoint.correct} из ${state.checkpoint.targetCount} · финал: ${correct} из ${state.targets.size}`,left);
+  }
+  if(game.mode==='free'&&game.variant==='encounter'){
+    appendText('small','',state.eventCounts.guaranteedEncounter?'↔ Сближение выполнено — посмотри его в разборе':'↔ Манёвр сближения не состоялся в этом раунде',left);
+  }
   const right=appendText('span','',perfect?`✓ Верно · серия ${game.db.streak}`:'Продолжай тренировку',box);
   right.setAttribute('aria-label',perfect?'Ответ правильный':'Ответ с ошибками');
   updateTargetProgress(result);
@@ -2108,7 +2129,7 @@ function renderRecords(){
       ?`${r.speedMin}–${r.speedMax} ед./с (средняя ${r.speedAverage})`
       :`${r.speed} ед./с`;
     const eventCount=r.events?Object.values(r.events).reduce((n,v)=>n+(Number(v)||0),0):null;
-    const details=`${r.objects} самолётов · ${speedText} · лишних ${r.wrong}, пропущено ${r.missed}`;
+    const details=`${r.objects} самолётов · ${speedText} · лишних ${r.wrong}, пропущено ${r.missed}`+(r.checkpoint?` · промежуточно ${r.checkpoint.correct}/${r.checkpoint.targets}`:'');
     appendText('small','',details+(eventCount===null?'':` · событий ${eventCount}`)+(r.pauses?` · пауз ${r.pauses}`:''),a);
     appendText('strong','',`${r.correct}/${r.targets}`,el);
   });
@@ -2985,7 +3006,7 @@ function updateSelectionInfo() {
     return;
   }
   if (state.phase === 'stopped') {
-    if(state.checkpoint?.waiting){info.textContent=`Контрольная точка: отмечено ${count} из ${targetCount}. Правильные ответы узнаешь в конце полёта.`;return;}
+    if(state.checkpoint?.waiting){info.textContent=`Проверка 1 из 2: отмечено ${count} из ${targetCount}. Отметки не покажем до конца раунда.`;return;}
     info.textContent = `Выбрано: ${count} из ${targetCount}. ${count === targetCount ? 'Теперь проверь ответ!' : 'Нажми на нужные самолёты.'}`;
     return;
   }
@@ -3026,12 +3047,12 @@ function updateUI() {
     stopped: ['Выбери ответ', 'Кликай по самолётикам, которые были целями'],
     revealed: ['Ответ показан', 'Зелёные кольца — правильные цели, красные метки — ошибки выбора']
   };
-  $('statusText').textContent = state.checkpoint?.waiting?'Контрольная точка':labels[phase][0];
-  $('instruction').textContent = state.checkpoint?.waiting?'Отметь цели и продолжай. Ответ узнаешь только после завершения полёта.':labels[phase][1];
+  $('statusText').textContent = state.checkpoint?.waiting?'Проверка 1 из 2':labels[phase][0];
+  $('instruction').textContent = state.checkpoint?.waiting?'Проверка 1 из 2: выбери самолёты. Ответы покажем в конце.':labels[phase][1];
   $('statusDot').className = 'status-dot ' + (phase === 'preview' ? 'preview' : phase === 'tracking' ? 'tracking' : phase === 'stopped' || phase === 'revealed' ? 'stopped' : '');
   $('page').dataset.phase=phase;
   $('page').dataset.checkpoint=state.checkpoint?.waiting?'1':'0';
-  $('mobileBoardInfo').textContent = `${state.checkpoint?.waiting?'Контрольная точка':game.mode==='challenge'?'Этап '+Math.min(game.challenge.index+1,game.challenge.length):'Раунд '+state.round} · ${state.targets.size || state.settings.targets} ${((state.targets.size || state.settings.targets) === 1) ? 'цель' : ((state.targets.size || state.settings.targets) < 5) ? 'цели' : 'целей'}`;
+  $('mobileBoardInfo').textContent = `${state.checkpoint?.waiting?'Проверка 1 из 2':game.mode==='free'&&game.variant==='checkpoint'&&state.phase==='tracking'&&state.checkpoint?.done?'Финальный этап':game.mode==='challenge'?'Этап '+Math.min(game.challenge.index+1,game.challenge.length):'Раунд '+state.round} · ${state.targets.size || state.settings.targets} ${((state.targets.size || state.settings.targets) === 1) ? 'цель' : ((state.targets.size || state.settings.targets) < 5) ? 'цели' : 'целей'}`;
   $('roundStat').textContent = state.round;
   $('objectsStat').textContent = state.planes.length ? `${state.planes.length} / ${state.targets.size}` : `${state.settings.objects} / ${state.settings.targets}`;
   $('startButton').textContent = phase === 'paused' ? '▶ Продолжить' : '▶ Начать';
@@ -3400,11 +3421,12 @@ $('replayButton').addEventListener('click',openFlightReplay);
 $('replayClose').addEventListener('click',closeFlightReplay);
 $('replayOverlay').addEventListener('click',e=>{if(e.target===$('replayOverlay'))closeFlightReplay();});
 $('replayPlay').addEventListener('click',toggleFlightReplay);
+$('replayClip').addEventListener('click',replayKeyMomentClip);
 $('replaySpeed').addEventListener('click',cycleReplaySpeed);
 $('replayLarge').addEventListener('click',toggleReplayLarge);
 $('replayMomentJump').addEventListener('click',()=>jumpFlightReplayToMoment(state.lastReplay?.nearest));
 $('replayTrails').addEventListener('change',paintFlightReplay);
-$('replaySeek').addEventListener('input',e=>{replayPlayer.playing=false;replayPlayer.focus=null;seekFlightReplay(+e.target.value);});
+$('replaySeek').addEventListener('input',e=>{replayPlayer.playing=false;replayPlayer.focus=null;replayPlayer.clipEnd=null;seekFlightReplay(+e.target.value);});
 $('clearButton').addEventListener('click',clearSelection);
 $('answerButton').addEventListener('click',()=>{
   if(!canSelect() || state.userSelected.size!==state.targets.size)return;
