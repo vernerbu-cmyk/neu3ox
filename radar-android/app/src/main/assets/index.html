@@ -452,6 +452,44 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
 .target-promotion-actions{display:flex;gap:7px;flex:0 0 auto}
 .target-promotion-actions .btn{padding:9px 11px;min-height:38px;font-size:12px;white-space:nowrap}
 @media(max-width:420px){.target-promotion-actions{width:100%}.target-promotion-actions .btn{flex:1;min-width:0}}
+
+/* v7.2 — Last-flight review. Review does not change the underlying game state. */
+#replayButton{display:none}
+.page[data-phase="revealed"] #replayButton{display:inline-flex}
+.replay-overlay{display:none;position:fixed;inset:0;z-index:85;background:rgba(5,15,35,.84);padding:12px;overflow:auto;overscroll-behavior:contain;align-items:flex-start;justify-content:center}
+.replay-overlay.open{display:flex}
+.replay-dialog{width:min(950px,100%);margin:auto;background:#F8FBFF;border-radius:21px;border:1px solid #91B5D9;box-shadow:0 22px 60px #0008;padding:14px;color:#142E53;display:flex;flex-direction:column;gap:10px;max-height:calc(100dvh - 24px);overflow-y:auto}
+.replay-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.replay-head strong{font-size:20px;color:var(--blue)}
+.replay-head small{display:block;font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4}
+.replay-stage{display:flex;align-items:center;justify-content:center;min-height:0;background:#0A1633;border:1px solid #314B74;border-radius:16px;overflow:hidden;padding:4px}
+#replayCanvas{display:block;width:100%;height:auto;max-height:52dvh;object-fit:contain}
+.replay-seek-row{display:flex;align-items:center;gap:10px;font-weight:850;font-size:13px}
+#replaySeek{min-width:0;flex:1;accent-color:var(--orange);height:30px;touch-action:pan-y}
+#replayClock{min-width:78px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.replay-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.replay-actions .btn{min-height:40px;padding:8px 12px;font-size:13px}
+.replay-actions label{font-size:12px;font-weight:850;display:flex;align-items:center;gap:6px;margin-left:auto}
+.replay-markers{display:flex;gap:7px;overflow-x:auto;min-height:0;padding-bottom:4px}
+.replay-markers button{flex:0 0 auto;border:1px solid #C8D9EA;border-radius:10px;background:white;color:#173C6E;font-weight:800;font-size:12px;padding:8px 10px;min-height:37px}
+.replay-markers button:hover{background:#E9F4FF}
+.replay-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;font-weight:800;color:#425C7B}
+.replay-legend span{display:inline-flex;align-items:center;gap:5px}
+.replay-dot{display:inline-block;width:10px;height:10px;border-radius:50%}
+.replay-note{color:#60728C;font-size:11px;line-height:1.4;margin:0}
+@media(max-width:720px){
+ .page[data-phase="revealed"] #replayButton{display:inline-flex;grid-column:1/-1;order:1}
+ .page[data-phase="revealed"] #repeatButton{order:2}
+ .page[data-phase="revealed"] #finishButton{order:3}
+ .replay-overlay{padding:6px}
+ .replay-dialog{padding:10px;border-radius:15px;gap:7px;max-height:calc(100dvh - 12px)}
+ .replay-head strong{font-size:17px}
+ #replayCanvas{max-height:47dvh}
+ .replay-actions{gap:6px}
+ .replay-actions .btn{font-size:12px;min-height:38px;padding:7px 9px}
+ .replay-actions label{flex:1 0 100%;margin-left:0}
+ .replay-note{font-size:10px}
+}
 </style>
 </head>
 <body class="nx-added-game nx-game-radar" data-nx-section="attention">
@@ -468,7 +506,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
       </div>
       <div>
         <div class="brand-line">NeuroX · Внимание</div>
-        <h1>Радар <span style="font-size:14px;font-weight:800;color:#7b90ac;vertical-align:middle">7.1.7</span></h1>
+        <h1>Радар <span style="font-size:14px;font-weight:800;color:#7b90ac;vertical-align:middle">7.2.0</span></h1>
         <p class="subtitle">Запомни самолёты-цели и следи за ними. Начни с одного — игра предложит больше, когда будешь готов!</p>
       </div>
     </div>
@@ -539,6 +577,7 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
       <div class="control-divider"></div>
       <button type="button" class="btn" id="repeatButton" disabled>↺ Повторить</button>
       <button type="button" class="btn" id="nextButton" disabled>➜ Следующий раунд</button>
+      <button type="button" class="btn orange" id="replayButton" disabled>↻ Разбор полёта</button>
       <div class="control-divider"></div>
       <button type="button" class="btn" id="clearButton" disabled>⌫ Очистить выбор</button>
       <button type="button" class="btn reveal" id="answerButton" disabled>◉ Показать ответ</button>
@@ -649,6 +688,17 @@ h1{font-size:clamp(23px,2.2vw,31px);color:var(--blue);margin:1px 0 3px;font-weig
       <div class="records-actions"><button class="btn danger" type="button" id="clearRecordsButton">Очистить историю</button><button class="btn primary" type="button" id="recordsDone">Готово</button></div>
     </div>
   </div>
+  <div class="replay-overlay" id="replayOverlay" role="dialog" aria-modal="true" aria-label="Разбор полёта" aria-hidden="true">
+    <div class="replay-dialog">
+      <div class="replay-head"><div><strong>↻ Разбор полёта</strong><small id="replaySummary">Повтор последнего раунда по записанным координатам.</small></div><button type="button" class="btn" id="replayClose" aria-label="Закрыть разбор">✕</button></div>
+      <div class="replay-stage"><canvas id="replayCanvas" aria-label="Запись движения самолётов с выделенными траекториями целей и ошибок"></canvas></div>
+      <div class="replay-seek-row"><label for="replaySeek">Время</label><input id="replaySeek" type="range" min="0" max="10" step="0.01" value="0" aria-label="Положение воспроизведения"><output id="replayClock">0,0 / 10,0</output></div>
+      <div class="replay-actions"><button type="button" class="btn primary" id="replayPlay">▶ Смотреть</button><button type="button" class="btn" id="replaySpeed">1×</button><label><input type="checkbox" id="replayTrails" checked> Показывать траектории и правильные цели</label></div>
+      <div class="replay-legend"><span><i class="replay-dot" style="background:#42E3A6"></i>Правильная цель</span><span><i class="replay-dot" style="background:#FF7777"></i>Ошибочный выбор</span><span><i class="replay-dot" style="background:#FFC16E"></i>Близкое сближение</span></div>
+      <div class="replay-markers" id="replayMarkers" aria-label="События и сближения полёта"></div>
+      <p class="replay-note" id="replayNote">Отметки сближений показывают потенциально трудные участки, а не момент, когда игрок потерял цель. Это разбор игры, не диагностика внимания.</p>
+    </div>
+  </div>
   <div class="confirm-overlay" id="confirmOverlay" role="dialog" aria-modal="true" aria-label="Подтверждение" aria-hidden="true">
     <div class="confirm-dialog"><h3 id="confirmTitle">Завершить игру?</h3><p id="confirmText">Текущий раунд будет прерван.</p>
       <div class="confirm-actions"><button type="button" id="confirmCancel" class="btn">Отмена</button><button type="button" id="confirmAccept" class="btn danger">Завершить</button></div>
@@ -741,7 +791,8 @@ const state = {
   eventCounts:{}, blackoutTime:0, blindZone:null, turbulenceZone:null, decoy:null,
   squad:null, switchCue:null, toastTime:0, history:[], extrasAdded:0, switchDone:false,
    corridor:null, mirror:null, zoom:null, echo:null,
-   traceHistory:new Map(), traceLast:-1, eventUiTime:0, roundMetrics:null
+   traceHistory:new Map(), traceLast:-1, eventUiTime:0, roundMetrics:null,
+   replayCapture:null, lastReplay:null
 };
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
@@ -1292,6 +1343,7 @@ function startRound(repeat = false) {
   $('challengeFinish').classList.remove('visible');
   $('roundResult').className = 'round-result';
   $('roundResult').replaceChildren();
+  state.replayCapture=null;state.lastReplay=null;
   closeQuickEvents();
   closeSpeedPopover();
   let data;
@@ -1369,6 +1421,7 @@ function resume() {
   render();
 }
 function stopRound(completed) {
+  if(completed)finalizeReplayCapture();else state.replayCapture=null;
   state.phase = 'stopped';
   state.phaseLeft = 0;
   if (completed) { state.completed += 1; playSignal('stopped'); }
@@ -1378,6 +1431,201 @@ function stopRound(completed) {
   state.toastTime=0;$('eventToast').hidden=true;
   updateUI();
   render();
+}
+
+// Replay uses actual frame snapshots, not a new random flight. Only the last
+// successfully finished round is kept in RAM. It does not alter stored records.
+const replayPlayer={open:false,playing:false,at:0,speed:1,lastStamp:0,lastDraw:0,painting:false,frame:null,token:0};
+const REPLAY_EVENT_NAMES={squad:'Эскадрилья',blackout:'Радиомолчание',reinforcement:'Подкрепление',blind:'Слепая зона',switch:'Смена цели',turbulence:'Турбулентность',decoy:'Ложный сигнал',corridor:'Коридор',zoom:'Масштаб',mirror:'Зеркальные маршруты',echo:'Эхо'};
+function beginReplayCapture(){
+  state.replayCapture={version:1,frames:[],events:[],encounters:[],duration:+state.settings.duration,
+    world:{w:WORLD.w,h:WORLD.h},settings:{...state.settings},initialTargets:[...state.targets],
+    finalTargets:[],selected:[],traceHistory:null};
+  captureReplayFrame(0,true);
+}
+function captureReplayFrame(t,force=false){
+  const capture=state.replayCapture;
+  if(!capture)return;
+  const frames=capture.frames,last=frames[frames.length-1];
+  if(!force && last && t-last.t<1/30)return;
+  // Mobile-memory ceiling: even a 20-second flight occupies a small bounded buffer.
+  if(frames.length>=750)return;
+  frames.push({t:Math.min(capture.duration,Math.max(0,t)),flightTime:state.flightTime,
+    zoom:cameraZoom(),blackout:state.blackoutTime>0,
+    planes:state.planes.map(p=>({id:p.id,x:p.x,y:p.y,angle:p.angle,scale:p.scale||1,colorIndex:p.colorIndex,
+      visible:!inBlindZone(p)})),targets:[...state.targets],
+    blindZone:state.blindZone?{...state.blindZone}:null,
+    turbulenceZone:state.turbulenceZone?{...state.turbulenceZone}:null,
+    switchCue:state.switchCue?{...state.switchCue}:null,
+    decoy:state.decoy?{...state.decoy}:null,
+    corridor:state.corridor?{cx:state.corridor.cx,cy:state.corridor.cy,angle:state.corridor.angle,
+      length:state.corridor.length,width:state.corridor.width,elapsed:state.corridor.elapsed,duration:state.corridor.duration}:null,
+    mirror:state.mirror?{cx:state.mirror.cx}:null,
+    echo:state.echo?{elapsed:state.echo.elapsed,duration:state.echo.duration,ids:[...state.echo.ids]}:null});
+}
+function finalizeReplayCapture(){
+  const capture=state.replayCapture;
+  if(!capture||!capture.frames.length){state.replayCapture=null;return;}
+  capture.finalTargets=[...state.targets];
+  capture.events=state.history.map(e=>({...e,at:clamp(e.at,0,capture.duration)}));
+  capture.traceHistory=state.traceHistory;
+  capture.encounters=findReplayEncounters(capture);
+  state.lastReplay=capture;
+  state.replayCapture=null;
+}
+function findReplayEncounters(rec){
+  const threshold=Math.min(122,Math.max(75,(SPACING[rec.settings.spacing]||160)*.76));
+  const episodes=new Map(),out=[];
+  for(let i=0;i<rec.frames.length;i++){
+    const f=rec.frames[i],present=new Set();
+    for(let a=0;a<f.planes.length;a++)for(let b=a+1;b<f.planes.length;b++){
+      const x=f.planes[a],y=f.planes[b];
+      if(!f.targets.includes(x.id)&&!f.targets.includes(y.id))continue;
+      const dist=Math.hypot(x.x-y.x,x.y-y.y);
+      if(dist>=threshold)continue;
+      const key=`${Math.min(x.id,y.id)}-${Math.max(x.id,y.id)}`;
+      present.add(key);
+      const event=episodes.get(key);
+      if(!event){episodes.set(key,{t:f.t,d:dist,pair:[x.id,y.id],x:(x.x+y.x)/2,y:(x.y+y.y)/2,last:f.t});}
+      else{event.last=f.t;if(dist<event.d){event.t=f.t;event.d=dist;event.x=(x.x+y.x)/2;event.y=(x.y+y.y)/2;}}
+    }
+    for(const [key,ep] of episodes){if(!present.has(key)){
+      if(ep.last>=.05)out.push(ep);episodes.delete(key);
+    }}
+  }
+  for(const ep of episodes.values())out.push(ep);
+  // Prioritize the closest approaches; don't show five points inside the same one-second maneuver.
+  return out.sort((a,b)=>a.d-b.d).filter((ep,idx,arr)=>arr.slice(0,idx).every(other=>Math.abs(other.t-ep.t)>.85))
+    .slice(0,6).sort((a,b)=>a.t-b.t);
+}
+function openFlightReplay(){
+  const rec=state.lastReplay;
+  if(state.phase!=='revealed'||!rec?.frames?.length)return;
+  closeQuickEvents();closeSpeedPopover();
+  $('settings').open=false;
+  const correct=rec.selected.filter(id=>rec.finalTargets.includes(id)).length;
+  $('replaySummary').textContent=`Последний раунд: ${correct} из ${rec.finalTargets.length} · ${rec.frames.length} записанных кадров · ${rec.events.length} событий`;
+  $('replaySeek').max=String(rec.duration);
+  $('replayTrails').checked=true;
+  $('replayOverlay').classList.add('open');$('replayOverlay').setAttribute('aria-hidden','false');
+  replayPlayer.open=true;replayPlayer.playing=false;replayPlayer.at=0;replayPlayer.speed=1;replayPlayer.lastStamp=0;replayPlayer.lastDraw=0;
+  $('replaySpeed').textContent='1×';
+  const markerBox=$('replayMarkers');markerBox.replaceChildren();
+  for(const ep of rec.encounters){
+    const btn=document.createElement('button');btn.type='button';
+    btn.textContent=`⚠ ${ep.t.toFixed(1).replace('.',',')} с · №${ep.pair[0]+1} и №${ep.pair[1]+1}`;
+    btn.title='Близкое сближение — нажми, чтобы перейти';
+    btn.addEventListener('click',()=>{replayPlayer.playing=false;seekFlightReplay(ep.t);});markerBox.appendChild(btn);
+  }
+  for(const ev of rec.events){
+    const btn=document.createElement('button');btn.type='button';
+    btn.textContent=`• ${ev.at.toFixed(1).replace('.',',')} с · ${REPLAY_EVENT_NAMES[ev.name]||ev.name}`;
+    btn.addEventListener('click',()=>{replayPlayer.playing=false;seekFlightReplay(ev.at);});markerBox.appendChild(btn);
+  }
+  if(!markerBox.children.length){const msg=document.createElement('span');msg.textContent='За этот раунд не было отмеченных сближений и событий.';markerBox.appendChild(msg);}
+  seekFlightReplay(0);
+  $('replayClose').focus();
+}
+function closeFlightReplay(){
+  if(!replayPlayer.open)return;
+  replayPlayer.open=false;replayPlayer.playing=false;replayPlayer.lastStamp=0;replayPlayer.lastDraw=0;replayPlayer.token++;
+  replayPlayer.painting=false;replayPlayer.frame=null;
+  $('replayOverlay').classList.remove('open');$('replayOverlay').setAttribute('aria-hidden','true');
+  render();
+  if(state.phase==='revealed')$('replayButton').focus();
+}
+function nearestReplayFrame(rec,t){
+  const frames=rec.frames;
+  let low=0,high=frames.length-1;
+  while(low<high){const mid=(low+high)>>1;if(frames[mid].t<t)low=mid+1;else high=mid;}
+  return low>0&&Math.abs(frames[low-1].t-t)<Math.abs(frames[low].t-t)?low-1:low;
+}
+function seekFlightReplay(t){
+  const rec=state.lastReplay;
+  if(!replayPlayer.open||!rec)return;
+  replayPlayer.at=clamp(t,0,rec.duration);
+  $('replaySeek').value=String(replayPlayer.at);
+  $('replayClock').textContent=`${replayPlayer.at.toFixed(1).replace('.',',')} / ${rec.duration.toFixed(1).replace('.',',')} с`;
+  $('replayPlay').textContent=replayPlayer.playing?'Ⅱ Пауза':'▶ Смотреть';
+  paintFlightReplay();
+}
+function toggleFlightReplay(){
+  if(!replayPlayer.open)return;
+  if(replayPlayer.playing){replayPlayer.playing=false;replayPlayer.lastStamp=0;seekFlightReplay(replayPlayer.at);return;}
+  if(replayPlayer.at>=state.lastReplay.duration-.01)replayPlayer.at=0;
+  replayPlayer.playing=true;replayPlayer.lastStamp=0;
+  seekFlightReplay(replayPlayer.at);
+  const token=++replayPlayer.token;
+  requestAnimationFrame(stamp=>runFlightReplay(stamp,token));
+}
+function runFlightReplay(stamp,token){
+  if(!replayPlayer.open||!replayPlayer.playing||replayPlayer.token!==token)return;
+  if(replayPlayer.lastStamp){replayPlayer.at=Math.min(state.lastReplay.duration,replayPlayer.at+
+    Math.min(.10,(stamp-replayPlayer.lastStamp)/1000)*replayPlayer.speed);}
+  replayPlayer.lastStamp=stamp;
+  if(replayPlayer.at>=state.lastReplay.duration){replayPlayer.playing=false;replayPlayer.lastStamp=0;}
+  if(!replayPlayer.playing || stamp-replayPlayer.lastDraw>=35){seekFlightReplay(replayPlayer.at);replayPlayer.lastDraw=stamp;}
+  if(replayPlayer.playing)requestAnimationFrame(next=>runFlightReplay(next,token));
+}
+function cycleReplaySpeed(){
+  if(!replayPlayer.open)return;
+  replayPlayer.speed=replayPlayer.speed===1?.5:replayPlayer.speed===.5?2:1;
+  $('replaySpeed').textContent=`${replayPlayer.speed===.5?'0,5':replayPlayer.speed}×`;
+}
+function paintFlightReplay(){
+  if(!replayPlayer.open||!state.lastReplay)return;
+  const rec=state.lastReplay,index=nearestReplayFrame(rec,replayPlayer.at),f=rec.frames[index];
+  const original={planes:state.planes,targets:state.targets,userSelected:state.userSelected,phase:state.phase,
+    flightTime:state.flightTime,blackoutTime:state.blackoutTime,blindZone:state.blindZone,
+    turbulenceZone:state.turbulenceZone,decoy:state.decoy,switchCue:state.switchCue,
+    corridor:state.corridor,mirror:state.mirror,echo:state.echo,zoom:state.zoom,
+    settings:state.settings,traceHistory:state.traceHistory};
+  // Reuse the game's genuine aircraft/vector renderer and radar background.
+  // Restoring the state in finally is mandatory: replay must not change scoring.
+  try{
+    state.planes=f.planes;state.targets=new Set(f.targets);state.userSelected=new Set();state.phase='tracking';
+    state.flightTime=f.flightTime;state.blackoutTime=f.blackout?1:0;
+    state.blindZone=f.blindZone;state.turbulenceZone=f.turbulenceZone;
+    state.decoy=f.decoy;state.switchCue=f.switchCue;
+    state.corridor=f.corridor;state.mirror=f.mirror;
+    state.echo=f.echo?{...f.echo,ids:new Set(f.echo.ids)}:null;
+    state.zoom=null;state.settings=rec.settings;state.traceHistory=rec.traceHistory;
+    replayPlayer.painting=true;replayPlayer.frame=f;
+    render();
+    if($('replayTrails').checked)drawReplayAnnotations(rec,index,f);
+    const canvas=$('replayCanvas');
+    if(canvas.width!==C.width||canvas.height!==C.height){canvas.width=C.width;canvas.height=C.height;}
+    const g=canvas.getContext('2d');g.clearRect(0,0,canvas.width,canvas.height);g.drawImage(C,0,0);
+  }finally{
+    Object.assign(state,original);
+    replayPlayer.painting=false;replayPlayer.frame=null;
+    render();
+  }
+}
+function drawReplayAnnotations(rec,index,frame){
+  if(frame.blackout)return;
+  const tf=worldTransform(),zoom=frame.zoom;
+  ctx.save();ctx.setTransform(tf.scale,0,0,tf.scale,tf.offsetX,tf.offsetY);
+  ctx.translate(WORLD.w/2,WORLD.h/2);ctx.scale(zoom,zoom);ctx.translate(-WORLD.w/2,-WORLD.h/2);
+  const paths=[...new Set([...rec.finalTargets,...rec.selected.filter(id=>!rec.finalTargets.includes(id))])];
+  for(const id of paths){
+    const good=rec.finalTargets.includes(id),col=good?'#42E3A6':'#FF7777';
+    ctx.beginPath();let began=false;
+    for(let i=0;i<=index;i+=Math.max(1,Math.floor(index/160))){
+      const plane=rec.frames[i].planes.find(p=>p.id===id);if(!plane)continue;
+      if(!began){ctx.moveTo(plane.x,plane.y);began=true;}else ctx.lineTo(plane.x,plane.y);
+    }
+    const p=frame.planes.find(p=>p.id===id);
+    if(p){if(!began)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);}
+    ctx.strokeStyle=col;ctx.lineWidth=3.5;ctx.globalAlpha=.65;ctx.stroke();ctx.globalAlpha=1;
+    if(p&&p.visible){ctx.strokeStyle=col;ctx.lineWidth=3.5;ctx.beginPath();ctx.arc(p.x,p.y,41*(p.scale||1),0,Math.PI*2);ctx.stroke();}
+  }
+  for(const ep of rec.encounters){
+    if(Math.abs(ep.t-frame.t)>.28)continue;
+    ctx.strokeStyle='#FFC16E';ctx.lineWidth=3;ctx.setLineDash([7,6]);
+    ctx.beginPath();ctx.arc(ep.x,ep.y,54,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+  }
+  ctx.restore();
 }
 
 // Persistent local progress, sound and challenge mode. All data is on the device.
@@ -1502,6 +1750,7 @@ function restoreFreeSettings(){
 }
 function setGameMode(mode){
   if(state.sessionLive && game.mode!==mode)return;
+  closeFlightReplay();
   dismissTargetOffer();
   if(mode===game.mode)return;
   game.mode=mode;
@@ -1574,6 +1823,7 @@ function recordRound(){
   const box=$('roundResult');
   box.className='round-result visible'+(perfect?' perfect':'');
   box.replaceChildren();
+  if(state.lastReplay)state.lastReplay.selected=[...state.userSelected];
   const left=appendText('div','', '',box);
   appendText('strong','',`${correct} из ${state.targets.size}`,left);
   appendText('small','',perfect?'Все цели найдены!':`Лишних: ${wrong} · пропущено: ${missed}`,left);
@@ -1739,6 +1989,7 @@ function handleSettingsOpened(open){
   }
 }
 function handleBack(){
+  if($('replayOverlay').classList.contains('open')){closeFlightReplay();return;}
   if($('confirmOverlay').classList.contains('open')){closeConfirm(false);return;}
   if($('recordsOverlay').classList.contains('open')){closeRecords();return;}
   if($('settings').open){$('settings').open=false;return;}
@@ -1756,6 +2007,7 @@ function handleBack(){
 function finishSession() {
   dismissTargetOffer();
   if (!state.sessionLive) return;
+  closeFlightReplay();
   closeQuickEvents();closeSpeedPopover();
   if(game.mode==='challenge'){
     game.challenge.active=false;game.challenge.done=false;
@@ -2039,6 +2291,7 @@ function makeZoom(){
   return true;
 }
 function cameraZoom(){
+  if(replayPlayer.painting && replayPlayer.frame)return replayPlayer.frame.zoom;
   const event=state.zoom;if(!event)return 1;
   const t=clamp(event.elapsed/event.duration,0,1);
   const desired=t<.54
@@ -2228,7 +2481,7 @@ function triggerEvent(name,manual=false) {
   else if(name==='echo')success=makeEcho();
   if (success){
     state.eventCounts[name]=(state.eventCounts[name]||0)+1;
-    state.history.push({name,at:Math.round(state.flightTime*10)/10,manual});
+    state.history.push({name,at:Math.round((+state.settings.duration-state.phaseLeft)*10)/10,manual});
     state.eventCooldown=nextEventDelay();
     updateUI();
   }
@@ -2552,6 +2805,7 @@ function updateUI() {
   $('nextButton').disabled = phase !== 'revealed';
   $('answerButton').disabled = !canSelect() || state.userSelected.size!==state.targets.size;
   $('answerButton').textContent = phase === 'revealed' ? '✓ Проверено' : '✓ Проверить ответ';
+  $('replayButton').disabled = phase!=='revealed' || !state.lastReplay?.frames?.length;
   $('clearButton').disabled = !canSelect() || state.userSelected.size === 0;
   $('nextButton').textContent=game.mode==='challenge' ? (game.challenge.done?'↻ Новое испытание':'➜ Следующий этап'):'➜ Следующий раунд';
   syncModeUI();updateQuickEvents();
@@ -2831,6 +3085,7 @@ function tick(timestamp) {
     if (state.phaseLeft <= 0) {
       state.phase = 'tracking';
       state.phaseLeft = +state.settings.duration;
+      beginReplayCapture();
       updateUI();
     }
   } else if (state.phase === 'tracking') {
@@ -2847,7 +3102,8 @@ function tick(timestamp) {
       state.roundMetrics.minSpeed=Math.min(state.roundMetrics.minSpeed,state.settings.speed);
       state.roundMetrics.maxSpeed=Math.max(state.roundMetrics.maxSpeed,state.settings.speed);
     }
-    state.phaseLeft = Math.max(0, state.phaseLeft - dt);
+    state.phaseLeft = Math.max(0, state.phaseLeft - allowed);
+    captureReplayFrame(+state.settings.duration - state.phaseLeft, state.phaseLeft<=0);
     if (state.phaseLeft <= 0) {stopRound(true);closeQuickEvents();closeSpeedPopover();}
   }
   // Avoid painting twice as often on 90/120 Hz Android screens.
@@ -2900,7 +3156,14 @@ $('startButton').addEventListener('click',()=>{
 $('pauseButton').addEventListener('click',()=>{closeQuickEvents();pause();});
 $('finishButton').addEventListener('click',requestFinish);
 $('repeatButton').addEventListener('click',()=>{if(game.mode==='free')startRound(true);});
-$('nextButton').addEventListener('click',()=>{if(state.phase==='revealed'){playSignal('tap');startRound(false);}});
+$('nextButton').addEventListener('click',()=>{if(state.phase==='revealed'){closeFlightReplay();playSignal('tap');startRound(false);}});
+$('replayButton').addEventListener('click',openFlightReplay);
+$('replayClose').addEventListener('click',closeFlightReplay);
+$('replayOverlay').addEventListener('click',e=>{if(e.target===$('replayOverlay'))closeFlightReplay();});
+$('replayPlay').addEventListener('click',toggleFlightReplay);
+$('replaySpeed').addEventListener('click',cycleReplaySpeed);
+$('replayTrails').addEventListener('change',paintFlightReplay);
+$('replaySeek').addEventListener('input',e=>{replayPlayer.playing=false;seekFlightReplay(+e.target.value);});
 $('clearButton').addEventListener('click',clearSelection);
 $('answerButton').addEventListener('click',()=>{
   if(!canSelect() || state.userSelected.size!==state.targets.size)return;
@@ -2954,6 +3217,7 @@ $('recordsDone').addEventListener('click',closeRecords);
 $('recordsOverlay').addEventListener('click',e=>{if(e.target===$('recordsOverlay'))closeRecords();});
 $('clearRecordsButton').addEventListener('click',()=>askConfirm('Удалить результаты?','История раундов, рекорды и продвижение по уровням будут сброшены на этом устройстве.','Удалить',()=>{
   const previousLevel=game.mode==='free'?currentRadarLevel():'';
+  state.lastReplay=null;closeFlightReplay();
   game.db={rounds:[],challenges:[],streak:0,bestStreak:0,totalRounds:0,totalPerfect:0,maxTargets:0};
   game.levelProgress={};
   for(const level of Object.keys(PRESETS))game.levelProgress[level]={targets:1,wins:0};
@@ -2979,7 +3243,7 @@ function pauseForBackground(){
   if(game.mode==='challenge')saveChallengeCheckpoint();
 }
 window.NeuroXRadarLifecycle={pauseForBackground};
-document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseForBackground();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){pauseForBackground();replayPlayer.playing=false;}});
 window.addEventListener('pagehide',pauseForBackground);
 C.addEventListener('click',event=>{
   if(!canSelect())return;
