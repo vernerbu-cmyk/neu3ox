@@ -1464,8 +1464,7 @@ function doPrint(puzzle, withAnswers) {
     }
     const html = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Филворд — печать</title>
  <style>*{box-sizing:border-box}body{margin:0;color:#202c40;font:13pt Arial,sans-serif;padding:8mm}h1{text-align:center;color:#1E3F8A;font-size:21pt;margin:0 0 3mm}h2{font-size:12pt;color:#1E3F8A;margin:6mm 0 2mm}.sub{text-align:center;font-size:10pt;margin:0 0 3mm}.meta{text-align:center;font-size:9pt;color:#607086}.p-grid{display:grid;gap:1px;width:max-content;margin:6mm auto}.p-cell{border:1px solid #374359;display:flex;align-items:center;justify-content:center;line-height:1;font-weight:700}.p-words{display:flex;flex-wrap:wrap;gap:3mm 7mm}.p-word{font-size:11pt;border-bottom:1px dotted #999;white-space:nowrap}.p-legend{display:flex;flex-wrap:wrap;gap:2mm 4mm;border-top:1px solid #ddd;margin-top:5mm;padding-top:3mm;font-size:9pt}.p-legend span{display:flex;gap:2mm;align-items:center}.p-legend i{width:4mm;height:4mm;border:1px solid #444;display:inline-block}footer{text-align:right;margin-top:8mm;color:#6c7a90;font-size:8pt}@page{size:A4;margin:10mm}@media print{body{padding:0}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style>
- </head><body>${printContent(puzzle, withAnswers)}<script>window.addEventListener('load',()=>setTimeout(()=>window.print(),300));<\/script><script src="./filvord_enhancements.js"></script>
-</body></html>`;
+ </head><body>${printContent(puzzle, withAnswers)}<script>window.addEventListener('load',()=>setTimeout(()=>window.print(),300));<\/script></body></html>`;
     w.document.open();
     w.document.write(html);
     w.document.close();
@@ -1496,5 +1495,6 @@ showSettings();
 <script src="../shared/seasons.js" defer></script>
 <script src="../shared/accessibility.js" defer></script>
 <script src="../shared/teacher-panel.js" defer></script>
+<script src="./filvord_enhancements.js"></script>
 </body>
 </html>
