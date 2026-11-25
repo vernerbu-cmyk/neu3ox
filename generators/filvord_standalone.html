@@ -1355,7 +1355,12 @@ function finishSelection() {
     if (selected.length < 2)
         return; // одиночный клик больше не оставляет подсветку
     // Только реально проложенный путь слова, не случайный набор тех же букв.
-    const placement = state.placed.find(p => !state.found.has(p.word) && pathEquals(p.cells, selected));
+    const selectedWord = selected.map(([r, c]) => state.grid[r][c]).join('');
+    const reverseWord = [...selectedWord].reverse().join('');
+    // Правильное слово может случайно появиться в сетке по другому допустимому маршруту.
+    const placement = state.placed.find(p => !state.found.has(p.word) &&
+        (p.word === selectedWord || p.word === reverseWord));
+    if (placement) placement.cells = selected.slice();
     if (placement) {
         markFound(placement);
         return;
