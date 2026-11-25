@@ -584,14 +584,58 @@
   <link rel="stylesheet" href="../shared/unified-topbar.css">
   <link rel="stylesheet" href="../shared/season-effects.css">
   <link rel="stylesheet" href="../shared/theme.css">
+<style>
+
+.site-header .score{display:none}
+.nprint-output{max-width:920px;margin:24px auto}
+.nprint-preview-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:13px}
+.nprint-preview-head h3{margin:0;font-size:20px;color:var(--text)}
+.nprint-preview-head span{font-size:12px;color:var(--muted);font-weight:700}
+.nprint-warning{font-size:13px;color:var(--orange-dark);font-weight:800;margin-bottom:10px}
+.nprint-page{background:#fff;color:#182336;padding:30px 35px;margin:0 auto 24px;width:100%;max-width:790px;min-height:950px;box-shadow:0 5px 24px #142a5525;border-radius:7px}
+.nprint-title{text-align:center;font:800 27px Arial,sans-serif;color:#1e3f8a;margin:0 0 6px}
+.nprint-subtitle{text-align:center;font:12px Arial,sans-serif;margin:0 0 16px;color:#475569}
+.nprint-person{text-align:center;font:12px Arial,sans-serif;white-space:pre-wrap;margin-bottom:17px}
+.nprint-grid{display:grid;gap:1px;max-width:100%;margin:8px auto 22px}
+.nprint-cell{aspect-ratio:1;border:1px solid #66778e;display:flex;align-items:center;justify-content:center;font:750 var(--nprint-font,28px) Arial,sans-serif;min-width:0}
+.nprint-h3{font:800 16px Arial,sans-serif;margin:12px 0 11px;color:#1e3f8a}
+.nprint-gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.nprint-card{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:8px 4px;border:1px solid #cdd5e2;border-radius:11px;break-inside:avoid;min-height:46px}
+.nprint-card img{width:77px;height:70px;max-width:90%;object-fit:contain}
+.nprint-card strong{font:800 13px Arial,sans-serif;letter-spacing:.4px;text-align:center}
+.nprint-credit{text-align:center;margin-top:20px;font:10px Arial;color:#8590a0}
+.nprint-mono .nprint-card img{filter:grayscale(1)}
+.nprint-formats select{font:800 13px 'Nunito Sans',sans-serif}
+@page{size:A4;margin:10mm}
+@media print{
+ html,body{background:#fff!important;width:100%!important;margin:0!important;padding:0!important}
+ .site-header,.settings,footer,.nprint-preview-head,.nprint-warning,.nx-drawer,.nx-topbar{display:none!important}
+ .wrap,.nprint-output,#game{margin:0!important;padding:0!important;max-width:none!important;width:100%!important;display:block!important}
+ .nprint-page{margin:0!important;padding:0!important;box-shadow:none!important;border:0!important;max-width:none!important;min-height:0!important;width:100%!important;break-inside:avoid}
+ .nprint-page.nprint-answers{break-before:page!important;page-break-before:always!important}
+ .nprint-grid{max-width:100%!important}
+ .nprint-card{break-inside:avoid}
+ .nprint-card img{width:19mm;height:18mm}
+ *{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important}
+}
+@media(max-width:650px){
+ .nprint-page{padding:14px 10px;min-height:620px}
+ .nprint-gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+ .nprint-card img{width:50px;height:47px}
+ .nprint-card strong{font-size:11px}
+ .nprint-title{font-size:19px}
+ .nprint-cell{font-size:clamp(12px,4vw,27px)}
+}
+
+</style>
 </head>
 <body>
   <header class="site-header">
     <div class="brand">
       <button class="back" onclick="location.href='index.html'" title="Назад">←</button>
       <div>
-        <h1>Филворд</h1>
-        <small>NeuroX · логика и мышление</small>
+        <h1>Филворды · печать</h1>
+        <small>NeuroX · раздаточные материалы</small>
       </div>
     </div>
     <div class="header-right">
@@ -2001,9 +2045,197 @@ showSettings();
   const originalFit=fitBoard;
   fitBoard=function(...args){originalFit(...args);if(!isBaby())return;const board=elem('board');if(!board||!board.firstElementChild)return;const size=board.firstElementChild.getBoundingClientRect().width;board.style.setProperty('--fs',`${Math.max(25,Math.min(70,size*.64))}px`)};
   window.addEventListener('resize',()=>{if(elem('board')&&isBaby())fitBoard()});
+
+  /* Печатный генератор вместо игрового экрана */
+  const PRINT_ONLY_KEY='nx_filvord_print_only_v1';
+  let printPuzzle=null, printCue='picture-word', printMono=false;
+  const rasterEmoji=new Map();
+  const printSelect=id=>document.getElementById(id);
+  try{
+    const prefs=JSON.parse(localStorage.getItem(PRINT_ONLY_KEY)||'{}');
+    if(prefs.cue)printCue=prefs.cue;
+    if(prefs.mono)printMono=!!prefs.mono;
+    if(!localStorage.getItem(PRINT_ONLY_KEY)){
+      cfg.mode='baby';
+      Object.assign(cfg,BABY_DEFAULTS);
+      cfg.mode='baby';
+      saveCfg();
+    }
+  }catch(e){}
+  const savePrint=()=>{try{localStorage.setItem(PRINT_ONLY_KEY,JSON.stringify({cue:printCue,mono:printMono}))}catch(e){}};
+  function imageForPrint(word){
+    const item=illustration(word);
+    if(item.kind==='image')return item.value;
+    const emoji=item.value;
+    if(rasterEmoji.has(emoji))return rasterEmoji.get(emoji);
+    const c=document.createElement('canvas');c.width=240;c.height=240;
+    const context=c.getContext('2d');
+    if(!context)return '';
+    context.font="180px 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif";
+    context.textAlign='center';context.textBaseline='middle';
+    context.fillText(emoji,120,127,220);
+    const src=c.toDataURL('image/png');
+    rasterEmoji.set(emoji,src);
+    return src;
+  }
+  function makeGrid(puzzle,answers){
+    const div=document.createElement('div');
+    div.className='nprint-grid';
+    const side=Math.min(isBaby()?73:53,Math.floor(610/puzzle.W));
+    div.style.width=(side*puzzle.W)+'px';
+    div.style.gridTemplateColumns='repeat('+puzzle.W+',minmax(0,1fr))';
+    div.style.setProperty('--nprint-font',Math.round(side*.50)+'px');
+    const colors=['#dbeafe','#fef3c7','#dcfce7','#fce7f3','#e0e7ff','#cffafe','#ffe4e6','#f3e8ff'];
+    const painted=new Map();
+    if(answers)puzzle.placed.forEach((p,i)=>p.cells.forEach(([r,c])=>painted.set(r+','+c,colors[i%colors.length])));
+    puzzle.grid.forEach((row,r)=>row.forEach((letter,c)=>{
+      const el=document.createElement('span');el.className='nprint-cell';
+      el.textContent=letter;
+      if(painted.has(r+','+c))el.style.background=painted.get(r+','+c);
+      div.appendChild(el);
+    }));
+    return div;
+  }
+  function makePage(puzzle,answers){
+    const sheet=document.createElement('article');
+    sheet.className='nprint-page'+(answers?' nprint-answers':'');
+    const title=document.createElement('h2');title.className='nprint-title';
+    title.textContent=answers?'Ответы · Филворд':(isBaby()?'Найди слова по картинкам':'Найди слова');
+    sheet.appendChild(title);
+    const sub=document.createElement('p');sub.className='nprint-subtitle';
+    sub.textContent=answers?'Найденные слова выделены цветом':(isBaby()?getBabyDirectionSpec().description:'Каждая буква используется в слове один раз. Можно поворачивать.');
+    sheet.appendChild(sub);
+    if(!answers){
+      const caption=document.createElement('div');caption.className='nprint-person';
+      caption.textContent='Имя: ________________________      Дата: _______________';
+      sheet.appendChild(caption);
+    }
+    sheet.appendChild(makeGrid(puzzle,answers));
+    const heading=document.createElement('h3');heading.className='nprint-h3';
+    const clueMode=answers?'words':(isBaby()?printCue:'words');
+    heading.textContent=clueMode==='words'?'Найди слова':'Найди по картинкам';
+    sheet.appendChild(heading);
+    const gallery=document.createElement('div');gallery.className='nprint-gallery';
+    puzzle.placed.slice().sort((a,b)=>a.word.localeCompare(b.word,'ru')).forEach(p=>{
+      const card=document.createElement('div');card.className='nprint-card';
+      if(clueMode!=='words'){
+        const img=document.createElement('img');img.alt='Иллюстрация: '+p.word;
+        img.src=imageForPrint(p.word);
+        card.appendChild(img);
+      }
+      if(clueMode!=='picture'){
+        const text=document.createElement('strong');text.textContent=p.word;
+        card.appendChild(text);
+      }
+      gallery.appendChild(card);
+    });
+    sheet.appendChild(gallery);
+    const credit=document.createElement('div');credit.className='nprint-credit';
+    credit.textContent='NeuroX · © verner';sheet.appendChild(credit);
+    return sheet;
+  }
+  function printDraw(){
+    const host=printSelect('nprintHost');
+    if(!host)return;
+    host.replaceChildren();
+    if(!printPuzzle)return;
+    host.appendChild(makePage(printPuzzle,false));
+    if(cfg.printAnswers)host.appendChild(makePage(printPuzzle,true));
+    host.classList.toggle('nprint-mono',printMono);
+    const msg=printSelect('nprintWarning');
+    if(msg){
+      msg.textContent=printPuzzle.placed.length<printPuzzle.requested
+        ?'В сетку поместилось '+printPuzzle.placed.length+' из '+printPuzzle.requested+' слов. Размер сохранён.'
+        :'';
+    }
+  }
+  function printGenerate(){
+    printPuzzle=buildPuzzleFromCfg();
+    if(!printPuzzle){
+      const host=printSelect('nprintHost');
+      if(host)host.innerHTML='<p class="notice">Не удалось собрать сетку. Увеличь её размер или уменьши количество слов.</p>';
+      return;
+    }
+    printDraw();
+  }
+  async function printNow(){
+    if(!printPuzzle)printGenerate();
+    const host=printSelect('nprintHost');if(!printPuzzle||!host)return;
+    await Promise.all([...host.querySelectorAll('img')].map(img=>img.complete?Promise.resolve():new Promise(done=>{img.onload=done;img.onerror=done})));
+    window.print();
+  }
+  const previousGameSettings=showSettings;
+  showSettings=function(){
+    previousGameSettings();
+    const root=gameEl.querySelector('.settings');
+    if(!root)return;
+    const modeButtons=root.querySelectorAll('#modeChips .chip');
+    modeButtons.forEach(btn=>{
+      if(btn.dataset.v==='baby')btn.textContent='🧸 Дошколята 4–6';
+      if(btn.dataset.v==='regular')btn.textContent='🎒 Школьники 7+';
+    });
+    const mainTitle=root.querySelector('.page-title');
+    if(mainTitle)mainTitle.textContent='Филворды · генератор для печати';
+    const intro=root.querySelector('.sub');
+    if(intro)intro.textContent='Раздаточные материалы А4. Без игрового режима.';
+    const start=printSelect('startBtn');
+    const printButton=printSelect('printTemplate');
+    if(start){start.textContent='↻ Новая сетка';start.onclick=printGenerate}
+    if(printButton){printButton.textContent='🖨 Печать / PDF';printButton.onclick=printNow}
+    ['showTimer','showList','sound'].forEach(id=>{
+      const element=printSelect(id);
+      if(element){const parent=element.closest('.toggle');if(parent)parent.remove()}
+    });
+    const oldPictureSwitch=printSelect('nxShowPictures');
+    if(oldPictureSwitch){const parent=oldPictureSwitch.closest('.toggle');if(parent)parent.remove()}
+    const printPanel=root.querySelector('.panel');
+    const format=document.createElement('div');
+    format.className='group nprint-formats';
+    format.innerHTML=[
+      '<div class="group-title">Печатные подсказки</div>',
+      '<label for="nprintCue" style="display:block;margin-bottom:7px;font-weight:850">Что будет под сеткой?</label>',
+      '<select id="nprintCue" style="width:100%;padding:12px;border-radius:10px;border:2px solid var(--border);background:var(--panel);color:var(--text)">',
+      '<option value="picture-word">Картинки и подписи</option>',
+      '<option value="picture">Только картинки</option>',
+      '<option value="words">Только слова</option></select>',
+      '<label class="toggle" style="margin-top:9px"><input type="checkbox" id="nprintMono">Чёрно-белые картинки</label>',
+      '<p class="baby-intro">Картинки уже вставлены. При печати эмодзи преобразуются в изображения; свои рисунки тоже печатаются.</p>'
+    ].join('');
+    if(!isBaby())format.querySelector('select').value='words';
+    const actions=printPanel.querySelector('.actions:last-child');
+    printPanel.insertBefore(format,actions);
+    const cue=printSelect('nprintCue');
+    cue.value=isBaby()?printCue:'words';
+    cue.onchange=()=>{printCue=cue.value;savePrint();printDraw()};
+    const mono=printSelect('nprintMono');mono.checked=printMono;
+    mono.onchange=()=>{printMono=mono.checked;savePrint();printDraw()};
+    const outer=document.createElement('div');outer.className='nprint-output';
+    outer.innerHTML='<div class="nprint-preview-head"><h3>Предпросмотр А4</h3><span>Печатается только лист с заданием</span></div><div class="nprint-warning" id="nprintWarning"></div><div id="nprintHost"></div>';
+    root.after(outer);
+    // Настройки в исходном генераторе сохраняют рабочие диапазоны и направления.
+    root.addEventListener('click',e=>{
+      if(e.target.closest('.chip'))requestAnimationFrame(printGenerate);
+    });
+    root.addEventListener('change',e=>{
+      if(e.target.id==='nprintCue'||e.target.id==='nprintMono')return;
+      if(e.target.matches('input,select'))requestAnimationFrame(printGenerate);
+    });
+    root.addEventListener('input',e=>{
+      if(e.target.id==='countRange')requestAnimationFrame(printGenerate);
+    });
+    printGenerate();
+  };
+  const oldWrite=writePicture;
+  writePicture=async function(...args){await oldWrite(...args);printDraw()};
+  const oldErase=erasePicture;
+  erasePicture=async function(...args){await oldErase(...args);printDraw()};
+  const oldImport=importSet;
+  importSet=async function(...args){await oldImport(...args);printDraw()};
   showSettings();
-  loadPictures();
+  loadPictures().then(printDraw);
+
 })();
+
 </script>
 </body>
 </html>
