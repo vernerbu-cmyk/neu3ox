@@ -1551,22 +1551,29 @@ showSettings();
   'use strict';
   // Редакторская подборка частотных, узнаваемых слов: только 3–4 буквы.
   const EASY_WORDS = new Set(`
-    КОТ КИТ ПЁС БЫК ЛЕВ РАК ОСА ЖУК СОМ ЛИСА ЁЖИК УТКА ГУСЬ СОВА МУХА ЖАБА КОЗА РЫБА ОВЦА ОСЁЛ МЫШЬ ЛАМА ЗАЯЦ
-    СЫР СУП СОК ЧАЙ МЁД РИС КАША РЕПА ДЫНЯ ТОРТ ЯЙЦО МЯСО СОЛЬ КИВИ БОБЫ ЕДА УХА ЖЕЛЕ МУКА ЛУК КЕКС ОРЕХ СОУС МАК КОФЕ ПЮРЕ БЛИН
-    ЛЕС ЛУГ САД ДУБ ИВА ЕЛЬ КУСТ ЛИСТ РОЗА ЛЁД СНЕГ ТУЧА РОСА ПРУД РЕКА МОРЕ ГОРА ПОЛЕ ЛУНА НЕБО ЗИМА ЛЕТО ВОДА ГРОМ БУРЯ ГРИБ КОРА ДЕНЬ НОЧЬ ЖАРА ПЕНЬ ПУХ ДЫМ
-    ДОМ ПОЛ СТОЛ СТУЛ ОКНО ЧАСЫ ВАЗА КЛЮЧ ДУШ МЫЛО КРАН НОЖ ЛУПА ШАР ФЕН КУБ БАНТ МЯЧ РАМА ДАЧА ТАЗ КЛЕЙ БАНЯ ПИЛА СЕТЬ БАК МЕЛ
-    НОС РОТ УХО ЛОБ РУКА НОГА ГЛАЗ ШЕЯ УСЫ ЗУБ ЛИЦО КОЖА ПЯТА ТЕЛО ГУБА ЛАПА ЮБКА КЕДЫ ШУБА
-    ЮЛА ЛЕГО ИГРА ЛОТО БУСЫ КОНЬ КЛАД ЦИРК
-    МАМА ПАПА ДЕД СЫН БРАТ ДОЧЬ ТЁТЯ ДЯДЯ ДЕТИ ДРУГ ВНУК ЖЕНА МУЖ ИМЯ
-    АВТО ЯХТА САНИ РУЛЬ ФАРА ПЛОТ МОСТ
-    УРОК ТОМ ПЕРО НОТА ТЕСТ ЦВЕТ ЗВУК
-    СПИ ПОЙ ИДИ БЕГИ СТОЙ ЕШЬ ПЕЙ ДУЙ ЛОВИ НЕСИ ИЩИ ПИШИ ЛЕПИ КАТИ МЕТИ МОЙ УЧИ СИДИ ИДУ ЕДУ ЖДИ ЕЛА ПИЛ ПЁК ПЁТ ДЕЛИ ТЯНИ ВЕЗИ ЕЛИ ПИЛИ МЫЛИ
-    СОН МИР СМЕХ ДЕЛО ЧУДО ДАР ПРИЗ ЗВОН ШАГ ВЕС РОСТ СИЛА СВЕТ УТРО ГОД ЧАС МАЙ НОЛЬ ОДИН ДВА ТРИ ПЯТЬ РЯД ПАРА ПЛАН КОД
+    КОТ КИТ ПЁС БЫК ЛЕВ ЖУК ЛИСА ЁЖИК УТКА ГУСЬ СОВА МУХА КОЗА РЫБА ОВЦА ОСЁЛ МЫШЬ ЛАМА ЗАЯЦ
+    СЫР СУП СОК ЧАЙ МЁД РИС КАША ДЫНЯ ТОРТ ЯЙЦО МЯСО СОЛЬ КИВИ БОБЫ ЛУК КЕКС ОРЕХ КОФЕ БЛИН
+    ЛЕС ЕЛЬ ЛИСТ РОЗА ЛЁД СНЕГ ТУЧА МОРЕ ГОРА ЛУНА ВОДА ГРИБ НОЧЬ
+    ДОМ СТУЛ ОКНО ЧАСЫ ВАЗА КЛЮЧ ДУШ МЫЛО КРАН НОЖ ЛУПА ШАР КУБ БАНТ МЯЧ ПИЛА
+    НОС РОТ УХО РУКА НОГА ГЛАЗ ЗУБ ЛАПА КЕДЫ
+    БУСЫ КОНЬ КЛАД ЦИРК
+    АВТО ЯХТА САНИ МОСТ
+    СОН СМЕХ ПРИЗ ЗВОН ШАГ ВЕС РОСТ СИЛА СВЕТ УТРО НОЛЬ ОДИН ДВА ТРИ ПЯТЬ
   `.trim().split(/\s+/));
   BABY_CATEGORIES.slice(1).forEach(category => {
     category.words = category.words.filter(word => EASY_WORDS.has(word));
   });
+  // Не показываем темы, в которых осталось меньше трёх однозначных картинок.
+  BABY_CATEGORIES.splice(1, BABY_CATEGORIES.length - 1, ...BABY_CATEGORIES.slice(1).filter(category => category.words.length >= 3));
   BABY_CATEGORIES[0].words = [...new Set(BABY_CATEGORIES.slice(1).flatMap(category => category.words))];
+  if (cfg.mode === 'baby' && !BABY_CATEGORIES.some(category => category.id === cfg.category)) {
+    cfg.category = 'all';
+    saveCfg();
+  }
+  if (cfg.babyPrefs && !BABY_CATEGORIES.some(category => category.id === cfg.babyPrefs.category)) {
+    cfg.babyPrefs.category = 'all';
+    saveCfg();
+  }
   const allWords = BABY_CATEGORIES[0].words.slice().sort((a, b) => a.localeCompare(b, 'ru'));
   const allowedWords = new Set(allWords);
 
@@ -1799,6 +1806,10 @@ showSettings();
     const m = line.trim().match(/^(\S+)\s+(.+)$/);
     return [m[1], m[2]];
   }));
+  // Встроенные подсказки только к разрешённым словам, без двусмысленных замен.
+  for (const word of [...DEFAULT_EMOJI.keys()]) {
+    if (!allowedWords.has(word)) DEFAULT_EMOJI.delete(word);
+  }
   const illustration = word => pictures.has(word)
     ? {kind: 'image', value: pictures.get(word)}
     : {kind: 'emoji', value: DEFAULT_EMOJI.get(word) || '🔎'};
