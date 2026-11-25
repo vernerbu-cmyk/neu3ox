@@ -594,9 +594,9 @@
 .nprint-grid{display:grid;gap:1px;max-width:100%;margin:8px auto 22px}
 .nprint-cell{aspect-ratio:1;border:1px solid #66778e;display:flex;align-items:center;justify-content:center;font:750 var(--nprint-font,28px) Arial,sans-serif;min-width:0}
 .nprint-h3{font:800 16px Arial,sans-serif;margin:12px 0 11px;color:#1e3f8a}
-.nprint-gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
-.nprint-card{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:8px 4px;border:1px solid #cdd5e2;border-radius:11px;break-inside:avoid;min-height:46px}
-.nprint-card img{width:77px;height:70px;max-width:90%;object-fit:contain}
+.nprint-gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.nprint-card{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;padding:5px 4px;border:1px solid #cdd5e2;border-radius:10px;break-inside:avoid;min-height:37px}
+.nprint-card img{width:var(--nprint-img-screen,42px);height:var(--nprint-img-screen,42px);max-width:90%;object-fit:contain}
 .nprint-card strong{font:800 13px Arial,sans-serif;letter-spacing:.4px;text-align:center}
 .nprint-credit{text-align:center;margin-top:20px;font:10px Arial;color:#8590a0}
 .nprint-mono .nprint-card img{filter:grayscale(1)}
@@ -610,13 +610,13 @@
  .nprint-page.nprint-answers{break-before:page!important;page-break-before:always!important}
  .nprint-grid{max-width:100%!important}
  .nprint-card{break-inside:avoid}
- .nprint-card img{width:19mm;height:18mm}
+ .nprint-card img{width:var(--nprint-img-print,11mm);height:var(--nprint-img-print,11mm)}
  *{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important}
 }
 @media(max-width:650px){
  .nprint-page{padding:14px 10px;min-height:620px}
  .nprint-gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
- .nprint-card img{width:50px;height:47px}
+ .nprint-card img{width:var(--nprint-img-screen,42px);height:var(--nprint-img-screen,42px)}
  .nprint-card strong{font-size:11px}
  .nprint-title{font-size:19px}
  .nprint-cell{font-size:clamp(12px,4vw,27px)}
@@ -2046,13 +2046,14 @@ showSettings();
 
   /* Печатный генератор вместо игрового экрана */
   const PRINT_ONLY_KEY='nx_filvord_print_only_v1';
-  let printPuzzle=null, printCue='picture-word', printMono=false;
+  let printPuzzle=null, printCue='picture-word', printMono=false, printImageMM=11;
   const rasterEmoji=new Map();
   const printSelect=id=>document.getElementById(id);
   try{
     const prefs=JSON.parse(localStorage.getItem(PRINT_ONLY_KEY)||'{}');
     if(prefs.cue)printCue=prefs.cue;
     if(prefs.mono)printMono=!!prefs.mono;
+    if(Number.isFinite(Number(prefs.imageMM)))printImageMM=Math.max(7,Math.min(19,Math.round(Number(prefs.imageMM))));
     if(!localStorage.getItem(PRINT_ONLY_KEY)){
       cfg.mode='baby';
       Object.assign(cfg,BABY_DEFAULTS);
@@ -2060,7 +2061,7 @@ showSettings();
       saveCfg();
     }
   }catch(e){}
-  const savePrint=()=>{try{localStorage.setItem(PRINT_ONLY_KEY,JSON.stringify({cue:printCue,mono:printMono}))}catch(e){}};
+  const savePrint=()=>{try{localStorage.setItem(PRINT_ONLY_KEY,JSON.stringify({cue:printCue,mono:printMono,imageMM:printImageMM}))}catch(e){}};
   function imageForPrint(word){
     const item=illustration(word);
     if(item.kind==='image')return item.value;
@@ -2135,6 +2136,8 @@ showSettings();
   function printDraw(){
     const host=printSelect('nprintHost');
     if(!host)return;
+    host.style.setProperty('--nprint-img-screen',Math.round(printImageMM*96/25.4)+'px');
+    host.style.setProperty('--nprint-img-print',printImageMM+'mm');
     host.replaceChildren();
     if(!printPuzzle)return;
     host.appendChild(makePage(printPuzzle,false));
@@ -2196,6 +2199,8 @@ showSettings();
       '<option value="picture-word">Картинки и подписи</option>',
       '<option value="picture">Только картинки</option>',
       '<option value="words">Только слова</option></select>',
+      '<div id="nprintImgSizeGroup" style="margin-top:12px"><label for="nprintImgSize" style="display:flex;justify-content:space-between;font-weight:850;font-size:13px">Размер картинок <output id="nprintImgSizeValue">'+printImageMM+' мм</output></label>',
+      '<input type="range" id="nprintImgSize" min="7" max="19" step="1" value="'+printImageMM+'" style="width:100%;accent-color:var(--orange)"></div>',
       '<label class="toggle" style="margin-top:9px"><input type="checkbox" id="nprintMono">Чёрно-белые картинки</label>',
       '<p class="baby-intro">Картинки уже вставлены. При печати эмодзи преобразуются в изображения; свои рисунки тоже печатаются.</p>'
     ].join('');
@@ -2207,6 +2212,9 @@ showSettings();
     cue.onchange=()=>{printCue=cue.value;savePrint();printDraw()};
     const mono=printSelect('nprintMono');mono.checked=printMono;
     mono.onchange=()=>{printMono=mono.checked;savePrint();printDraw()};
+    printSelect('nprintImgSizeGroup').style.display=isBaby()?'':'none';
+    const sizeSlider=printSelect('nprintImgSize');
+    sizeSlider.oninput=()=>{printImageMM=Number(sizeSlider.value);printSelect('nprintImgSizeValue').textContent=printImageMM+' мм';savePrint();printDraw()};
     const outer=document.createElement('div');outer.className='nprint-output';
     outer.innerHTML='<div class="nprint-preview-head"><h3>Предпросмотр А4</h3><span>Печатается только лист с заданием</span></div><div class="nprint-warning" id="nprintWarning"></div><div id="nprintHost"></div>';
     root.after(outer);
@@ -2215,7 +2223,7 @@ showSettings();
       if(e.target.closest('.chip'))requestAnimationFrame(printGenerate);
     });
     root.addEventListener('change',e=>{
-      if(e.target.id==='nprintCue'||e.target.id==='nprintMono')return;
+      if(['nprintCue','nprintMono','nprintImgSize'].includes(e.target.id))return;
       if(e.target.matches('input,select'))requestAnimationFrame(printGenerate);
     });
     root.addEventListener('input',e=>{
