@@ -23,6 +23,256 @@
   const allWords = BABY_CATEGORIES[0].words.slice().sort((a, b) => a.localeCompare(b, 'ru'));
   const allowedWords = new Set(allWords);
 
+  // Встроенные визуальные подсказки для всех слов детского режима.
+  // Собственная картинка (если добавлена) имеет приоритет над эмодзи.
+  const DEFAULT_EMOJI = new Map(`
+    КОТ 🐈
+    КИТ 🐳
+    ПЁС 🐕
+    БЫК 🐂
+    ЛЕВ 🦁
+    РАК 🦞
+    ОСА 🐝
+    ЖУК 🪲
+    СОМ 🐟
+    ЛИСА 🦊
+    ЁЖИК 🦔
+    УТКА 🦆
+    ГУСЬ 🪿
+    СОВА 🦉
+    МУХА 🪰
+    ЖАБА 🐸
+    КОЗА 🐐
+    РЫБА 🐟
+    ОВЦА 🐑
+    ОСЁЛ 🫏
+    МЫШЬ 🐭
+    ЛАМА 🦙
+    ЗАЯЦ 🐇
+    СЫР 🧀
+    СУП 🍲
+    СОК 🧃
+    ЧАЙ 🍵
+    МЁД 🍯
+    РИС 🍚
+    КАША 🥣
+    РЕПА 🥬
+    ДЫНЯ 🍈
+    ТОРТ 🎂
+    ЯЙЦО 🥚
+    МЯСО 🥩
+    СОЛЬ 🧂
+    КИВИ 🥝
+    БОБЫ 🫘
+    ЕДА 🍽️
+    УХА 🍲
+    ЖЕЛЕ 🍮
+    МУКА 🌾
+    ЛУК 🧅
+    КЕКС 🧁
+    ОРЕХ 🌰
+    СОУС 🥫
+    МАК 🌺
+    КОФЕ ☕
+    ПЮРЕ 🥣
+    БЛИН 🥞
+    ЛЕС 🌲
+    ЛУГ 🌼
+    САД 🌳
+    ДУБ 🌳
+    ИВА 🌳
+    ЕЛЬ 🎄
+    КУСТ 🌿
+    ЛИСТ 🍃
+    РОЗА 🌹
+    ЛЁД 🧊
+    СНЕГ ❄️
+    ТУЧА ☁️
+    РОСА 💧
+    ПРУД 🏞️
+    РЕКА 🏞️
+    МОРЕ 🌊
+    ГОРА 🏔️
+    ПОЛЕ 🌾
+    ЛУНА 🌙
+    НЕБО 🌤️
+    ЗИМА ⛄
+    ЛЕТО ☀️
+    ВОДА 💧
+    ГРОМ ⚡
+    БУРЯ 🌪️
+    ГРИБ 🍄
+    КОРА 🌳
+    ДЕНЬ ☀️
+    НОЧЬ 🌌
+    ЖАРА 🥵
+    ПЕНЬ 🪵
+    ПУХ 🪶
+    ДЫМ 💨
+    ДОМ 🏠
+    ПОЛ 🏠
+    СТОЛ 🪑
+    СТУЛ 🪑
+    ОКНО 🪟
+    ЧАСЫ ⏰
+    ВАЗА 🏺
+    КЛЮЧ 🗝️
+    ДУШ 🚿
+    МЫЛО 🧼
+    КРАН 🚰
+    НОЖ 🔪
+    ЛУПА 🔍
+    ШАР 🎈
+    ФЕН 💨
+    КУБ 🎲
+    БАНТ 🎀
+    МЯЧ ⚽
+    РАМА 🖼️
+    ДАЧА 🏡
+    ТАЗ 🪣
+    КЛЕЙ 🧴
+    БАНЯ 🛁
+    ПИЛА 🪚
+    СЕТЬ 🥅
+    БАК 🛢️
+    МЕЛ ✏️
+    НОС 👃
+    РОТ 👄
+    УХО 👂
+    ЛОБ 🙂
+    РУКА ✋
+    НОГА 🦵
+    ГЛАЗ 👁️
+    ШЕЯ 🧣
+    УСЫ 🥸
+    ЗУБ 🦷
+    ЛИЦО 🙂
+    КОЖА 🤲
+    ПЯТА 🦶
+    ТЕЛО 🧍
+    ГУБА 👄
+    ЛАПА 🐾
+    ЮБКА 👗
+    КЕДЫ 👟
+    ШУБА 🧥
+    ЮЛА 🌀
+    ЛЕГО 🧱
+    ИГРА 🎮
+    ЛОТО 🎲
+    БУСЫ 📿
+    КОНЬ 🐎
+    КЛАД 💰
+    ЦИРК 🎪
+    МАМА 👩
+    ПАПА 👨
+    ДЕД 👴
+    СЫН 👦
+    БРАТ 🧑‍🤝‍🧑
+    ДОЧЬ 👧
+    ТЁТЯ 👩
+    ДЯДЯ 👨
+    ДЕТИ 🧒
+    ДРУГ 🧑‍🤝‍🧑
+    ВНУК 👦
+    ЖЕНА 👩
+    МУЖ 👨
+    ИМЯ 🪪
+    АВТО 🚗
+    ЯХТА ⛵
+    САНИ 🛷
+    РУЛЬ 🚘
+    ФАРА 🚘
+    ПЛОТ 🛶
+    МОСТ 🌉
+    УРОК 📚
+    ТОМ 📕
+    ПЕРО 🪶
+    НОТА 🎵
+    ТЕСТ 📝
+    ЦВЕТ 🌈
+    ЗВУК 🔊
+    СПИ 😴
+    ПОЙ 🎤
+    ИДИ 🚶
+    БЕГИ 🏃
+    СТОЙ 🧍
+    ЕШЬ 🍽️
+    ПЕЙ 🥤
+    ДУЙ 💨
+    ЛОВИ 🤲
+    НЕСИ 🛍️
+    ИЩИ 🔎
+    ПИШИ ✍️
+    ЛЕПИ 🎨
+    КАТИ 🛞
+    МЕТИ 🧹
+    МОЙ 🧼
+    УЧИ 📖
+    СИДИ 🪑
+    ИДУ 🚶
+    ЕДУ 🚗
+    ЖДИ ⏳
+    ЕЛА 🍽️
+    ПИЛ 🥤
+    ПЁК 🍞
+    ПЁТ 🎤
+    ДЕЛИ ➗
+    ТЯНИ 🪢
+    ВЕЗИ 🛒
+    ЕЛИ 🍽️
+    ПИЛИ 🥤
+    МЫЛИ 🧼
+    СОН 💤
+    МИР 🌍
+    СМЕХ 😄
+    ДЕЛО 📋
+    ЧУДО ✨
+    ДАР 🎁
+    ПРИЗ 🏆
+    ЗВОН 🔔
+    ШАГ 👣
+    ВЕС ⚖️
+    РОСТ 📏
+    СИЛА 💪
+    СВЕТ 💡
+    УТРО 🌅
+    ГОД 📅
+    ЧАС 🕐
+    МАЙ 🌷
+    НОЛЬ 0️⃣
+    ОДИН 1️⃣
+    ДВА 2️⃣
+    ТРИ 3️⃣
+    ПЯТЬ 5️⃣
+    РЯД 🔢
+    ПАРА 👥
+    ПЛАН 🗺️
+    КОД 🔢
+  `.trim().split(/\n/).map(line => {
+    const m = line.trim().match(/^(\S+)\s+(.+)$/);
+    return [m[1], m[2]];
+  }));
+  const illustration = word => pictures.has(word)
+    ? {kind: 'image', value: pictures.get(word)}
+    : {kind: 'emoji', value: DEFAULT_EMOJI.get(word) || '🔎'};
+  function makeIllustration(word, className = '') {
+    const item = illustration(word);
+    if (item.kind === 'image') {
+      const img = document.createElement('img');
+      img.src = item.value;
+      img.alt = 'Картинка к слову ' + word;
+      img.loading = 'lazy';
+      if (className) img.className = className;
+      return img;
+    }
+    const span = document.createElement('span');
+    span.className = 'nx-default-emoji' + (className ? ' ' + className : '');
+    span.textContent = item.value;
+    span.setAttribute('role', 'img');
+    span.setAttribute('aria-label', 'Эмодзи к слову ' + word);
+    return span;
+  }
+
   const stylesheet = document.createElement('style');
   stylesheet.textContent = `
     .board.baby{width:min(100%,850px);max-width:850px;gap:6px}
@@ -33,6 +283,7 @@
     .nx-picture-group select{width:100%;height:46px;border:2px solid var(--border);background:var(--panel);color:var(--text);border-radius:12px;padding:8px}
     .nx-picture-preview{height:142px;border:2px dashed var(--border);border-radius:16px;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:800;overflow:hidden;text-align:center;padding:7px}
     .nx-picture-preview img{max-width:100%;max-height:100%;object-fit:contain}
+    .nx-picture-preview .nx-default-emoji{font-size:83px;line-height:1.2}
     .nx-picture-group .actions{margin:12px 0 2px;justify-content:flex-start}
     .nx-picture-group .btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px}
     .nx-picture-group .btn input{display:none}
@@ -41,13 +292,18 @@
     .nx-picture-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:2px solid var(--border);background:var(--panel);border-radius:16px;padding:8px;min-width:94px;max-width:150px;color:var(--text);font-weight:900;transition:opacity .2s,transform .2s}
     .nx-picture-item:hover{transform:translateY(-2px);border-color:var(--orange)}
     .nx-picture-item img{width:104px;height:85px;object-fit:contain;border-radius:10px;background:#fff}
+    .nx-picture-item .nx-default-emoji{width:104px;height:85px;display:flex;align-items:center;justify-content:center;font-size:66px;line-height:1;background:var(--bg);border-radius:10px}
+    .nx-picture-item img{background:var(--bg)}
+    .nx-picture-gallery{max-width:1080px;margin-left:auto;margin-right:auto}
+    .nx-picture-item span:not(.nx-default-emoji){font-size:15px;letter-spacing:.02em}
     .nx-picture-item.done{opacity:.5;border-color:var(--green)}
     .nx-picture-viewer{position:fixed;inset:0;background:rgba(5,16,35,.82);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
     .nx-picture-modal{background:var(--panel);color:var(--text);width:min(95vw,720px);border-radius:22px;padding:20px;text-align:center;position:relative}
     .nx-picture-modal img{display:block;max-width:100%;max-height:65vh;margin:0 auto;object-fit:contain}
     .nx-picture-modal strong{display:block;font-size:25px;margin-top:12px}
+    .nx-picture-modal .nx-default-emoji{display:block;font-size:min(44vw,185px);line-height:1.5;margin:8px auto}
     .nx-picture-close{position:absolute;right:12px;top:12px;border:0;border-radius:50%;width:42px;height:42px;background:var(--orange);color:#fff;font-size:24px;font-weight:900}
-    @media(max-width:700px){body.nx-baby-playing .wrap{padding:0 5px}body.nx-baby-playing .game-layout .panel{padding:8px} .board.baby{gap:3px;width:100%;max-width:none} .board.baby .cell{border-radius:8px} .nx-picture-tools{grid-template-columns:1fr} .nx-picture-item img{width:78px;height:65px} .nx-picture-item{min-width:82px;max-width:104px}}
+    @media(max-width:700px){body.nx-baby-playing .wrap{padding:0 5px}body.nx-baby-playing .game-layout .panel{padding:8px} .board.baby{gap:3px;width:100%;max-width:none} .board.baby .cell{border-radius:8px} .nx-picture-tools{grid-template-columns:1fr} .nx-picture-item img{width:78px;height:65px} .nx-picture-item .nx-default-emoji{width:78px;height:65px;font-size:52px} .nx-picture-item{min-width:82px;max-width:104px}}
   `;
   document.head.appendChild(stylesheet);
 
@@ -118,15 +374,11 @@
     const preview=elem('nxPicturePreview');
     if (!preview) return;
     preview.replaceChildren();
-    const data=pictures.get(chosenWord);
-    if (data) {
-      const img=document.createElement('img');img.src=data;img.alt='Иллюстрация к слову '+chosenWord;
-      preview.appendChild(img);
-    } else {
-      preview.textContent='Картинка пока не добавлена';
-    }
-    const count=elem('nxPictureCount');if(count)count.textContent=`Добавлено: ${pictures.size} из ${allWords.length}`;
-    const erase=elem('nxPictureErase');if(erase)erase.disabled=!data || loadFailed;
+    preview.appendChild(makeIllustration(chosenWord));
+    const count=elem('nxPictureCount');
+    if(count)count.textContent=`Готовые картинки: ${DEFAULT_EMOJI.size} · своих: ${pictures.size}`;
+    const erase=elem('nxPictureErase');
+    if(erase)erase.disabled=!pictures.has(chosenWord) || loadFailed;
   }
   function makeThumbnail(file) {
     return new Promise((resolve,reject) => {
@@ -179,15 +431,15 @@
     if(description && description.textContent.includes('Больше 300')) description.textContent=description.textContent.replace('Больше 300',`${allWords.length}`);
     const box=document.createElement('section');box.className='nx-picture-group';
     box.innerHTML=`<div class="group-title">🖼 Картинки к словам</div>
-      <p class="baby-intro">Выбери слово, добавь свой рисунок или фотографию. В игре картинка появится как подсказка рядом со словом. Можно и без картинок.</p>
+      <p class="baby-intro">Для всех детских слов картинки уже есть — это эмодзи. Можно заменить любое эмодзи своим рисунком или фотографией. Находить слова можно и без подсказок.</p>
       <div class="nx-picture-tools"><div><label for="nxPictureWord"><b>Слово</b></label><select id="nxPictureWord"></select>
       <div class="nx-picture-status" id="nxPictureCount"></div></div>
       <div id="nxPicturePreview" class="nx-picture-preview"></div></div>
-      <div class="actions"><label class="btn primary" for="nxPictureUpload">＋ Добавить картинку<input type="file" id="nxPictureUpload" accept="image/png,image/jpeg,image/webp,image/gif,image/avif"></label>
-      <button type="button" class="btn" id="nxPictureErase">Удалить</button></div>
+      <div class="actions"><label class="btn primary" for="nxPictureUpload">↻ Заменить своей картинкой<input type="file" id="nxPictureUpload" accept="image/png,image/jpeg,image/webp,image/gif,image/avif"></label>
+      <button type="button" class="btn" id="nxPictureErase">Вернуть эмодзи</button></div>
       <div class="actions"><button type="button" class="btn" id="nxPictureExport">↓ Сохранить набор</button><label class="btn" for="nxPictureImport">↑ Загрузить набор<input type="file" id="nxPictureImport" accept=".json,application/json"></label></div>
-      <label class="toggle" style="margin-top:12px"><input type="checkbox" id="nxShowPictures" ${cfg.showPictures?'checked':''}>Показывать картинки-подсказки в игре</label>
-      <p class="baby-intro">Картинки хранятся в этом браузере. Чтобы перенести их на другое устройство, используй «Сохранить набор» и «Загрузить набор».</p>
+      <label class="toggle" style="margin-top:12px"><input type="checkbox" id="nxShowPictures" ${cfg.showPictures?'checked':''}>Показывать картинки к словам в игре</label>
+      <p class="baby-intro">Эмодзи уже встроены в игру, работают без интернета. Твои собственные картинки хранятся в браузере; для переноса используй «Сохранить набор».</p>
       <div class="nx-picture-status" id="nxPictureStatus" role="status" aria-live="polite"></div>`;
     panel.insertBefore(box,panel.querySelector('.actions:last-child'));
     const select=elem('nxPictureWord');
@@ -201,7 +453,7 @@
       catch(error){setStatus(error.message||'Не удалось сохранить картинку')}
       finally{e.target.value=''};
     };
-    elem('nxPictureErase').onclick=async()=>{try{await erasePicture(chosenWord);updatePreview();setStatus('Картинка удалена')}catch(error){setStatus(error.message)}};
+    elem('nxPictureErase').onclick=async()=>{try{await erasePicture(chosenWord);updatePreview();setStatus('Своя картинка удалена. Вернулась встроенная картинка.')}catch(error){setStatus(error.message)}};
     elem('nxPictureExport').onclick=downloadSet;
     elem('nxPictureImport').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{await importSet(file)}catch(error){setStatus(error.message)}finally{e.target.value=''}};
     elem('nxShowPictures').onchange=e=>{cfg.showPictures=e.target.checked;saveCfg()};
@@ -209,11 +461,11 @@
     updatePreview();
   }
   function viewPicture(word){
-    const src=pictures.get(word);if(!src)return;
+    if(!DEFAULT_EMOJI.has(word) && !pictures.has(word))return;
     const overlay=document.createElement('div');overlay.className='nx-picture-viewer';overlay.tabIndex=-1;
     const modal=document.createElement('div');modal.className='nx-picture-modal';
     const button=document.createElement('button');button.className='nx-picture-close';button.textContent='×';button.setAttribute('aria-label','Закрыть картинку');
-    const img=document.createElement('img');img.src=src;img.alt=word;
+    const img=makeIllustration(word);
     const title=document.createElement('strong');title.textContent=word;
     modal.append(button,img,title);overlay.append(modal);document.body.append(overlay);overlay.focus();
     const close=()=>{overlay.remove();document.removeEventListener('keydown',onKey)};
@@ -225,12 +477,12 @@
     document.querySelectorAll('.nx-picture-gallery').forEach(el=>el.remove());
     if(!isBaby() || !cfg.showPictures || !state || !state.placed || state.ended)return;
     const anchor=elem('wordList')||elem('board');if(!anchor)return;
-    const words=state.placed.filter(p=>pictures.has(p.word));if(!words.length)return;
+    const words=state.placed.filter(p=>DEFAULT_EMOJI.has(p.word)||pictures.has(p.word));if(!words.length)return;
     const gallery=document.createElement('div');gallery.className='nx-picture-gallery';gallery.setAttribute('aria-label','Картинки-подсказки к словам');
     words.forEach(p=>{
-      const btn=document.createElement('button');btn.type='button';btn.className='nx-picture-item';btn.dataset.word=p.word;btn.title='Увеличить картинку: '+p.word;
+      const btn=document.createElement('button');btn.type='button';btn.className='nx-picture-item';btn.dataset.word=p.word;btn.title='Посмотреть картинку: '+p.word;
       if(state.found.has(p.word))btn.classList.add('done');
-      const img=document.createElement('img');img.src=pictures.get(p.word);img.alt='Картинка к слову '+p.word;img.loading='lazy';
+      const img=makeIllustration(p.word);
       const caption=document.createElement('span');caption.textContent=p.word;
       btn.append(img,caption);btn.onclick=()=>viewPicture(p.word);gallery.append(btn);
     });
