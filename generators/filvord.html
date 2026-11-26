@@ -2096,7 +2096,7 @@ showSettings();
     return [match[1],match[2]];
   }));
   // Название города нельзя иллюстрировать животным с тем же именем (например, ОРЁЛ).
-  const schoolHasPicture = word => pictures.has(word) || (activeCategory().id !== 'cities' && (SCHOOL_EMOJI.has(word) || DEFAULT_EMOJI.has(word)));
+  const schoolHasPicture = word => pictures.has(word) || (activeCategory().id !== 'cities' && SCHOOL_EMOJI.has(word));
   const illustration = word => pictures.has(word)
     ? {kind: 'image', value: pictures.get(word)}
     : {kind: 'emoji', value: DEFAULT_EMOJI.get(word) || '🔎'};
@@ -2366,7 +2366,7 @@ showSettings();
   const savePrint=()=>{try{localStorage.setItem(PRINT_ONLY_KEY,JSON.stringify({cue:printCue,schoolCue:printSchoolCue,mono:printMono,imageMM:printImageMM}))}catch(e){}};
   function imageForPrint(word){
     if(pictures.has(word))return pictures.get(word);
-    const emoji=isBaby()?DEFAULT_EMOJI.get(word):(SCHOOL_EMOJI.get(word)||DEFAULT_EMOJI.get(word));
+    const emoji=isBaby()?DEFAULT_EMOJI.get(word):SCHOOL_EMOJI.get(word);
     if(!emoji)return '';
     if(rasterEmoji.has(emoji))return rasterEmoji.get(emoji);
     const c=document.createElement('canvas');c.width=240;c.height=240;
@@ -2584,7 +2584,7 @@ showSettings();
     holder.replaceChildren();
     const word=schoolChosenWord;
     const imgSource=pictures.get(word);
-    const emoji=activeCategory().id==='cities'?null:(SCHOOL_EMOJI.get(word)||DEFAULT_EMOJI.get(word));
+    const emoji=activeCategory().id==='cities'?null:SCHOOL_EMOJI.get(word);
     if(imgSource){
       const img=document.createElement('img');img.src=imgSource;img.alt=word;
       img.style.cssText='max-height:80px;max-width:120px;object-fit:contain';holder.appendChild(img);
