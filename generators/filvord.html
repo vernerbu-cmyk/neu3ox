@@ -628,6 +628,62 @@
 }
 
 </style>
+<style id="filvord-print-workspace">
+
+/* Настройки как в «Слова по слогам»: отдельная левая колонка + просмотр А4. */
+@media screen and (min-width:761px){
+  body:has(.fw-workspace){height:100dvh;overflow:hidden}
+  body:has(.fw-workspace) .wrap{max-width:none;width:100%;padding:0;margin:0}
+  .fw-workspace{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:minmax(310px,365px) minmax(0,1fr);background:var(--bg);min-width:0;min-height:0;overflow:hidden}
+  .fw-workspace>.fw-sidebar{height:100%;max-width:none;margin:0;padding:12px 12px 0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;border-right:1px solid var(--border);background:var(--panel);min-height:0;display:flex;flex-direction:column}
+  .fw-workspace>.fw-sidebar>.page-title{text-align:left;font-size:20px;margin:4px 3px}
+  .fw-workspace>.fw-sidebar>.sub{text-align:left;margin:3px 3px 12px;line-height:1.4}
+  .fw-workspace>.fw-sidebar>.panel{padding:0;background:transparent;box-shadow:none;border:0;border-radius:0;flex:1 0 auto}
+  .fw-workspace>.nprint-output{height:100%;min-width:0;min-height:0;max-width:none;width:100%;margin:0;padding:18px 18px 35px;overflow:auto}
+  .fw-workspace #nprintHost{max-width:100%;margin:0 auto}
+  .fw-workspace .nprint-page{width:790px;max-width:none;min-height:1010px;zoom:var(--fw-zoom,1)}
+  .fw-workspace .nprint-preview-head,.fw-workspace .nprint-warning{max-width:790px;margin-inline:auto}
+}
+.fw-accordion{background:var(--panel);border:1px solid var(--border);border-radius:10px;margin:0 0 9px;overflow:hidden}
+.fw-accordion>summary{cursor:pointer;font-size:14px;line-height:1.4;color:var(--text);font-weight:900;padding:12px;user-select:none}
+.fw-accordion[open]>summary{border-bottom:1px solid var(--border)}
+.fw-accordion>summary:hover{background:var(--blue-pale)}
+.fw-section{padding:4px 10px 12px}
+.fw-section>.group{margin:10px 0 0;padding:10px 0 0}
+.fw-section>.group:first-child{margin:4px 0 0;padding:0;border:0}
+.fw-section .group-title{margin-bottom:7px;font-size:11px}
+.fw-section .chips{gap:5px}
+.fw-section .chip{font-size:11px;padding:6px 8px;border-radius:8px;border-width:1px}
+.fw-section .chip.mode{font-size:12px;padding:8px 9px}
+.fw-section .baby-intro{font-size:12px;line-height:1.4}
+.fw-section .nx-picture-group{padding-top:10px;margin-top:12px;border-top:1px solid var(--border)}
+.fw-actions{position:sticky;bottom:0;z-index:20;margin-top:9px;background:var(--panel);border-top:1px solid var(--border);padding:10px 0 13px;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.fw-actions .btn{min-width:0;white-space:normal;padding:10px 5px;font-size:12px}
+.fw-actions .btn.primary{background:var(--panel);border:2px solid var(--blue);color:var(--blue)}
+.fw-actions .btn:last-child{background:var(--orange);border-color:var(--orange);color:#fff}
+.fw-form label{font-weight:800;font-size:12px}
+.fw-form input[type=text],.fw-presets input,.fw-presets select{border:1px solid var(--border);border-radius:8px;padding:9px;width:100%;min-width:0;max-width:100%;background:var(--panel);color:var(--text);font-size:12px}
+.fw-form .toggle{margin-top:10px}
+.fw-presets .fw-preset-row{display:flex;gap:6px;align-items:center;margin:7px 0}
+.fw-presets button{border:1px solid var(--blue);border-radius:8px;padding:7px 8px;color:var(--text);background:var(--panel);font-size:11px;font-weight:800}
+@media screen and (max-width:760px){
+  body:has(.fw-workspace){overflow:auto}
+  .fw-workspace{position:static;display:flex;flex-direction:column;gap:14px}
+  .fw-workspace>.fw-sidebar{width:100%;max-width:none;margin:0;padding:12px;background:var(--panel);border-radius:12px}
+  .fw-workspace>.fw-sidebar>.panel{border:0;box-shadow:none;padding:0}
+  .fw-workspace>.nprint-output{width:100%;max-width:none;margin:0;overflow:hidden}
+  .fw-workspace .nprint-page{width:790px;max-width:none;min-height:1010px;zoom:var(--fw-zoom,1)}
+  .fw-actions{position:sticky;bottom:0}
+}
+@media print{
+  body:has(.fw-workspace),html{height:auto!important;overflow:visible!important}
+  .fw-workspace{position:static!important;display:block!important;overflow:visible!important;width:100%!important;height:auto!important}
+  .fw-workspace>.fw-sidebar{display:none!important}
+  .fw-workspace>.nprint-output{display:block!important;width:100%!important;max-width:none!important;height:auto!important;overflow:visible!important;padding:0!important;margin:0!important}
+  .fw-workspace #nprintHost{width:100%!important;max-width:none!important}
+  .fw-workspace .nprint-page{width:100%!important;max-width:none!important;min-height:0!important;zoom:1!important;margin:0!important}
+}
+</style>
 </head>
 <body>
   <header class="site-header">
@@ -2401,8 +2457,8 @@ showSettings();
     const sheet=document.createElement('article');
     sheet.className='nprint-page'+(answers?' nprint-answers':'');
     const title=document.createElement('h2');title.className='nprint-title';
-    title.textContent=answers?'Ответы · Филворд':(isBaby()?'Найди слова по картинкам':'Найди слова');
-    sheet.appendChild(title);
+    title.textContent=answers?'Ответы · Филворд':(fwHeading.trim()||(isBaby()?'Найди слова по картинкам':'Найди слова'));
+    if(answers||fwHeadingVisible)sheet.appendChild(title);
     const sub=document.createElement('p');sub.className='nprint-subtitle';
     sub.textContent=answers?'Найденные слова выделены цветом':(isBaby()?getBabyDirectionSpec().description:'Каждая буква используется в слове один раз. Можно поворачивать.');
     sheet.appendChild(sub);
@@ -2450,6 +2506,7 @@ showSettings();
     host.appendChild(makePage(printPuzzle,false));
     if(cfg.printAnswers)host.appendChild(makePage(printPuzzle,true));
     host.classList.toggle('nprint-mono',printMono);
+    requestAnimationFrame(fwFit);
     const msg=printSelect('nprintWarning');
     if(msg){
       msg.textContent=printPuzzle.placed.length<printPuzzle.requested
@@ -2541,9 +2598,7 @@ showSettings();
     printSelect('nprintImgSizeGroup').style.display=currentPrintCue()==='words'?'none':'';
     const sizeSlider=printSelect('nprintImgSize');
     sizeSlider.oninput=()=>{printImageMM=Number(sizeSlider.value);printSelect('nprintImgSizeValue').textContent=printImageMM+' мм';savePrint();printDraw()};
-    const outer=document.createElement('div');outer.className='nprint-output';
-    outer.innerHTML='<div class="nprint-preview-head"><h3>Предпросмотр А4</h3><span>Печатается только лист с заданием</span></div><div class="nprint-warning" id="nprintWarning"></div><div id="nprintHost"></div>';
-    root.after(outer);
+    fwArrange(root,printPanel,format,actions);
     // Настройки в исходном генераторе сохраняют рабочие диапазоны и направления.
     root.addEventListener('click',e=>{
       if(e.target.closest('.chip'))requestAnimationFrame(printGenerate);
@@ -2655,6 +2710,145 @@ showSettings();
     };
     refreshSchoolWordPicker();
   }
+
+
+  // Рабочая область и раскрывающиеся блоки по образцу генератора «Слова по слогам».
+  const FW_TITLE_KEY='nx_filvord_sheet_heading_v1';
+  const FW_PRESETS_KEY='nx_filvord_preset_collection_v1';
+  let fwHeading='',fwHeadingVisible=true,fwObserver=null;
+  try{
+    const p=JSON.parse(localStorage.getItem(FW_TITLE_KEY)||'{}');
+    fwHeading=typeof p.heading==='string'?p.heading.slice(0,80):'';
+    fwHeadingVisible=p.visible!==false;
+  }catch(e){}
+  function fwSaveHeading(){
+    try{localStorage.setItem(FW_TITLE_KEY,JSON.stringify({heading:fwHeading,visible:fwHeadingVisible}))}catch(e){}
+  }
+  function fwPresets(){
+    try{const p=JSON.parse(localStorage.getItem(FW_PRESETS_KEY)||'[]');return Array.isArray(p)?p.filter(x=>x&&typeof x.name==='string').slice(0,24):[]}catch(e){return []}
+  }
+  function fwSavePresets(arr){
+    try{localStorage.setItem(FW_PRESETS_KEY,JSON.stringify(arr))}catch(e){}
+  }
+  function fwFit(){
+    const preview=printSelect('fwPreview'),host=printSelect('nprintHost');
+    if(!preview||!host)return;
+    const space=preview.clientWidth-38;
+    host.style.setProperty('--fw-zoom',String(Math.min(1,Math.max(.2,space/790))));
+  }
+  function fwArrange(root,panel,format,actions){
+    const workspace=document.createElement('div');workspace.className='fw-workspace';
+    root.before(workspace);workspace.append(root);root.classList.add('fw-sidebar');
+    const g=id=>printSelect(id)?.closest('.group');
+    const basics=[g('modeChips'),g('categoryChips'),g('countRange')];
+    const grid=[g('sizeChips'),g('lengthChips'),g('babyLengthChips'),g('babyDirectionChips')];
+    const diag=printSelect('diag')?.closest('.toggle');
+    if(diag){
+      const group=document.createElement('div');group.className='group';
+      group.innerHTML='<div class="group-title">Дополнительные направления</div>';
+      group.append(diag);grid.push(group);
+    }
+    const design=document.createElement('div');design.className='group';
+    design.innerHTML='<div class="group-title">Оформление подсказок</div>';
+    const slider=printSelect('nprintImgSizeGroup'),mono=printSelect('nprintMono')?.closest('.toggle');
+    if(slider)design.append(slider);
+    if(mono)design.append(mono);
+
+    const paper=document.createElement('div');paper.className='group fw-form';
+    paper.innerHTML='<div class="group-title">Заголовок листа</div>'+
+      '<input type="text" id="fwHeading" maxlength="80" placeholder="Найди слова">'+
+      '<label class="toggle"><input type="checkbox" id="fwHeadingVisible"> Показывать заголовок</label>';
+    const titleInput=paper.querySelector('#fwHeading');
+    titleInput.value=fwHeading;
+    titleInput.oninput=()=>{fwHeading=titleInput.value;fwSaveHeading();printDraw()};
+    const check=paper.querySelector('#fwHeadingVisible');check.checked=fwHeadingVisible;
+    check.onchange=()=>{fwHeadingVisible=check.checked;fwSaveHeading();printDraw()};
+
+    const presetGroup=document.createElement('div');presetGroup.className='group fw-presets';
+    presetGroup.innerHTML='<div class="group-title">Мои пресеты</div>'+
+      '<div class="fw-preset-row"><input type="text" maxlength="55" id="fwPresetName" placeholder="Название пресета"><button type="button" id="fwPresetSave">Сохранить</button></div>'+
+      '<div class="fw-preset-row"><select id="fwPresetList" aria-label="Выбрать пресет"></select></div>'+
+      '<div class="fw-preset-row"><button type="button" id="fwPresetLoad">Загрузить</button><button type="button" id="fwPresetRemove">Удалить</button></div>'+
+      '<p id="fwPresetStatus" class="baby-intro">Сохраняются в этом браузере.</p>';
+    const presetSelect=presetGroup.querySelector('#fwPresetList'),presetStatus=presetGroup.querySelector('#fwPresetStatus');
+    const updatePresetMenu=()=>{
+      const old=presetSelect.value;presetSelect.replaceChildren();
+      fwPresets().forEach(p=>{const opt=document.createElement('option');opt.value=p.name;opt.textContent=p.name;presetSelect.append(opt)});
+      if(fwPresets().some(p=>p.name===old))presetSelect.value=old;
+    };
+    presetGroup.querySelector('#fwPresetSave').onclick=()=>{
+      const name=presetGroup.querySelector('#fwPresetName').value.trim().slice(0,55);
+      if(!name){presetStatus.textContent='Введи название пресета.';return}
+      const list=fwPresets().filter(p=>p.name!==name);
+      list.push({name,mode:cfg.mode,prefs:modePrefs(),printAnswers:cfg.printAnswers,
+        cue:printCue,schoolCue:printSchoolCue,mono:printMono,imgMM:printImageMM,
+        heading:fwHeading,titleVisible:fwHeadingVisible});
+      fwSavePresets(list.slice(-24));updatePresetMenu();presetSelect.value=name;
+      presetStatus.textContent='Пресет сохранён.';
+    };
+    presetGroup.querySelector('#fwPresetLoad').onclick=()=>{
+      const chosen=fwPresets().find(p=>p.name===presetSelect.value);
+      if(!chosen){presetStatus.textContent='Выбери пресет.';return}
+      cfg.mode=chosen.mode==='baby'?'baby':'regular';
+      Object.assign(cfg,chosen.prefs||{});
+      cfg.printAnswers=!!chosen.printAnswers;
+      if(cfg.mode==='baby')cfg.babyPrefs=modePrefs();else cfg.regularPrefs=modePrefs();
+      printCue=chosen.cue||'picture-word';printSchoolCue=chosen.schoolCue||'words';
+      printMono=!!chosen.mono;printImageMM=Math.max(7,Math.min(19,Number(chosen.imgMM)||11));
+      fwHeading=String(chosen.heading||'').slice(0,80);fwHeadingVisible=chosen.titleVisible!==false;
+      fwSaveHeading();savePrint();saveCfg();showSettings();
+    };
+    presetGroup.querySelector('#fwPresetRemove').onclick=()=>{
+      const name=presetSelect.value;if(!name)return;
+      fwSavePresets(fwPresets().filter(p=>p.name!==name));updatePresetMenu();
+      presetStatus.textContent='Пресет удалён.';
+    };
+    updatePresetMenu();
+
+    const makeSection=(label,elements,open)=>{
+      const parts=elements.filter(Boolean);if(!parts.length)return;
+      const el=document.createElement('details');el.className='fw-accordion';el.open=!!open;
+      const summary=document.createElement('summary');summary.textContent=label;
+      const content=document.createElement('div');content.className='fw-section';
+      parts.forEach(node=>content.append(node));
+      el.append(summary,content);panel.append(el);
+    };
+    const pictures=panel.querySelector('.nx-picture-group');
+    makeSection('Основные настройки',basics,true);
+    makeSection('Сетка и сложность',grid,false);
+    makeSection('Подсказки и картинки',[format,pictures],false);
+    makeSection('Оформление',[design],false);
+    makeSection('Параметры листа',[g('printAnswers'),paper],false);
+    makeSection('Мои пресеты',[presetGroup],false);
+    // Удаляются только оставшиеся пустые исходные блоки.
+    [...panel.children].filter(x=>x.classList.contains('group')||x.classList.contains('nx-picture-group')).forEach(x=>x.remove());
+    actions.classList.add('fw-actions');root.append(actions);
+
+    const preview=document.createElement('div');
+    preview.id='fwPreview';preview.className='nprint-output';
+    preview.innerHTML='<div class="nprint-preview-head"><h3>Предпросмотр А4</h3><span>На печать идёт только лист</span></div>'+
+      '<div class="nprint-warning" id="nprintWarning"></div><div id="nprintHost"></div>';
+    workspace.append(preview);
+    const resize=()=>{
+      const header=document.querySelector('.site-header');
+      workspace.style.top=window.innerWidth>760?Math.max(0,Math.round(header?.getBoundingClientRect().bottom||0))+'px':'';
+      fwFit();
+    };
+    if(fwObserver)fwObserver.disconnect();
+    if(typeof ResizeObserver!=='undefined'){
+      fwObserver=new ResizeObserver(fwFit);
+      fwObserver.observe(preview);
+    }
+    requestAnimationFrame(resize);
+  }
+  window.addEventListener('resize',()=>{
+    const workspace=document.querySelector('.fw-workspace');
+    if(workspace){
+      const header=document.querySelector('.site-header');
+      workspace.style.top=window.innerWidth>760?Math.max(0,Math.round(header?.getBoundingClientRect().bottom||0))+'px':'';
+    }
+    fwFit();
+  });
 
   const oldWrite=writePicture;
   writePicture=async function(...args){await oldWrite(...args);if(isBaby())printDraw();else printGenerate()};
