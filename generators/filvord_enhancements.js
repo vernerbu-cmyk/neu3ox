@@ -548,7 +548,8 @@
     const match=line.trim().match(/^(\S+)\s+(.+)$/);
     return [match[1],match[2]];
   }));
-  const schoolHasPicture = word => SCHOOL_EMOJI.has(word) || DEFAULT_EMOJI.has(word) || pictures.has(word);
+  // Название города нельзя иллюстрировать животным с тем же именем (например, ОРЁЛ).
+  const schoolHasPicture = word => pictures.has(word) || (activeCategory().id !== 'cities' && (SCHOOL_EMOJI.has(word) || DEFAULT_EMOJI.has(word)));
   const illustration = word => pictures.has(word)
     ? {kind: 'image', value: pictures.get(word)}
     : {kind: 'emoji', value: DEFAULT_EMOJI.get(word) || '🔎'};
