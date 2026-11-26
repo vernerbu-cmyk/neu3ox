@@ -1562,7 +1562,7 @@ showSettings();
     saveCfg();
   }
   const allWords = BABY_CATEGORIES[0].words.slice().sort((a, b) => a.localeCompare(b, 'ru'));
-  const allowedWords = new Set(allWords);
+  const allowedWords = new Set([...allWords, ...CATEGORIES[0].words]);
 
   // Встроенные визуальные подсказки для всех слов детского режима.
   // Собственная картинка (если добавлена) имеет приоритет над эмодзи.
@@ -1797,6 +1797,292 @@ showSettings();
   for (const word of [...DEFAULT_EMOJI.keys()]) {
     if (!allowedWords.has(word)) DEFAULT_EMOJI.delete(word);
   }
+  // Проверенные иллюстрации для школьной печати. Абстрактные слова здесь намеренно отсутствуют.
+  const SCHOOL_EMOJI = new Map(`
+    ТИГР 🐅
+    СЛОН 🐘
+    ЖИРАФ 🦒
+    ЗЕБРА 🦓
+    ЛИСА 🦊
+    МЕДВЕДЬ 🐻
+    ВОЛК 🐺
+    ЗАЯЦ 🐇
+    ЁЖИК 🦔
+    БЕЛКА 🐿️
+    ОЛЕНЬ 🦌
+    БАРСУК 🦡
+    БОБР 🦫
+    ВЫДРА 🦦
+    ПИНГВИН 🐧
+    ДЕЛЬФИН 🐬
+    АКУЛА 🦈
+    ОРЁЛ 🦅
+    СОВА 🦉
+    ЧЕРЕПАХА 🐢
+    КРОКОДИЛ 🐊
+    ЗМЕЯ 🐍
+    ЯЩЕРИЦА 🦎
+    ЛЯГУШКА 🐸
+    БАБОЧКА 🦋
+    ПЧЕЛА 🐝
+    МУРАВЕЙ 🐜
+    ПАУК 🕷️
+    ХОМЯК 🐹
+    ТЮЛЕНЬ 🦭
+    ПАНДА 🐼
+    КОАЛА 🐨
+    ПАВЛИН 🦚
+    ФЛАМИНГО 🦩
+    ГОРИЛЛА 🦍
+    ЛЕНИВЕЦ 🦥
+    ВЕРБЛЮД 🐪
+    КЕНГУРУ 🦘
+    ЛЕОПАРД 🐆
+    КРЫСА 🐀
+    МЫШЬ 🐭
+    ОБЕЗЬЯНА 🐒
+    ОСЬМИНОГ 🐙
+    МЕДУЗА 🪼
+    КРАБ 🦀
+    КРЕВЕТКА 🦐
+    УЛИТКА 🐌
+    КОМАР 🦟
+    МУХА 🪰
+    СКОРПИОН 🦂
+    ГОЛУБЬ 🕊️
+    ЛЕБЕДЬ 🦢
+    ГУСЬ 🪿
+    УТКА 🦆
+    КУРИЦА 🐔
+    ПЕТУХ 🐓
+    ПОПУГАЙ 🦜
+    ЯБЛОКО 🍎
+    ГРУША 🍐
+    ВИШНЯ 🍒
+    АРБУЗ 🍉
+    ДЫНЯ 🍈
+    БАНАН 🍌
+    АПЕЛЬСИН 🍊
+    ЛИМОН 🍋
+    ВИНОГРАД 🍇
+    ПЕРСИК 🍑
+    КЛУБНИКА 🍓
+    КАРТОШКА 🥔
+    МОРКОВЬ 🥕
+    КАПУСТА 🥬
+    ОГУРЕЦ 🥒
+    ПОМИДОР 🍅
+    ЧЕСНОК 🧄
+    ТЫКВА 🎃
+    ХЛЕБ 🍞
+    СЫР 🧀
+    МОЛОКО 🥛
+    МАСЛО 🧈
+    ПЕЛЬМЕНИ 🥟
+    КАША 🥣
+    БЛИНЫ 🥞
+    ПИРОГ 🥧
+    ТОРТ 🎂
+    КОНФЕТА 🍬
+    ШОКОЛАД 🍫
+    ПЕЧЕНЬЕ 🍪
+    ОРЕХ 🌰
+    ПИЦЦА 🍕
+    СУШИ 🍣
+    ЛАПША 🍜
+    РИС 🍚
+    ГОРОХ 🫛
+    ФАСОЛЬ 🫘
+    КУКУРУЗА 🌽
+    ПЕРЕЦ 🫑
+    МЁД 🍯
+    ПОПКОРН 🍿
+    МОРОЖЕНОЕ 🍦
+    ЛИМОНАД 🥤
+    ЧАЙ 🍵
+    КОФЕ ☕
+    САЛАТ 🥗
+    СУП 🍲
+    РЕКА 🏞️
+    МОРЕ 🌊
+    ГОРА 🏔️
+    ЛЕС 🌲
+    ПОЛЕ 🌾
+    ПУСТЫНЯ 🏜️
+    ВУЛКАН 🌋
+    ОСТРОВ 🏝️
+    ПЛЯЖ 🏖️
+    ЗАКАТ 🌇
+    РАССВЕТ 🌅
+    ОБЛАКО ☁️
+    ТУМАН 🌫️
+    ГРОЗА ⛈️
+    РАДУГА 🌈
+    СНЕГОПАД 🌨️
+    ВЕТЕР 🌬️
+    УРАГАН 🌀
+    КАМЕНЬ 🪨
+    АЛМАЗ 💎
+    РАКУШКА 🐚
+    РОМАШКА 🌼
+    РОЗА 🌹
+    ТЮЛЬПАН 🌷
+    ЛОТОС 🪷
+    СТУЛ 🪑
+    КНИГА 📖
+    РУЧКА 🖊️
+    ТЕТРАДЬ 📓
+    ЗЕРКАЛО 🪞
+    ЧАСЫ ⏰
+    КЛЮЧ 🗝️
+    ДВЕРЬ 🚪
+    ОКНО 🪟
+    ДИВАН 🛋️
+    КРОВАТЬ 🛏️
+    ТАРЕЛКА 🍽️
+    ЛОЖКА 🥄
+    ВИЛКА 🍴
+    ЧАЙНИК 🫖
+    ВЕДРО 🪣
+    ТЕЛЕФОН ☎️
+    КОМПЬЮТЕР 💻
+    НАУШНИКИ 🎧
+    РЮКЗАК 🎒
+    ЗОНТИК ☂️
+    ПАКЕТ 🛍️
+    КОРОБКА 📦
+    СВЕЧА 🕯️
+    ФОНАРЬ 🔦
+    ГИТАРА 🎸
+    ПИАНИНО 🎹
+    БАРАБАН 🥁
+    СКРИПКА 🎻
+    КАРТИНА 🖼️
+    НОЖНИЦЫ ✂️
+    ЛИНЕЙКА 📏
+    ПОРТФЕЛЬ 💼
+    ПОМАДА 💄
+    МЫЛО 🧼
+    ВАННА 🛁
+    ДУШ 🚿
+    МОЛОТОК 🔨
+    ПИЛА 🪚
+    ФУТБОЛ ⚽
+    ХОККЕЙ 🏒
+    БАСКЕТБОЛ 🏀
+    ВОЛЕЙБОЛ 🏐
+    ТЕННИС 🎾
+    БАДМИНТОН 🏸
+    РЕГБИ 🏉
+    БЕЙСБОЛ ⚾
+    КРИКЕТ 🏏
+    БОКС 🥊
+    КАРАТЕ 🥋
+    БОРЬБА 🤼
+    ПЛАВАНИЕ 🏊
+    БЕГ 🏃
+    ГРЕБЛЯ 🚣
+    ВЕЛОСПОРТ 🚴
+    ЙОГА 🧘
+    ГИМНАСТИКА 🤸
+    ЛЫЖИ 🎿
+    КОНЬКИ ⛸️
+    ШАХМАТЫ ♟️
+    БИЛЬЯРД 🎱
+    БОУЛИНГ 🎳
+    ДАРТС 🎯
+    ГОЛЬФ ⛳
+    СЁРФИНГ 🏄
+    ДАЙВИНГ 🤿
+    ПАРАШЮТ 🪂
+    СКЕЙТБОРД 🛹
+    РОЛИКИ 🛼
+    МАШИНА 🚗
+    ГРУЗОВИК 🚚
+    ФУРА 🚛
+    АВТОБУС 🚌
+    ТРОЛЛЕЙБУС 🚎
+    ТРАМВАЙ 🚋
+    ПОЕЗД 🚆
+    МЕТРО 🚇
+    ПАРОВОЗ 🚂
+    ВАГОН 🚃
+    САМОЛЁТ ✈️
+    ВЕРТОЛЁТ 🚁
+    РАКЕТА 🚀
+    КОРАБЛЬ 🚢
+    ЛОДКА 🛶
+    ЯХТА ⛵
+    ПАРОМ ⛴️
+    ВЕЛОСИПЕД 🚲
+    МОТОЦИКЛ 🏍️
+    САМОКАТ 🛴
+    ТРАКТОР 🚜
+    САНИ 🛷
+    ЗВЕЗДА ⭐
+    ЛУНА 🌙
+    СОЛНЦЕ ☀️
+    ЗЕМЛЯ 🌍
+    САТУРН 🪐
+    КОМЕТА ☄️
+    СПУТНИК 🛰️
+    ТЕЛЕСКОП 🔭
+    КОСМОНАВТ 👩‍🚀
+    ФУТБОЛКА 👕
+    КУРТКА 🧥
+    ДЖИНСЫ 👖
+    ШОРТЫ 🩳
+    ПЛАТЬЕ 👗
+    ХАЛАТ 🥼
+    НОСКИ 🧦
+    КЕПКА 🧢
+    ШЛЯПА 🎩
+    ПЕРЧАТКИ 🧤
+    ОЧКИ 👓
+    КРОССОВКИ 👟
+    САПОГИ 👢
+    ТУФЛИ 👠
+    БОТИНКИ 🥾
+    ШАРФ 🧣
+    ЗВОНОК 🔔
+    КАРАНДАШ ✏️
+    ГЛОБУС 🌐
+    КАРТА 🗺️
+    МИКРОСКОП 🔬
+    ПРОБИРКА 🧪
+    УЧИТЕЛЬ 👩‍🏫
+    МУЗЫКА 🎶
+    ДРАКОН 🐉
+    ЕДИНОРОГ 🦄
+    ФЕЯ 🧚
+    ВОЛШЕБНИК 🧙
+    ВЕДЬМА 🧙‍♀️
+    ЭЛЬФ 🧝
+    РУСАЛКА 🧜‍♀️
+    ПРИНЦЕССА 👸
+    МЕЧ ⚔️
+    МЕТЛА 🧹
+    НОТА 🎵
+    ФЛЕЙТА 🪈
+    САКСОФОН 🎷
+    ТРУБА 🎺
+    БАНДЖО 🪕
+    АККОРДЕОН 🪗
+    БАЛЕТ 🩰
+    ВРАЧ 🩺
+    ПОВАР 👨‍🍳
+    ПОЖАРНЫЙ 👩‍🚒
+    ПОЛИЦЕЙСКИЙ 👮
+    ФЕРМЕР 👨‍🌾
+    ХУДОЖНИК 👨‍🎨
+    ПИЛОТ 👩‍✈️
+    МЕХАНИК 👩‍🔧
+    УЧЁНЫЙ 👩‍🔬
+  `.trim().split(/\n/).map(line => {
+    const match=line.trim().match(/^(\S+)\s+(.+)$/);
+    return [match[1],match[2]];
+  }));
+  const schoolHasPicture = word => SCHOOL_EMOJI.has(word) || DEFAULT_EMOJI.has(word) || pictures.has(word);
   const illustration = word => pictures.has(word)
     ? {kind: 'image', value: pictures.get(word)}
     : {kind: 'emoji', value: DEFAULT_EMOJI.get(word) || '🔎'};
@@ -2046,12 +2332,14 @@ showSettings();
 
   /* Печатный генератор вместо игрового экрана */
   const PRINT_ONLY_KEY='nx_filvord_print_only_v1';
-  let printPuzzle=null, printCue='picture-word', printMono=false, printImageMM=11;
+  let printPuzzle=null, printCue='picture-word', printSchoolCue='words', printMono=false, printImageMM=11, schoolChosenWord='';
+  const currentPrintCue=()=>isBaby()?printCue:printSchoolCue;
   const rasterEmoji=new Map();
   const printSelect=id=>document.getElementById(id);
   try{
     const prefs=JSON.parse(localStorage.getItem(PRINT_ONLY_KEY)||'{}');
-    if(prefs.cue)printCue=prefs.cue;
+    if(['picture-word','picture','words'].includes(prefs.cue))printCue=prefs.cue;
+    if(['words','picture-word','picture','mixed'].includes(prefs.schoolCue))printSchoolCue=prefs.schoolCue;
     if(prefs.mono)printMono=!!prefs.mono;
     if(Number.isFinite(Number(prefs.imageMM)))printImageMM=Math.max(7,Math.min(19,Math.round(Number(prefs.imageMM))));
     if(!localStorage.getItem(PRINT_ONLY_KEY)){
@@ -2061,11 +2349,11 @@ showSettings();
       saveCfg();
     }
   }catch(e){}
-  const savePrint=()=>{try{localStorage.setItem(PRINT_ONLY_KEY,JSON.stringify({cue:printCue,mono:printMono,imageMM:printImageMM}))}catch(e){}};
+  const savePrint=()=>{try{localStorage.setItem(PRINT_ONLY_KEY,JSON.stringify({cue:printCue,schoolCue:printSchoolCue,mono:printMono,imageMM:printImageMM}))}catch(e){}};
   function imageForPrint(word){
-    const item=illustration(word);
-    if(item.kind==='image')return item.value;
-    const emoji=item.value;
+    if(pictures.has(word))return pictures.get(word);
+    const emoji=isBaby()?DEFAULT_EMOJI.get(word):(SCHOOL_EMOJI.get(word)||DEFAULT_EMOJI.get(word));
+    if(!emoji)return '';
     if(rasterEmoji.has(emoji))return rasterEmoji.get(emoji);
     const c=document.createElement('canvas');c.width=240;c.height=240;
     const context=c.getContext('2d');
@@ -2111,18 +2399,23 @@ showSettings();
     }
     sheet.appendChild(makeGrid(puzzle,answers));
     const heading=document.createElement('h3');heading.className='nprint-h3';
-    const clueMode=answers?'words':(isBaby()?printCue:'words');
-    heading.textContent=clueMode==='words'?'Найди слова':'Найди по картинкам';
+    const clueMode=answers?'words':currentPrintCue();
+    heading.textContent=clueMode==='words'?'Найди слова':clueMode==='mixed'?'Найди слова по подсказкам':'Найди по картинкам';
     sheet.appendChild(heading);
     const gallery=document.createElement('div');gallery.className='nprint-gallery';
-    puzzle.placed.slice().sort((a,b)=>a.word.localeCompare(b.word,'ru')).forEach(p=>{
+    puzzle.placed.slice().sort((a,b)=>a.word.localeCompare(b.word,'ru')).forEach((p,i)=>{
       const card=document.createElement('div');card.className='nprint-card';
-      if(clueMode!=='words'){
-        const img=document.createElement('img');img.alt='Иллюстрация: '+p.word;
-        img.src=imageForPrint(p.word);
-        card.appendChild(img);
+      // Смешанный режим: половина подсказок — рисунки БЕЗ подписей, половина — слова.
+      const picture=(clueMode==='picture-word'||clueMode==='picture'||(clueMode==='mixed'&&i%2===0));
+      const word=(clueMode==='words'||clueMode==='picture-word'||(clueMode==='mixed'&&i%2!==0));
+      if(picture){
+        const src=imageForPrint(p.word);
+        if(src){
+          const img=document.createElement('img');img.alt='Иллюстрация: '+p.word;
+          img.src=src;card.appendChild(img);
+        }
       }
-      if(clueMode!=='picture'){
+      if(word){
         const text=document.createElement('strong');text.textContent=p.word;
         card.appendChild(text);
       }
@@ -2151,12 +2444,24 @@ showSettings();
     }
   }
   function printGenerate(){
-    printPuzzle=buildPuzzleFromCfg();
+    const useSchoolImages=!isBaby()&&currentPrintCue()!=='words';
+    const cat=activeCategory();
+    const original=cat.words;
+    // В школьных режимах с рисунками не допускаются слова со случайной 🔎 вместо изображения.
+    if(useSchoolImages)cat.words=original.filter(schoolHasPicture);
+    try{printPuzzle=buildPuzzleFromCfg()}finally{cat.words=original}
+    const warning=printSelect('nprintWarning');
     if(!printPuzzle){
       const host=printSelect('nprintHost');
-      if(host)host.innerHTML='<p class="notice">Не удалось собрать сетку. Увеличь её размер или уменьши количество слов.</p>';
+      if(host)host.innerHTML='<p class="notice">'+
+        (useSchoolImages&&original.filter(schoolHasPicture).length<4
+          ?'Для этой темы пока мало картинок. Добавь собственные изображения к словам или выбери другую тему / режим «Только слова».'
+          :'Не удалось собрать сетку. Увеличь размер поля, уменьши количество слов или выбери другую тему.')+'</p>';
+      if(warning)warning.textContent='';
+      refreshSchoolWordPicker();
       return;
     }
+    refreshSchoolWordPicker();
     printDraw();
   }
   async function printNow(){
@@ -2198,21 +2503,28 @@ showSettings();
       '<select id="nprintCue" style="width:100%;padding:12px;border-radius:10px;border:2px solid var(--border);background:var(--panel);color:var(--text)">',
       '<option value="picture-word">Картинки и подписи</option>',
       '<option value="picture">Только картинки</option>',
-      '<option value="words">Только слова</option></select>',
+      '<option value="words">Только слова</option>',
+      '<option value="mixed">Часть картинок, часть слов</option></select>',
       '<div id="nprintImgSizeGroup" style="margin-top:12px"><label for="nprintImgSize" style="display:flex;justify-content:space-between;font-weight:850;font-size:13px">Размер картинок <output id="nprintImgSizeValue">'+printImageMM+' мм</output></label>',
       '<input type="range" id="nprintImgSize" min="7" max="19" step="1" value="'+printImageMM+'" style="width:100%;accent-color:var(--orange)"></div>',
       '<label class="toggle" style="margin-top:9px"><input type="checkbox" id="nprintMono">Чёрно-белые картинки</label>',
       '<p class="baby-intro">Картинки уже вставлены. При печати эмодзи преобразуются в изображения; свои рисунки тоже печатаются.</p>'
     ].join('');
-    if(!isBaby())format.querySelector('select').value='words';
+    if(isBaby())format.querySelector('option[value="mixed"]').remove();
     const actions=printPanel.querySelector('.actions:last-child');
     printPanel.insertBefore(format,actions);
+    if(!isBaby())setupSchoolPictureEditor(printPanel,actions);
     const cue=printSelect('nprintCue');
-    cue.value=isBaby()?printCue:'words';
-    cue.onchange=()=>{printCue=cue.value;savePrint();printDraw()};
+    cue.value=currentPrintCue();
+    cue.onchange=()=>{
+      if(isBaby())printCue=cue.value;else printSchoolCue=cue.value;
+      savePrint();
+      printSelect('nprintImgSizeGroup').style.display=currentPrintCue()==='words'?'none':'';
+      printGenerate();
+    };
     const mono=printSelect('nprintMono');mono.checked=printMono;
     mono.onchange=()=>{printMono=mono.checked;savePrint();printDraw()};
-    printSelect('nprintImgSizeGroup').style.display=isBaby()?'':'none';
+    printSelect('nprintImgSizeGroup').style.display=currentPrintCue()==='words'?'none':'';
     const sizeSlider=printSelect('nprintImgSize');
     sizeSlider.oninput=()=>{printImageMM=Number(sizeSlider.value);printSelect('nprintImgSizeValue').textContent=printImageMM+' мм';savePrint();printDraw()};
     const outer=document.createElement('div');outer.className='nprint-output';
@@ -2231,14 +2543,113 @@ showSettings();
     });
     printGenerate();
   };
+
+  function refreshSchoolWordPicker(){
+    const select=printSelect('nprintSchoolImageWord');
+    if(!select||isBaby())return;
+    const available=activeCategory().words;
+    if(!available.includes(schoolChosenWord))schoolChosenWord=available[0]||'';
+    if(select.options.length!==available.length||
+        (available.length&&select.options[0].value!==available[0])){
+      select.replaceChildren();
+      available.slice().sort((a,b)=>a.localeCompare(b,'ru')).forEach(word=>{
+        const opt=document.createElement('option');opt.value=word;opt.textContent=word;
+        select.appendChild(opt);
+      });
+    }
+    select.value=schoolChosenWord;
+    schoolPicturePreview();
+  }
+  function schoolPictureMessage(msg){
+    const el=printSelect('nprintSchoolImageStatus');
+    if(el)el.textContent=msg;
+  }
+  function schoolPicturePreview(){
+    const holder=printSelect('nprintSchoolImagePreview');
+    if(!holder)return;
+    holder.replaceChildren();
+    const word=schoolChosenWord;
+    const imgSource=pictures.get(word);
+    const emoji=SCHOOL_EMOJI.get(word)||DEFAULT_EMOJI.get(word);
+    if(imgSource){
+      const img=document.createElement('img');img.src=imgSource;img.alt=word;
+      img.style.cssText='max-height:80px;max-width:120px;object-fit:contain';holder.appendChild(img);
+    }else if(emoji){
+      const span=document.createElement('span');span.textContent=emoji;
+      span.style.cssText='font-size:58px;line-height:1.6';holder.appendChild(span);
+    }else{
+      const span=document.createElement('span');
+      span.style.cssText='font-size:12px;color:var(--muted);text-align:center';
+      span.textContent='Пока нет изображения для «'+word+'». Можно добавить своё.';
+      holder.appendChild(span);
+    }
+    const remove=printSelect('nprintSchoolImageErase');
+    if(remove)remove.disabled=!pictures.has(word);
+    const available=activeCategory().words.filter(schoolHasPicture).length;
+    const counter=printSelect('nprintSchoolImageCount');
+    if(counter)counter.textContent='С картинками в этой теме: '+available;
+  }
+  function setupSchoolPictureEditor(panel,beforeActions){
+    const box=document.createElement('div');
+    box.className='group nx-picture-group';
+    box.innerHTML=[
+      '<div class="group-title">🖼 Картинки к школьным словам</div>',
+      '<p class="baby-intro">Для подходящих слов иллюстрации уже есть. Для остальных можно добавить собственные — они станут доступны и в печатном листе.</p>',
+      '<label for="nprintSchoolImageWord" style="font-weight:850;font-size:13px">Выбери слово</label>',
+      '<select id="nprintSchoolImageWord" style="width:100%;padding:10px;margin-top:6px;border:2px solid var(--border);border-radius:10px;background:var(--panel);color:var(--text)"></select>',
+      '<div id="nprintSchoolImagePreview" style="height:105px;display:flex;align-items:center;justify-content:center;margin-top:8px;background:var(--bg);border-radius:10px"></div>',
+      '<div class="nx-picture-status" id="nprintSchoolImageCount"></div>',
+      '<div class="actions" style="justify-content:flex-start;margin-top:8px">',
+      '<label class="btn primary" for="nprintSchoolImageUpload">Загрузить картинку',
+      '<input type="file" id="nprintSchoolImageUpload" accept="image/png,image/jpeg,image/webp,image/gif,image/avif"></label>',
+      '<button type="button" class="btn" id="nprintSchoolImageErase">Вернуть исходную</button></div>',
+      '<div class="actions" style="justify-content:flex-start;margin-top:8px">',
+      '<button type="button" class="btn" id="nprintSchoolImageExport">↓ Сохранить набор</button>',
+      '<label class="btn" for="nprintSchoolImageImport">↑ Загрузить набор',
+      '<input type="file" id="nprintSchoolImageImport" accept=".json,application/json"></label></div>',
+      '<p class="nx-picture-status" id="nprintSchoolImageStatus" role="status"></p>'
+    ].join('');
+    panel.insertBefore(box,beforeActions);
+    const picker=printSelect('nprintSchoolImageWord');
+    picker.onchange=()=>{schoolChosenWord=picker.value;schoolPicturePreview()};
+    printSelect('nprintSchoolImageUpload').onchange=async e=>{
+      const file=e.target.files&&e.target.files[0];if(!file)return;
+      const word=schoolChosenWord;
+      try{
+        schoolPictureMessage('Обрабатываю изображение…');
+        const image=await makeThumbnail(file);
+        await writePicture(word,image);
+        schoolPicturePreview();
+        schoolPictureMessage('Картинка для «'+word+'» сохранена.');
+      }catch(error){schoolPictureMessage(error.message||'Не удалось загрузить картинку')}
+      e.target.value='';
+    };
+    printSelect('nprintSchoolImageErase').onclick=async()=>{
+      try{
+        await erasePicture(schoolChosenWord);schoolPicturePreview();
+        schoolPictureMessage('Своя картинка удалена.');
+      }catch(error){schoolPictureMessage(error.message||'Ошибка удаления')}
+    };
+    printSelect('nprintSchoolImageExport').onclick=downloadSet;
+    printSelect('nprintSchoolImageImport').onchange=async e=>{
+      const file=e.target.files&&e.target.files[0];if(!file)return;
+      try{
+        await importSet(file);schoolPicturePreview();
+        schoolPictureMessage('Картинки добавлены из набора.');
+      }catch(error){schoolPictureMessage(error.message||'Ошибка импорта')}
+      e.target.value='';
+    };
+    refreshSchoolWordPicker();
+  }
+
   const oldWrite=writePicture;
-  writePicture=async function(...args){await oldWrite(...args);printDraw()};
+  writePicture=async function(...args){await oldWrite(...args);if(isBaby())printDraw();else printGenerate()};
   const oldErase=erasePicture;
-  erasePicture=async function(...args){await oldErase(...args);printDraw()};
+  erasePicture=async function(...args){await oldErase(...args);if(isBaby())printDraw();else printGenerate()};
   const oldImport=importSet;
-  importSet=async function(...args){await oldImport(...args);printDraw()};
+  importSet=async function(...args){await oldImport(...args);if(isBaby())printDraw();else printGenerate()};
   showSettings();
-  loadPictures().then(printDraw);
+  loadPictures().then(()=>{if(isBaby())printDraw();else printGenerate()});
 
 })();
 
